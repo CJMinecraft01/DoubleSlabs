@@ -22,15 +22,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import scala.actors.threadpool.Arrays;
+
+import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Events {
+
+    @SubscribeEvent
+    public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
+    {
+        if (event.getModID().equals(DoubleSlabs.MODID))
+        {
+            ConfigManager.sync(DoubleSlabs.MODID, Config.Type.INSTANCE);
+            DoubleSlabsConfig.slabBlacklist = Arrays.asList(DoubleSlabsConfig.slabBlacklistArray);
+        }
+    }
 
     private static void tryPlace(BlockPos pos, ItemSlab slab, EnumFacing face, PlayerInteractEvent.RightClickBlock event) {
         IBlockState state = event.getWorld().getBlockState(pos);
@@ -38,6 +54,8 @@ public class Events {
         IBlockState slabState = slab.singleSlab.getStateForPlacement(event.getWorld(), pos, face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z, slab.getMetadata(event.getItemStack().getMetadata()), event.getEntityPlayer(), event.getHand()).cycleProperty(BlockSlab.HALF);
         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);
 
+        if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(slabState)))
+            return;
         AxisAlignedBB axisalignedbb = newState.getCollisionBoundingBox(event.getWorld(), pos);
 
         if (axisalignedbb != Block.NULL_AABB && event.getWorld().checkNoEntityCollision(axisalignedbb.offset(pos)) && event.getWorld().setBlockState(pos, newState, 11))
@@ -66,6 +84,8 @@ public class Events {
                 }
                 IBlockState state = event.getWorld().getBlockState(pos);
                 if (state.getBlock() instanceof BlockSlab) {
+                    if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(state)))
+                        return;
                     BlockSlab.EnumBlockHalf half = state.getValue(BlockSlab.HALF);
                     if ((face == EnumFacing.UP && half == BlockSlab.EnumBlockHalf.BOTTOM || face == EnumFacing.DOWN && half == BlockSlab.EnumBlockHalf.TOP))
                         tryPlace(pos, slab, face, event);

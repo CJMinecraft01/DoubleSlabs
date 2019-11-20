@@ -1,12 +1,13 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/double-slabs",
   "1.12.2": {
+    "0.1.0": "+Added a config file which contains a list of block states to not allow the placement of mixed slabs with the specified slab types",
     "0.0.3": "=Fixed an issue with the mod crashing when on a server\n=Fixed an issue with double slabs not working with other mods\n+Added a forge update checker to notify players when a update has arrived",
     "0.0.2": "=Fixed a bug to do with moving a double slab with a piston using the Quark Pistons move TE feature (Note: there is still an issue with the rendering of the double slab when the piston is moving but this will be fixed as soon as possible)",
     "0.0.1": "+Added the ability to create double slabs using different slab types\n+Added WAILA/HWYLA support to show the correct slab"
   },
   "promos": {
-    "1.12.2-latest": "0.0.3",
-    "1.12.2-recommended": "0.0.3"
+    "1.12.2-latest": "0.1.0",
+    "1.12.2-recommended": "0.1.0"
   }
 }
