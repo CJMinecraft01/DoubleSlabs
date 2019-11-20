@@ -1,0 +1,17 @@
+[
+{
+  "modid": "doubleslabs",
+  "name": "Double Slabs",
+  "description": "Adds the ability to create double slabs with mixed slab types!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/CJMinecraft01/DoubleSlabs",
+  "updateUrl": "",
+  "authorList": ["CJMinecraft", "PitsPower"],
+  "credits": "Thanks for PitsPower for inspiring me to get back into modding and helping me create the first draft of the mod!",
+  "logoFile": "",
+  "screenshots": [],
+  "useDependencyInformation": true,
+  "dependencies": []
+}
+]

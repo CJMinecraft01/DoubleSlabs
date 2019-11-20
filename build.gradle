@@ -71,6 +71,7 @@ processResources {
 
 jar {
     manifest {
-        attributes 'FMLAT': 'betterslabs_at.cfg'
+        attributes 'FMLAT': 'doubleslabs_at.cfg'
     }
 }
+
