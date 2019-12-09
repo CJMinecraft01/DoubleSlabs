@@ -17,10 +17,14 @@ public class DoubleSlabsConfig {
     public static String[] slabBlacklistArray = new String[]{};
 
     @Config.Ignore
-    public static List slabBlacklist = new ArrayList<>();
+    public static List<String> slabBlacklist = new ArrayList<>();
 
     public static String slabToString(IBlockState state) {
         BlockSlab slab = (BlockSlab) state.getBlock();
+        if (state.getBlock().getRegistryName() == null)
+            return "";
+        if (slab.getVariantProperty() == BlockSlab.HALF)
+            return state.getBlock().getRegistryName().toString();
         return state.getBlock().getRegistryName().toString() + (slab.getVariantProperty().getAllowedValues().size() == 1 ? "" : "#" + slab.getVariantProperty().getName() + "=" + state.getValue(slab.getVariantProperty()).toString());
     }
 

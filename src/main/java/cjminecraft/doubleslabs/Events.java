@@ -31,18 +31,16 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Events {
 
     @SubscribeEvent
-    public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
-    {
-        if (event.getModID().equals(DoubleSlabs.MODID))
-        {
+    public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(DoubleSlabs.MODID)) {
             ConfigManager.sync(DoubleSlabs.MODID, Config.Type.INSTANCE);
             DoubleSlabsConfig.slabBlacklist = Arrays.asList(DoubleSlabsConfig.slabBlacklistArray);
         }
@@ -54,12 +52,11 @@ public class Events {
         IBlockState slabState = slab.singleSlab.getStateForPlacement(event.getWorld(), pos, face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z, slab.getMetadata(event.getItemStack().getMetadata()), event.getEntityPlayer(), event.getHand()).cycleProperty(BlockSlab.HALF);
         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);
 
-        if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(slabState)))
+        if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(slabState)))
             return;
         AxisAlignedBB axisalignedbb = newState.getCollisionBoundingBox(event.getWorld(), pos);
 
-        if (axisalignedbb != Block.NULL_AABB && event.getWorld().checkNoEntityCollision(axisalignedbb.offset(pos)) && event.getWorld().setBlockState(pos, newState, 11))
-        {
+        if (axisalignedbb != Block.NULL_AABB && event.getWorld().checkNoEntityCollision(axisalignedbb.offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
             SoundType soundtype = slab.singleSlab.getSoundType(slabState, event.getWorld(), pos, event.getEntityPlayer());
             event.getWorld().playSound(event.getEntityPlayer(), pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
             if (!event.getEntityPlayer().isCreative())
@@ -67,7 +64,7 @@ public class Events {
             event.setCancellationResult(EnumActionResult.SUCCESS);
             event.setCanceled(true);
             if (event.getEntityPlayer() instanceof EntityPlayerMP)
-                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)event.getEntityPlayer(), pos, event.getItemStack());
+                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) event.getEntityPlayer(), pos, event.getItemStack());
         }
     }
 
@@ -84,8 +81,6 @@ public class Events {
                 }
                 IBlockState state = event.getWorld().getBlockState(pos);
                 if (state.getBlock() instanceof BlockSlab) {
-                    if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(state)))
-                        return;
                     BlockSlab.EnumBlockHalf half = state.getValue(BlockSlab.HALF);
                     if ((face == EnumFacing.UP && half == BlockSlab.EnumBlockHalf.BOTTOM || face == EnumFacing.DOWN && half == BlockSlab.EnumBlockHalf.TOP))
                         tryPlace(pos, slab, face, event);
