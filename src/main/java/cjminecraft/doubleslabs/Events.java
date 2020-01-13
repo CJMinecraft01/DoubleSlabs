@@ -5,34 +5,22 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemSlab;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
@@ -40,9 +28,9 @@ public class Events {
 
     @SubscribeEvent
     public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(DoubleSlabs.MODID)) {
+        if (event.getModID().equalsIgnoreCase(DoubleSlabs.MODID)) {
             ConfigManager.sync(DoubleSlabs.MODID, Config.Type.INSTANCE);
-            DoubleSlabsConfig.slabBlacklist = Arrays.asList(DoubleSlabsConfig.slabBlacklistArray);
+            DoubleSlabsConfig.SLAB_BLACKLIST = Arrays.asList(DoubleSlabsConfig.SLAB_BLACKLIST_ARRAY);
         }
     }
 
@@ -52,7 +40,7 @@ public class Events {
         IBlockState slabState = slab.singleSlab.getStateForPlacement(event.getWorld(), pos, face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z, slab.getMetadata(event.getItemStack().getMetadata()), event.getEntityPlayer(), event.getHand()).cycleProperty(BlockSlab.HALF);
         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);
 
-        if (DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.slabBlacklist.contains(DoubleSlabsConfig.slabToString(slabState)))
+        if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
             return;
         AxisAlignedBB axisalignedbb = newState.getCollisionBoundingBox(event.getWorld(), pos);
 

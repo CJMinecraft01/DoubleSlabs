@@ -131,8 +131,8 @@ public class BlockDoubleSlab extends Block {
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
         IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
         if (target.hitVec.y - pos.getY() > 0.5)
-            return extendedBlockState.getValue(TOP).getBlock().getPickBlock(extendedBlockState.getValue(TOP), target, world, pos, player);
-        return extendedBlockState.getValue(BOTTOM).getBlock().getPickBlock(extendedBlockState.getValue(BOTTOM), target, world, pos, player);
+            return extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlock().getPickBlock(extendedBlockState.getValue(TOP), target, world, pos, player) : ItemStack.EMPTY;
+        return extendedBlockState.getValue(BOTTOM) != null ? extendedBlockState.getValue(BOTTOM).getBlock().getPickBlock(extendedBlockState.getValue(BOTTOM), target, world, pos, player) : ItemStack.EMPTY;
     }
 
 //    @Override

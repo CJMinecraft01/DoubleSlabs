@@ -32,14 +32,12 @@ public class DoubleSlabs
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         proxy.preInit();
-
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        ConfigManager.sync(MODID, Config.Type.INSTANCE);
         proxy.init();
-        DoubleSlabsConfig.slabBlacklist = Arrays.asList(DoubleSlabsConfig.slabBlacklistArray);
+        ConfigManager.sync(MODID, Config.Type.INSTANCE);
     }
 
     @Mod.EventHandler
