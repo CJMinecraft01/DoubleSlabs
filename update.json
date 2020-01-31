@@ -8,8 +8,13 @@
     "0.0.2": "=Fixed a bug to do with moving a double slab with a piston using the Quark Pistons move TE feature (Note: there is still an issue with the rendering of the double slab when the piston is moving but this will be fixed as soon as possible)",
     "0.0.1": "+Added the ability to create double slabs using different slab types\n+Added WAILA/HWYLA support to show the correct slab"
   },
+  "1.14.4": {
+	"1.0.0": "Initial port to 1.14"
+  }
   "promos": {
     "1.12.2-latest": "0.1.2",
-    "1.12.2-recommended": "0.1.2"
+    "1.12.2-recommended": "0.1.2",
+	"1.14.4-latest": "1.0.0",
+	"1.14.4-recommended": "1.0.0"
   }
 }
