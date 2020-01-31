@@ -1,98 +1,113 @@
 package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBlockState;
+import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.ParticleDigging;
-import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class BlockDoubleSlab extends Block {
-    public static final UnlistedPropertyBlockState TOP = new UnlistedPropertyBlockState();
-    public static final UnlistedPropertyBlockState BOTTOM = new UnlistedPropertyBlockState();
 
     public BlockDoubleSlab() {
-        super(Material.ROCK);
+        super(Properties.create(Material.ROCK));
         setRegistryName(DoubleSlabs.MODID, "double_slab");
-//        setDefaultState(((IExtendedBlockState) this.getBlockState().getBaseState()).withProperty(TOP, Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP)).withProperty(BOTTOM, Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK)));
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.SOLID;
     }
 
     @Override
-    public boolean isFullBlock(IBlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
+        return layer == BlockRenderLayer.SOLID;
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return true;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isSolid(BlockState state) {
         return true;
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
+    @Nullable
     @Override
-    public Material getMaterial(IBlockState state) {
-        return ((IExtendedBlockState) state).getValue(TOP) == null ? Material.ROCK : ((IExtendedBlockState) state).getValue(TOP).getMaterial();
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return Registrar.TILE_DOUBLE_SLAB.create();
     }
 
-    @Override
-    public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
-        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(state, world, pos));
-        return extendedState.getValue(TOP).getBlock().getSoundType(extendedState.getValue(TOP), world, pos, entity);
-    }
 
-    @Override
-    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
-        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
-        return Math.min(extendedState.getValue(TOP).getBlockHardness(world, pos), extendedState.getValue(BOTTOM).getBlockHardness(world, pos));
-    }
+    public <T> T runOnDoubleSlab(BlockState state, IBlockReader world, BlockPos pos, Function<Pair<BlockState, BlockState>, T> func, Supplier<T> orElse) {
+        TileEntity te = world.getTileEntity(pos);
 
-    @Override
-    public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
-        return Math.min(extendedState.getValue(TOP).getBlock().getExplosionResistance(world, pos, exploder, explosion), extendedState.getValue(BOTTOM).getBlock().getExplosionResistance(world, pos, exploder, explosion));
+        if (te instanceof TileEntityDoubleSlab) {
+            BlockState topState = ((TileEntityDoubleSlab) te).getTopState();
+            BlockState bottomState = ((TileEntityDoubleSlab) te).getBottomState();
+            return func.apply(Pair.of(topState, bottomState));
+        }
+
+        return orElse.get();
     }
 
 //    @Override
+//    public Material getMaterial(BlockState state) {
+//        return ((IExtendedBlockState) state).getValue(TOP) == null ? Material.ROCK : ((IExtendedBlockState) state).getValue(TOP).getMaterial();
+//    }
+
+    @Override
+    public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
+        return runOnDoubleSlab(state, world, pos, (states) -> states.getLeft().getSoundType(), () -> super.getSoundType(state, world, pos, entity));
+    }
+
+    @Override
+    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(state, world, pos, (states) -> Math.min(states.getLeft().getBlockHardness(world, pos), states.getRight().getBlockHardness(world, pos)), () -> super.getBlockHardness(state, world, pos));
+    }
+
+    @Override
+    public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
+        return runOnDoubleSlab(state, world, pos, (states) -> Math.min(states.getLeft().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(state, world, pos, exploder, explosion));
+    }
+
+    //    @Override
 //    public int getHarvestLevel(IBlockState state) {
 //        IExtendedBlockState extendedState = (IExtendedBlockState) state;
 //        return Math.min(extendedState.getValue(TOP).getBlock().getHarvestLevel(extendedState.getValue(TOP)), extendedState.getValue(BOTTOM).getBlock().getHarvestLevel(extendedState.getValue(BOTTOM)));
@@ -105,34 +120,26 @@ public class BlockDoubleSlab extends Block {
 //        return "pickaxe";
 //    }
 
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
-        return new TileEntityDoubleSlab(((IExtendedBlockState) state).getValue(TOP), ((IExtendedBlockState) state).getValue(BOTTOM));
-    }
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new ExtendedBlockState.Builder(this).add(TOP, BOTTOM).build();
+//    }
+
+
+//    @Override
+//    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+//        if (state instanceof IExtendedBlockState) {
+//            IExtendedBlockState extendedState = (IExtendedBlockState) state;
+//            TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
+//            if (tile != null)
+//                return extendedState.withProperty(TOP, tile.getTopState()).withProperty(BOTTOM, tile.getBottomState());
+//        }
+//        return state;
+//    }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new ExtendedBlockState.Builder(this).add(TOP, BOTTOM).build();
-    }
-
-    @Override
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
-        if (state instanceof IExtendedBlockState) {
-            IExtendedBlockState extendedState = (IExtendedBlockState) state;
-            TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
-            if (tile != null)
-                return extendedState.withProperty(TOP, tile.getTopState()).withProperty(BOTTOM, tile.getBottomState());
-        }
-        return state;
-    }
-
-    @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
-        if (target.hitVec.y - pos.getY() > 0.5)
-            return extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlock().getPickBlock(extendedBlockState.getValue(TOP), target, world, pos, player) : ItemStack.EMPTY;
-        return extendedBlockState.getValue(BOTTOM) != null ? extendedBlockState.getValue(BOTTOM).getBlock().getPickBlock(extendedBlockState.getValue(BOTTOM), target, world, pos, player) : ItemStack.EMPTY;
+    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+        return runOnDoubleSlab(state, world, pos, (states) -> target.getHitVec().y - pos.getY() > 0.5 ? states.getLeft().getPickBlock(target, world, pos, player) : states.getRight().getPickBlock(target, world, pos, player), () -> super.getPickBlock(state, target, world, pos, player));
     }
 
 //    @Override
@@ -151,40 +158,60 @@ public class BlockDoubleSlab extends Block {
 //        super.breakBlock(world, pos, state);
 //    }
 
+
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         if (willHarvest)
             return true;
-        return super.removedByPlayer(state, world, pos, player, willHarvest);
+        return super.removedByPlayer(state, world, pos, player, false, fluid);
     }
 
     @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        TileEntityDoubleSlab tile = (TileEntityDoubleSlab) builder.get(LootParameters.BLOCK_ENTITY);
+        List<ItemStack> drops = new ArrayList<>();
         if (tile != null) {
-            tile.getTopState().getBlock().getDrops(drops, world, pos, tile.getTopState(), fortune);
-            tile.getBottomState().getBlock().getDrops(drops, world, pos, tile.getBottomState(), fortune);
+            drops.addAll(tile.getTopState().getDrops(builder));
+            drops.addAll(tile.getBottomState().getDrops(builder));
         }
+        return drops;
     }
 
     @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
-        worldIn.setBlockToAir(pos);
-        worldIn.removeTileEntity(pos);
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.harvestBlock(world, player, pos, state, te, stack);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        world.removeTileEntity(pos);
     }
 
-    @Override
-    public boolean addLandingEffects(IBlockState state, WorldServer world, BlockPos pos, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
-        IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
-        float f = (float) MathHelper.ceil(entity.fallDistance - 3.0F);
-        double d0 = Math.min((0.2F + f / 15.0F), 2.5D);
-        int numOfParticles = (int) (150.0D * d0);
-        world.spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ, numOfParticles,
-                0.0D, 0.0D, 0.0D, 0.15000000596046448D, Block.getStateId(extendedBlockState.getValue(TOP)));
-        return true;
-    }
+//    @Override
+//    public boolean addLandingEffects(BlockState state1, ServerWorld world, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
+//        return runOnDoubleSlab(state1, world, pos, (states) -> {
+//            float f = (float) MathHelper.ceil(entity.fallDistance - 3.0F);
+//            double d0 = Math.min((0.2F + f / 15.0F), 2.5D);
+//            int numOfParticles = (int) (150.0D * d0);
+//            world.spawnParticle(new RedstoneParticleData(0, 0, 0, 1), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0D, 0.0D, 0.0D, 0.15000000596046448D);
+//            return true;
+//        }, () -> false);
+//    }
 
+//    @Override
+//    public boolean addRunningEffects(BlockState state, World world, BlockPos pos, Entity entity) {
+//        return runOnDoubleSlab(state, world, pos, (states) -> {
+//            if (world.isRemote) {
+//                world.part
+//                world.spawnParticle(ParticleTypes.BLOCK_CRACK,
+//                        entity.posX + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.width,
+//                        entity.getEntityBoundingBox().minY + 0.1D,
+//                        entity.posZ + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.width,
+//                        -entity.motionX * 4.0D, 1.5D, -entity.motionZ * 4.0D, Block.getStateId(extendedBlockState.getValue(TOP)));
+//                return true;
+//            }
+//            return false;
+//        }, () -> false);
+//    }
+
+    /* TODO add
     @Override
     public boolean addRunningEffects(IBlockState state, World world, BlockPos pos, Entity entity) {
         if (world.isRemote) {
@@ -288,7 +315,7 @@ public class BlockDoubleSlab extends Block {
             }
         }
         return true;
-    }
+    }*/
 
 //    @Override
 //    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
