@@ -28,25 +28,6 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
         return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
     }
 
-//    @Override
-//    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-////        System.out.println(state);
-//        if (state == null)
-//            return getFallback().getQuads(state, side, rand);
-//        IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
-//        IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-////        topState = Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
-////        bottomState = Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK);
-//        IBakedModel topModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(topState);
-//        IBakedModel bottomModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(bottomState);
-//        List<BakedQuad> topQuads = new ArrayList<>(topModel.getQuads(topState, side, rand));
-//        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-//        List<BakedQuad> bottomQuads = new ArrayList<>(bottomModel.getQuads(bottomState, side, rand));
-//        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
-//        topQuads.addAll(bottomQuads);
-//        return topQuads;
-//    }
-
     @Override
     public boolean isAmbientOcclusion() {
         return getFallback().isAmbientOcclusion();
@@ -95,13 +76,5 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             return topQuads;
         }
         return getFallback().getQuads(state, side, rand, extraData);
-
-//        topState = Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
-//        bottomState = Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK);
     }
-
-//    @Override
-//    public ItemOverrideList getOverrides() {
-//        return getFallback().getOverrides();
-//    }
 }

@@ -2,13 +2,10 @@ package cjminecraft.doubleslabs.tileentitiy;
 
 import cjminecraft.doubleslabs.Registrar;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
@@ -27,15 +24,7 @@ public class TileEntityDoubleSlab extends TileEntity {
 
     public TileEntityDoubleSlab() {
         super(Registrar.TILE_DOUBLE_SLAB);
-        this.topState = Blocks.PURPUR_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP);
-        this.bottomState = Blocks.ACACIA_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
     }
-
-//    public TileEntityDoubleSlab(BlockState topState, BlockState bottomState) {
-//        super(Registrar.TILE_DOUBLE_SLAB);
-//        this.topState = topState;
-//        this.bottomState = bottomState;
-//    }
 
     public BlockState getTopState() {
         return topState;
@@ -45,16 +34,14 @@ public class TileEntityDoubleSlab extends TileEntity {
         return bottomState;
     }
 
-    public TileEntityDoubleSlab setTopState(BlockState topState) {
+    public void setTopState(BlockState topState) {
         this.topState = topState;
         markDirtyClient();
-        return this;
     }
 
-    public TileEntityDoubleSlab setBottomState(BlockState bottomState) {
+    public void setBottomState(BlockState bottomState) {
         this.bottomState = bottomState;
         markDirtyClient();
-        return this;
     }
 
     @Override

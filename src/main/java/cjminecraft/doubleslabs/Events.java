@@ -1,43 +1,24 @@
 package cjminecraft.doubleslabs;
 
-import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.SoundType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLCommonLaunchHandler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Events {
-
-//    @SubscribeEvent
-//    public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-//        if (event.getModID().equals(DoubleSlabs.MODID)) {
-//            ConfigManager.sync(DoubleSlabs.MODID, Config.Type.INSTANCE);
-//            DoubleSlabsConfig.slabBlacklist = Arrays.asList(DoubleSlabsConfig.slabBlacklistArray);
-//        }
-//    }
 
     private static void tryPlace(BlockState state, SlabType half, BlockPos pos, SlabBlock slab, PlayerInteractEvent.RightClickBlock event) {
         BlockState slabState = slab.getDefaultState().with(SlabBlock.TYPE, half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
@@ -70,10 +51,13 @@ public class Events {
                 SlabBlock slab = (SlabBlock) ((BlockItem) event.getItemStack().getItem()).getBlock();
                 BlockPos pos = event.getPos();
                 Direction face = event.getFace();
-                if (!(event.getWorld().getBlockState(pos).getBlock() instanceof SlabBlock))
+                if (!(event.getWorld().getBlockState(pos).getBlock() instanceof SlabBlock)) {
                     pos = pos.offset(face);
+                    if (event.getWorld().getBlockState(pos).getBlock() instanceof SlabBlock)
+                        face = event.getWorld().getBlockState(pos).get(SlabBlock.TYPE) == SlabType.BOTTOM ? Direction.UP : Direction.DOWN;
+                }
                 BlockState state = event.getWorld().getBlockState(pos);
-                if (state.getBlock() instanceof SlabBlock)
+                if (state.getBlock() instanceof SlabBlock && (face == Direction.UP || face == Direction.DOWN))
                     tryPlace(state, state.get(SlabBlock.TYPE), pos, slab, event);
             }
         }
