@@ -1,18 +1,10 @@
 package cjminecraft.doubleslabs.proxy;
 
+import net.minecraftforge.eventbus.api.IEventBus;
+
 public class ServerProxy implements IProxy {
     @Override
-    public void preInit() {
-
-    }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    public void postInit() {
+    public void setup(IEventBus bus) {
 
     }
 }

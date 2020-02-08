@@ -1,11 +1,9 @@
 package cjminecraft.doubleslabs.proxy;
 
+import net.minecraftforge.eventbus.api.IEventBus;
+
 public interface IProxy {
 
-    void preInit();
-
-    void init();
-
-    void postInit();
+    void setup(IEventBus bus);
 
 }
