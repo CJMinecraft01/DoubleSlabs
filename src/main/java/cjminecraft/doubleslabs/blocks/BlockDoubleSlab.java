@@ -5,11 +5,13 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.FallingDustParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
@@ -18,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -30,6 +33,8 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.ToolType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -46,25 +51,36 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return layer == BlockRenderLayer.SOLID;
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return true;
+    public boolean func_220074_n(BlockState state) {
+        return false;
     }
 
     @Override
     public boolean isSolid(BlockState state) {
-        return true;
+        return false;
     }
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+//    @OnlyIn(Dist.CLIENT)
+//    @Override
+//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
+//        return layer == BlockRenderLayer.SOLID;
+//    }
+
+
+//    @Override
+//    public boolean isSolid(BlockState state) {
+//        return true;
+//    }
 
     @Override
     public boolean hasTileEntity(BlockState state) {
@@ -77,23 +93,34 @@ public class BlockDoubleSlab extends Block {
         return Registrar.TILE_DOUBLE_SLAB.create();
     }
 
-
     public <T> T runOnDoubleSlab(IBlockReader world, BlockPos pos, Function<Pair<BlockState, BlockState>, T> func, Supplier<T> orElse) {
         TileEntity te = world.getTileEntity(pos);
 
         if (te instanceof TileEntityDoubleSlab) {
             BlockState topState = ((TileEntityDoubleSlab) te).getTopState();
             BlockState bottomState = ((TileEntityDoubleSlab) te).getBottomState();
+            if (topState == null || bottomState == null)
+                return orElse.get();
             return func.apply(Pair.of(topState, bottomState));
         }
 
         return orElse.get();
     }
 
-//    @Override
-//    public Material getMaterial(BlockState state) {
-//        return ((IExtendedBlockState) state).getValue(TOP) == null ? Material.ROCK : ((IExtendedBlockState) state).getValue(TOP).getMaterial();
-//    }
+    @Override
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
+        return adjacentBlockState.getBlock() == this;
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
+    }
+
+    @Override
+    public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
+        return runOnDoubleSlab(world, pos, (states) -> states.getRight().canEntitySpawn(world, pos, type), () -> true);
+    }
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
@@ -101,34 +128,45 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> Math.min(states.getLeft().getBlockHardness(world, pos), states.getRight().getBlockHardness(world, pos)), () -> super.getBlockHardness(state, world, pos));
-    }
-
-    @Override
     public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
         return runOnDoubleSlab(world, pos, (states) -> Math.min(states.getLeft().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(state, world, pos, exploder, explosion));
     }
 
-    //    @Override
-//    public int getHarvestLevel(IBlockState state) {
-//        IExtendedBlockState extendedState = (IExtendedBlockState) state;
-//        return Math.min(extendedState.getValue(TOP).getBlock().getHarvestLevel(extendedState.getValue(TOP)), extendedState.getValue(BOTTOM).getBlock().getHarvestLevel(extendedState.getValue(BOTTOM)));
-//    }
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().propagatesSkylightDown(world, pos) && states.getRight().propagatesSkylightDown(world, pos), () -> false);
+    }
 
-//    @Nullable
-//    @Override
-//    public String getHarvestTool(IBlockState state) {
-//        // TODO use the correct harvest tool
-//        return "pickaxe";
-//    }
+    @Override
+    public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, (states) -> Math.max(states.getLeft().getAmbientOcclusionLightValue(world, pos), states.getRight().getAmbientOcclusionLightValue(world, pos)), () -> super.getAmbientOcclusionLightValue(state, world, pos));
+    }
 
+    @Override
+    public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().causesSuffocation(world, pos) || states.getRight().causesSuffocation(world, pos), () -> true);
+    }
+
+    @Nullable
+    @Override
+    public ToolType getHarvestTool(BlockState state) {
+        return null;
+    }
+
+    @Override
+    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().canHarvestBlock(world, pos, player) || states.getRight().canHarvestBlock(world, pos, player), () -> false);
+    }
+
+    @Override
+    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, (states) -> Math.min(states.getLeft().getPlayerRelativeBlockHardness(player, world, pos), states.getRight().getPlayerRelativeBlockHardness(player, world, pos)), () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+    }
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
         return runOnDoubleSlab(world, pos, (states) -> target.getHitVec().y - pos.getY() > 0.5 ? states.getLeft().getPickBlock(target, world, pos, player) : states.getRight().getPickBlock(target, world, pos, player), () -> super.getPickBlock(state, target, world, pos, player));
     }
-
 
     @Override
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {

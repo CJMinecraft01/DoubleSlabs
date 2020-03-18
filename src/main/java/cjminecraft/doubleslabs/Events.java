@@ -12,6 +12,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,7 +29,7 @@ public class Events {
         if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)) || Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
             return;
 
-        if (event.getWorld().checkNoEntityCollision(event.getPlayer()) && event.getWorld().setBlockState(pos, newState, 11)) {
+        if (event.getWorld().checkNoEntityCollision(event.getPlayer(), VoxelShapes.create(event.getPlayer().getBoundingBox())) && event.getWorld().setBlockState(pos, newState, 11)) {
             TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);
             if (tile == null)
                 return;
@@ -57,7 +59,7 @@ public class Events {
                         face = event.getWorld().getBlockState(pos).get(SlabBlock.TYPE) == SlabType.BOTTOM ? Direction.UP : Direction.DOWN;
                 }
                 BlockState state = event.getWorld().getBlockState(pos);
-                if (state.getBlock() instanceof SlabBlock && (face == Direction.UP || face == Direction.DOWN))
+                if (state.getBlock() instanceof SlabBlock && ((face == Direction.UP && state.get(SlabBlock.TYPE) == SlabType.BOTTOM) || (face == Direction.DOWN && state.get(SlabBlock.TYPE) == SlabType.TOP)) && state.get(SlabBlock.TYPE) != SlabType.DOUBLE)
                     tryPlace(state, state.get(SlabBlock.TYPE), pos, slab, event);
             }
         }

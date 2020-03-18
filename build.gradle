@@ -46,6 +46,9 @@ minecraft {
                 doubleslabs {
                     source sourceSets.main
                 }
+                doubleslabstest {
+                    source sourceSets.test
+                }
             }
         }
 
@@ -61,6 +64,9 @@ minecraft {
             mods {
                 doubleslabs {
                     source sourceSets.main
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
