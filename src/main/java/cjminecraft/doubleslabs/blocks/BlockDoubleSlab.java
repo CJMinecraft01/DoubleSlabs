@@ -13,7 +13,6 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class BlockDoubleSlab extends Block {
     public static final UnlistedPropertyBlockState TOP = new UnlistedPropertyBlockState();
@@ -46,7 +44,14 @@ public class BlockDoubleSlab extends Block {
     @SideOnly(Side.CLIENT)
     @Override
     public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.SOLID;
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+//        return extendedBlockState.getValue(TOP).isOpaqueCube() && extendedBlockState.getValue(BOTTOM).isOpaqueCube();
     }
 
     @Override
@@ -56,7 +61,18 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isFullCube(IBlockState state) {
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+        IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
+        return extendedBlockState.getValue(BOTTOM).isNormalCube() && extendedBlockState.getValue(TOP).isNormalCube();
+    }
+
+    @Override
+    public boolean canEntitySpawn(IBlockState state, Entity entityIn) {
+        return ((IExtendedBlockState) state).getValue(TOP).canEntitySpawn(entityIn);
     }
 
     @Override
@@ -81,29 +97,50 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
-        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
-        return Math.min(extendedState.getValue(TOP).getBlockHardness(world, pos), extendedState.getValue(BOTTOM).getBlockHardness(world, pos));
+    public float getAmbientOcclusionLightValue(IBlockState state) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+        if (extendedBlockState == null || extendedBlockState.getValue(TOP) == null)
+            return super.getAmbientOcclusionLightValue(state);
+        return Math.max(extendedBlockState.getValue(TOP).getAmbientOcclusionLightValue(), extendedBlockState.getValue(BOTTOM).getAmbientOcclusionLightValue());
     }
+
+    @Override
+    public boolean causesSuffocation(IBlockState state) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+        if (extendedBlockState == null || extendedBlockState.getValue(TOP) == null)
+            return true;
+        return extendedBlockState.getValue(TOP).causesSuffocation() || extendedBlockState.getValue(BOTTOM).causesSuffocation();
+    }
+
+    @Nullable
+    @Override
+    public String getHarvestTool(IBlockState state) {
+        return null;
+    }
+
+    @Override
+    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+        IExtendedBlockState state = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+        return state.getValue(TOP).getBlock().canHarvestBlock(world, pos, player) || state.getValue(BOTTOM).getBlock().canHarvestBlock(world, pos, player);
+    }
+
+    @Override
+    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+        return Math.min(extendedBlockState.getValue(TOP).getPlayerRelativeBlockHardness(player, world, pos), extendedBlockState.getValue(BOTTOM).getPlayerRelativeBlockHardness(player, world, pos));
+    }
+
+//    @Override
+//    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
+//        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
+//        return Math.min(extendedState.getValue(TOP).getBlockHardness(world, pos), extendedState.getValue(BOTTOM).getBlockHardness(world, pos));
+//    }
 
     @Override
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
         IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
         return Math.min(extendedState.getValue(TOP).getBlock().getExplosionResistance(world, pos, exploder, explosion), extendedState.getValue(BOTTOM).getBlock().getExplosionResistance(world, pos, exploder, explosion));
     }
-
-//    @Override
-//    public int getHarvestLevel(IBlockState state) {
-//        IExtendedBlockState extendedState = (IExtendedBlockState) state;
-//        return Math.min(extendedState.getValue(TOP).getBlock().getHarvestLevel(extendedState.getValue(TOP)), extendedState.getValue(BOTTOM).getBlock().getHarvestLevel(extendedState.getValue(BOTTOM)));
-//    }
-
-//    @Nullable
-//    @Override
-//    public String getHarvestTool(IBlockState state) {
-//        // TODO use the correct harvest tool
-//        return "pickaxe";
-//    }
 
     @Nullable
     @Override
@@ -134,22 +171,6 @@ public class BlockDoubleSlab extends Block {
             return extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlock().getPickBlock(extendedBlockState.getValue(TOP), target, world, pos, player) : ItemStack.EMPTY;
         return extendedBlockState.getValue(BOTTOM) != null ? extendedBlockState.getValue(BOTTOM).getBlock().getPickBlock(extendedBlockState.getValue(BOTTOM), target, world, pos, player) : ItemStack.EMPTY;
     }
-
-//    @Override
-//    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-//        if (world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 6, false).isCreative()) {
-//            super.breakBlock(world, pos, state);
-//            return;
-//        }
-//        IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
-//        NonNullList<ItemStack> drops = NonNullList.create();
-//        extendedBlockState.getValue(TOP).getBlock().getDrops(drops, world, pos, extendedBlockState.getValue(TOP), 0);
-//        extendedBlockState.getValue(BOTTOM).getBlock().getDrops(drops, world, pos, extendedBlockState.getValue(BOTTOM), 0);
-//        for (ItemStack stack : drops)
-//            if (!stack.isEmpty())
-//                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-//        super.breakBlock(world, pos, state);
-//    }
 
     @Override
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
@@ -256,16 +277,6 @@ public class BlockDoubleSlab extends Block {
                     double d1 = ((double) k + 0.5D) / 4.0D;
                     double d2 = ((double) l + 0.5D) / 4.0D;
 
-//                    RayTraceResult result = rayTrace(Objects.requireNonNull(world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 6, false)), 6);
-//                    Vec3d hitVec = result != null ? result.hitVec : null;
-//                    if (hitVec != null) {
-//                        hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-//                        ParticleDigging particle = (ParticleDigging) factory.createParticle(0, world,
-//                                (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
-//                                d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(hitVec.y > 0.5 ? TOP : BOTTOM)));
-//                        particle.setBlockPos(pos);
-//                        manager.addEffect(particle);
-//                    } else {
                     ParticleDigging particle1 = (ParticleDigging) factory.createParticle(0, world,
                             (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
                             d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(TOP)));
@@ -277,67 +288,10 @@ public class BlockDoubleSlab extends Block {
                             d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(BOTTOM)));
                     particle2.setBlockPos(pos);
                     manager.addEffect(particle2);
-//                    }
-
-//                    ParticleDigging particle2 = (ParticleDigging) factory.createParticle(0, world,
-//                            (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
-//                            d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(BOTTOM)));
-//                    particle2.setBlockPos(pos);
-//                    manager.addEffect(particle2);
                 }
             }
         }
         return true;
     }
 
-//    @Override
-//    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-//        this.onBlockHarvested(world, pos, state, player);
-//        return true;
-//    }
-
-//    @Override
-//    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-//        IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
-//        NonNullList<ItemStack> drops = NonNullList.create();
-//        extendedBlockState.getValue(TOP).getBlock().getDrops(drops, world, pos, extendedBlockState.getValue(TOP), 0);
-//        extendedBlockState.getValue(BOTTOM).getBlock().getDrops(drops, world, pos, extendedBlockState.getValue(BOTTOM), 0);
-//        for (ItemStack stack : drops)
-//            if (!stack.isEmpty())
-//                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), stack);
-//        super.onBlockExploded(world, pos, explosion);
-//    }
-//
-//    @Override
-//    public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-//        if (player instanceof FakePlayer)
-//            return;
-//        RayTraceResult mop = rayTrace(player, 6);
-//        Vec3d hitVec = mop != null ? mop.hitVec : null;
-//        if (hitVec != null)
-//            hitVec = hitVec.add(-pos.getX(), -pos.getY(), -pos.getZ());
-//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state.getBlock().getExtendedState(state, world, pos);
-//        IBlockState dropState;
-//        IBlockState newState;
-//        if (hitVec != null && hitVec.y < 0.5f) {
-//            dropState = extendedBlockState.getValue(BlockDoubleSlab.BOTTOM);
-//            newState = extendedBlockState.getValue(BlockDoubleSlab.TOP);
-//        } else {
-//            dropState = extendedBlockState.getValue(BlockDoubleSlab.TOP);
-//            newState = extendedBlockState.getValue(BlockDoubleSlab.BOTTOM);
-//        }
-//
-//        if (!world.isRemote && player.canHarvestBlock(state) && !player.isCreative()) {
-//            Item slab = Item.getItemFromBlock(dropState.getBlock());
-//            if (slab != Items.AIR)
-//                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(slab, 1, dropState.getBlock().damageDropped(dropState)));
-//        }
-//        world.setBlockState(pos, newState, world.isRemote ? 11 : 3);
-//    }
-//
-//    public static RayTraceResult rayTrace(EntityLivingBase entity, double length) {
-//        Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-//        Vec3d endPos = startPos.add(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length);
-//        return entity.world.rayTraceBlocks(startPos, endPos);
-//    }
 }

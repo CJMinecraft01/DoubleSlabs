@@ -35,19 +35,10 @@ minecraft {
 }
 
 repositories {
-    maven {
-        url "http://tehnut.info/maven"
-    }
 
-//    maven {
-//        name "tterrag maven"
-//        url "http://maven.tterrag.com/"
-//    }
 }
 
 dependencies {
-    deobfCompile "mcp.mobius.waila:Hwyla:${project.HWYLA_VERSION}"
-//    deobfCompile "mcjty.theoneprobe:TheOneProbe-${project.ONE_PROBE_MC_VERSION}:${project.ONE_PROBE_VERSION}"
 }
 
 processResources {

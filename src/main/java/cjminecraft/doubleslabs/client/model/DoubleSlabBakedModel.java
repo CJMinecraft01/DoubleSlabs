@@ -31,19 +31,24 @@ public class DoubleSlabBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-//        System.out.println(state);
         if (state == null)
             return getFallback().getQuads(state, side, rand);
         IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
         IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-//        topState = Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
-//        bottomState = Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK);
+        boolean topTransparent = !topState.isOpaqueCube();
+        boolean bottomTransparent = !bottomState.isOpaqueCube();
         IBakedModel topModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(topState);
         IBakedModel bottomModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(bottomState);
         List<BakedQuad> topQuads = new ArrayList<>(topModel.getQuads(topState, side, rand));
-        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+        if (!bottomTransparent)
+            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
         List<BakedQuad> bottomQuads = new ArrayList<>(bottomModel.getQuads(bottomState, side, rand));
-        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+        if (!topTransparent)
+            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+        if (topTransparent && bottomTransparent) {
+            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+        }
         topQuads.addAll(bottomQuads);
         return topQuads;
     }
