@@ -59,7 +59,7 @@ public class Events {
                         face = event.getWorld().getBlockState(pos).get(SlabBlock.TYPE) == SlabType.BOTTOM ? Direction.UP : Direction.DOWN;
                 }
                 BlockState state = event.getWorld().getBlockState(pos);
-                if (state.getBlock() instanceof SlabBlock && (face == Direction.UP || face == Direction.DOWN))
+                if (state.getBlock() instanceof SlabBlock && ((face == Direction.UP && state.get(SlabBlock.TYPE) == SlabType.BOTTOM) || (face == Direction.DOWN && state.get(SlabBlock.TYPE) == SlabType.TOP)) && state.get(SlabBlock.TYPE) != SlabType.DOUBLE)
                     tryPlace(state, state.get(SlabBlock.TYPE), pos, slab, event);
             }
         }

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=bottom": { "model": "doubleslabstest:block/glass_slab" },
+    "type=top": { "model": "doubleslabstest:block/glass_slab_top" },
+    "type=double": { "model": "minecraft:block/glass" }
+  }
+}

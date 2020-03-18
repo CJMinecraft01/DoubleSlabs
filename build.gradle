@@ -43,8 +43,11 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
@@ -59,8 +62,11 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
@@ -74,10 +80,10 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'doubleslabs', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
                 }
             }

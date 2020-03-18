@@ -4,12 +4,14 @@ import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
@@ -74,9 +76,17 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             IBakedModel topModel = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(topState);
             IBakedModel bottomModel = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(bottomState);
             List<BakedQuad> topQuads = new ArrayList<>(topModel.getQuads(topState, side, rand, extraData));
-            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
+            boolean topTransparent = topState.getBlock().isTransparent(topState.with(SlabBlock.TYPE, SlabType.DOUBLE));
+            boolean bottomTransparent = bottomState.getBlock().isTransparent(bottomState.with(SlabBlock.TYPE, SlabType.DOUBLE));
+            if (!bottomTransparent)
+                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
             List<BakedQuad> bottomQuads = new ArrayList<>(bottomModel.getQuads(bottomState, side, rand, extraData));
-            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+            if (!topTransparent)
+                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+            if (topTransparent && bottomTransparent) {
+                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
+                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+            }
             topQuads.addAll(bottomQuads);
             return topQuads;
         }

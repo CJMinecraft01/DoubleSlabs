@@ -4,6 +4,8 @@ import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,6 +13,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Registrar {
@@ -21,6 +24,8 @@ public class Registrar {
     @SubscribeEvent
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(DOUBLE_SLAB);
+        if (FMLEnvironment.dist == Dist.CLIENT)
+            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, RenderType.cutoutMipped());
     }
 
     @SubscribeEvent
