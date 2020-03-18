@@ -1,6 +1,7 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/double-slabs",
   "1.12.2": {
+    "0.1.3": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "0.1.2": "=Fixed an issue with crashes occurring when a slab does not have a variant property\n=Added an extra precaution to when getting the pick block from a double slab to reduce the possibility of a null pointer error",
     "0.1.1": "=Fixed an issue with blocks which use the HALF block state property as the variant property as a slab and the blacklist (mainly causing an issue with Blockcraftery)",
     "0.1.0": "+Added a config file which contains a list of block states to not allow the placement of mixed slabs with the specified slab types",
@@ -10,18 +11,20 @@
   },
   "1.14.4": {
 	"1.0.0": "Initial port to 1.14",
-    "1.0.1": "=Fixed a bug with regular slab placement\n=Fixed the particle effects for double slabs"
+    "1.0.1": "=Fixed a bug with regular slab placement\n=Fixed the particle effects for double slabs",
+    "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
-	"2.0.1": "=Fixed compatibility with other 1.15 versions"
+	"2.0.1": "=Fixed compatibility with other 1.15 versions",
+    "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes"
   },
   "promos": {
-    "1.12.2-latest": "0.1.2",
-    "1.12.2-recommended": "0.1.2",
-	"1.14.4-latest": "1.0.1",
-	"1.14.4-recommended": "1.0.1",
-    "1.15.2-latest": "2.0.1",
-    "1.15.2-recommended": "2.0.1"
+    "1.12.2-latest": "0.1.3",
+    "1.12.2-recommended": "0.1.3",
+	"1.14.4-latest": "1.0.2",
+	"1.14.4-recommended": "1.0.2",
+    "1.15.2-latest": "2.0.2",
+    "1.15.2-recommended": "2.0.2"
   }
 }
