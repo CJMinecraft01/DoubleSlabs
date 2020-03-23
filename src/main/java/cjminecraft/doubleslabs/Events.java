@@ -29,7 +29,7 @@ public class Events {
         if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)) || Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
             return;
 
-        if (event.getWorld().checkNoEntityCollision(event.getPlayer(), VoxelShapes.create(event.getPlayer().getBoundingBox())) && event.getWorld().setBlockState(pos, newState, 11)) {
+        if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox()) && event.getWorld().setBlockState(pos, newState, 11)) {
             TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);
             if (tile == null)
                 return;
