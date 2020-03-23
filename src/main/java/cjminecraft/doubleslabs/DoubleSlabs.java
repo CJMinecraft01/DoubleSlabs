@@ -23,7 +23,7 @@ public class DoubleSlabs
     public static final String ACCEPTED_MC_VERSIONS = "[1.12,1.12.2]";
     public static final String SERVER_PROXY_CLASS = "cjminecraft.doubleslabs.proxy.ServerProxy";
     public static final String CLIENT_PROXY_CLASS = "cjminecraft.doubleslabs.proxy.ClientProxy";
-    public static final String UPDATE_URL = "https://raw.githubusercontent.com/CJMinecraft01/DoubleSlabs/master/update.json";
+    public static final String UPDATE_URL = "https://raw.githubusercontent.com/CJMinecraft01/DoubleSlabs/1.12.x/update.json";
     public static final Logger LOGGER = LogManager.getFormatterLogger(NAME);
 
     @SidedProxy(serverSide = SERVER_PROXY_CLASS, clientSide = CLIENT_PROXY_CLASS)

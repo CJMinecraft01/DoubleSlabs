@@ -24,11 +24,13 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockDoubleSlab extends Block {
@@ -118,23 +120,83 @@ public class BlockDoubleSlab extends Block {
         return null;
     }
 
+    public static boolean canHarvestBlock(@Nonnull Block block, @Nonnull EntityPlayer player, @Nonnull IBlockState state) {
+        if (state.getMaterial().isToolNotRequired()) {
+            return true;
+        } else {
+            ItemStack stack = player.getHeldItemMainhand();
+            String tool = block.getHarvestTool(state);
+            if (!stack.isEmpty() && tool != null) {
+                int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
+                if (toolLevel < 0) {
+                    return player.canHarvestBlock(state);
+                } else {
+                    return toolLevel >= block.getHarvestLevel(state);
+                }
+            } else {
+                return player.canHarvestBlock(state);
+            }
+        }
+    }
+
+    public static float blockStrength(@Nonnull IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
+        float hardness = state.getBlockHardness(world, pos);
+        if (hardness < 0.0F) {
+            return 0.0F;
+        } else {
+            return !canHarvestBlock(state.getBlock(), player, state) ? player.getDigSpeed(state, pos) / hardness / 100.0F : player.getDigSpeed(state, pos) / hardness / 30.0F;
+        }
+    }
+
+//    @Override
+//    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+//        IExtendedBlockState state = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+//        IBlockState topState = state.getValue(TOP);
+//        IBlockState bottomState = state.getValue(BOTTOM);
+//        if (topState.getMaterial().isToolNotRequired() && bottomState.getMaterial().isToolNotRequired())
+//            return true;
+//        ItemStack stack = player.getHeldItemMainhand();
+//        if (stack.isEmpty())
+//            return player.canHarvestBlock(topState) || player.canHarvestBlock(bottomState);
+//        String topStateTool = topState.getBlock().getHarvestTool(topState);
+//        String bottomStateTool = bottomState.getBlock().getHarvestTool(bottomState);
+//        if (topStateTool != null) {
+//            int toolLevel = stack.getItem().getHarvestLevel(stack, topStateTool, player, topState);
+//            if (toolLevel < 0)
+//                if (player.canHarvestBlock(topState))
+//                    return true;
+//            else if (toolLevel >= topState.getBlock().getHarvestLevel(topState))
+//                return true;
+//        }
+//        if (bottomStateTool != null) {
+//            int toolLevel = stack.getItem().getHarvestLevel(stack, bottomStateTool, player, bottomState);
+//            if (toolLevel < 0)
+//                if (player.canHarvestBlock(bottomState))
+//                    return true;
+//                else return toolLevel >= bottomState.getBlock().getHarvestLevel(bottomState);
+//        }
+//        return false;
+////        return state.getValue(TOP).getBlock().canHarvestBlock(world, pos, player) || state.getValue(BOTTOM).getBlock().canHarvestBlock(world, pos, player);
+//    }
+
+
     @Override
     public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
-        IExtendedBlockState state = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
-        return state.getValue(TOP).getBlock().canHarvestBlock(world, pos, player) || state.getValue(BOTTOM).getBlock().canHarvestBlock(world, pos, player);
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+        return canHarvestBlock(this, player, extendedBlockState.getValue(TOP)) || canHarvestBlock(this, player, extendedBlockState.getValue(BOTTOM));
     }
 
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
-        return Math.min(extendedBlockState.getValue(TOP).getPlayerRelativeBlockHardness(player, world, pos), extendedBlockState.getValue(BOTTOM).getPlayerRelativeBlockHardness(player, world, pos));
+        return Math.min(blockStrength(extendedBlockState.getValue(TOP), player, world, pos), blockStrength(extendedBlockState.getValue(BOTTOM), player, world, pos));
     }
 
-//    @Override
-//    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
-//        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
-//        return Math.min(extendedState.getValue(TOP).getBlockHardness(world, pos), extendedState.getValue(BOTTOM).getBlockHardness(world, pos));
-//    }
+    @Override
+    public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
+        IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos));
+        return Math.max(extendedState.getValue(TOP).getBlockHardness(world, pos), extendedState.getValue(BOTTOM).getBlockHardness(world, pos));
+    }
 
     @Override
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
@@ -176,7 +238,7 @@ public class BlockDoubleSlab extends Block {
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
         if (willHarvest)
             return true;
-        return super.removedByPlayer(state, world, pos, player, willHarvest);
+        return super.removedByPlayer(state, world, pos, player, false);
     }
 
     @Override
