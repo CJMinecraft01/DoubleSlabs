@@ -1,23 +1,26 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/double-slabs",
   "1.12.2": {
-    "0.1.3": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
-    "0.1.2": "=Fixed an issue with crashes occurring when a slab does not have a variant property\n=Added an extra precaution to when getting the pick block from a double slab to reduce the possibility of a null pointer error",
-    "0.1.1": "=Fixed an issue with blocks which use the HALF block state property as the variant property as a slab and the blacklist (mainly causing an issue with Blockcraftery)",
-    "0.1.0": "+Added a config file which contains a list of block states to not allow the placement of mixed slabs with the specified slab types",
-    "0.0.3": "=Fixed an issue with the mod crashing when on a server\n=Fixed an issue with double slabs not working with other mods\n+Added a forge update checker to notify players when a update has arrived",
+    "0.0.1": "+Added the ability to create double slabs using different slab types\n+Added WAILA/HWYLA support to show the correct slab",
     "0.0.2": "=Fixed a bug to do with moving a double slab with a piston using the Quark Pistons move TE feature (Note: there is still an issue with the rendering of the double slab when the piston is moving but this will be fixed as soon as possible)",
-    "0.0.1": "+Added the ability to create double slabs using different slab types\n+Added WAILA/HWYLA support to show the correct slab"
+    "0.0.3": "=Fixed an issue with the mod crashing when on a server\n=Fixed an issue with double slabs not working with other mods\n+Added a forge update checker to notify players when a update has arrived",
+    "0.1.0": "+Added a config file which contains a list of block states to not allow the placement of mixed slabs with the specified slab types",
+    "0.1.1": "=Fixed an issue with blocks which use the HALF block state property as the variant property as a slab and the blacklist (mainly causing an issue with Blockcraftery)",
+    "0.1.2": "=Fixed an issue with crashes occurring when a slab does not have a variant property\n=Added an extra precaution to when getting the pick block from a double slab to reduce the possibility of a null pointer error",
+    "0.1.3": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
+    "0.1.4": "=Fixed a major crash when mining double slabs\n+Slabs will now break according to the tool used and the slabs which make up the double slab"
   },
   "1.14.4": {
 	"1.0.0": "Initial port to 1.14",
     "1.0.1": "=Fixed a bug with regular slab placement\n=Fixed the particle effects for double slabs",
-    "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes"
+    "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
+    "1.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
 	"2.0.1": "=Fixed compatibility with other 1.15 versions",
-    "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes"
+    "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
+    "2.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player"
   },
   "promos": {
     "1.12.2-latest": "0.1.3",
