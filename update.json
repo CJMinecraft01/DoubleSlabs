@@ -14,20 +14,22 @@
     "1.0.0": "Initial port to 1.14",
     "1.0.1": "=Fixed a bug with regular slab placement\n=Fixed the particle effects for double slabs",
     "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
-    "1.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player"
+    "1.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
+    "1.0.4": "=Fixed a client model crash"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
     "2.0.1": "=Fixed compatibility with other 1.15 versions",
     "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
-    "2.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player"
+    "2.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
+    "2.0.4": "=Fixed a server side crash\n=Fixed a client model crash"
   },
   "promos": {
     "1.12.2-latest": "0.1.4",
     "1.12.2-recommended": "0.1.4",
-    "1.14.4-latest": "1.0.3",
-    "1.14.4-recommended": "1.0.3",
-    "1.15.2-latest": "2.0.3",
-    "1.15.2-recommended": "2.0.3"
+    "1.14.4-latest": "1.0.4",
+    "1.14.4-recommended": "1.0.4",
+    "1.15.2-latest": "2.0.4",
+    "1.15.2-recommended": "2.0.4"
   }
 }
