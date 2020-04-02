@@ -21,6 +21,7 @@ import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -129,7 +130,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().causesSuffocation(world, pos) || states.getRight().causesSuffocation(world, pos), () -> true);
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos), () -> true);
     }
 
     @Nullable

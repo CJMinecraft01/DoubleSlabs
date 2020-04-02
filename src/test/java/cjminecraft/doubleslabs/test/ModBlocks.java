@@ -22,7 +22,7 @@ public class ModBlocks {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(GLASS_SLAB);
         if (FMLEnvironment.dist == Dist.CLIENT)
-            RenderTypeLookup.setRenderLayer(GLASS_SLAB, RenderType.cutoutMipped());
+            RenderTypeLookup.setRenderLayer(GLASS_SLAB, RenderType.getCutout());
     }
 
     @SubscribeEvent

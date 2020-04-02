@@ -52,7 +52,7 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture(@Nonnull IModelData data) {
-        if (data.hasProperty(TileEntityDoubleSlab.TOP_STATE))
+        if (data.hasProperty(TileEntityDoubleSlab.TOP_STATE) && data.getData(TileEntityDoubleSlab.TOP_STATE) != null)
             return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(data.getData(TileEntityDoubleSlab.TOP_STATE)).getParticleTexture(data);
         return getFallback().getParticleTexture(data);
     }
@@ -73,6 +73,8 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
         if (extraData.hasProperty(TileEntityDoubleSlab.TOP_STATE) && extraData.hasProperty(TileEntityDoubleSlab.BOTTOM_STATE)) {
             BlockState topState = extraData.getData(TileEntityDoubleSlab.TOP_STATE);
             BlockState bottomState = extraData.getData(TileEntityDoubleSlab.BOTTOM_STATE);
+            if (topState == null || bottomState == null)
+                return getFallback().getQuads(state, side, rand, extraData);
             IBakedModel topModel = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(topState);
             IBakedModel bottomModel = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(bottomState);
             List<BakedQuad> topQuads = new ArrayList<>(topModel.getQuads(topState, side, rand, extraData));

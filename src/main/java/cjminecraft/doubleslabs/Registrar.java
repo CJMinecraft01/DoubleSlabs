@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs;
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
+import com.mojang.datafixers.types.Type;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -25,7 +26,7 @@ public class Registrar {
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(DOUBLE_SLAB);
         if (FMLEnvironment.dist == Dist.CLIENT)
-            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, RenderType.cutoutMipped());
+            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, RenderType.getCutout());
     }
 
     @SubscribeEvent
