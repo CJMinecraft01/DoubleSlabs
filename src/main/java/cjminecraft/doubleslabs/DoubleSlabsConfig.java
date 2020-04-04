@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraftforge.common.config.Config;
@@ -20,13 +21,17 @@ public class DoubleSlabsConfig {
     public static List<String> SLAB_BLACKLIST = new ArrayList<>();
 
     public static String slabToString(IBlockState state) {
-        BlockSlab slab = (BlockSlab) state.getBlock();
+        Block block = state.getBlock();
         if (state.getBlock().getRegistryName() == null)
             return "";
-        //noinspection ConstantConditions
-        if (slab.getVariantProperty() == BlockSlab.HALF || slab.getVariantProperty() == null)
-            return state.getBlock().getRegistryName().toString();
-        return state.getBlock().getRegistryName().toString() + (slab.getVariantProperty().getAllowedValues().size() == 1 ? "" : "#" + slab.getVariantProperty().getName() + "=" + state.getValue(slab.getVariantProperty()).toString());
+        if (block instanceof BlockSlab) {
+            BlockSlab slab = (BlockSlab) block;
+            //noinspection ConstantConditions
+            if (slab.getVariantProperty() == BlockSlab.HALF || slab.getVariantProperty() == null)
+                return state.getBlock().getRegistryName().toString();
+            return state.getBlock().getRegistryName().toString() + (slab.getVariantProperty().getAllowedValues().size() == 1 ? "" : "#" + slab.getVariantProperty().getName() + "=" + state.getValue(slab.getVariantProperty()).toString());
+        }
+        return state.getBlock().getRegistryName().toString();
     }
 
 }

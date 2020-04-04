@@ -8,8 +8,10 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +27,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
@@ -33,7 +36,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockDoubleSlab extends Block {
+public class BlockDoubleSlab extends Block implements IBlockColor {
     public static final UnlistedPropertyBlockState TOP = new UnlistedPropertyBlockState();
     public static final UnlistedPropertyBlockState BOTTOM = new UnlistedPropertyBlockState();
 
@@ -316,11 +319,13 @@ public class BlockDoubleSlab extends Block {
             case EAST:
                 d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
         }
+        IBlockState blockState = target.hitVec.y - pos.getY() > 0.5 ? extendedBlockState.getValue(TOP) : extendedBlockState.getValue(BOTTOM);
+        if (blockState == null)
+            return false;
 
         ParticleDigging.Factory factory = new ParticleDigging.Factory();
-
         ParticleDigging particle = (ParticleDigging) factory.createParticle(1, world, d0, d1, d2,
-                0.0D, 0.0D, 0.0D, Block.getStateId(target.hitVec.y - pos.getY() > 0.5 ? extendedBlockState.getValue(TOP) : extendedBlockState.getValue(BOTTOM)));
+                0.0D, 0.0D, 0.0D, Block.getStateId(blockState));
         particle.setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
         manager.addEffect(particle);
 
@@ -356,4 +361,20 @@ public class BlockDoubleSlab extends Block {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public int colorMultiplier(IBlockState state, @Nullable IBlockAccess world, @Nullable BlockPos pos, int tintIndex) {
+        IExtendedBlockState extendedBlockState;
+        if (world != null && pos != null)
+            extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+        else
+            extendedBlockState = (IExtendedBlockState) state;
+        int colourBottom = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(BOTTOM), world, pos, tintIndex);
+        int colourTop = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(TOP), world, pos, tintIndex);
+        if (colourBottom < 0)
+            return colourTop;
+        if (colourTop < 0)
+            return colourBottom;
+        return (colourBottom + colourTop) / 2;
+    }
 }

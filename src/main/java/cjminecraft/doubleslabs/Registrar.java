@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,6 +31,12 @@ public class Registrar {
     @SubscribeEvent
     public static void onModelBackEvent(ModelBakeEvent event) {
         event.getModelRegistry().putObject(DoubleSlabBakedModel.variantTag, new DoubleSlabBakedModel());
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void registerItemColours(ColorHandlerEvent.Block event) {
+        event.getBlockColors().registerBlockColorHandler(DOUBLE_SLAB, DOUBLE_SLAB);
     }
 
 }

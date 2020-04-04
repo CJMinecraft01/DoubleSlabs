@@ -53,7 +53,7 @@ processResources {
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-    rename '(.+_at.cfg)', 'META-INF/$1'
+//    rename '(.+_at.cfg)', 'META-INF/$1'
         
 //    // copy everything else except the mcmod.info
 //    from(sourceSets.main.resources.srcDirs) {

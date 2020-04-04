@@ -1,11 +1,13 @@
 package cjminecraft.doubleslabs;
 
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
@@ -43,5 +45,17 @@ public class DoubleSlabs
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
+    }
+
+    @Mod.EventHandler
+    public void processIMC(FMLInterModComms.IMCEvent event) {
+        for (FMLInterModComms.IMCMessage message : event.getMessages()) {
+            if (!message.isStringMessage()) continue;
+
+            if (message.key.equalsIgnoreCase("register")) {
+                LOGGER.info("Received slab support registration from [{}] for class {}", message.getSender(), message.getStringValue());
+                SlabSupport.addSupportFromIMC(message.getStringValue());
+            }
+        }
     }
 }
