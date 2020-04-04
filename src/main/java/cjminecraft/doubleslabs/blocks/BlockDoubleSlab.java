@@ -10,6 +10,7 @@ import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.FallingDustParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -25,10 +26,7 @@ import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
@@ -44,7 +42,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BlockDoubleSlab extends Block {
+public class BlockDoubleSlab extends Block implements IBlockColor {
 
     public BlockDoubleSlab() {
         super(Properties.create(Material.ROCK).notSolid());
@@ -285,4 +283,19 @@ public class BlockDoubleSlab extends Block {
         }, () -> false);
     }
 
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public int getColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
+        if (world == null || pos == null)
+            return -1;
+        return runOnDoubleSlab(world, pos, (states) -> {
+            int colourTop = Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
+            int colourBottom = Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
+            if (colourTop < 0)
+                return colourBottom;
+            if (colourBottom < 0)
+                return colourTop;
+            return (colourBottom + colourTop) / 2;
+        }, () -> -1);
+    }
 }
