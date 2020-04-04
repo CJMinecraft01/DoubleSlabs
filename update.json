@@ -9,7 +9,8 @@
     "0.1.2": "=Fixed an issue with crashes occurring when a slab does not have a variant property\n=Added an extra precaution to when getting the pick block from a double slab to reduce the possibility of a null pointer error",
     "0.1.3": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "0.1.4": "=Fixed a major crash when mining double slabs\n+Slabs will now break according to the tool used and the slabs which make up the double slab",
-    "0.2.0": "=Fixed some crashes due to null pointer errors\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark and blocks from JAOPCA) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks"
+    "0.2.0": "=Fixed some crashes due to null pointer errors\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark and blocks from JAOPCA) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks",
+    "0.2.1": "=Fixed a major server crash"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -17,7 +18,8 @@
     "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "1.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
     "1.0.4": "=Fixed a client model crash",
-    "1.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks"
+    "1.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks",
+    "1.1.1": "=Fixed a major server crash"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -25,14 +27,15 @@
     "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "2.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
     "2.0.4": "=Fixed a server side crash\n=Fixed a client model crash",
-    "2.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks"
+    "2.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks",
+    "2.1.1": "=Fixed a major server crash"
   },
   "promos": {
-    "1.12.2-latest": "0.2.0",
-    "1.12.2-recommended": "0.2.0",
-    "1.14.4-latest": "1.1.0",
-    "1.14.4-recommended": "1.1.0",
-    "1.15.2-latest": "2.1.0",
-    "1.15.2-recommended": "2.1.0"
+    "1.12.2-latest": "0.2.1",
+    "1.12.2-recommended": "0.2.1",
+    "1.14.4-latest": "1.1.1",
+    "1.14.4-recommended": "1.1.1",
+    "1.15.2-latest": "2.1.1",
+    "1.15.2-recommended": "2.1.1"
   }
 }

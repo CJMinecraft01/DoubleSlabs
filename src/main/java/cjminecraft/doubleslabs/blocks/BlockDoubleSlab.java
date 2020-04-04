@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BlockDoubleSlab extends Block implements IBlockColor {
+public class BlockDoubleSlab extends Block {
 
     public BlockDoubleSlab() {
         super(Properties.create(Material.ROCK));
@@ -298,20 +298,21 @@ public class BlockDoubleSlab extends Block implements IBlockColor {
         }, () -> false);
     }
 
-
-    @Override
     @OnlyIn(Dist.CLIENT)
-    public int getColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
-        if (world == null || pos == null)
-            return -1;
-        return runOnDoubleSlab(world, pos, (states) -> {
-            int colourTop = Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
-            int colourBottom = Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
-            if (colourTop < 0)
-                return colourBottom;
-            if (colourBottom < 0)
-                return colourTop;
-            return (colourBottom + colourTop) / 2;
+    public IBlockColor getBlockColor() {
+        return (state, world, pos, tintIndex) -> {
+            if (world == null || pos == null)
+                return -1;
+            return runOnDoubleSlab(world, pos, (states) -> {
+                int colourTop = Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
+                int colourBottom = Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
+                if (colourTop < 0)
+                    return colourBottom;
+                if (colourBottom < 0)
+                    return colourTop;
+                return (colourBottom + colourTop) / 2;
             }, () -> -1);
+        };
     }
+
 }
