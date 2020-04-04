@@ -29,7 +29,7 @@ public class Registrar {
 
 	@SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public static void onModelBackEvent(ModelBakeEvent event) {
+    public static void onModelBakeEvent(ModelBakeEvent event) {
         event.getModelRegistry().putObject(DoubleSlabBakedModel.variantTag, new DoubleSlabBakedModel());
     }
 

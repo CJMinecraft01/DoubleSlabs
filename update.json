@@ -16,21 +16,23 @@
     "1.0.1": "=Fixed a bug with regular slab placement\n=Fixed the particle effects for double slabs",
     "1.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "1.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
-    "1.0.4": "=Fixed a client model crash"
+    "1.0.4": "=Fixed a client model crash",
+    "1.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
 	"2.0.1": "=Fixed compatibility with other 1.15 versions",
     "2.0.2": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "2.0.3": "=Fixed the update URL\n=Fixed an issue with placement of double slabs within the player",
-    "2.0.4": "=Fixed a server side crash\n=Fixed a client model crash"
+    "2.0.4": "=Fixed a server side crash\n=Fixed a client model crash",
+    "2.1.0": "=Fixed a placement issue\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks"
   },
   "promos": {
     "1.12.2-latest": "0.2.0",
     "1.12.2-recommended": "0.2.0",
-	"1.14.4-latest": "1.0.4",
-	"1.14.4-recommended": "1.0.4",
-    "1.15.2-latest": "2.0.4",
-    "1.15.2-recommended": "2.0.4"
+	"1.14.4-latest": "1.1.0",
+	"1.14.4-recommended": "1.1.0",
+    "1.15.2-latest": "2.1.0",
+    "1.15.2-recommended": "2.1.0"
   }
 }
