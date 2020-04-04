@@ -36,7 +36,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockDoubleSlab extends Block implements IBlockColor {
+public class BlockDoubleSlab extends Block {
     public static final UnlistedPropertyBlockState TOP = new UnlistedPropertyBlockState();
     public static final UnlistedPropertyBlockState BOTTOM = new UnlistedPropertyBlockState();
 
@@ -362,19 +362,20 @@ public class BlockDoubleSlab extends Block implements IBlockColor {
     }
 
     @SideOnly(Side.CLIENT)
-    @Override
-    public int colorMultiplier(IBlockState state, @Nullable IBlockAccess world, @Nullable BlockPos pos, int tintIndex) {
-        IExtendedBlockState extendedBlockState;
-        if (world != null && pos != null)
-            extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
-        else
-            extendedBlockState = (IExtendedBlockState) state;
-        int colourBottom = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(BOTTOM), world, pos, tintIndex);
-        int colourTop = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(TOP), world, pos, tintIndex);
-        if (colourBottom < 0)
-            return colourTop;
-        if (colourTop < 0)
-            return colourBottom;
-        return (colourBottom + colourTop) / 2;
+    public IBlockColor getBlockColor() {
+        return (state, world, pos, tintIndex) -> {
+            IExtendedBlockState extendedBlockState;
+            if (world != null && pos != null)
+                extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
+            else
+                extendedBlockState = (IExtendedBlockState) state;
+            int colourBottom = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(BOTTOM), world, pos, tintIndex);
+            int colourTop = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(TOP), world, pos, tintIndex);
+            if (colourBottom < 0)
+                return colourTop;
+            if (colourTop < 0)
+                return colourBottom;
+            return (colourBottom + colourTop) / 2;
+        };
     }
 }

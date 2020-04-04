@@ -4,7 +4,6 @@ import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -36,7 +35,7 @@ public class Registrar {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void registerItemColours(ColorHandlerEvent.Block event) {
-        event.getBlockColors().registerBlockColorHandler(DOUBLE_SLAB, DOUBLE_SLAB);
+        event.getBlockColors().registerBlockColorHandler(DOUBLE_SLAB.getBlockColor(), DOUBLE_SLAB);
     }
 
 }
