@@ -41,4 +41,9 @@ public class MinecraftSlabSupport implements ISlabSupport {
         BlockItem slab = (BlockItem) stack.getItem();
         return slab.getBlock().getDefaultState().with(SlabBlock.TYPE, half);
     }
+
+    @Override
+    public boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
+        return ((BlockItem) stack.getItem()).getBlock() == state.getBlock();
+    }
 }

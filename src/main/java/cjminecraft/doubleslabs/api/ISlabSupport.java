@@ -16,4 +16,6 @@ public interface ISlabSupport {
     SlabType getHalf(World world, BlockPos pos, BlockState state);
 
     BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half);
+
+    boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack);
 }

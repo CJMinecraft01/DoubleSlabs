@@ -198,9 +198,7 @@ public class BlockDoubleSlab extends Block {
                         entity.getPosZ() + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.getWidth(),
                         -entity.getMotion().x * 4.0D, 1.5D, -entity.getMotion().z * 4.0D);
                 return null;
-            }, () -> {
-                return null;
-            });
+            }, () -> null);
         }
         return true;
     }

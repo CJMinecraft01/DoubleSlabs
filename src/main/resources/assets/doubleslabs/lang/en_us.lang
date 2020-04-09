@@ -1,1 +1,2 @@
 config.double_slabs.slab_blacklist=Slab Blacklist
+config.double_slabs.replace_same_slab=Replace Same Slab
