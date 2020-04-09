@@ -7,6 +7,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityDoubleSlab extends TileEntity {
@@ -14,10 +15,7 @@ public class TileEntityDoubleSlab extends TileEntity {
     private IBlockState topState;
     private IBlockState bottomState;
 
-    public TileEntityDoubleSlab() {
-//        this.topState = Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
-//        this.bottomState = Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK);
-    }
+    public TileEntityDoubleSlab() {}
 
     public TileEntityDoubleSlab(IBlockState topState, IBlockState bottomState) {
         this.topState = topState;
@@ -33,6 +31,7 @@ public class TileEntityDoubleSlab extends TileEntity {
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         nbt.setTag("top", NBTUtil.writeBlockState(new NBTTagCompound(), this.topState));
         nbt.setTag("bottom", NBTUtil.writeBlockState(new NBTTagCompound(), this.bottomState));
@@ -47,12 +46,13 @@ public class TileEntityDoubleSlab extends TileEntity {
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound getUpdateTag() {
         return this.writeToNBT(super.getUpdateTag());
     }
 
     @Override
-    public void handleUpdateTag(NBTTagCompound tag) {
+    public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
         super.handleUpdateTag(tag);
         this.readFromNBT(tag);
     }
@@ -72,6 +72,7 @@ public class TileEntityDoubleSlab extends TileEntity {
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound getTileData() {
         return this.writeToNBT(new NBTTagCompound());
     }

@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.patches.DynamicSurroundings;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -12,8 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
 
 
 @Mod(name = DoubleSlabs.NAME, version = DoubleSlabs.VERSION, modid = DoubleSlabs.MODID, acceptedMinecraftVersions = DoubleSlabs.ACCEPTED_MC_VERSIONS, updateJSON = DoubleSlabs.UPDATE_URL)
@@ -40,6 +39,7 @@ public class DoubleSlabs
     public void init(FMLInitializationEvent event) {
         proxy.init();
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
+        DynamicSurroundings.prepare();
     }
 
     @Mod.EventHandler

@@ -22,19 +22,26 @@ import java.util.List;
 
 public class DoubleSlabBakedModel implements IBakedModel {
 
+    private static IBakedModel fallback;
+
     public static final ModelResourceLocation variantTag
             = new ModelResourceLocation(new ResourceLocation(DoubleSlabs.MODID, "double_slab"), "normal");
 
-    private IBakedModel getFallback() {
-        return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
+    private static IBakedModel getFallback() {
+        if (fallback != null)
+            return fallback;
+        fallback = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
+        return fallback;
     }
 
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state == null)
-            return getFallback().getQuads(state, side, rand);
+            return getFallback().getQuads(null, side, rand);
         IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
         IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
+        if (topState == null || bottomState == null)
+            return getFallback().getQuads(state, side, rand);
         boolean topTransparent = !topState.isOpaqueCube();
         boolean bottomTransparent = !bottomState.isOpaqueCube();
         IBakedModel topModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(topState);

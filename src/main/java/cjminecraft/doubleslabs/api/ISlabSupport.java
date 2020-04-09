@@ -17,4 +17,6 @@ public interface ISlabSupport {
     BlockSlab.EnumBlockHalf getHalf(World world, BlockPos pos, IBlockState state);
 
     IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half);
+
+    boolean areSame(World world, BlockPos pos, IBlockState state, ItemStack stack);
 }

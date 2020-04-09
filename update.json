@@ -10,7 +10,8 @@
     "0.1.3": "=Fixed rendering of transparent slabs (partially)\n=Fixed slab placement bugs\n=Fixed crashes",
     "0.1.4": "=Fixed a major crash when mining double slabs\n+Slabs will now break according to the tool used and the slabs which make up the double slab",
     "0.2.0": "=Fixed some crashes due to null pointer errors\n+Completely changed the method to combine slabs together to a more dynamic system\n+Mod authors can now directly add integration with DoubleSlabs if their mod is not already supported\n=Improved compatibility with other mods meaning DoubleSlabs now works with even more mods\n+Added support for blocks which are coloured (e.g. Turf from Quark and blocks from JAOPCA) - Note when combining two coloured slabs, the colour is merged which may lead to new coloured blocks",
-    "0.2.1": "=Fixed a major server crash"
+    "0.2.1": "=Fixed a major server crash",
+    "0.3.0": "+Added configuration option to control whether to use the original double slab or the custom double slab when combining two slabs of the same type\n=Fixed a compatibility issue with Dynamic Surroundings causing lag spikes when creating double slabs"
   },
   "1.14.4": {
 	"1.0.0": "Initial port to 1.14",

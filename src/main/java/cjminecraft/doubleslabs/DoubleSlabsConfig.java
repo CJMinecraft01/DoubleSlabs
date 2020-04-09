@@ -20,6 +20,11 @@ public class DoubleSlabsConfig {
     @Config.Ignore
     public static List<String> SLAB_BLACKLIST = new ArrayList<>();
 
+    @Config.Name("Replace Same Slab")
+    @Config.Comment({"Whether to use the custom double slab when combining slabs of the same type"})
+    @Config.LangKey("config.doubleslabs.replace_same_slab")
+    public static boolean REPLACE_SAME_SLAB = true;
+
     public static String slabToString(IBlockState state) {
         Block block = state.getBlock();
         if (state.getBlock().getRegistryName() == null)

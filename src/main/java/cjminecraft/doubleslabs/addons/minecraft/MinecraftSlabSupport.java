@@ -40,6 +40,21 @@ public class MinecraftSlabSupport implements ISlabSupport {
     @Override
     public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
         ItemBlock slab = (ItemBlock) stack.getItem();
-        return slab.getBlock().getStateFromMeta(slab.getMetadata(stack)).withProperty(BlockSlab.HALF, half);
+        return slab.getBlock().getStateFromMeta(stack.getMetadata()).withProperty(BlockSlab.HALF, half);
+    }
+
+    @Override
+    public boolean areSame(World world, BlockPos pos, IBlockState state, ItemStack stack) {
+        Block block1 = ((ItemBlock) stack.getItem()).getBlock();
+        Block block2 = state.getBlock();
+        boolean sameVariant = true;
+        if (block1 instanceof BlockSlab && block2 instanceof BlockSlab) {
+            BlockSlab slab1 = (BlockSlab) block1;
+            BlockSlab slab2 = (BlockSlab) block2;
+            //noinspection ConstantConditions
+            if (slab1.getVariantProperty() != null && slab2.getVariantProperty() != null)
+                sameVariant = block1.getStateFromMeta(stack.getMetadata()).getValue(slab1.getVariantProperty()) == state.getValue(slab2.getVariantProperty());
+        }
+        return block1 == block2 && sameVariant;
     }
 }

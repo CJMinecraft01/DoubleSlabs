@@ -26,8 +26,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,11 +41,11 @@ public class BlockDoubleSlab extends Block {
     public BlockDoubleSlab() {
         super(Material.ROCK);
         setRegistryName(DoubleSlabs.MODID, "double_slab");
-//        setDefaultState(((IExtendedBlockState) this.getBlockState().getBaseState()).withProperty(TOP, Blocks.PURPUR_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP)).withProperty(BOTTOM, Blocks.WOODEN_SLAB.getDefaultState().withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM).withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK)));
     }
 
     @SideOnly(Side.CLIENT)
     @Override
+    @Nonnull
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
@@ -55,8 +53,6 @@ public class BlockDoubleSlab extends Block {
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
-//        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
-//        return extendedBlockState.getValue(TOP).isOpaqueCube() && extendedBlockState.getValue(BOTTOM).isOpaqueCube();
     }
 
     @Override
@@ -81,6 +77,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
+    @Nonnull
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
     }
@@ -91,11 +88,13 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
+    @Nonnull
     public Material getMaterial(IBlockState state) {
         return ((IExtendedBlockState) state).getValue(TOP) == null ? Material.ROCK : ((IExtendedBlockState) state).getValue(TOP).getMaterial();
     }
 
     @Override
+    @Nonnull
     public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
         IExtendedBlockState extendedState = ((IExtendedBlockState) getExtendedState(state, world, pos));
         return extendedState.getValue(TOP).getBlock().getSoundType(extendedState.getValue(TOP), world, pos, entity);
@@ -117,9 +116,9 @@ public class BlockDoubleSlab extends Block {
         return extendedBlockState.getValue(TOP).causesSuffocation() || extendedBlockState.getValue(BOTTOM).causesSuffocation();
     }
 
-    @Nullable
     @Override
-    public String getHarvestTool(IBlockState state) {
+    @Nullable
+    public String getHarvestTool(@Nonnull IBlockState state) {
         return null;
     }
 
@@ -151,46 +150,15 @@ public class BlockDoubleSlab extends Block {
         }
     }
 
-//    @Override
-//    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
-//        IExtendedBlockState state = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
-//        IBlockState topState = state.getValue(TOP);
-//        IBlockState bottomState = state.getValue(BOTTOM);
-//        if (topState.getMaterial().isToolNotRequired() && bottomState.getMaterial().isToolNotRequired())
-//            return true;
-//        ItemStack stack = player.getHeldItemMainhand();
-//        if (stack.isEmpty())
-//            return player.canHarvestBlock(topState) || player.canHarvestBlock(bottomState);
-//        String topStateTool = topState.getBlock().getHarvestTool(topState);
-//        String bottomStateTool = bottomState.getBlock().getHarvestTool(bottomState);
-//        if (topStateTool != null) {
-//            int toolLevel = stack.getItem().getHarvestLevel(stack, topStateTool, player, topState);
-//            if (toolLevel < 0)
-//                if (player.canHarvestBlock(topState))
-//                    return true;
-//            else if (toolLevel >= topState.getBlock().getHarvestLevel(topState))
-//                return true;
-//        }
-//        if (bottomStateTool != null) {
-//            int toolLevel = stack.getItem().getHarvestLevel(stack, bottomStateTool, player, bottomState);
-//            if (toolLevel < 0)
-//                if (player.canHarvestBlock(bottomState))
-//                    return true;
-//                else return toolLevel >= bottomState.getBlock().getHarvestLevel(bottomState);
-//        }
-//        return false;
-////        return state.getValue(TOP).getBlock().canHarvestBlock(world, pos, player) || state.getValue(BOTTOM).getBlock().canHarvestBlock(world, pos, player);
-//    }
-
 
     @Override
-    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHarvestBlock(IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
         return canHarvestBlock(this, player, extendedBlockState.getValue(TOP)) || canHarvestBlock(this, player, extendedBlockState.getValue(BOTTOM));
     }
 
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
+    public float getPlayerRelativeBlockHardness(IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
         IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
         return Math.min(blockStrength(extendedBlockState.getValue(TOP), player, world, pos), blockStrength(extendedBlockState.getValue(BOTTOM), player, world, pos));
     }
@@ -209,17 +177,19 @@ public class BlockDoubleSlab extends Block {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state) {
         return new TileEntityDoubleSlab(((IExtendedBlockState) state).getValue(TOP), ((IExtendedBlockState) state).getValue(BOTTOM));
     }
 
     @Override
+    @Nonnull
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState.Builder(this).add(TOP, BOTTOM).build();
     }
 
     @Override
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    @Nonnull
+    public IBlockState getExtendedState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState extendedState = (IExtendedBlockState) state;
             TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
@@ -230,7 +200,8 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+    @Nonnull
+    public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
         IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
         if (target.hitVec.y - pos.getY() > 0.5)
             return extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlock().getPickBlock(extendedBlockState.getValue(TOP), target, world, pos, player) : ItemStack.EMPTY;
@@ -238,14 +209,14 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
         if (willHarvest)
             return true;
         return super.removedByPlayer(state, world, pos, player, false);
     }
 
     @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(@Nonnull NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, @Nonnull IBlockState state, int fortune) {
         TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
         if (tile != null) {
             tile.getTopState().getBlock().getDrops(drops, world, pos, tile.getTopState(), fortune);
@@ -254,10 +225,10 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
-        worldIn.setBlockToAir(pos);
-        worldIn.removeTileEntity(pos);
+    public void harvestBlock(@Nonnull World world, EntityPlayer player, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.harvestBlock(world, player, pos, state, te, stack);
+        world.setBlockToAir(pos);
+        world.removeTileEntity(pos);
     }
 
     @Override
@@ -326,6 +297,8 @@ public class BlockDoubleSlab extends Block {
         ParticleDigging.Factory factory = new ParticleDigging.Factory();
         ParticleDigging particle = (ParticleDigging) factory.createParticle(1, world, d0, d1, d2,
                 0.0D, 0.0D, 0.0D, Block.getStateId(blockState));
+        if (particle == null)
+            return false;
         particle.setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
         manager.addEffect(particle);
 
@@ -344,21 +317,22 @@ public class BlockDoubleSlab extends Block {
                     double d1 = ((double) k + 0.5D) / 4.0D;
                     double d2 = ((double) l + 0.5D) / 4.0D;
 
-                    ParticleDigging particle1 = (ParticleDigging) factory.createParticle(0, world,
-                            (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
-                            d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(TOP)));
-                    particle1.setBlockPos(pos);
-                    manager.addEffect(particle1);
-
-                    ParticleDigging particle2 = (ParticleDigging) factory.createParticle(0, world,
-                            (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
-                            d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(extendedBlockState.getValue(BOTTOM)));
-                    particle2.setBlockPos(pos);
-                    manager.addEffect(particle2);
+                    createDestroyParticle(world, pos, manager, extendedBlockState, factory, d0, d1, d2, TOP);
+                    createDestroyParticle(world, pos, manager, extendedBlockState, factory, d0, d1, d2, BOTTOM);
                 }
             }
         }
         return true;
+    }
+
+    private void createDestroyParticle(World world, BlockPos pos, ParticleManager manager, IExtendedBlockState state, ParticleDigging.Factory factory, double d0, double d1, double d2, UnlistedPropertyBlockState top) {
+        ParticleDigging particle = (ParticleDigging) factory.createParticle(0, world,
+                (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
+                d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, Block.getStateId(state.getValue(top)));
+        if (particle == null)
+            return;
+        particle.setBlockPos(pos);
+        manager.addEffect(particle);
     }
 
     @SideOnly(Side.CLIENT)
@@ -369,8 +343,10 @@ public class BlockDoubleSlab extends Block {
                 extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
             else
                 extendedBlockState = (IExtendedBlockState) state;
-            int colourBottom = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(BOTTOM), world, pos, tintIndex);
-            int colourTop = Minecraft.getMinecraft().getBlockColors().colorMultiplier(extendedBlockState.getValue(TOP), world, pos, tintIndex);
+            IBlockState stateBottom = extendedBlockState.getValue(BOTTOM);
+            IBlockState stateTop = extendedBlockState.getValue(TOP);
+            int colourBottom = stateBottom != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateBottom, world, pos, tintIndex) : -1;
+            int colourTop = stateTop != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateTop, world, pos, tintIndex) : -1;
             if (colourBottom < 0)
                 return colourTop;
             if (colourTop < 0)

@@ -34,7 +34,7 @@ public class Registrar {
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public static void registerItemColours(ColorHandlerEvent.Block event) {
+    public static void registerBlockColours(ColorHandlerEvent.Block event) {
         event.getBlockColors().registerBlockColorHandler(DOUBLE_SLAB.getBlockColor(), DOUBLE_SLAB);
     }
 

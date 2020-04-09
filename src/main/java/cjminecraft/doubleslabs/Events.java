@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
+import cjminecraft.doubleslabs.patches.DynamicSurroundings;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
@@ -73,9 +74,13 @@ public class Events {
                 if (blockSupport == null) {
                     pos = pos.offset(event.getFace());
                     face = event.getHitVec().y - pos.getY() > 0.5 ? EnumFacing.UP : EnumFacing.DOWN;
+                    blockSupport = SlabSupport.getSupport(event.getWorld(), pos, event.getWorld().getBlockState(pos));
                 }
                 IBlockState state = event.getWorld().getBlockState(pos);
-                blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
+
+                if (!DoubleSlabsConfig.REPLACE_SAME_SLAB && blockSupport == itemSupport && blockSupport.areSame(event.getWorld(), pos, state, event.getItemStack()))
+                    return;
+
                 if (blockSupport != null) {
                     BlockSlab.EnumBlockHalf half = blockSupport.getHalf(event.getWorld(), pos, state);
                     if ((face == EnumFacing.UP && half == BlockSlab.EnumBlockHalf.BOTTOM) || (face == EnumFacing.DOWN && half == BlockSlab.EnumBlockHalf.TOP)) {
@@ -85,6 +90,8 @@ public class Events {
 
                         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);
                         AxisAlignedBB axisalignedbb = newState.getCollisionBoundingBox(event.getWorld(), pos);
+
+                        DynamicSurroundings.patchBlockState(newState);
 
                         if (axisalignedbb != Block.NULL_AABB && event.getWorld().checkNoEntityCollision(axisalignedbb.offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
                             SoundType soundtype = state.getBlock().getSoundType(slabState, event.getWorld(), pos, event.getEntityPlayer());
