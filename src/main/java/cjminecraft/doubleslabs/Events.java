@@ -51,6 +51,9 @@ public class Events {
                 if (half == SlabType.DOUBLE)
                     return;
 
+                if (!Config.REPLACE_SAME_SLAB.get() && blockSupport == itemSupport && blockSupport.areSame(event.getWorld(), pos, state, event.getItemStack()))
+                    return;
+
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
                     BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();

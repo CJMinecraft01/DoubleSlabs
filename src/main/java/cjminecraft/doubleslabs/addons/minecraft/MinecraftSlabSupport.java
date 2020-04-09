@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.addons.minecraft;
 
 import cjminecraft.doubleslabs.api.ISlabSupport;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,5 +41,10 @@ public class MinecraftSlabSupport implements ISlabSupport {
     public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
         BlockItem slab = (BlockItem) stack.getItem();
         return slab.getBlock().getDefaultState().with(SlabBlock.TYPE, half);
+    }
+
+    @Override
+    public boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
+        return ((BlockItem) stack.getItem()).getBlock() == state.getBlock();
     }
 }

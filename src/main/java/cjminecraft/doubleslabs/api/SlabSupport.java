@@ -26,10 +26,10 @@ public class SlabSupport {
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
         if (supportedSlabs.contains(support)) {
-            DoubleSlabs.LOGGER.info("A slab support of type {} has already been registered - SKIPPING", support.getClass().getSimpleName());
+            DoubleSlabs.LOGGER.info("A slab support of type %s has already been registered - SKIPPING", support.getClass().getSimpleName());
         } else {
             supportedSlabs.add(support);
-            DoubleSlabs.LOGGER.info("Successfully added slab support for type {}", support.getClass().getSimpleName());
+            DoubleSlabs.LOGGER.info("Successfully added slab support for type %s", support.getClass().getSimpleName());
         }
     }
 
@@ -40,7 +40,7 @@ public class SlabSupport {
                 if (interfaces.getName().equals(ISlabSupport.class.getName()))
                     addSlabSupport((ISlabSupport) support.newInstance());
         } catch (Exception e) {
-            DoubleSlabs.LOGGER.error("An error occurred when registering slab support for class {}", className);
+            DoubleSlabs.LOGGER.error("An error occurred when registering slab support for class %s", className);
         }
     }
 
@@ -53,8 +53,7 @@ public class SlabSupport {
         return null;
     }
 
-    public static @Nullable
-    ISlabSupport getSupport(ItemStack stack, PlayerEntity player, Hand hand) {
+    public static @Nullable ISlabSupport getSupport(ItemStack stack, PlayerEntity player, Hand hand) {
         if ((stack.getItem() instanceof BlockItem)) {
             Block block = ((BlockItem) stack.getItem()).getBlock();
             if (block instanceof ISlabSupport) {
