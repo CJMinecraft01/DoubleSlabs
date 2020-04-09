@@ -325,6 +325,7 @@ public class BlockDoubleSlab extends Block {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
     private void createDestroyParticle(World world, BlockPos pos, ParticleManager manager, IExtendedBlockState state, ParticleDigging.Factory factory, double d0, double d1, double d2, UnlistedPropertyBlockState top) {
         ParticleDigging particle = (ParticleDigging) factory.createParticle(0, world,
                 (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2,
