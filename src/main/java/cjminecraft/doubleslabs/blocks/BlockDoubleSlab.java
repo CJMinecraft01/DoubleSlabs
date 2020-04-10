@@ -2,12 +2,12 @@ package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
+import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.DiggingParticle;
-import net.minecraft.client.particle.FallingDustParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
@@ -16,23 +16,23 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
-import net.minecraft.world.*;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -302,13 +302,9 @@ public class BlockDoubleSlab extends Block {
             if (world == null || pos == null)
                 return -1;
             return runOnDoubleSlab(world, pos, (states) -> {
-                int colourTop = Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
-                int colourBottom = Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
-                if (colourTop < 0)
-                    return colourBottom;
-                if (colourBottom < 0)
-                    return colourTop;
-                return (colourBottom + colourTop) / 2;
+                if (tintIndex < DoubleSlabBakedModel.TINT_OFFSET)
+                    return Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
+                return Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
             }, () -> -1);
         };
     }

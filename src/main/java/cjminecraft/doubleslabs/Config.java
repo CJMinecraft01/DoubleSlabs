@@ -30,6 +30,8 @@ public class Config {
     }
 
     public static String slabToString(BlockState state) {
+        if (state == null)
+            return "null";
         if (state.getBlock().getRegistryName() == null)
             return "";
         return state.getBlock().getRegistryName().toString();
