@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
+import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -287,13 +288,9 @@ public class BlockDoubleSlab extends Block {
             if (world == null || pos == null)
                 return -1;
             return runOnDoubleSlab(world, pos, (states) -> {
-                int colourTop = Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
-                int colourBottom = Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
-                if (colourTop < 0)
-                    return colourBottom;
-                if (colourBottom < 0)
-                    return colourTop;
-                return (colourBottom + colourTop) / 2;
+                if (tintIndex < DoubleSlabBakedModel.TINT_OFFSET)
+                    return Minecraft.getInstance().getBlockColors().getColor(states.getLeft(), world, pos, tintIndex);
+                return Minecraft.getInstance().getBlockColors().getColor(states.getRight(), world, pos, tintIndex);
             }, () -> -1);
         };
     }
