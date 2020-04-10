@@ -26,6 +26,8 @@ public class DoubleSlabsConfig {
     public static boolean REPLACE_SAME_SLAB = true;
 
     public static String slabToString(IBlockState state) {
+        if (state == null)
+            return "null";
         Block block = state.getBlock();
         if (state.getBlock().getRegistryName() == null)
             return "";

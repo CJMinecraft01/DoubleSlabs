@@ -1,26 +1,28 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.DoubleSlabsConfig;
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
-import net.minecraft.block.BlockPlanks;
-import net.minecraft.block.BlockSlab;
-import net.minecraft.block.BlockWoodSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DoubleSlabBakedModel implements IBakedModel {
+
+    private final Map<String, List<BakedQuad>> cache = new HashMap<>();
+    // Should be large enough so that tint offsets don't overlap
+    public static final int TINT_OFFSET = 1000;
 
     private static IBakedModel fallback;
 
@@ -34,30 +36,44 @@ public class DoubleSlabBakedModel implements IBakedModel {
         return fallback;
     }
 
+    private List<BakedQuad> getQuadsForState(@Nullable IBlockState state, @Nullable EnumFacing side, long rand, int tintOffset) {
+        if (state == null) return new ArrayList<>();
+        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
+        return model.getQuads(state, side, rand).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat())).collect(Collectors.toList());
+    }
+
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state == null)
             return getFallback().getQuads(null, side, rand);
         IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
         IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-        if (topState == null || bottomState == null)
-            return getFallback().getQuads(state, side, rand);
-        boolean topTransparent = !topState.isOpaqueCube();
-        boolean bottomTransparent = !bottomState.isOpaqueCube();
-        IBakedModel topModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(topState);
-        IBakedModel bottomModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(bottomState);
-        List<BakedQuad> topQuads = new ArrayList<>(topModel.getQuads(topState, side, rand));
-        if (!bottomTransparent)
-            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-        List<BakedQuad> bottomQuads = new ArrayList<>(bottomModel.getQuads(bottomState, side, rand));
-        if (!topTransparent)
-            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
-        if (topTransparent && bottomTransparent) {
-            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+        String cacheKey = DoubleSlabsConfig.slabToString(topState) + "," + DoubleSlabsConfig.slabToString(bottomState) + ":" + (side != null ? side.getName() : "null");
+        if (!cache.containsKey(cacheKey)) {
+            if (topState == null || bottomState == null) {
+                List<BakedQuad> quads = getFallback().getQuads(null, side, rand);
+                cache.put(cacheKey, quads);
+                return quads;
+            }
+            boolean topTransparent = !topState.isOpaqueCube();
+            boolean bottomTransparent = !bottomState.isOpaqueCube();
+
+            List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
+            if (!bottomTransparent)
+                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+            List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
+            if (!topTransparent)
+                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+            if (topTransparent && bottomTransparent) {
+                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+            }
+            topQuads.addAll(bottomQuads);
+            cache.put(cacheKey, topQuads);
+            return topQuads;
+        } else {
+            return cache.get(cacheKey);
         }
-        topQuads.addAll(bottomQuads);
-        return topQuads;
     }
 
     @Override

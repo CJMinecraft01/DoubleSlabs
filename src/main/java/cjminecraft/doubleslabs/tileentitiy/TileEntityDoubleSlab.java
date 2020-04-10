@@ -33,16 +33,20 @@ public class TileEntityDoubleSlab extends TileEntity {
     @Override
     @Nonnull
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        nbt.setTag("top", NBTUtil.writeBlockState(new NBTTagCompound(), this.topState));
-        nbt.setTag("bottom", NBTUtil.writeBlockState(new NBTTagCompound(), this.bottomState));
+        if (this.topState != null)
+            nbt.setTag("top", NBTUtil.writeBlockState(new NBTTagCompound(), this.topState));
+        if (this.bottomState != null)
+            nbt.setTag("bottom", NBTUtil.writeBlockState(new NBTTagCompound(), this.bottomState));
         return super.writeToNBT(nbt);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        this.topState = NBTUtil.readBlockState(nbt.getCompoundTag("top"));
-        this.bottomState = NBTUtil.readBlockState(nbt.getCompoundTag("bottom"));
+        if (nbt.hasKey("top"))
+            this.topState = NBTUtil.readBlockState(nbt.getCompoundTag("top"));
+        if (nbt.hasKey("bottom"))
+            this.bottomState = NBTUtil.readBlockState(nbt.getCompoundTag("bottom"));
     }
 
     @Override

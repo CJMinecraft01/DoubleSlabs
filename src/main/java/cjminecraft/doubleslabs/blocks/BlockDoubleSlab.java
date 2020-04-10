@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBlockState;
+import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -246,6 +247,8 @@ public class BlockDoubleSlab extends Block {
     public boolean addRunningEffects(IBlockState state, World world, BlockPos pos, Entity entity) {
         if (world.isRemote) {
             IExtendedBlockState extendedBlockState = ((IExtendedBlockState) getExtendedState(state, world, pos));
+            if (extendedBlockState.getValue(TOP) == null)
+                return true;
             world.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
                     entity.posX + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.width,
                     entity.getEntityBoundingBox().minY + 0.1D,
@@ -344,15 +347,11 @@ public class BlockDoubleSlab extends Block {
                 extendedBlockState = (IExtendedBlockState) getExtendedState(world.getBlockState(pos), world, pos);
             else
                 extendedBlockState = (IExtendedBlockState) state;
-            IBlockState stateBottom = extendedBlockState.getValue(BOTTOM);
             IBlockState stateTop = extendedBlockState.getValue(TOP);
-            int colourBottom = stateBottom != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateBottom, world, pos, tintIndex) : -1;
-            int colourTop = stateTop != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateTop, world, pos, tintIndex) : -1;
-            if (colourBottom < 0)
-                return colourTop;
-            if (colourTop < 0)
-                return colourBottom;
-            return (colourBottom + colourTop) / 2;
+            IBlockState stateBottom = extendedBlockState.getValue(BOTTOM);
+            if (tintIndex < DoubleSlabBakedModel.TINT_OFFSET)
+                return stateTop != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateTop, world, pos, tintIndex) : -1;;
+            return stateBottom != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(stateBottom, world, pos, tintIndex - DoubleSlabBakedModel.TINT_OFFSET) : -1;
         };
     }
 }

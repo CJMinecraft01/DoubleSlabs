@@ -40,6 +40,8 @@ public class DynamicSurroundings {
     public static void patchBlockState(IBlockState state) {
         if (!loaded)
             return;
+        if (defaultStateData == null)
+            return;
         try {
             setStateData.invoke(null, state, defaultStateData);
         } catch (IllegalAccessException | InvocationTargetException e) {
