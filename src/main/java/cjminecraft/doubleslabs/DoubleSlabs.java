@@ -45,6 +45,7 @@ public class DoubleSlabs
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
+        SlabSupport.init();
     }
 
     @Mod.EventHandler

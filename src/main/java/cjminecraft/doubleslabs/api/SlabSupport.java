@@ -1,6 +1,9 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.addons.atum2.Atum2SlabSupport;
+import cjminecraft.doubleslabs.addons.erebus.ErebusSlabSupport;
+import cjminecraft.doubleslabs.addons.libraryex.LibraryExSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import net.minecraft.block.Block;
@@ -12,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,10 +24,19 @@ import java.util.List;
 
 public class SlabSupport {
 
-    private static List<ISlabSupport> supportedSlabs = new ArrayList<>();
+    private static final List<ISlabSupport> supportedSlabs = new ArrayList<>();
 
-    static {
+    public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+
+        if (Loader.isModLoaded("atum"))
+            addSlabSupport(new Atum2SlabSupport());
+
+        if (Loader.isModLoaded("libraryex"))
+            addSlabSupport(new LibraryExSlabSupport());
+
+        if (Loader.isModLoaded("erebus"))
+            addSlabSupport(new ErebusSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {

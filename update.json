@@ -14,7 +14,8 @@
     "0.3.0": "+Added configuration option to control whether to use the original double slab or the custom double slab when combining two slabs of the same type\n=Fixed a compatibility issue with Dynamic Surroundings causing lag spikes when creating double slabs",
     "0.3.1": "=Fixed a server crash",
     "0.3.2": "=Fixed the way colours are chosen for coloured blocks meaning that two slabs can be coloured independent of each other",
-    "0.3.3": "=Improved slab rendering to better support transparent and translucent blocks\n=Improved compatibility with dynamic surroundings"
+    "0.3.3": "=Improved slab rendering to better support transparent and translucent blocks\n=Improved compatibility with dynamic surroundings",
+    "0.3.4": "+Added Atum 2 slab support\n+Added LibraryEx / NetherEx slab support\n+Added Erebus slab support"
   },
   "1.14.4": {
 	"1.0.0": "Initial port to 1.14",
