@@ -55,12 +55,6 @@ public class BlockDoubleSlab extends Block {
         return BlockRenderType.MODEL;
     }
 
-//    @OnlyIn(Dist.CLIENT)
-//    @Override
-//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-//        return layer == BlockRenderLayer.SOLID;
-//    }
-
 
 //    @Override
 //    public boolean isSolid(BlockState state) {

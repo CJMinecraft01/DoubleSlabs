@@ -26,7 +26,8 @@ public class Registrar {
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(DOUBLE_SLAB);
         if (FMLEnvironment.dist == Dist.CLIENT)
-            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, RenderType.getCutout());
+            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, layer -> true);
+//            RenderTypeLookup.setRenderLayer(DOUBLE_SLAB, RenderType.getCutout());
     }
 
     @SubscribeEvent
