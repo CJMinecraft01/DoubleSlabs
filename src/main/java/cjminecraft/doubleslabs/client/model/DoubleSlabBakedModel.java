@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
 
 import javax.annotation.Nullable;
@@ -20,14 +21,12 @@ import java.util.stream.Collectors;
 
 public class DoubleSlabBakedModel implements IBakedModel {
 
-    private final Map<String, List<BakedQuad>> cache = new HashMap<>();
     // Should be large enough so that tint offsets don't overlap
     public static final int TINT_OFFSET = 1000;
-
-    private static IBakedModel fallback;
-
     public static final ModelResourceLocation variantTag
             = new ModelResourceLocation(new ResourceLocation(DoubleSlabs.MODID, "double_slab"), "normal");
+    private static IBakedModel fallback;
+    private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
     private static IBakedModel getFallback() {
         if (fallback != null)
@@ -48,7 +47,9 @@ public class DoubleSlabBakedModel implements IBakedModel {
             return getFallback().getQuads(null, side, rand);
         IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
         IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-        String cacheKey = DoubleSlabsConfig.slabToString(topState) + "," + DoubleSlabsConfig.slabToString(bottomState) + ":" + (side != null ? side.getName() : "null");
+        String cacheKey = DoubleSlabsConfig.slabToString(topState) + "," + DoubleSlabsConfig.slabToString(bottomState)
+                + ":" + (side != null ? side.getName() : "null") + ":" +
+                (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
         if (!cache.containsKey(cacheKey)) {
             if (topState == null || bottomState == null) {
                 List<BakedQuad> quads = getFallback().getQuads(null, side, rand);
@@ -58,19 +59,22 @@ public class DoubleSlabBakedModel implements IBakedModel {
             boolean topTransparent = !topState.isOpaqueCube();
             boolean bottomTransparent = !bottomState.isOpaqueCube();
 
-            List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
-            if (!bottomTransparent)
-                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-            List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
-            if (!topTransparent)
-                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
-            if (topTransparent && bottomTransparent) {
-                topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-                bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+            List<BakedQuad> quads = new ArrayList<>();
+            if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer()) {
+                List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
+                if (!bottomTransparent || topTransparent)
+                    topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+                quads.addAll(topQuads);
             }
-            topQuads.addAll(bottomQuads);
-            cache.put(cacheKey, topQuads);
-            return topQuads;
+            if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer()) {
+                List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
+                if (!topTransparent || bottomTransparent)
+                    bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+                quads.addAll(bottomQuads);
+            }
+
+            cache.put(cacheKey, quads);
+            return quads;
         } else {
             return cache.get(cacheKey);
         }

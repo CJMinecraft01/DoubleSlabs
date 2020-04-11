@@ -2,7 +2,9 @@ package cjminecraft.doubleslabs.patches;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import net.minecraft.block.state.IBlockState;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -41,6 +43,8 @@ public class DynamicSurroundings {
         if (!loaded)
             return;
         if (defaultStateData == null)
+            return;
+        if (FMLCommonHandler.instance().getSide() != Side.CLIENT)
             return;
         try {
             setStateData.invoke(null, state, defaultStateData);

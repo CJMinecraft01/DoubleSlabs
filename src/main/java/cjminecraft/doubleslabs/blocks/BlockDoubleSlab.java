@@ -44,11 +44,17 @@ public class BlockDoubleSlab extends Block {
         setRegistryName(DoubleSlabs.MODID, "double_slab");
     }
 
-    @SideOnly(Side.CLIENT)
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    @Nonnull
+//    public BlockRenderLayer getRenderLayer() {
+//        return BlockRenderLayer.CUTOUT_MIPPED;
+//    }
+
     @Override
-    @Nonnull
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    @SideOnly(Side.CLIENT)
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        return true;
     }
 
     @Override
