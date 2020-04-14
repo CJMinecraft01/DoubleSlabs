@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.addons.erebus.ErebusSlabSupport;
 import cjminecraft.doubleslabs.addons.libraryex.LibraryExSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.thebetweenlands.TheBetweenlandsSlabSupport;
+import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,6 +40,9 @@ public class SlabSupport {
 
         if (Loader.isModLoaded("thebetweenlands"))
             addSlabSupport(new TheBetweenlandsSlabSupport());
+
+        if (Loader.isModLoaded("engineersdecor"))
+            addSlabSupport(new EngineersDecorSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
