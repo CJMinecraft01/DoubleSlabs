@@ -24,9 +24,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.*;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
@@ -58,11 +61,6 @@ public class BlockDoubleSlab extends Block {
         return false;
     }
 
-    //    @Override
-//    public BlockRenderLayer getRenderLayer() {
-//        return BlockRenderLayer.CUTOUT;
-//    }
-
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
@@ -73,18 +71,6 @@ public class BlockDoubleSlab extends Block {
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
-
-//    @OnlyIn(Dist.CLIENT)
-//    @Override
-//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-//        return layer == BlockRenderLayer.SOLID;
-//    }
-
-
-//    @Override
-//    public boolean isSolid(BlockState state) {
-//        return true;
-//    }
 
     @Override
     public boolean hasTileEntity(BlockState state) {
@@ -118,12 +104,13 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
+        return true;
+//        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
     }
 
     @Override
     public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getRight().canEntitySpawn(world, pos, type), () -> true);
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().canEntitySpawn(world, pos, type), () -> true);
     }
 
     @Override

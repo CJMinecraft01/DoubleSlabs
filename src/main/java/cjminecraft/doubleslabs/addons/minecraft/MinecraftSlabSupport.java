@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class MinecraftSlabSupport implements ISlabSupport {
 
     private boolean isValid(BlockState state) {
-        return (state.getBlock() instanceof SlabBlock && state.get(SlabBlock.TYPE) != SlabType.DOUBLE) || hasEnumHalfProperty(state);
+        return (state.getBlock() instanceof SlabBlock && state.get(SlabBlock.TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || hasEnumHalfProperty(state);
     }
 
     private boolean hasEnumHalfProperty(BlockState state) {
@@ -29,7 +29,7 @@ public class MinecraftSlabSupport implements ISlabSupport {
 
     @Override
     public boolean isValid(ItemStack stack, PlayerEntity player, Hand hand) {
-        return (stack.getItem() instanceof BlockItem && isValid(((BlockItem) stack.getItem()).getBlock().getDefaultState()));
+        return stack.getItem() instanceof BlockItem && isValid(((BlockItem) stack.getItem()).getBlock().getDefaultState());
     }
 
     @Override
