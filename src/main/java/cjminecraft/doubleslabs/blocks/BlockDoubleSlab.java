@@ -93,12 +93,13 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
+        return true;
+        //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
     }
 
     @Override
     public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getRight().canEntitySpawn(world, pos, type), () -> true);
+        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().canEntitySpawn(world, pos, type), () -> true);
     }
 
     @Override
