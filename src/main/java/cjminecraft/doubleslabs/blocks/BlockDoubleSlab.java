@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -51,6 +52,26 @@ public class BlockDoubleSlab extends Block {
 //        return BlockRenderLayer.CUTOUT_MIPPED;
 //    }
 
+
+    @Override
+    public boolean isTopSolid(IBlockState state) {
+        return ((IExtendedBlockState) state).getValue(TOP) == null || ((IExtendedBlockState) state).getValue(TOP).isTopSolid();
+    }
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
+        IExtendedBlockState extendedBlockState = (IExtendedBlockState) getExtendedState(state, world, pos);
+        if (face == EnumFacing.UP)
+            return extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlockFaceShape(world, pos, EnumFacing.UP) : BlockFaceShape.SOLID;
+        if (face == EnumFacing.DOWN)
+            return extendedBlockState.getValue(BOTTOM) != null ? extendedBlockState.getValue(BOTTOM).getBlockFaceShape(world, pos, EnumFacing.DOWN) : BlockFaceShape.SOLID;
+        BlockFaceShape topFace = extendedBlockState.getValue(TOP) != null ? extendedBlockState.getValue(TOP).getBlockFaceShape(world, pos, EnumFacing.UP) : BlockFaceShape.SOLID;
+        BlockFaceShape bottomFace = extendedBlockState.getValue(BOTTOM) != null ? extendedBlockState.getValue(BOTTOM).getBlockFaceShape(world, pos, EnumFacing.UP) : BlockFaceShape.SOLID;
+        if (topFace == BlockFaceShape.SOLID && bottomFace == BlockFaceShape.SOLID)
+            return BlockFaceShape.SOLID;
+        return BlockFaceShape.UNDEFINED;
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
@@ -69,7 +90,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isFullCube(IBlockState state) {
-        return false;
+        return true;
     }
 
     @Override

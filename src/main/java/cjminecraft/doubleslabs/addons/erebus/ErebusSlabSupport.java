@@ -19,7 +19,7 @@ public class ErebusSlabSupport implements ISlabSupport {
 
     @Override
     public boolean isValid(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        return ((ItemBlock) stack.getItem()).getBlock() instanceof BlockSlabErebus;
+        return stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock() instanceof BlockSlabErebus;
     }
 
     @Override

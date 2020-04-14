@@ -23,7 +23,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2847"
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -47,6 +47,7 @@ dependencies {
     deobfCompile "com.teammetallurgy.atum:atum2_${project.minecraft.version}:${project.minecraft.version}-${project.ATUM2_VERSION}"
     compile "com.github.LogicTechCorp:LibraryEx:1.12.x-SNAPSHOT"
     compile "com.github.vadis365:TheErebus:mc1.12-SNAPSHOT"
+//    compile files("libs/TheBetweenlands-3.5.10-universal.jar")
 }
 
 processResources {
@@ -57,12 +58,12 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 //    rename '(.+_at.cfg)', 'META-INF/$1'
-        
+
 //    // copy everything else except the mcmod.info
 //    from(sourceSets.main.resources.srcDirs) {
 //        exclude 'mcmod.info'

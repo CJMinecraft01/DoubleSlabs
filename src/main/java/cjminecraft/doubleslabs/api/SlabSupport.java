@@ -5,11 +5,10 @@ import cjminecraft.doubleslabs.addons.atum2.Atum2SlabSupport;
 import cjminecraft.doubleslabs.addons.erebus.ErebusSlabSupport;
 import cjminecraft.doubleslabs.addons.libraryex.LibraryExSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
-import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.addons.thebetweenlands.TheBetweenlandsSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -37,6 +36,9 @@ public class SlabSupport {
 
         if (Loader.isModLoaded("erebus"))
             addSlabSupport(new ErebusSlabSupport());
+
+        if (Loader.isModLoaded("thebetweenlands"))
+            addSlabSupport(new TheBetweenlandsSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
