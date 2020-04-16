@@ -16,7 +16,8 @@
     "0.3.2": "=Fixed the way colours are chosen for coloured blocks meaning that two slabs can be coloured independent of each other",
     "0.3.3": "=Improved slab rendering to better support transparent and translucent blocks\n=Improved compatibility with dynamic surroundings",
     "0.3.4": "+Added Atum 2 slab support\n+Added LibraryEx / NetherEx slab support\n+Added Erebus slab support",
-    "0.3.5": "=Fixed a crash with Erebus slab support\n+Added The Betweenlands slab support\n+Doors and redstone can now be placed on double slabs which aren't transparent"
+    "0.3.5": "=Fixed a crash with Erebus slab support\n+Added The Betweenlands slab support\n+Doors and redstone can now be placed on double slabs which aren't transparent",
+    "0.4.0": "=Tweaked double slab placement mechanics to work better with directional slabs\n=Optimised rendering of slabs\n=Fixed rendering of transparent slabs giving x-ray vision through other double slabs\n+Began JAR signing\n=Fixed a couple of crashes by improving stability of block overrides\n+Added Engineers Decor slab support"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -29,7 +30,8 @@
     "1.2.0": "+Added configuration option to control whether to use the original double slab or the custom double slab when combining two slabs of the same type",
     "1.2.1": "=Fixed the way colours are chosen for coloured blocks meaning that two slabs can be coloured independent of each other",
     "1.2.2": "=Improved slab rendering to better support transparent and translucent blocks",
-    "1.2.3": "+Doors and redstone can now be placed on double slabs"
+    "1.2.3": "+Doors and redstone can now be placed on double slabs",
+    "1.2.4": "+Added Engineers Decor slab support"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -42,14 +44,15 @@
     "2.2.0": "+Added configuration option to control whether to use the original double slab or the custom double slab when combining two slabs of the same type",
     "2.2.1": "=Fixed the way colours are chosen for coloured blocks meaning that two slabs can be coloured independent of each other",
     "2.2.2": "=Improved slab rendering to better support transparent and translucent blocks",
-    "2.2.3": "+Doors and redstone can now be placed on double slabs"
+    "2.2.3": "+Doors and redstone can now be placed on double slabs",
+    "2.2.4": "+Added Engineers Decor slab support"
   },
   "promos": {
-    "1.12.2-latest": "0.3.5",
-    "1.12.2-recommended": "0.3.5",
-    "1.14.4-latest": "1.2.3",
-    "1.14.4-recommended": "1.2.3",
-    "1.15.2-latest": "2.2.3",
-    "1.15.2-recommended": "2.2.3"
+    "1.12.2-latest": "0.4.0",
+    "1.12.2-recommended": "0.4.0",
+    "1.14.4-latest": "1.2.4",
+    "1.14.4-recommended": "1.2.4",
+    "1.15.2-latest": "2.2.4",
+    "1.15.2-recommended": "2.2.4"
   }
 }
