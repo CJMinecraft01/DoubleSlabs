@@ -29,8 +29,8 @@ public class Atum2SlabSupport implements ISlabSupport {
     }
 
     @Override
-    public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
-        return ((ItemBlock) stack.getItem()).getBlock().getDefaultState().withProperty(BlockAtumSlab.TYPE, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockAtumSlab.Type.BOTTOM : BlockAtumSlab.Type.TOP);
+    public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
+        return state.withProperty(BlockAtumSlab.TYPE, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockAtumSlab.Type.BOTTOM : BlockAtumSlab.Type.TOP);
     }
 
     @Override

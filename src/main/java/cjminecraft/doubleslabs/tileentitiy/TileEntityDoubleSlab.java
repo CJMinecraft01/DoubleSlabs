@@ -80,5 +80,4 @@ public class TileEntityDoubleSlab extends TileEntity {
     public NBTTagCompound getTileData() {
         return this.writeToNBT(new NBTTagCompound());
     }
-
 }

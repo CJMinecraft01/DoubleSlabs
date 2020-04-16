@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.DoubleSlabsConfig;
+import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -56,19 +58,25 @@ public class DoubleSlabBakedModel implements IBakedModel {
                 cache.put(cacheKey, quads);
                 return quads;
             }
-            boolean topTransparent = !topState.isOpaqueCube();
-            boolean bottomTransparent = !bottomState.isOpaqueCube();
+            boolean topTransparent = Utils.isTransparent(topState);
+            boolean bottomTransparent = Utils.isTransparent(bottomState);
+
+//            DoubleSlabs.LOGGER.info(topState);
+//            DoubleSlabs.LOGGER.info(bottomState);
+//            DoubleSlabs.LOGGER.info(topTransparent);
+//            DoubleSlabs.LOGGER.info(bottomTransparent);
+//            DoubleSlabs.LOGGER.info("===============");
 
             List<BakedQuad> quads = new ArrayList<>();
             if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer()) {
                 List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
-                if (!bottomTransparent || topTransparent)
+                if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                     topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
                 quads.addAll(topQuads);
             }
             if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer()) {
                 List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
-                if (!topTransparent || bottomTransparent)
+                if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                     bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
                 quads.addAll(bottomQuads);
             }

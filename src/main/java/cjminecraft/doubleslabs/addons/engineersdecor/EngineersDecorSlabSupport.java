@@ -16,8 +16,8 @@ public class EngineersDecorSlabSupport implements ISlabSupport {
     private final PropertyInteger parts;
 
     public EngineersDecorSlabSupport() {
-        Class<?> slab = null;
-        PropertyInteger parts = null;
+        Class<?> slab;
+        PropertyInteger parts;
         try {
             slab = Class.forName("wile.engineersdecor.blocks.BlockDecorSlab");
             parts = (PropertyInteger)slab.getField("PARTS").get(null);
@@ -45,8 +45,7 @@ public class EngineersDecorSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
-        final IBlockState state = ((ItemBlock)stack.getItem()).getBlock().getDefaultState();
+    public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
         return (slab == null) ? (state) : (state.withProperty(parts, half == BlockSlab.EnumBlockHalf.BOTTOM ? 0 : 1));
     }
 

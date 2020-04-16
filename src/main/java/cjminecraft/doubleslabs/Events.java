@@ -39,28 +39,6 @@ public class Events {
         }
     }
 
-//    private static void tryPlace(BlockPos pos, ItemSlab slab, EnumFacing face, PlayerInteractEvent.RightClickBlock event) {
-//        IBlockState state = event.getWorld().getBlockState(pos);
-//        BlockSlab.EnumBlockHalf half = state.getValue(BlockSlab.HALF);
-//        IBlockState slabState = slab.singleSlab.getStateForPlacement(event.getWorld(), pos, face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z, slab.getMetadata(event.getItemStack().getMetadata()), event.getEntityPlayer(), event.getHand()).cycleProperty(BlockSlab.HALF);
-//        IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);
-//
-//        if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
-//            return;
-//        AxisAlignedBB axisalignedbb = newState.getCollisionBoundingBox(event.getWorld(), pos);
-//
-//        if (axisalignedbb != Block.NULL_AABB && event.getWorld().checkNoEntityCollision(axisalignedbb.offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
-//            SoundType soundtype = slab.singleSlab.getSoundType(slabState, event.getWorld(), pos, event.getEntityPlayer());
-//            event.getWorld().playSound(event.getEntityPlayer(), pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-//            if (!event.getEntityPlayer().isCreative())
-//                event.getItemStack().shrink(1);
-//            event.setCancellationResult(EnumActionResult.SUCCESS);
-//            event.setCanceled(true);
-//            if (event.getEntityPlayer() instanceof EntityPlayerMP)
-//                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) event.getEntityPlayer(), pos, event.getItemStack());
-//        }
-//    }
-
     @SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getItemStack().isEmpty()) {
@@ -70,13 +48,15 @@ public class Events {
             if (event.getEntityPlayer().canPlayerEdit(event.getPos().offset(event.getFace()), event.getFace(), event.getItemStack())) {
                 BlockPos pos = event.getPos();
                 EnumFacing face = event.getFace();
-                ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, event.getWorld().getBlockState(pos));
+                IBlockState state = event.getWorld().getBlockState(pos);
+                ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
                     pos = pos.offset(event.getFace());
+                    state = event.getWorld().getBlockState(pos);
                     face = event.getHitVec().y - pos.getY() > 0.5 ? EnumFacing.UP : EnumFacing.DOWN;
-                    blockSupport = SlabSupport.getSupport(event.getWorld(), pos, event.getWorld().getBlockState(pos));
-                }
-                IBlockState state = event.getWorld().getBlockState(pos);
+                    blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
+                } else if (state.getBlock().hasTileEntity(state) && state.getBlock().onBlockActivated(event.getWorld(), pos, state, event.getEntityPlayer(), event.getHand(), face, (float)event.getHitVec().x, (float)event.getHitVec().y, (float)event.getHitVec().z))
+                    return;
 
                 if (!DoubleSlabsConfig.REPLACE_SAME_SLAB && blockSupport == itemSupport && blockSupport.areSame(event.getWorld(), pos, state, event.getItemStack()))
                     return;
@@ -84,7 +64,10 @@ public class Events {
                 if (blockSupport != null) {
                     BlockSlab.EnumBlockHalf half = blockSupport.getHalf(event.getWorld(), pos, state);
                     if ((face == EnumFacing.UP && half == BlockSlab.EnumBlockHalf.BOTTOM) || (face == EnumFacing.DOWN && half == BlockSlab.EnumBlockHalf.TOP)) {
-                        IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
+                        IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
+                                itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
+                                        event.getHitVec(), event.getEntityPlayer(), event.getHand()),
+                                half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
                         if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
                             return;
 

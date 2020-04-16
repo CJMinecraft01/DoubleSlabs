@@ -29,8 +29,8 @@ public class LibraryExSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
-        return ((ItemBlock) stack.getItem()).getBlock().getDefaultState().withProperty(BlockModSlab.TYPE, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockModSlab.SlabType.BOTTOM : BlockModSlab.SlabType.TOP);
+    public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
+        return state.withProperty(BlockModSlab.TYPE, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockModSlab.SlabType.BOTTOM : BlockModSlab.SlabType.TOP);
     }
 
     @Override

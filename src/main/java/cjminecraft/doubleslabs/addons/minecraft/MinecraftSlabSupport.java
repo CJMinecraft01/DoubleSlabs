@@ -38,9 +38,8 @@ public class MinecraftSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
-        ItemBlock slab = (ItemBlock) stack.getItem();
-        return slab.getBlock().getStateFromMeta(stack.getMetadata()).withProperty(BlockSlab.HALF, half);
+    public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
+        return state.withProperty(BlockSlab.HALF, half);
     }
 
     @Override

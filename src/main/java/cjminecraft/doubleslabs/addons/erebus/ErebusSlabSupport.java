@@ -28,8 +28,8 @@ public class ErebusSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public IBlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockSlab.EnumBlockHalf half) {
-        return ((ItemBlock) stack.getItem()).getBlock().getDefaultState().withProperty(BlockSlabErebus.HALF, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlabErebus.EnumBlockHalf.BOTTOM : BlockSlabErebus.EnumBlockHalf.TOP);
+    public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
+        return state.withProperty(BlockSlabErebus.HALF, half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlabErebus.EnumBlockHalf.BOTTOM : BlockSlabErebus.EnumBlockHalf.TOP);
     }
 
     @Override
