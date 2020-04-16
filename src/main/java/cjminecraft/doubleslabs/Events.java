@@ -4,11 +4,16 @@ import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.SoundType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -16,8 +21,10 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
 
@@ -55,7 +62,11 @@ public class Events {
                     return;
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
-                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
+//                    BlockItemUseContext context = new BlockItemUseContext(new ItemUseContext(event.getPlayer(), event.getHand(), DistExecutor.runForDist(() -> () -> (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver, () -> () -> event.getWorld().rayTraceBlocks(new RayTraceContext(event.getPlayer().getEyePosition(0f), event.getPlayer().getEyePosition(0f).add(event.getPlayer().getLookVec().scale(event.getPlayer().getAttribute(PlayerEntity.REACH_DISTANCE).getValue() + 3)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, event.getPlayer())))));
+//                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, itemSupport.getStateFromStack(event.getItemStack(), context), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
+
+                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), event.getPos(), event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
+
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
                     if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)) || Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))

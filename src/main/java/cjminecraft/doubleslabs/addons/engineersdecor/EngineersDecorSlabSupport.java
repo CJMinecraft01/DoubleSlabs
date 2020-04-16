@@ -1,0 +1,58 @@
+package cjminecraft.doubleslabs.addons.engineersdecor;
+
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.properties.SlabType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+public class EngineersDecorSlabSupport implements ISlabSupport {
+    private final Class<?> slab;
+    private final IntegerProperty parts;
+
+    public EngineersDecorSlabSupport() {
+        Class<?> slab;
+        IntegerProperty parts;
+        try {
+            slab = Class.forName("wile.engineersdecor.blocks.BlockDecorSlab");
+            parts = (IntegerProperty)slab.getField("PARTS").get(null);
+        } catch(ClassNotFoundException|NoSuchFieldException|IllegalAccessException ignored) {
+            slab = null;
+            parts = null;
+        }
+        this.slab = slab;
+        this.parts = parts;
+    }
+
+    @Override
+    public boolean isValid(World world, BlockPos pos, BlockState state) {
+        return (slab != null) && (state.getBlock().getClass().equals(slab)) && (state.get(parts) < 2);
+    }
+
+    @Override
+    public boolean isValid(ItemStack stack, PlayerEntity player, Hand hand) {
+        return (slab != null) && (stack.getItem() instanceof BlockItem) && (((BlockItem)stack.getItem()).getBlock().getClass().equals(slab));
+    }
+
+    @Override
+    public SlabType getHalf(World world, BlockPos pos, BlockState state) {
+        return ((slab != null) && (state.get(parts) == 0)) ? SlabType.BOTTOM : SlabType.TOP;
+    }
+
+    @Override
+    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
+        BlockState state = Block.getBlockFromItem(stack.getItem()).getDefaultState();
+        return (slab == null) ? (state) : (state.with(parts, half == SlabType.BOTTOM ? 0 : 1));
+    }
+
+    @Override
+    public boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
+        return ((BlockItem)stack.getItem()).getBlock() == state.getBlock();
+    }
+}

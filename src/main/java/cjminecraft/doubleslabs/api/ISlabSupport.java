@@ -15,6 +15,11 @@ public interface ISlabSupport {
 
     SlabType getHalf(World world, BlockPos pos, BlockState state);
 
+//    default BlockState getStateFromStack(ItemStack stack, BlockItemUseContext context) {
+//        return Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
+//    }
+
+//    BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half);
     BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half);
 
     boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack);
