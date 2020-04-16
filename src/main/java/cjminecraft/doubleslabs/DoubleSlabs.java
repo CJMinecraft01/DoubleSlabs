@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs;
 
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.proxy.ClientProxy;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import cjminecraft.doubleslabs.proxy.ServerProxy;
@@ -30,7 +31,7 @@ public class DoubleSlabs
     }
 
     public void setup(FMLCommonSetupEvent event) {
-
+        SlabSupport.init();
     }
 
 }

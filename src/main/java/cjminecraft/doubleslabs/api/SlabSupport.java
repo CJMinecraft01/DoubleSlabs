@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,10 +20,13 @@ import java.util.List;
 
 public class SlabSupport {
 
-    private static List<ISlabSupport> supportedSlabs = new ArrayList<>();
+    private static final List<ISlabSupport> supportedSlabs = new ArrayList<>();
 
-    static {
+    public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+
+        if (ModList.get().isLoaded("engineersdecor"))
+            addSlabSupport(new EngineersDecorSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
