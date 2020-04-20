@@ -33,10 +33,15 @@ public class DoubleSlabsConfig {
             return "";
         if (block instanceof BlockSlab) {
             BlockSlab slab = (BlockSlab) block;
-            //noinspection ConstantConditions
-            if (slab.getVariantProperty() == BlockSlab.HALF || slab.getVariantProperty() == null)
+            try {
+                //noinspection ConstantConditions
+                if (slab.getVariantProperty() == BlockSlab.HALF || slab.getVariantProperty() == null)
+                    return state.getBlock().getRegistryName().toString();
+                return state.getBlock().getRegistryName().toString() + (slab.getVariantProperty().getAllowedValues().size() == 1 ? "" : "#" + slab.getVariantProperty().getName() + "=" + state.getValue(slab.getVariantProperty()).toString());
+            } catch (Exception e) {
+                // From what I've seen, any error can crop up so might as well catch them all :(
                 return state.getBlock().getRegistryName().toString();
-            return state.getBlock().getRegistryName().toString() + (slab.getVariantProperty().getAllowedValues().size() == 1 ? "" : "#" + slab.getVariantProperty().getName() + "=" + state.getValue(slab.getVariantProperty()).toString());
+            }
         }
         return state.getBlock().getRegistryName().toString();
     }

@@ -49,10 +49,14 @@ public class Events {
                 BlockPos pos = event.getPos();
                 EnumFacing face = event.getFace();
                 IBlockState state = event.getWorld().getBlockState(pos);
+                if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)))
+                    return;
                 ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
                     pos = pos.offset(event.getFace());
                     state = event.getWorld().getBlockState(pos);
+                    if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)))
+                        return;
                     face = event.getHitVec().y - pos.getY() > 0.5 ? EnumFacing.UP : EnumFacing.DOWN;
                     blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 } else if (state.getBlock().hasTileEntity(state) && state.getBlock().onBlockActivated(event.getWorld(), pos, state, event.getEntityPlayer(), event.getHand(), face, (float)event.getHitVec().x, (float)event.getHitVec().y, (float)event.getHitVec().z))
@@ -68,7 +72,7 @@ public class Events {
                                 itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
                                         event.getHitVec(), event.getEntityPlayer(), event.getHand()),
                                 half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
-                        if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)) || DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
+                        if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
                             return;
 
                         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);

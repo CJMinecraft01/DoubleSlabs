@@ -50,9 +50,14 @@ public class MinecraftSlabSupport implements ISlabSupport {
         if (block1 instanceof BlockSlab && block2 instanceof BlockSlab) {
             BlockSlab slab1 = (BlockSlab) block1;
             BlockSlab slab2 = (BlockSlab) block2;
-            //noinspection ConstantConditions
-            if (slab1.getVariantProperty() != null && slab2.getVariantProperty() != null)
-                sameVariant = block1.getStateFromMeta(stack.getMetadata()).getValue(slab1.getVariantProperty()) == state.getValue(slab2.getVariantProperty());
+            try {
+                //noinspection ConstantConditions
+                if (slab1.getVariantProperty() != null && slab2.getVariantProperty() != null)
+                    sameVariant = block1.getStateFromMeta(stack.getMetadata()).getValue(slab1.getVariantProperty()) == state.getValue(slab2.getVariantProperty());
+            } catch (Exception e) {
+                // Just in case some mods throw erros when using getVariantProperty *cough* Midnight *cough*
+                sameVariant = true;
+            }
         }
         return block1 == block2 && sameVariant;
     }
