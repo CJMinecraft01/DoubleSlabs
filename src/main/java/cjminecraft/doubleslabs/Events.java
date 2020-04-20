@@ -4,10 +4,7 @@ import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -40,12 +37,20 @@ public class Events {
 
             if (event.getPlayer().canPlayerEdit(event.getPos().offset(event.getFace()), event.getFace(), event.getItemStack())) {
                 BlockPos pos = event.getPos();
+                if (MathHelper.floor(event.getPlayer().posX) == pos.getX() && MathHelper.floor(event.getPlayer().posY) == pos.getY() && MathHelper.floor(event.getPlayer().posZ) == pos.getZ())
+                    return;
                 Direction face = event.getFace();
                 BlockState state = event.getWorld().getBlockState(pos);
+                if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
+                    return;
                 ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
                     pos = pos.offset(face);
+                    if (MathHelper.floor(event.getPlayer().posX) == pos.getX() && MathHelper.floor(event.getPlayer().posY) == pos.getY() && MathHelper.floor(event.getPlayer().posZ) == pos.getZ())
+                        return;
                     state = event.getWorld().getBlockState(pos);
+                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
+                        return;
                     if (!event.getPlayer().canPlayerEdit(pos.offset(face), face, event.getItemStack()))
                         return;
                     blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
@@ -69,10 +74,11 @@ public class Events {
 
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
-                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)) || Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
+                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
                         return;
 
-                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
+//                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
+                    if (event.getWorld().setBlockState(pos, newState, 11)) {
                         TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);
                         if (tile == null)
                             return;
