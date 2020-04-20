@@ -29,12 +29,20 @@ public class Events {
 
             if (event.getPlayer().canPlayerEdit(event.getPos().offset(event.getFace()), event.getFace(), event.getItemStack())) {
                 BlockPos pos = event.getPos();
+                if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
+                    return;
                 Direction face = event.getFace();
                 BlockState state = event.getWorld().getBlockState(pos);
+                if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
+                    return;
                 ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
                     pos = pos.offset(face);
+                    if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
+                        return;
                     state = event.getWorld().getBlockState(pos);
+                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
+                        return;
                     if (!event.getPlayer().canPlayerEdit(pos.offset(face), face, event.getItemStack()))
                         return;
                     blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
@@ -54,10 +62,11 @@ public class Events {
                     BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
-                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)) || Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
+                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
                         return;
 
-                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
+//                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, 11)) {
+                    if (event.getWorld().setBlockState(pos, newState, 11)) {
                         TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);
                         if (tile == null)
                             return;
