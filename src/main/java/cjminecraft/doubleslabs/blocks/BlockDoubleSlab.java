@@ -24,10 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
@@ -134,6 +131,11 @@ public class BlockDoubleSlab extends Block {
     @Override
     public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
         return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).causesSuffocation(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).causesSuffocation(world, pos), () -> true);
+    }
+
+    @Override
+    public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, states -> Math.max(states.getLeft().getLightValue(world, pos), states.getRight().getLightValue(world, pos)), () -> 0);
     }
 
     @Nullable
