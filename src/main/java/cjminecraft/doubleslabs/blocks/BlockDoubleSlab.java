@@ -127,6 +127,11 @@ public class BlockDoubleSlab extends Block {
         return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos), () -> true);
     }
 
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+        return runOnDoubleSlab(world, pos, states -> Math.max(states.getLeft().getLightValue(world, pos), states.getRight().getLightValue(world, pos)), () -> 0);
+    }
+
     @Nullable
     @Override
     public ToolType getHarvestTool(BlockState state) {
