@@ -228,6 +228,16 @@ public class BlockDoubleSlab extends Block {
         return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> Math.min(states.getLeft().getBlock().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getBlock().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(world, pos, exploder, explosion));
     }
 
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return runOnDoubleSlab(state, world, pos, states -> Math.max(states.getLeft().getLightValue(world, pos), states.getRight().getLightValue(world, pos)), () -> super.getLightValue(state, world, pos));
+    }
+
+//    @Override
+//    public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {
+//        return runOnDoubleSlab(state, world, pos, states -> Math.min(states.getLeft().getLightOpacity(world, pos), states.getRight().getLightOpacity(world, pos)), () -> super.getLightOpacity(state, world, pos));
+//    }
+
     @Nullable
     @Override
     public TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state) {

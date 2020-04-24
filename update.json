@@ -18,7 +18,8 @@
     "0.3.4": "+Added Atum 2 slab support\n+Added LibraryEx / NetherEx slab support\n+Added Erebus slab support",
     "0.3.5": "=Fixed a crash with Erebus slab support\n+Added The Betweenlands slab support\n+Doors and redstone can now be placed on double slabs which aren't transparent",
     "0.4.0": "=Tweaked double slab placement mechanics to work better with directional slabs\n=Optimised rendering of slabs\n=Fixed rendering of transparent slabs giving x-ray vision through other double slabs\n+Began JAR signing\n=Fixed a couple of crashes by improving stability of block overrides\n+Added Engineers Decor slab support",
-    "0.4.1": "=Ensured that if a slab is blacklisted, no checks will be done on the slab\n=Fixed a crash with the midnight mod"
+    "0.4.1": "=Ensured that if a slab is blacklisted, no checks will be done on the slab\n=Fixed a crash with the midnight mod",
+    "0.4.2": "+Added the ability for double slabs to emit light if one of the slabs emits light"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -33,7 +34,8 @@
     "1.2.2": "=Improved slab rendering to better support transparent and translucent blocks",
     "1.2.3": "+Doors and redstone can now be placed on double slabs",
     "1.2.4": "+Added Engineers Decor slab support",
-    "1.2.5": "=Fixed a placement issue below y level 32"
+    "1.2.5": "=Fixed a placement issue below y level 32",
+    "1.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -48,14 +50,15 @@
     "2.2.2": "=Improved slab rendering to better support transparent and translucent blocks",
     "2.2.3": "+Doors and redstone can now be placed on double slabs",
     "2.2.4": "+Added Engineers Decor slab support",
-    "2.2.5": "=Fixed a placement issue below y level 32"
+    "2.2.5": "=Fixed a placement issue below y level 32",
+    "2.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light"
   },
   "promos": {
-    "1.12.2-latest": "0.4.1",
-    "1.12.2-recommended": "0.4.1",
-    "1.14.4-latest": "1.2.5",
-    "1.14.4-recommended": "1.2.5",
-    "1.15.2-latest": "2.2.5",
-    "1.15.2-recommended": "2.2.5"
+    "1.12.2-latest": "0.4.2",
+    "1.12.2-recommended": "0.4.2",
+    "1.14.4-latest": "1.2.6",
+    "1.14.4-recommended": "1.2.6",
+    "1.15.2-latest": "2.2.6",
+    "1.15.2-recommended": "2.2.6"
   }
 }
