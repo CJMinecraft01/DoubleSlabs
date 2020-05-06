@@ -35,7 +35,8 @@
     "1.2.3": "+Doors and redstone can now be placed on double slabs",
     "1.2.4": "+Added Engineers Decor slab support",
     "1.2.5": "=Fixed a placement issue below y level 32",
-    "1.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light"
+    "1.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light",
+    "1.2.7": "=Tweaked model caching\n=Fixed a crash with engineers decor"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -51,14 +52,15 @@
     "2.2.3": "+Doors and redstone can now be placed on double slabs",
     "2.2.4": "+Added Engineers Decor slab support",
     "2.2.5": "=Fixed a placement issue below y level 32",
-    "2.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light"
+    "2.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light",
+    "2.2.7": "=Tweaked model caching\n=Fixed a crash with engineers decor"
   },
   "promos": {
     "1.12.2-latest": "0.4.2",
     "1.12.2-recommended": "0.4.2",
-    "1.14.4-latest": "1.2.6",
-    "1.14.4-recommended": "1.2.6",
-    "1.15.2-latest": "2.2.6",
-    "1.15.2-recommended": "2.2.6"
+    "1.14.4-latest": "1.2.7",
+    "1.14.4-recommended": "1.2.7",
+    "1.15.2-latest": "2.2.7",
+    "1.15.2-recommended": "2.2.7"
   }
 }
