@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
+import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.*;
@@ -130,7 +131,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).causesSuffocation(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).causesSuffocation(world, pos), () -> true);
+        return runOnDoubleSlab(world, pos, (states) -> !Utils.isTransparent(states.getLeft()) || !Utils.isTransparent(states.getRight()), () -> true);
     }
 
     @Override

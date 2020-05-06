@@ -20,7 +20,7 @@ public class Registrar {
 
     @SubscribeEvent
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
-        event.getRegistry().registerAll(DOUBLE_SLAB);
+        event.getRegistry().register(DOUBLE_SLAB);
     }
 
     @SubscribeEvent

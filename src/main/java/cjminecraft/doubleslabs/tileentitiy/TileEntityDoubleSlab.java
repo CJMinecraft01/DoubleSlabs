@@ -75,7 +75,7 @@ public class TileEntityDoubleSlab extends TileEntity {
     public SUpdateTileEntityPacket getUpdatePacket() {
         CompoundNBT nbt = new CompoundNBT();
         this.write(nbt);
-        return new SUpdateTileEntityPacket(getPos(), 1, nbt);
+        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
     }
 
     @Override
