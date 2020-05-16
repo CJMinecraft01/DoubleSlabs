@@ -7,6 +7,7 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -15,11 +16,11 @@ import net.minecraft.world.World;
 public class MinecraftSlabSupport implements ISlabSupport {
 
     private boolean isValid(BlockState state) {
-        return (state.getBlock() instanceof SlabBlock && state.get(SlabBlock.TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || hasEnumHalfProperty(state);
+        return (state.getBlock() instanceof SlabBlock && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || (hasEnumHalfProperty(state) && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE);
     }
 
     private boolean hasEnumHalfProperty(BlockState state) {
-        return state.getProperties().contains(SlabBlock.TYPE);
+        return state.getProperties().contains(BlockStateProperties.SLAB_TYPE);
     }
 
     @Override
@@ -34,13 +35,13 @@ public class MinecraftSlabSupport implements ISlabSupport {
 
     @Override
     public SlabType getHalf(World world, BlockPos pos, BlockState state) {
-        return state.get(SlabBlock.TYPE);
+        return state.get(BlockStateProperties.SLAB_TYPE);
     }
 
     @Override
     public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
         BlockState state = Block.getBlockFromItem(stack.getItem()).getDefaultState();
-        return state.with(SlabBlock.TYPE, half);
+        return state.with(BlockStateProperties.SLAB_TYPE, half);
     }
 
     @Override
