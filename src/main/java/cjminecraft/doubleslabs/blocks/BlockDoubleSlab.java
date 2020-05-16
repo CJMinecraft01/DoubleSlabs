@@ -25,9 +25,13 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
@@ -147,7 +151,13 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
-        return runOnDoubleSlab(world, pos, (states) -> Math.min(states.getLeft().getPlayerRelativeBlockHardness(player, world, pos), states.getRight().getPlayerRelativeBlockHardness(player, world, pos)), () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+        return runOnDoubleSlab(world, pos, (states) -> {
+            RayTraceResult rayTraceResult = Utils.rayTrace(player);
+            Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+            if (hitVec == null)
+                return Math.min(states.getLeft().getPlayerRelativeBlockHardness(player, world, pos), states.getRight().getPlayerRelativeBlockHardness(player, world, pos));
+            return (hitVec.y - pos.getY()) > 0.5 ? states.getLeft().getPlayerRelativeBlockHardness(player, world, pos) : states.getRight().getPlayerRelativeBlockHardness(player, world, pos);
+        }, () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
     }
 
     @Override
@@ -174,9 +184,35 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
+    public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (player.abilities.isCreativeMode)
+            super.onBlockHarvested(world, pos, state, player);
+    }
+
+    @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(world, player, pos, state, te, stack);
-        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+        if (hitVec == null || te == null) {
+            super.harvestBlock(world, player, pos, state, te, stack);
+            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        } else {
+            TileEntityDoubleSlab tile = (TileEntityDoubleSlab) te;
+
+            double y = hitVec.y - (double)pos.getY();
+
+            BlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
+            BlockState stateToRemove = y > 0.5 ? tile.getTopState() : tile.getBottomState();
+
+            player.addStat(Stats.BLOCK_MINED.get(stateToRemove.getBlock()));
+            world.playEvent(2001, pos, Block.getStateId(stateToRemove));
+            player.addExhaustion(0.005F);
+
+            if (!player.abilities.isCreativeMode)
+                spawnDrops(stateToRemove, world, pos, null, player, stack);
+
+            world.setBlockState(pos, remainingState, 11);
+        }
         world.removeTileEntity(pos);
     }
 

@@ -6,12 +6,18 @@ import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -83,6 +89,31 @@ public class Events {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public static void renderBlockHighlight(DrawHighlightEvent.HighlightBlock event) {
+        // Reference net.minecraft.client.renderer.WorldRenderer#drawSelectionBox
+
+        BlockState state = Minecraft.getInstance().world.getBlockState(event.getTarget().getPos());
+        // We are trying to render the block highlight for the double slab
+        if (state.getBlock() == Registrar.DOUBLE_SLAB && !Minecraft.getInstance().player.abilities.isCreativeMode) {
+            // Offset the position of the block for when we render
+            double x = (double)event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
+            double y = (double)event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
+            double z = (double)event.getTarget().getPos().getZ() - event.getInfo().getProjectedView().z;
+            // Check if we are looking at the top slab or bottom slab
+            if (event.getTarget().getHitVec().y - event.getTarget().getPos().getY() > 0.5) {
+                // Draw the top slab bounding box
+                WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y + 0.5f, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+            } else {
+                // Draw the bottom slab bounding box
+                WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y, z, x + 1, y + 0.5f, z + 1, 0, 0, 0, 0.4f);
+            }
+            // Don't draw the default block highlight
+            event.setCanceled(true);
         }
     }
 
