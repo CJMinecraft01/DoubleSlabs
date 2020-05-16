@@ -15,30 +15,32 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -215,7 +217,13 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
-        return runOnDoubleSlab(state, world, pos, states -> Math.min(blockStrength(states.getLeft(), player, world, pos), blockStrength(states.getRight(), player, world, pos)), () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+        return runOnDoubleSlab(state, world, pos, states -> {
+            RayTraceResult rayTraceResult = Utils.rayTrace(player);
+            Vec3d hitVec = rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK ? rayTraceResult.hitVec : null;
+            if (hitVec == null)
+                return Math.min(blockStrength(states.getLeft(), player, world, pos), blockStrength(states.getRight(), player, world, pos));
+            return (hitVec.y - pos.getY()) > 0.5 ? blockStrength(states.getLeft(), player, world, pos) : blockStrength(states.getRight(), player, world, pos);
+        }, () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
     }
 
     @Override
@@ -284,8 +292,28 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void harvestBlock(@Nonnull World world, EntityPlayer player, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(world, player, pos, state, te, stack);
-        world.setBlockToAir(pos);
+        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        Vec3d hitVec = rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK ? rayTraceResult.hitVec : null;
+        if (hitVec == null || te == null) {
+            super.harvestBlock(world, player, pos, state, te, stack);
+            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        } else {
+            TileEntityDoubleSlab tile = (TileEntityDoubleSlab) te;
+
+            double y = hitVec.y - (double) pos.getY();
+
+            IBlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
+            IBlockState stateToRemove = y > 0.5 ? tile.getTopState() : tile.getBottomState();
+
+            player.addStat(StatList.getBlockStats(stateToRemove.getBlock()));
+            player.addExhaustion(0.005F);
+            world.playEvent(2001, pos, Block.getStateId(stateToRemove));
+
+            if (!player.isCreative())
+                stateToRemove.getBlock().harvestBlock(world, player, pos, stateToRemove, null, stack);
+
+            world.setBlockState(pos, remainingState, 11);
+        }
         world.removeTileEntity(pos);
     }
 
