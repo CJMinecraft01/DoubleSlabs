@@ -10,11 +10,18 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityVerticalSlab extends TileEntity {
-    
+
+    public static final ModelProperty<BlockState> NEGATIVE_STATE = new ModelProperty<>();
+    public static final ModelProperty<BlockState> POSITIVE_STATE = new ModelProperty<>();
+
     private BlockState negativeState;
     private BlockState positiveState;
     
@@ -93,11 +100,22 @@ public class TileEntityVerticalSlab extends TileEntity {
                 this.world.markChunkDirty(getPos(), getTileEntity());
     }
 
+    @Override
+    public CompoundNBT getTileData() {
+        return this.write(new CompoundNBT());
+    }
+
     private void markDirtyClient() {
         markDirty();
         if (getWorld() != null) {
             BlockState state = getWorld().getBlockState(getPos());
             getWorld().notifyBlockUpdate(getPos(), state, state, 3);
         }
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        return new ModelDataMap.Builder().withInitial(NEGATIVE_STATE, this.negativeState).withInitial(POSITIVE_STATE, this.positiveState).build();
     }
 }
