@@ -11,9 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -32,13 +34,14 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
-    private int[] rotateVertexData(int[] vertexData, Direction direction) {
+    private static int[] rotateVertexData(int[] vertexData, Direction direction) {
         int[] data = new int[vertexData.length];
         for (int i = 0; i < vertexData.length / 8; i++) {
             // The x y z position centered at the center of the shape
             float x = Float.intBitsToFloat(vertexData[i * 8]) - 0.5f;
             float y = Float.intBitsToFloat(vertexData[i * 8 + 1]) - 0.5f;
             float z = Float.intBitsToFloat(vertexData[i * 8 + 2]) - 0.5f;
+
             Vector3f vec = new Vector3f(x, y, z);
             switch (direction) {
                 case NORTH:
@@ -56,9 +59,11 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 default:
                     break;
             }
+
             float transformedX = vec.getX() + 0.5f;
             float transformedY = vec.getY() + 0.5f;
             float transformedZ = vec.getZ() + 0.5f;
+
             data[i * 8] = Float.floatToRawIntBits(transformedX);
             data[i * 8 + 1] = Float.floatToRawIntBits(transformedY);
             data[i * 8 + 2] = Float.floatToRawIntBits(transformedZ);
@@ -68,6 +73,9 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             data[i * 8 + 6] = vertexData[i * 8 + 6]; // baked lighting
             data[i * 8 + 7] = vertexData[i * 8 + 7]; // normal
         }
+        ForgeHooksClient.fillNormal(data, direction);
+
+//        DoubleSlabs.LOGGER.info(direction.getName() + " " + FaceBakery.getFacingFromVertexData(vertexData).getName() + " " + FaceBakery.getFacingFromVertexData(data));
         return data;
     }
 
@@ -87,9 +95,11 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, @Nonnull Direction direction) {
         if (state == null) return new ArrayList<>();
-        DoubleSlabs.LOGGER.info(side);
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, getSideForDirection(side, direction), rand, extraData).stream().map(quad -> new BakedQuad(rotateVertexData(quad.getVertexData(), direction), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.func_187508_a(), quad.shouldApplyDiffuseLighting())).collect(Collectors.toList());
+        return model.getQuads(state, getSideForDirection(side, direction), rand, extraData).stream().map(quad -> {
+            int[] vertexData = rotateVertexData(quad.getVertexData(), direction);
+            return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
+        }).collect(Collectors.toList());
     }
 
     @Nonnull
@@ -108,13 +118,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
                 
                 List<BakedQuad> quads = new ArrayList<>();
-                if (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer())) {
+                if (positiveState != null && RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction);
 //                    if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
 //                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(positiveQuads);
                 }
-                if (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer())) {
+                if (negativeState != null && RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction);
 //                    if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
 //                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
