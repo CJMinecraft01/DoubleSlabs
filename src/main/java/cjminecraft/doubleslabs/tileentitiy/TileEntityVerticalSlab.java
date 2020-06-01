@@ -28,7 +28,7 @@ public class TileEntityVerticalSlab extends TileEntity {
     public TileEntityVerticalSlab() {
         super(Registrar.TILE_VERTICAL_SLAB);
         negativeState = Blocks.PURPUR_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM);
-        positiveState = Blocks.STONE_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.TOP);
+//        positiveState = Blocks.STONE_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.TOP);
     }
 
     public BlockState getNegativeState() {

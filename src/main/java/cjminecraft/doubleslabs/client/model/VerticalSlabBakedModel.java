@@ -96,10 +96,10 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
     private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, @Nonnull Direction direction) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, getSideForDirection(side, direction), rand, extraData).stream().map(quad -> {
+        return new ArrayList<>(model.getQuads(state, getSideForDirection(side, direction), rand, extraData).stream().map(quad -> {
             int[] vertexData = rotateVertexData(quad.getVertexData(), direction);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()));
     }
 
     @Nonnull
@@ -108,30 +108,29 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         if (extraData.hasProperty(TileEntityVerticalSlab.NEGATIVE_STATE) && extraData.hasProperty(TileEntityVerticalSlab.POSITIVE_STATE)) {
             BlockState negativeState = extraData.getData(TileEntityVerticalSlab.NEGATIVE_STATE);
             BlockState positiveState = extraData.getData(TileEntityVerticalSlab.POSITIVE_STATE);
+            Direction direction = state.get(BlockVerticalSlab.FACING);
             String cacheKey = Config.slabToString(negativeState) + "," + Config.slabToString(positiveState) +
                     ":" + (side != null ? side.getName() : "null") + ":" +
-                    (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
+                    (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName();
             if (!cache.containsKey(cacheKey)) {
-                Direction direction = state.get(BlockVerticalSlab.FACING);
-                
                 boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);
                 boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
                 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (positiveState != null && RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction);
-//                    if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
-//                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
+                    if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
+                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction);
-//                    if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
-//                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
+                    if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
+                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(negativeQuads);
                 }
 
-//                cache.put(cacheKey, quads);
+                cache.put(cacheKey, quads);
                 return quads;
             } else {
                 return cache.get(cacheKey);
