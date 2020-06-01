@@ -34,8 +34,9 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
-    private static int[] rotateVertexData(int[] vertexData, Direction direction) {
+    private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side, boolean positiveState) {
         int[] data = new int[vertexData.length];
+        int[] vertexOrder = new int[vertexData.length / 8];
         for (int i = 0; i < vertexData.length / 8; i++) {
             // The x y z position centered at the center of the shape
             float x = Float.intBitsToFloat(vertexData[i * 8]) - 0.5f;
@@ -45,20 +46,59 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             Vector3f vec = new Vector3f(x, y, z);
             switch (direction) {
                 case NORTH:
+                    if (side != null) {
+                        if (side == Direction.NORTH)
+                            vertexOrder[i] = (i + 2) % 4;
+                        else if (side == Direction.SOUTH)
+                            vertexOrder[i] = i;
+                        else if (side == Direction.WEST)
+                            vertexOrder[i] = (i + 1) % 4;
+                        else
+                            vertexOrder[i] = (i + 3) % 4;
+                    }
                     vec.transform(NORTH_ROTATION);
                     break;
                 case SOUTH:
+                    if (side != null) {
+                        if (side == Direction.NORTH)
+                            vertexOrder[i] = i;
+                        else if (side == Direction.SOUTH)
+                            vertexOrder[i] = (i + 2) % 4;
+                        else if (side == Direction.WEST)
+                            vertexOrder[i] = (i + 3) % 4;
+                        else
+                            vertexOrder[i] = (i + 1) % 4;
+                    }
                     vec.transform(SOUTH_ROTATION);
                     break;
                 case WEST:
+                    if (side != null) {
+                        if (side.getAxis() == Direction.Axis.X)
+                            vertexOrder[i] = (i + 1) % 4;
+                        else if (side == Direction.NORTH)
+                            vertexOrder[i] = (i + 3) % 4;
+                        else
+                            vertexOrder[i] = (i + 1) % 4;
+                    }
                     vec.transform(WEST_ROTATION);
                     break;
                 case EAST:
+                    if (side != null) {
+                        if (side.getAxis() == Direction.Axis.X)
+                            vertexOrder[i] = (i + 3) % 4;
+                        else if (side == Direction.NORTH)
+                            vertexOrder[i] = (i + 1) % 4;
+                        else
+                            vertexOrder[i] = (i + 3) % 4;
+                    }
                     vec.transform(EAST_ROTATION);
                     break;
                 default:
                     break;
             }
+
+            if (side == null)
+                vertexOrder[i] = i;
 
             float transformedX = vec.getX() + 0.5f;
             float transformedY = vec.getY() + 0.5f;
@@ -72,11 +112,55 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             data[i * 8 + 5] = vertexData[i * 8 + 5]; // texture V
             data[i * 8 + 6] = vertexData[i * 8 + 6]; // baked lighting
             data[i * 8 + 7] = vertexData[i * 8 + 7]; // normal
+
+            // Correct vertex orders:
+            // Down +ve -ve for north direction
+            //
+
+//            if (side == null)
+//                vertexOrder[i] = i;
+//            else {
+//                switch (side) {
+//                    case DOWN:
+//                        if (direction == Direction.SOUTH)
+//                            vertexOrder[i] = (i + 2) % 4;
+//                        else {
+//                            vertexOrder[i] = i;
+//                        }
+//                        if (!positiveState)
+//                            DoubleSlabs.LOGGER.info("%s %s %s %s", direction, transformedX, transformedY, transformedZ);
+//                        break;
+//                    case UP:
+//                        break;
+//                    case NORTH:
+//                        break;
+//                    case SOUTH:
+//                        break;
+//                    case WEST:
+//                        break;
+//                    case EAST:
+//                        break;
+//                }
+//            }
         }
-        ForgeHooksClient.fillNormal(data, direction);
+
+        int[] finalData = new int[data.length];
+        for (int i = 0; i < vertexOrder.length; i++) {
+            int j = vertexOrder[i] * 8;
+            finalData[i * 8] = data[j];
+            finalData[i * 8 + 1] = data[j + 1];
+            finalData[i * 8 + 2] = data[j + 2];
+            finalData[i * 8 + 3] = data[j + 3];
+            finalData[i * 8 + 4] = data[j + 4];
+            finalData[i * 8 + 5] = data[j + 5];
+            finalData[i * 8 + 6] = data[j + 6];
+            finalData[i * 8 + 7] = data[j + 7];
+        }
+
+        ForgeHooksClient.fillNormal(finalData, direction);
 
 //        DoubleSlabs.LOGGER.info(direction.getName() + " " + FaceBakery.getFacingFromVertexData(vertexData).getName() + " " + FaceBakery.getFacingFromVertexData(data));
-        return data;
+        return finalData;
     }
 
     private Direction getSideForDirection(Direction side, Direction direction) {
@@ -93,11 +177,11 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         return Direction.DOWN;
     }
 
-    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, @Nonnull Direction direction) {
+    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, @Nonnull Direction direction, boolean positiveState) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         return new ArrayList<>(model.getQuads(state, getSideForDirection(side, direction), rand, extraData).stream().map(quad -> {
-            int[] vertexData = rotateVertexData(quad.getVertexData(), direction);
+            int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side, positiveState);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
         }).collect(Collectors.toList()));
     }
@@ -118,13 +202,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (positiveState != null && RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer())) {
-                    List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction);
+                    List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction, true);
                     if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer())) {
-                    List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction);
+                    List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction, false);
                     if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
                         negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(negativeQuads);
