@@ -105,6 +105,7 @@ public class TileEntityDoubleSlab extends TileEntity {
         markDirty();
         if (getWorld() != null) {
             BlockState state = getWorld().getBlockState(getPos());
+            requestModelDataUpdate();
             getWorld().notifyBlockUpdate(getPos(), state, state, 3);
         }
     }

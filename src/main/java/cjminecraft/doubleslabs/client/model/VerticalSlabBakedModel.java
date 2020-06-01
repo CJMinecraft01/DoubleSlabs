@@ -204,13 +204,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 if (positiveState != null && RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction, true);
                     if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
-                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
+                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer())) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction, false);
                     if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
-                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
+                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(negativeQuads);
                 }
 

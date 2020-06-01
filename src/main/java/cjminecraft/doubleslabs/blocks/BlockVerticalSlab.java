@@ -37,6 +37,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public BlockVerticalSlab() {
         super(Properties.create(Material.ROCK).notSolid());
         setRegistryName(DoubleSlabs.MODID, "vertical_slab");
+        setDefaultState(this.getStateContainer().getBaseState().getBlockState().with(FACING, Direction.NORTH).with(DOUBLE, false).with(WATERLOGGED, false));
     }
 
     @Override

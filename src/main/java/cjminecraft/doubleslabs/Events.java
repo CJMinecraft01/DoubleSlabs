@@ -2,7 +2,9 @@ package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
+import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -43,6 +45,30 @@ public class Events {
                     return;
                 ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
+
+                    boolean foundVerticalSlab = false;
+                    Direction verticalSlabFacing = null;
+
+                    if (state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE)) {
+                        foundVerticalSlab = true;
+                        verticalSlabFacing = state.get(BlockVerticalSlab.FACING);
+                        if (!event.getPlayer().isCrouching()) {
+                            BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true);
+                            if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.TOP);
+                                TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                if (tile == null)
+                                    return;
+                                tile.setNegativeState(slabState);
+
+                                event.getWorld().markBlockRangeForRenderUpdate(pos, state, newState);
+
+                                finishBlockPlacement(event, pos, slabState);
+                                return;
+                            }
+                        }
+                    }
+
                     pos = pos.offset(face);
                     if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
                         return;
@@ -52,8 +78,51 @@ public class Events {
                     if (!event.getPlayer().canPlayerEdit(pos.offset(face), face, event.getItemStack()))
                         return;
                     blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
-                    if (blockSupport == null)
+                    if (blockSupport == null) {
+                        if (event.getPlayer().isCrouching() && (!foundVerticalSlab || face == verticalSlabFacing)) {
+                            BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
+                            if (face.getAxis() == Direction.Axis.Y) {
+                                Direction direction = event.getPlayer().getHorizontalFacing();
+
+                                double distance;
+
+                                if (direction.getAxis() == Direction.Axis.X)
+                                    distance = result.getHitVec().x - pos.getX();
+                                else
+                                    distance = result.getHitVec().z - pos.getZ();
+
+                                if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE && distance < 0.5f)
+                                    direction = direction.getOpposite();
+                                else if (direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE && distance > 0.5f)
+                                    direction = direction.getOpposite();
+
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
+
+                                if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                    TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                    if (tile == null)
+                                        return;
+                                    tile.setPositiveState(slabState);
+
+                                    finishBlockPlacement(event, pos, slabState);
+                                }
+                            } else {
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, face.getOpposite());
+
+                                if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                    TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                    if (tile == null)
+                                        return;
+                                    tile.setPositiveState(slabState);
+
+                                    finishBlockPlacement(event, pos, slabState);
+                                }
+                            }
+                        }
                         return;
+                    }
                     face = blockSupport.getHalf(event.getWorld(), pos, state) == SlabType.BOTTOM ? Direction.UP : Direction.DOWN;
                 }
 
@@ -78,18 +147,23 @@ public class Events {
                             return;
                         tile.setTopState(half == SlabType.TOP ? state : slabState);
                         tile.setBottomState(half == SlabType.BOTTOM ? state : slabState);
-                        SoundType soundtype = slabState.getSoundType(event.getWorld(), pos, event.getPlayer());
-                        event.getWorld().playSound(event.getPlayer(), pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                        if (!event.getPlayer().isCreative())
-                            event.getItemStack().shrink(1);
-                        event.setCancellationResult(ActionResultType.SUCCESS);
-                        event.setCanceled(true);
-                        if (event.getPlayer() instanceof ServerPlayerEntity)
-                            CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity) event.getPlayer(), pos, event.getItemStack());
+                        finishBlockPlacement(event, pos, slabState);
                     }
                 }
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void finishBlockPlacement(PlayerInteractEvent.RightClickBlock event, BlockPos pos, BlockState slabState) {
+        SoundType soundtype = slabState.getSoundType(event.getWorld(), pos, event.getPlayer());
+        event.getWorld().playSound(event.getPlayer(), pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+        if (!event.getPlayer().isCreative())
+            event.getItemStack().shrink(1);
+        event.setCancellationResult(ActionResultType.SUCCESS);
+        event.setCanceled(true);
+        if (event.getPlayer() instanceof ServerPlayerEntity)
+            CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity) event.getPlayer(), pos, event.getItemStack());
     }
 
     @SubscribeEvent

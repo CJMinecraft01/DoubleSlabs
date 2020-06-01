@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.tileentitiy;
 
+import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,7 +28,7 @@ public class TileEntityVerticalSlab extends TileEntity {
     
     public TileEntityVerticalSlab() {
         super(Registrar.TILE_VERTICAL_SLAB);
-        negativeState = Blocks.PURPUR_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM);
+//        negativeState = Blocks.PURPUR_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.BOTTOM);
 //        positiveState = Blocks.STONE_SLAB.getDefaultState().with(BlockStateProperties.SLAB_TYPE, SlabType.TOP);
     }
 
@@ -107,9 +108,10 @@ public class TileEntityVerticalSlab extends TileEntity {
 
     private void markDirtyClient() {
         markDirty();
-        if (getWorld() != null) {
-            BlockState state = getWorld().getBlockState(getPos());
-            getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+        if (this.world != null) {
+            BlockState state = this.world.getBlockState(getPos());
+            requestModelDataUpdate();
+            this.world.notifyBlockUpdate(getPos(), state, state, 3);
         }
     }
 
