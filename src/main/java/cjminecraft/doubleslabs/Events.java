@@ -31,9 +31,67 @@ public class Events {
     @SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getItemStack().isEmpty()) {
-            ISlabSupport itemSupport = SlabSupport.getSupport(event.getItemStack(), event.getPlayer(), event.getHand());
-            if (itemSupport == null)
+            ISlabSupport itemSupport = SlabSupport.getHorizontalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
+            if (itemSupport == null) {
+                itemSupport = SlabSupport.getVerticalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
+                if (itemSupport == null)
+                    return;
+
+                if (event.getPlayer().canPlayerEdit(event.getPos().offset(event.getFace()), event.getFace(), event.getItemStack())) {
+                    BlockPos pos = event.getPos();
+                    if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
+                        return;
+
+                    BlockState state = event.getWorld().getBlockState(pos);
+                    Direction face = event.getFace();
+
+                    if (state.getBlock() == Registrar.VERTICAL_SLAB) {
+                        // If we are trying to mix to one of our vertical slabs
+                        if (!state.get(BlockVerticalSlab.DOUBLE)) {
+                            TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                            if (tile!= null && !event.getPlayer().isCrouching() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
+                                BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true);
+                                if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                    BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? face.getOpposite() : face);
+                                    if (tile.getPositiveState() != null)
+                                        tile.setNegativeState(slabState);
+                                    else
+                                        tile.setPositiveState(slabState);
+
+                                    event.getWorld().markBlockRangeForRenderUpdate(pos, state, newState);
+
+                                    finishBlockPlacement(event, pos, slabState);
+                                    return;
+                                }
+                            }
+                        }
+                    } else {
+                        // Otherwise check if we are trying to mix two vertical slabs from different mods
+
+                        ISlabSupport blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+
+                        if (blockSupport == null)
+                            return;
+
+                        Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
+
+                        BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), direction.getOpposite());
+                        BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.DOUBLE, true);
+
+                        if (event.getWorld().setBlockState(pos, newState, 11)) {
+                            TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                            if (tile == null)
+                                return;
+                            tile.setNegativeState(state);
+                            tile.setPositiveState(slabState);
+
+                            finishBlockPlacement(event, pos, slabState);
+                        }
+                    }
+                }
+
                 return;
+            }
 
             if (event.getPlayer().canPlayerEdit(event.getPos().offset(event.getFace()), event.getFace(), event.getItemStack())) {
                 BlockPos pos = event.getPos();
@@ -43,7 +101,7 @@ public class Events {
                 BlockState state = event.getWorld().getBlockState(pos);
                 if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
                     return;
-                ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
+                ISlabSupport blockSupport = SlabSupport.getHorizontalSlabSupport(event.getWorld(), pos, state);
                 if (blockSupport == null) {
 
                     boolean foundVerticalSlab = false;
@@ -70,6 +128,28 @@ public class Events {
                         }
                     }
 
+                    blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                    if (blockSupport != null) {
+                        // We are trying to combine a mod vertical slab with a regular slab
+
+                        Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
+
+                        BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                        BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
+
+                        if (event.getWorld().setBlockState(pos, newState, 11)) {
+                            TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                            if (tile == null)
+                                return;
+                            tile.setNegativeState(state);
+                            tile.setPositiveState(slabState);
+
+                            finishBlockPlacement(event, pos, slabState);
+                        }
+
+                        return;
+                    }
+
                     pos = pos.offset(face);
                     if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
                         return;
@@ -78,50 +158,91 @@ public class Events {
                         return;
                     if (!event.getPlayer().canPlayerEdit(pos.offset(face), face, event.getItemStack()))
                         return;
-                    blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
+                    blockSupport = SlabSupport.getHorizontalSlabSupport(event.getWorld(), pos, state);
                     if (blockSupport == null) {
-                        if (event.getPlayer().isCrouching() && (!foundVerticalSlab || face == verticalSlabFacing)) {
-                            BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
-                            if (face.getAxis() == Direction.Axis.Y) {
-                                Direction direction = event.getPlayer().getHorizontalFacing();
+                        blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                        if (blockSupport != null) {
+                            // We are trying to combine a mod vertical slab with a regular slab
 
-                                double distance;
+                            Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
-                                if (direction.getAxis() == Direction.Axis.X)
-                                    distance = result.getHitVec().x - pos.getX();
-                                else
-                                    distance = result.getHitVec().z - pos.getZ();
+                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.TOP);
+                            BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
 
-                                if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE && distance < 0.5f)
-                                    direction = direction.getOpposite();
-                                else if (direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE && distance > 0.5f)
-                                    direction = direction.getOpposite();
+                            if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                if (tile == null)
+                                    return;
+                                tile.setNegativeState(state);
+                                tile.setPositiveState(slabState);
 
-                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
-                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
+                                finishBlockPlacement(event, pos, slabState);
+                            }
 
-                                if (event.getWorld().setBlockState(pos, newState, 11)) {
-                                    TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
-                                    if (tile == null)
+                            return;
+                        }
+                        if (event.getPlayer().isCrouching()) {
+                            if (state.getBlock() == Registrar.VERTICAL_SLAB) {
+                                TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                if (tile != null && !event.getPlayer().isCrouching() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
+                                    BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true);
+                                    if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                        BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
+                                        if (tile.getPositiveState() != null)
+                                            tile.setNegativeState(slabState);
+                                        else
+                                            tile.setPositiveState(slabState);
+
+                                        event.getWorld().markBlockRangeForRenderUpdate(pos, state, newState);
+
+                                        finishBlockPlacement(event, pos, slabState);
                                         return;
-                                    tile.setPositiveState(slabState);
-
-                                    finishBlockPlacement(event, pos, slabState);
+                                    }
                                 }
-                            } else {
-                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
-                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, face.getOpposite());
+                            } else if (!foundVerticalSlab || face == verticalSlabFacing) {
+                                BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
+                                if (face.getAxis() == Direction.Axis.Y) {
+                                    Direction direction = event.getPlayer().getHorizontalFacing();
 
-                                if (event.getWorld().setBlockState(pos, newState, 11)) {
-                                    TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
-                                    if (tile == null)
-                                        return;
-                                    tile.setPositiveState(slabState);
+                                    double distance;
 
-                                    finishBlockPlacement(event, pos, slabState);
+                                    if (direction.getAxis() == Direction.Axis.X)
+                                        distance = result.getHitVec().x - pos.getX();
+                                    else
+                                        distance = result.getHitVec().z - pos.getZ();
+
+                                    if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE && distance < 0.5f)
+                                        direction = direction.getOpposite();
+                                    else if (direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE && distance > 0.5f)
+                                        direction = direction.getOpposite();
+
+                                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                                    BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
+
+                                    if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                        TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                        if (tile == null)
+                                            return;
+                                        tile.setPositiveState(slabState);
+
+                                        finishBlockPlacement(event, pos, slabState);
+                                    }
+                                } else {
+                                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                                    BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, face.getOpposite());
+
+                                    if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                        TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                                        if (tile == null)
+                                            return;
+                                        tile.setPositiveState(slabState);
+
+                                        finishBlockPlacement(event, pos, slabState);
+                                    }
                                 }
                             }
                         }
+
                         return;
                     }
                     face = blockSupport.getHalf(event.getWorld(), pos, state) == SlabType.BOTTOM ? Direction.UP : Direction.DOWN;
