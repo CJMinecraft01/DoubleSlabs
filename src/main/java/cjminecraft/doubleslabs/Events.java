@@ -52,14 +52,15 @@ public class Events {
                     if (state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE)) {
                         foundVerticalSlab = true;
                         verticalSlabFacing = state.get(BlockVerticalSlab.FACING);
-                        if (!event.getPlayer().isCrouching()) {
+                        TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                        if (tile!= null && !event.getPlayer().isCrouching() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                             BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true);
                             if (event.getWorld().setBlockState(pos, newState, 11)) {
-                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.TOP);
-                                TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
-                                if (tile == null)
-                                    return;
-                                tile.setNegativeState(slabState);
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
+                                if (tile.getPositiveState() != null)
+                                    tile.setNegativeState(slabState);
+                                else
+                                    tile.setPositiveState(slabState);
 
                                 event.getWorld().markBlockRangeForRenderUpdate(pos, state, newState);
 
@@ -192,7 +193,7 @@ public class Events {
                 event.setCanceled(true);
             }
 
-            if (state.getBlock() == Registrar.VERTICAL_SLAB) {
+            if (state.getBlock() == Registrar.VERTICAL_SLAB && state.get(BlockVerticalSlab.DOUBLE)) {
                 // Offset the position of the block for when we render
                 double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
                 double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;

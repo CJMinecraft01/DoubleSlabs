@@ -40,5 +40,6 @@ public class ClientProxy implements IProxy {
 
     private static void registerBlockColours(ColorHandlerEvent.Block event) {
         event.getBlockColors().register(Registrar.DOUBLE_SLAB.getBlockColor(), Registrar.DOUBLE_SLAB);
+        event.getBlockColors().register(Registrar.VERTICAL_SLAB.getBlockColor(), Registrar.VERTICAL_SLAB);
     }
 }
