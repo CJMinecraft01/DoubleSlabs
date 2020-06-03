@@ -724,13 +724,12 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         return getHalfStateWithWorld(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(pair -> {
-            player.setWorld(pair.getRight());
-            if (world.isRemote)
-                Minecraft.getInstance().player.setWorld(pair.getRight());
-            ActionResultType result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
-            player.setWorld(world);
-            if (world.isRemote)
-                Minecraft.getInstance().player.setWorld(world);
+            ActionResultType result;
+            try {
+                result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+            } catch (ClassCastException e) {
+                result = ActionResultType.PASS;
+            }
             return result;
         }).orElse(ActionResultType.PASS);
 //        return runOnVerticalSlab(world, pos, states -> ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) > 0.5 : (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) < 0.5) || states.getRight() == null) && states.getLeft() != null ? states.getLeft().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getPositiveWorld(), player, hand, hit) : states.getRight().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getNegativeWorld(), player, hand, hit), () -> super.onBlockActivated(state, world, pos, player, hand, hit));

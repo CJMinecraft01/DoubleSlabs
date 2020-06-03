@@ -5,20 +5,17 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ILightReader;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 
 public class TileEntityRendererVerticalSlab extends TileEntityRenderer<TileEntityVerticalSlab> {
 
@@ -27,24 +24,19 @@ public class TileEntityRendererVerticalSlab extends TileEntityRenderer<TileEntit
     private static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
     private static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
 
-    private static BlockRendererDispatcher blockRenderer;
-
     public TileEntityRendererVerticalSlab(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
     }
 
     @Override
     public void render(@Nonnull TileEntityVerticalSlab tile, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderer, int light, int otherLight) {
-        if (blockRenderer == null)
-            blockRenderer = Minecraft.getInstance().getBlockRendererDispatcher();
-
         BlockPos pos = tile.getPos();
         ILightReader world = MinecraftForgeClient.getRegionRenderCache(tile.getWorld(), pos);
         if (world.getBlockState(pos).getBlock() != Registrar.VERTICAL_SLAB)
             return;
 
-        BlockState negativeState = tile.getNegativeState();
-        BlockState positiveState = tile.getPositiveState();
+        if (tile.getPositiveTile() == null && tile.getNegativeTile() == null)
+            return;
 
         Direction facing = world.getBlockState(pos).get(BlockVerticalSlab.FACING);
 
@@ -67,9 +59,9 @@ public class TileEntityRendererVerticalSlab extends TileEntityRenderer<TileEntit
                 break;
         }
 
-        if (negativeState != null)
-            blockRenderer.renderModel(negativeState, pos, world, matrixStack, renderer.getBuffer(Atlases.getSolidBlockType()), false, new Random(), EmptyModelData.INSTANCE);
-        if (positiveState != null)
-            blockRenderer.renderModel(positiveState, pos, world, matrixStack, renderer.getBuffer(Atlases.getSolidBlockType()), false, new Random(), EmptyModelData.INSTANCE);
+        if (tile.getPositiveTile() != null)
+            TileEntityRendererDispatcher.instance.renderTileEntity(tile.getPositiveTile(), partialTicks, matrixStack, renderer);
+        if (tile.getNegativeTile() != null)
+            TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeTile(), partialTicks, matrixStack, renderer);
     }
 }

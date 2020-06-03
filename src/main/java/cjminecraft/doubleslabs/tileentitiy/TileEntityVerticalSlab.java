@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.tileentitiy;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.util.WorldWrapper;

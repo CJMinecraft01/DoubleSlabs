@@ -117,7 +117,6 @@ public class WorldWrapper extends World {
     @Nullable
     @Override
     public TileEntity getTileEntity(BlockPos pos) {
-        DoubleSlabs.LOGGER.info(pos.equals(this.verticalSlab.getPos()) ? (this.positive ? this.verticalSlab.getPositiveTile() : this.verticalSlab.getNegativeTile()) : super.getTileEntity(pos));
         return pos.equals(this.verticalSlab.getPos()) ? (this.positive ? this.verticalSlab.getPositiveTile() : this.verticalSlab.getNegativeTile()) : super.getTileEntity(pos);
     }
 
