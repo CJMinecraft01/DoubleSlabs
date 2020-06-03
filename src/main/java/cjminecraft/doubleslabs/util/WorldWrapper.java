@@ -778,12 +778,12 @@ public class WorldWrapper extends World {
 
     @Override
     public Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
-        return this.getEmptyCollisionShapes(entityIn, aabb, entitiesToIgnore);
+        return this.world.getEmptyCollisionShapes(entityIn, aabb, entitiesToIgnore);
     }
 
     @Override
     public boolean checkNoEntityCollision(@Nullable Entity entityIn, VoxelShape shape) {
-        return this.checkNoEntityCollision(entityIn, shape);
+        return this.world.checkNoEntityCollision(entityIn, shape);
     }
 
     @Override
@@ -793,7 +793,7 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean func_226663_a_(BlockState p_226663_1_, BlockPos p_226663_2_, ISelectionContext p_226663_3_) {
-        return this.func_226663_a_(p_226663_1_, p_226663_2_, p_226663_3_);
+        return this.world.func_226663_a_(p_226663_1_, p_226663_2_, p_226663_3_);
     }
 
     @Override

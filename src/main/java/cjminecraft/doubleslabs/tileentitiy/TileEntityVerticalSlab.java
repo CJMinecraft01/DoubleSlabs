@@ -10,6 +10,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -28,17 +29,21 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
     public static final ModelProperty<BlockState> NEGATIVE_STATE = new ModelProperty<>();
     public static final ModelProperty<BlockState> POSITIVE_STATE = new ModelProperty<>();
 
-    private BlockState negativeState;
-    private BlockState positiveState;
+    protected BlockState negativeState;
+    protected BlockState positiveState;
 
-    private TileEntity negativeTile;
-    private TileEntity positiveTile;
+    protected TileEntity negativeTile;
+    protected TileEntity positiveTile;
 
     private WorldWrapper negativeWorld;
     private WorldWrapper positiveWorld;
 
     public TileEntityVerticalSlab() {
         super(Registrar.TILE_VERTICAL_SLAB);
+    }
+
+    protected TileEntityVerticalSlab(TileEntityType<?> type) {
+        super(type);
     }
 
     public WorldWrapper getNegativeWorld() {

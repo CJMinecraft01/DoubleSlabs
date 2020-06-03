@@ -14,42 +14,36 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityDoubleSlab extends TileEntity {
+public class TileEntityDoubleSlab extends TileEntityVerticalSlab {
 
     public static final ModelProperty<BlockState> TOP_STATE = new ModelProperty<>();
     public static final ModelProperty<BlockState> BOTTOM_STATE = new ModelProperty<>();
 
-    private BlockState topState;
-    private BlockState bottomState;
+//    private BlockState topState;
+//    private BlockState bottomState;
 
     public TileEntityDoubleSlab() {
         super(Registrar.TILE_DOUBLE_SLAB);
     }
 
     public BlockState getTopState() {
-        return topState;
+        return getPositiveState();
     }
 
     public BlockState getBottomState() {
-        return bottomState;
+        return getNegativeState();
     }
 
     public void setTopState(BlockState topState) {
-        this.topState = topState;
-        markDirtyClient();
+        setPositiveState(topState);
     }
 
     public void setBottomState(BlockState bottomState) {
-        this.bottomState = bottomState;
-        markDirtyClient();
+        setNegativeState(bottomState);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT nbt) {
-        if (this.topState != null)
-            nbt.put("top", NBTUtil.writeBlockState(this.topState));
-        if (this.bottomState != null)
-            nbt.put("bottom", NBTUtil.writeBlockState(this.bottomState));
         return super.write(nbt);
     }
 
@@ -57,62 +51,15 @@ public class TileEntityDoubleSlab extends TileEntity {
     public void read(CompoundNBT read) {
         super.read(read);
         if (read.contains("top"))
-            this.topState = NBTUtil.readBlockState(read.getCompound("top"));
+            this.positiveState = NBTUtil.readBlockState(read.getCompound("top"));
         if (read.contains("bottom"))
-            this.bottomState = NBTUtil.readBlockState(read.getCompound("bottom"));
-        markDirtyClient();
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT nbt = super.getUpdateTag();
-        this.write(nbt);
-        return nbt;
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT nbt = new CompoundNBT();
-        this.write(nbt);
-        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundNBT tag) {
-        super.handleUpdateTag(tag);
-        this.read(tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        super.onDataPacket(net, pkt);
-        BlockState oldTopState = this.topState;
-        BlockState oldBottomState = this.bottomState;
-        this.read(pkt.getNbtCompound());
-        if (this.world.isRemote)
-            if (oldTopState != this.topState || oldBottomState != this.bottomState)
-                this.world.markChunkDirty(getPos(), getTileEntity());
+            this.negativeState = NBTUtil.readBlockState(read.getCompound("bottom"));
     }
 
     @Nonnull
     @Override
     public IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(BOTTOM_STATE, this.bottomState).withInitial(TOP_STATE, this.topState).build();
-    }
-
-    private void markDirtyClient() {
-        markDirty();
-        if (getWorld() != null) {
-            BlockState state = getWorld().getBlockState(getPos());
-            requestModelDataUpdate();
-            getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-        }
-    }
-
-    @Override
-    public CompoundNBT getTileData() {
-        return this.write(new CompoundNBT());
+        return new ModelDataMap.Builder().withInitial(BOTTOM_STATE, this.getBottomState()).withInitial(TOP_STATE, this.getTopState()).build();
     }
 
 }

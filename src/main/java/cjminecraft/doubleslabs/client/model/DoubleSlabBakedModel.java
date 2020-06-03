@@ -87,7 +87,7 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
         if (extraData.hasProperty(TileEntityDoubleSlab.TOP_STATE) && extraData.hasProperty(TileEntityDoubleSlab.BOTTOM_STATE)) {
             BlockState topState = extraData.getData(TileEntityDoubleSlab.TOP_STATE);
             BlockState bottomState = extraData.getData(TileEntityDoubleSlab.BOTTOM_STATE);
-            String cacheKey = Config.slabToString(topState) + "," + Config.slabToString(bottomState) +
+            String cacheKey = (bottomState != null ? bottomState.toString() : "null") + "," + (topState != null ? topState.toString() : "null") +
                     ":" + (side != null ? side.getName() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
             if (!cache.containsKey(cacheKey)) {

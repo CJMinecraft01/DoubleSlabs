@@ -85,9 +85,22 @@ public class Events {
                         // Check that the block is a vertical slab
                         ISlabSupport blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
 
-                        // If not, do nothing special
-                        if (blockSupport == null)
-                            return;
+                        // If not, try offsetting by the face
+                        if (blockSupport == null) {
+                            // Offset the position
+                            pos = pos.offset(face);
+                            // Check the player isn't standing there
+                            if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
+                                return;
+                            state = event.getWorld().getBlockState(pos);
+
+                            if (!event.getPlayer().canPlayerEdit(pos.offset(face), face, event.getItemStack()))
+                                return;
+
+                            blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                            if (blockSupport == null)
+                                return;
+                        }
 
                         // Get the direction that the vertical slab block is facing
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);

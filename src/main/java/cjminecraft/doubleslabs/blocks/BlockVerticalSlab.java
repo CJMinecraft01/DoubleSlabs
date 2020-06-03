@@ -228,17 +228,17 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         return type == PathType.WATER && world.getFluidState(pos).isTagged(FluidTags.WATER);
     }
 
-    public <T> T runOnVerticalSlab(IBlockReader world, BlockPos pos, Function<Pair<BlockState, BlockState>, T> func, Supplier<T> orElse) {
-        TileEntity te = world.getTileEntity(pos);
-
-        if (te instanceof TileEntityVerticalSlab) {
-            BlockState positiveState = ((TileEntityVerticalSlab) te).getPositiveState();
-            BlockState negativeState = ((TileEntityVerticalSlab) te).getNegativeState();
-            return func.apply(Pair.of(positiveState, negativeState));
-        }
-
-        return orElse.get();
-    }
+//    public <T> T runOnVerticalSlab(IBlockReader world, BlockPos pos, Function<Pair<BlockState, BlockState>, T> func, Supplier<T> orElse) {
+//        TileEntity te = world.getTileEntity(pos);
+//
+//        if (te instanceof TileEntityVerticalSlab) {
+//            BlockState positiveState = ((TileEntityVerticalSlab) te).getPositiveState();
+//            BlockState negativeState = ((TileEntityVerticalSlab) te).getNegativeState();
+//            return func.apply(Pair.of(positiveState, negativeState));
+//        }
+//
+//        return orElse.get();
+//    }
 
     @Override
     public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
