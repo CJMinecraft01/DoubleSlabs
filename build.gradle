@@ -36,19 +36,9 @@ minecraft {
 }
 
 repositories {
-    maven {
-        url "https://girafi.dk/maven/"
-    }
-    maven {
-        url "https://jitpack.io"
-    }
 }
 
 dependencies {
-    deobfCompile "com.teammetallurgy.atum:atum2_${project.minecraft.version}:${project.minecraft.version}-${project.ATUM2_VERSION}"
-    compile "com.github.LogicTechCorp:LibraryEx:1.12.x-SNAPSHOT"
-    compile "com.github.vadis365:TheErebus:mc1.12-SNAPSHOT"
-    compile files("libs/TheBetweenlands-3.5.10-universal.jar")
 }
 
 processResources {
