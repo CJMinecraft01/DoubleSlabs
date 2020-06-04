@@ -10,6 +10,7 @@ import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class EngineersDecorSlabSupport implements ISlabSupport {
@@ -31,7 +32,7 @@ public class EngineersDecorSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public boolean isValid(World world, BlockPos pos, BlockState state) {
+    public boolean isValid(IBlockReader world, BlockPos pos, BlockState state) {
         return (slab != null) && (state.getBlock().getClass().equals(slab)) && (state.get(parts) < 2);
     }
 

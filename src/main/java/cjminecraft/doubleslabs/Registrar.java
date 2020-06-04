@@ -1,13 +1,11 @@
 package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
-import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
+import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,22 +14,23 @@ import net.minecraftforge.fml.common.Mod;
 public class Registrar {
 
     public static BlockDoubleSlab DOUBLE_SLAB = new BlockDoubleSlab();
-    public static TileEntityType TILE_DOUBLE_SLAB = TileEntityType.Builder.create(TileEntityDoubleSlab::new, DOUBLE_SLAB).build(null).setRegistryName(DoubleSlabs.MODID, "double_slabs");
+    public static BlockVerticalSlab VERTICAL_SLAB = new BlockVerticalSlab();
+    public static TileEntityType<TileEntityDoubleSlab> TILE_DOUBLE_SLAB;
+    public static TileEntityType<TileEntityVerticalSlab> TILE_VERTICAL_SLAB;
 
     @SubscribeEvent
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(DOUBLE_SLAB);
+        event.getRegistry().registerAll(DOUBLE_SLAB, VERTICAL_SLAB);
     }
 
     @SubscribeEvent
     public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
-        event.getRegistry().register(TILE_DOUBLE_SLAB);
-    }
+        TILE_DOUBLE_SLAB = TileEntityType.Builder.create(TileEntityDoubleSlab::new, DOUBLE_SLAB).build(null);
+        TILE_DOUBLE_SLAB.setRegistryName(DoubleSlabs.MODID, "double_slabs");
+        TILE_VERTICAL_SLAB = TileEntityType.Builder.create(TileEntityVerticalSlab::new, VERTICAL_SLAB).build(null);
+        TILE_VERTICAL_SLAB.setRegistryName(DoubleSlabs.MODID, "vertical_slab");
 
-//    @OnlyIn(Dist.CLIENT)
-//    @SubscribeEvent
-//    public static void onModelBakeEvent(ModelBakeEvent event) {
-//        event.getModelRegistry().put(DOUBLE_SLAB.getRegistryName(), new DoubleSlabBakedModel());
-//    }
+        event.getRegistry().registerAll(TILE_DOUBLE_SLAB, TILE_VERTICAL_SLAB);
+    }
 
 }

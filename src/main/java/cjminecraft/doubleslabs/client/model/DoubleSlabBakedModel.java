@@ -28,7 +28,7 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
 
     private static IBakedModel fallback;
 
-    private IBakedModel getFallback() {
+    protected IBakedModel getFallback() {
         if (fallback != null)
             return fallback;
         fallback = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();

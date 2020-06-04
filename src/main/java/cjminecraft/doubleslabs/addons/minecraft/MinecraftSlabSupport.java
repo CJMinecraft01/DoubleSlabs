@@ -11,6 +11,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class MinecraftSlabSupport implements ISlabSupport {
@@ -24,7 +25,7 @@ public class MinecraftSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public boolean isValid(World world, BlockPos pos, BlockState state) {
+    public boolean isValid(IBlockReader world, BlockPos pos, BlockState state) {
         return isValid(state);
     }
 
