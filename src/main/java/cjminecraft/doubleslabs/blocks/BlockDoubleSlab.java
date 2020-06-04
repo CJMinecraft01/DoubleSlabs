@@ -5,12 +5,10 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
-import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.DiggingParticle;
-import net.minecraft.client.particle.FallingDustParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
@@ -20,28 +18,24 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.properties.SlabType;
 import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.*;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -50,7 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
 
 public class BlockDoubleSlab extends Block {
 
@@ -142,20 +139,6 @@ public class BlockDoubleSlab extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return Registrar.TILE_DOUBLE_SLAB.create();
-    }
-
-    public <T> T runOnDoubleSlab(IBlockReader world, BlockPos pos, Function<Pair<BlockState, BlockState>, T> func, Supplier<T> orElse) {
-        TileEntity te = world.getTileEntity(pos);
-
-        if (te instanceof TileEntityDoubleSlab) {
-            BlockState topState = ((TileEntityDoubleSlab) te).getTopState();
-            BlockState bottomState = ((TileEntityDoubleSlab) te).getBottomState();
-            if (topState == null || bottomState == null)
-                return orElse.get();
-            return func.apply(Pair.of(topState, bottomState));
-        }
-
-        return orElse.get();
     }
 
     @Override
@@ -292,7 +275,7 @@ public class BlockDoubleSlab extends Block {
         } else {
             TileEntityDoubleSlab tile = (TileEntityDoubleSlab) te;
 
-            double y = hitVec.y - (double)pos.getY();
+            double y = hitVec.y - (double) pos.getY();
 
             TileEntity remainingTile = y > 0.5 ? tile.getNegativeTile() : tile.getPositiveTile();
             BlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
