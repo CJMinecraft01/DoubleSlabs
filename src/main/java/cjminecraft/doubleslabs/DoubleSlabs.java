@@ -32,17 +32,11 @@ public class DoubleSlabs
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
-        bus.addListener(this::clientSetup);
         proxy.setup(bus);
     }
 
     public void setup(FMLCommonSetupEvent event) {
         SlabSupport.init();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void clientSetup(FMLClientSetupEvent event) {
-//        ClientRegistry.bindTileEntityRenderer(Registrar.TILE_VERTICAL_SLAB, TileEntityRendererVerticalSlab::new);
     }
 
 }

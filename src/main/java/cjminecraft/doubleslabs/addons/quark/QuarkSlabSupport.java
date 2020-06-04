@@ -21,14 +21,6 @@ public class QuarkSlabSupport<T extends Enum<T> & IStringSerializable> extends M
     private final EnumProperty<T> verticalSlabTypeProperty;
     private final T[] verticalSlabTypes;
 
-    private static <E extends Enum<?>> E[] getEnumValues(Class<?> enumClass)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field f = enumClass.getDeclaredField("$VALUES");
-        f.setAccessible(true);
-        Object o = f.get(null);
-        return (E[]) o;
-    }
-
     public QuarkSlabSupport() {
         Class<?> verticalSlab;
         EnumProperty<T> verticalSlabTypeProperty;
@@ -50,7 +42,7 @@ public class QuarkSlabSupport<T extends Enum<T> & IStringSerializable> extends M
 
     @Override
     public boolean isVerticalSlab(IBlockReader world, BlockPos pos, BlockState state) {
-        return verticalSlab != null && state.getBlock().getClass() == verticalSlab && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[4]);
+        return verticalSlab != null && state.getBlock().getClass().equals(verticalSlab) && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[4]);
     }
 
     @Override
