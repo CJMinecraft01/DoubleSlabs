@@ -44,7 +44,10 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -359,8 +362,16 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (player.abilities.isCreativeMode)
+        if (player.abilities.isCreativeMode) {
+            TileEntityVerticalSlab tile = (TileEntityVerticalSlab) world.getTileEntity(pos);
+            if (tile != null) {
+                if (tile.getPositiveState() != null)
+                    tile.getPositiveState().onReplaced(tile.getPositiveWorld(), pos, Blocks.AIR.getDefaultState(), false);
+                if (tile.getNegativeState() != null)
+                    tile.getNegativeState().onReplaced(tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
+            }
             super.onBlockHarvested(world, pos, state, player);
+        }
     }
 
     @Override
@@ -723,6 +734,8 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (state.getBlock() != this)
+            return ActionResultType.PASS;
         return getHalfStateWithWorld(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(pair -> {
             ActionResultType result;
             try {

@@ -40,6 +40,7 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolType;
 import org.apache.commons.lang3.tuple.Pair;
@@ -268,8 +269,16 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (player.abilities.isCreativeMode)
+        if (player.abilities.isCreativeMode) {
+            TileEntityDoubleSlab tile = (TileEntityDoubleSlab) world.getTileEntity(pos);
+            if (tile != null) {
+                if (tile.getPositiveState() != null)
+                    tile.getPositiveState().onReplaced(tile.getPositiveWorld(), pos, Blocks.AIR.getDefaultState(), false);
+                if (tile.getNegativeState() != null)
+                    tile.getNegativeState().onReplaced(tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
+            }
             super.onBlockHarvested(world, pos, state, player);
+        }
     }
 
     @Override
@@ -296,7 +305,7 @@ public class BlockDoubleSlab extends Block {
             if (!player.abilities.isCreativeMode)
                 spawnDrops(stateToRemove, world, pos, null, player, stack);
 
-            stateToRemove.onReplaced(world, pos, Blocks.AIR.getDefaultState(), false);
+            stateToRemove.onReplaced(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
             world.setBlockState(pos, remainingState, 11);
             world.setTileEntity(pos, remainingTile);
@@ -524,6 +533,8 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (state.getBlock() != this)
+            return ActionResultType.PASS;
         return getHalfStateWithWorld(world, pos, hit.getHitVec().y - pos.getY()).map(pair -> {
             ActionResultType result;
             try {
