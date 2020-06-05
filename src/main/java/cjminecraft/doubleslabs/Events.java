@@ -325,7 +325,6 @@ public class Events {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void finishBlockPlacement(PlayerInteractEvent.RightClickBlock event, BlockPos pos, BlockState slabState) {
         SoundType soundtype = slabState.getSoundType(event.getWorld(), pos, event.getPlayer());
         event.getWorld().playSound(event.getPlayer(), pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
