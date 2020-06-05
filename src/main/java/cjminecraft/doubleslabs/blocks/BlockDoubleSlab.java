@@ -431,6 +431,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
         runIfAvailable(world, pos, s -> s.getBlock().animateTick(s, world, pos, rand));
     }
