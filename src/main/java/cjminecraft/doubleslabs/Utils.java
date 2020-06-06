@@ -1,10 +1,6 @@
 package cjminecraft.doubleslabs;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.Matrix4f;
-import net.minecraft.client.renderer.Quaternion;
-import net.minecraft.client.renderer.TransformationMatrix;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -12,11 +8,6 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 
 public class Utils {
-
-    public static final Quaternion NORTH_ROTATION = Vector3f.XP.rotationDegrees(90);
-    public static final Quaternion SOUTH_ROTATION = Vector3f.XN.rotationDegrees(90);
-    public static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
-    public static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
 
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque();
@@ -33,15 +24,23 @@ public class Utils {
     public static Direction rotateFace(Direction face, Direction verticalSlabDirection) {
         if (face == null)
             return null;
-        if (face.getAxis() == (verticalSlabDirection.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X))
-            return face;
-        if (face == Direction.UP)
-            return verticalSlabDirection;
-        if (face == Direction.DOWN)
-            return verticalSlabDirection.getOpposite();
-        if (face.getAxisDirection() != verticalSlabDirection.getAxisDirection())
+        if (face == verticalSlabDirection)
+            return Direction.DOWN;
+        if (face == verticalSlabDirection.getOpposite())
             return Direction.UP;
-        return Direction.DOWN;
+        if (face == Direction.UP)
+            return Direction.NORTH;
+        if (face == Direction.DOWN)
+            return Direction.SOUTH;
+        if (face == Direction.NORTH)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
+        if (face == Direction.SOUTH)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
+        if (face == Direction.EAST)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
+        if (face == Direction.WEST)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
+        return face;
     }
 
 }

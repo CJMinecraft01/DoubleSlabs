@@ -39,6 +39,8 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
     private static final Quaternion SOUTH_ROTATION = Vector3f.XN.rotationDegrees(90);
     private static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
     private static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
+    private static final Quaternion ROTATE_X_90 = Vector3f.XP.rotationDegrees(90);
+    private static final Quaternion ROTATE_Z_180 = Vector3f.ZP.rotationDegrees(180);
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
@@ -52,6 +54,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             float z = Float.intBitsToFloat(vertexData[i * 8 + 2]) - 0.5f;
 
             Vector3f vec = new Vector3f(x, y, z);
+            vertexOrder[i] = i;
             switch (direction) {
                 case NORTH:
                     if (side != null) {
@@ -78,28 +81,35 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                             vertexOrder[i] = (i + 1) % 4;
                     }
                     vec.transform(SOUTH_ROTATION);
+                    vec.transform(ROTATE_Z_180);
                     break;
                 case WEST:
                     if (side != null) {
-                        if (side.getAxis() == Direction.Axis.X)
-                            vertexOrder[i] = (i + 1) % 4;
-                        else if (side == Direction.NORTH)
+                        if (side == Direction.NORTH)
                             vertexOrder[i] = (i + 3) % 4;
-                        else
+                        else if (side == Direction.SOUTH)
                             vertexOrder[i] = (i + 1) % 4;
+                        else if (side == Direction.EAST)
+                            vertexOrder[i] = i % 4;
+                        else
+                            vertexOrder[i] = (i + 2) % 4;
                     }
                     vec.transform(WEST_ROTATION);
+                    vec.transform(ROTATE_X_90);
                     break;
                 case EAST:
                     if (side != null) {
-                        if (side.getAxis() == Direction.Axis.X)
-                            vertexOrder[i] = (i + 3) % 4;
-                        else if (side == Direction.NORTH)
+                        if (side == Direction.NORTH)
                             vertexOrder[i] = (i + 1) % 4;
+                        else if (side == Direction.SOUTH)
+                        vertexOrder[i] = (i + 3) % 4;
+                        else if (side == Direction.EAST)
+                            vertexOrder[i] = (i + 2) % 4;
                         else
-                            vertexOrder[i] = (i + 3) % 4;
+                            vertexOrder[i] = i % 4;
                     }
                     vec.transform(EAST_ROTATION);
+                    vec.transform(ROTATE_X_90);
                     break;
                 default:
                     break;
