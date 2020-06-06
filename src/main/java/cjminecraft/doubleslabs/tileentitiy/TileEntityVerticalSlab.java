@@ -303,11 +303,14 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        Direction direction = this.world.getBlockState(this.pos).get(BlockVerticalSlab.FACING);
-        if (side == direction && this.positiveTile != null)
-            return this.positiveTile.getCapability(cap, null);
-        if (side == direction.getOpposite() && this.negativeTile != null)
-            return this.negativeTile.getCapability(cap, null);
+        if (this.positiveTile != null && this.negativeTile == null)
+            return this.positiveTile.getCapability(cap, side);
+        else if (this.negativeTile != null && this.positiveTile == null)
+            return this.negativeTile.getCapability(cap, side);
+        else if (this.positiveTile != null && this.negativeTile != null) {
+            LazyOptional<T> positiveCapability = this.positiveTile.getCapability(cap, side);
+            return positiveCapability.isPresent() ? positiveCapability : this.negativeTile.getCapability(cap, side);
+        }
         return super.getCapability(cap, side);
     }
 }
