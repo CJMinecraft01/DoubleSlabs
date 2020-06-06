@@ -224,7 +224,7 @@ public class Events {
 
                             return;
                         }
-                        if (event.getPlayer().isShiftKeyDown()) {
+                        if (event.getPlayer().isShiftKeyDown() && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
                             if (face.getAxis() == Direction.Axis.Y) {
