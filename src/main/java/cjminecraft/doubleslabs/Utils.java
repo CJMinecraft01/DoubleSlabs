@@ -24,15 +24,23 @@ public class Utils {
     public static Direction rotateFace(Direction face, Direction verticalSlabDirection) {
         if (face == null)
             return null;
-        if (face.getAxis() == (verticalSlabDirection.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X))
-            return face;
-        if (face == Direction.UP)
-            return verticalSlabDirection;
-        if (face == Direction.DOWN)
-            return verticalSlabDirection.getOpposite();
-        if (face.getAxisDirection() == Direction.AxisDirection.POSITIVE)
+        if (face == verticalSlabDirection)
+            return Direction.DOWN;
+        if (face == verticalSlabDirection.getOpposite())
             return Direction.UP;
-        return Direction.DOWN;
+        if (face == Direction.UP)
+            return Direction.NORTH;
+        if (face == Direction.DOWN)
+            return Direction.SOUTH;
+        if (face == Direction.NORTH)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
+        if (face == Direction.SOUTH)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
+        if (face == Direction.EAST)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
+        if (face == Direction.WEST)
+            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
+        return face;
     }
 
 }

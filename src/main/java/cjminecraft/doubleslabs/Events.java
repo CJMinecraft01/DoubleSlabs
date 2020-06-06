@@ -222,7 +222,7 @@ public class Events {
 
                             return;
                         }
-                        if (event.getPlayer().isSneaking()) {
+                        if (event.getPlayer().isSneaking() && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
                             if (face.getAxis() == Direction.Axis.Y) {

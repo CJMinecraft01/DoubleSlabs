@@ -399,9 +399,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
                 double distance = state.get(FACING).getAxis() == Direction.Axis.X ? hitVec.x - (double) pos.getX() : hitVec.z - (double) pos.getZ();
 
-                boolean distanceTest = state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? distance > 0.5 : distance < 0.5;
+                boolean positive = state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? distance > 0.5 : distance < 0.5;
 
-                BlockState stateToRemove = distanceTest ? tile.getPositiveState() : tile.getNegativeState();
+                BlockState stateToRemove = positive ? tile.getPositiveState() : tile.getNegativeState();
 
                 player.addStat(Stats.BLOCK_MINED.get(stateToRemove.getBlock()));
                 world.playEvent(2001, pos, Block.getStateId(stateToRemove));
@@ -410,9 +410,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                 if (!player.abilities.isCreativeMode)
                     spawnDrops(stateToRemove, world, pos, null, player, stack);
 
-                stateToRemove.onReplaced(distanceTest ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
+                stateToRemove.onReplaced(positive ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
-                if (distanceTest)
+                if (positive)
                     tile.setPositiveState(null);
                 else
                     tile.setNegativeState(null);
