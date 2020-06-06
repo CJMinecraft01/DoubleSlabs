@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api;
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
+import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,6 +33,9 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("quark"))
             addSlabSupport(new QuarkSlabSupport());
+
+        if (ModList.get().isLoaded("mubble"))
+            addSlabSupport(new MubbleSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
