@@ -1,6 +1,10 @@
 package cjminecraft.doubleslabs;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.client.renderer.TransformationMatrix;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -8,6 +12,11 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 
 public class Utils {
+
+    public static final Quaternion NORTH_ROTATION = Vector3f.XP.rotationDegrees(90);
+    public static final Quaternion SOUTH_ROTATION = Vector3f.XN.rotationDegrees(90);
+    public static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
+    public static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
 
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque();
@@ -30,7 +39,7 @@ public class Utils {
             return verticalSlabDirection;
         if (face == Direction.DOWN)
             return verticalSlabDirection.getOpposite();
-        if (face.getAxisDirection() == Direction.AxisDirection.POSITIVE)
+        if (face.getAxisDirection() != verticalSlabDirection.getAxisDirection())
             return Direction.UP;
         return Direction.DOWN;
     }
