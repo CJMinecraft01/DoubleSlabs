@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.addons.mubble;
 
+import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,7 +52,16 @@ public class MubbleSlabSupport<T extends Enum<T> & IStringSerializable> extends 
     @Override
     public BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, Direction direction) {
         BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
-        return (verticalSlab == null) ? (state) : (state.with(verticalSlabTypeProperty, verticalSlabTypes[direction.getAxis() == Direction.Axis.X ? direction == Direction.WEST ? 3 : 2 : direction.getIndex() - 2]));
+        if (verticalSlab == null)
+            return state;
+        if (direction == Direction.SOUTH)
+            return state.with(verticalSlabTypeProperty, verticalSlabTypes[0]);
+        else if (direction == Direction.NORTH)
+            return state.with(verticalSlabTypeProperty, verticalSlabTypes[1]);
+        else if (direction == Direction.WEST)
+            return state.with(verticalSlabTypeProperty, verticalSlabTypes[2]);
+        else
+            return state.with(verticalSlabTypeProperty, verticalSlabTypes[3]);
     }
 
     @Override
@@ -60,12 +70,12 @@ public class MubbleSlabSupport<T extends Enum<T> & IStringSerializable> extends 
             return super.getDirection(world, pos, state);
         Enum<T> type = state.get(verticalSlabTypeProperty);
         if (type.equals(verticalSlabTypes[0]))
-            return Direction.NORTH;
-        else if (type.equals(verticalSlabTypes[1]))
             return Direction.SOUTH;
+        else if (type.equals(verticalSlabTypes[1]))
+            return Direction.NORTH;
         else if (type.equals(verticalSlabTypes[2]))
-            return Direction.EAST;
-        return Direction.WEST;
+            return Direction.WEST;
+        return Direction.EAST;
     }
 }
 
