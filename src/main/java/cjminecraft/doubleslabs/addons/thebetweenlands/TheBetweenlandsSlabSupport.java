@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class TheBetweenlandsSlabSupport<T extends Enum<T> & IStringSerializable> implements ISlabSupport {
@@ -38,7 +39,7 @@ public class TheBetweenlandsSlabSupport<T extends Enum<T> & IStringSerializable>
     }
 
     @Override
-    public boolean isValid(World world, BlockPos pos, IBlockState state) {
+    public boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state) {
         return slab != null && state.getBlock().getClass().equals(slab) && state.getValue(slabTypeProperty) != slabTypes[2];
     }
 

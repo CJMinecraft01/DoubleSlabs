@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class Atum2SlabSupport<T extends Enum<T> & IStringSerializable> implements ISlabSupport {
@@ -38,7 +39,7 @@ public class Atum2SlabSupport<T extends Enum<T> & IStringSerializable> implement
     }
 
     @Override
-    public boolean isValid(World world, BlockPos pos, IBlockState state) {
+    public boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state) {
         return slab != null && state.getBlock().getClass() == slab && state.getValue(slabTypeProperty) != slabTypes[2];
     }
 

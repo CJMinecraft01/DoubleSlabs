@@ -25,6 +25,12 @@ public class DoubleSlabsConfig {
     @Config.LangKey("config.doubleslabs.replace_same_slab")
     public static boolean REPLACE_SAME_SLAB = true;
 
+    @Config.Name("Disable Vertical Slab Placement")
+    @Config.Comment({"Whether to disable the placement of vertical slabs from regular horizontal slabs when holding shift"})
+    @Config.LangKey("config.doubleslabs.disable_vertical_slab_placement")
+    public static boolean DISABLE_VERTICAL_SLAB_PLACEMENT = false;
+
+
     public static String slabToString(IBlockState state) {
         if (state == null)
             return "null";

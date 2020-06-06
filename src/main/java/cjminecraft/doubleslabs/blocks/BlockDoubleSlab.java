@@ -10,17 +10,17 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockProperties;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
@@ -32,17 +32,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.*;
 
 public class BlockDoubleSlab extends Block {
     public static final UnlistedPropertyBlockState TOP = new UnlistedPropertyBlockState();
@@ -51,6 +49,126 @@ public class BlockDoubleSlab extends Block {
     public BlockDoubleSlab() {
         super(Material.ROCK);
         setRegistryName(DoubleSlabs.MODID, "double_slab");
+    }
+
+    public static Optional<TileEntityDoubleSlab> getTile(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        return tile != null && tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
+    }
+
+    public static Optional<IBlockState> getAvailableState(IBlockAccess world, BlockPos pos) {
+        return getTile(world, pos).flatMap(tile -> tile.getPositiveState() != null ? Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
+    }
+
+    public static Optional<IBlockState> getHalfState(IBlockAccess world, BlockPos pos, double y) {
+        return getTile(world, pos).flatMap(tile ->
+                (y > 0.5 || tile.getNegativeState() == null) && tile.getPositiveState() != null ?
+                        Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
+    }
+
+    public static Optional<Pair<IBlockState, World>> getHalfStateWithWorld(IBlockAccess world, BlockPos pos, double y) {
+        return getTile(world, pos).flatMap(tile ->
+                (y > 0.5 || tile.getNegativeState() == null) && tile.getPositiveState() != null ?
+                        Optional.of(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : Optional.of(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())));
+    }
+
+    public static int min(IBlockAccess world, BlockPos pos, ToIntFunction<IBlockState> converter) {
+        return getTile(world, pos).map(tile -> Math.min(tile.getPositiveState() != null ? converter.applyAsInt(tile.getPositiveState()) : Integer.MAX_VALUE, tile.getNegativeState() != null ? converter.applyAsInt(tile.getNegativeState()) : Integer.MAX_VALUE)).orElse(0);
+    }
+
+    public static float minFloat(IBlockAccess world, BlockPos pos, ToDoubleFunction<IBlockState> converter) {
+        return getTile(world, pos).map(tile -> Math.min(tile.getPositiveState() != null ? converter.applyAsDouble(tile.getPositiveState()) : Integer.MAX_VALUE, tile.getNegativeState() != null ? converter.applyAsDouble(tile.getNegativeState()) : Integer.MAX_VALUE)).orElse(0D).floatValue();
+    }
+
+    public static int max(IBlockAccess world, BlockPos pos, ToIntFunction<IBlockState> converter) {
+        return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(tile.getPositiveState()) : 0, tile.getNegativeState() != null ? converter.applyAsInt(tile.getNegativeState()) : 0)).orElse(0);
+    }
+
+    public static int maxWithWorld(IBlockAccess world, BlockPos pos, ToIntFunction<Pair<IBlockState, World>> converter) {
+        return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : 0, tile.getNegativeState() != null ? converter.applyAsInt(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())) : 0)).orElse(0);
+    }
+
+    public static float maxFloat(IBlockAccess world, BlockPos pos, ToDoubleFunction<IBlockState> converter) {
+        return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsDouble(tile.getPositiveState()) : 0, tile.getNegativeState() != null ? converter.applyAsDouble(tile.getNegativeState()) : 0)).orElse(0D).floatValue();
+    }
+
+    public static float addFloat(IBlockAccess world, BlockPos pos, ToDoubleFunction<IBlockState> converter) {
+        return getTile(world, pos).map(tile -> (tile.getPositiveState() != null ? converter.applyAsDouble(tile.getPositiveState()) : 0) + (tile.getNegativeState() != null ? converter.applyAsDouble(tile.getNegativeState()) : 0)).orElse(0D).floatValue();
+    }
+
+    public static void runIfAvailable(IBlockAccess world, BlockPos pos, Consumer<IBlockState> consumer) {
+        getTile(world, pos).map(tile -> {
+            if (tile.getPositiveState() != null)
+                consumer.accept(tile.getPositiveState());
+            if (tile.getNegativeState() != null)
+                consumer.accept(tile.getNegativeState());
+            return null;
+        });
+    }
+
+    public static boolean both(IBlockAccess world, BlockPos pos, Predicate<IBlockState> predicate) {
+        return getTile(world, pos).map(tile -> tile.getPositiveState() != null && tile.getNegativeState() != null && predicate.test(tile.getPositiveState()) && predicate.test(tile.getNegativeState())).orElse(false);
+    }
+
+    public static boolean either(IBlockAccess world, BlockPos pos, Predicate<IBlockState> predicate) {
+        return getTile(world, pos).map(tile -> (tile.getPositiveState() != null && predicate.test(tile.getPositiveState())) || (tile.getNegativeState() != null && predicate.test(tile.getNegativeState()))).orElse(false);
+    }
+
+    public static Optional<IExtendedBlockState> getTileState(IBlockState state) {
+        if (!(state.getBlock() instanceof BlockVerticalSlab))
+            return Optional.empty();
+        if (state instanceof IExtendedBlockState) {
+            return Optional.of((IExtendedBlockState) state);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<IBlockState> getAvailableState(IBlockState state) {
+        return getTileState(state).flatMap(s -> s.getValue(TOP) != null ? Optional.of(s.getValue(TOP)) : Optional.of(s.getValue(BOTTOM)));
+    }
+
+    public static Optional<IBlockState> getHalfState(IBlockState state, double y) {
+        return getTileState(state).flatMap(s ->
+                (y > 0.5 || s.getValue(BOTTOM) == null) && s.getValue(TOP) != null ?
+                        Optional.of(s.getValue(TOP)) : Optional.of(s.getValue(BOTTOM)));
+    }
+
+    public static int min(IBlockState state, ToIntFunction<IBlockState> converter) {
+        return getTileState(state).map(s -> Math.min(s.getValue(TOP) != null ? converter.applyAsInt(s.getValue(TOP)) : Integer.MAX_VALUE, s.getValue(BOTTOM) != null ? converter.applyAsInt(s.getValue(BOTTOM)) : Integer.MAX_VALUE)).orElse(0);
+    }
+
+    public static float minFloat(IBlockState state, ToDoubleFunction<IBlockState> converter) {
+        return getTileState(state).map(s -> Math.min(s.getValue(TOP) != null ? converter.applyAsDouble(s.getValue(TOP)) : Integer.MAX_VALUE, s.getValue(BOTTOM) != null ? converter.applyAsDouble(s.getValue(BOTTOM)) : Integer.MAX_VALUE)).orElse(0D).floatValue();
+    }
+
+    public static int max(IBlockState state, ToIntFunction<IBlockState> converter) {
+        return getTileState(state).map(s -> Math.max(s.getValue(TOP) != null ? converter.applyAsInt(s.getValue(TOP)) : 0, s.getValue(BOTTOM) != null ? converter.applyAsInt(s.getValue(BOTTOM)) : 0)).orElse(0);
+    }
+
+    public static float maxFloat(IBlockState state, ToDoubleFunction<IBlockState> converter) {
+        return getTileState(state).map(s -> Math.max(s.getValue(TOP) != null ? converter.applyAsDouble(s.getValue(TOP)) : 0, s.getValue(BOTTOM) != null ? converter.applyAsDouble(s.getValue(BOTTOM)) : 0)).orElse(0D).floatValue();
+    }
+
+    public static float addFloat(IBlockState state, ToDoubleFunction<IBlockState> converter) {
+        return getTileState(state).map(s -> (s.getValue(TOP) != null ? converter.applyAsDouble(s.getValue(TOP)) : 0) + (s.getValue(BOTTOM) != null ? converter.applyAsDouble(s.getValue(BOTTOM)) : 0)).orElse(0D).floatValue();
+    }
+
+    public static void runIfAvailable(IBlockState state, Consumer<IBlockState> consumer) {
+        getTileState(state).map(s -> {
+            if (s.getValue(TOP) != null)
+                consumer.accept(s.getValue(TOP));
+            if (s.getValue(BOTTOM) != null)
+                consumer.accept(s.getValue(BOTTOM));
+            return null;
+        });
+    }
+
+    public static boolean both(IBlockState state, Predicate<IBlockState> predicate) {
+        return getTileState(state).map(s -> s.getValue(TOP) != null && s.getValue(BOTTOM) != null && predicate.test(s.getValue(TOP)) && predicate.test(s.getValue(BOTTOM))).orElse(false);
+    }
+
+    public static boolean either(IBlockState state, Predicate<IBlockState> predicate) {
+        return getTileState(state).map(s -> (s.getValue(TOP) != null && predicate.test(s.getValue(TOP))) || (s.getValue(BOTTOM) != null && predicate.test(s.getValue(BOTTOM)))).orElse(false);
     }
 
 //    @SideOnly(Side.CLIENT)
@@ -110,34 +228,40 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isTopSolid(IBlockState state) {
-        return runOnDoubleSlab(state, states -> states.getLeft().isTopSolid(), () -> true);
+        return getTileState(state).map(s -> s.getValue(TOP).isTopSolid()).orElse(true);
     }
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
-        return runOnDoubleSlab(state, world, pos, states -> {
+        return getTile(world, pos).map(tile -> {
             if (face == EnumFacing.UP)
-                return states.getLeft().getBlockFaceShape(world, pos, EnumFacing.UP);
+                return tile.getTopState().getBlockFaceShape(world, pos, EnumFacing.UP);
             if (face == EnumFacing.DOWN)
-                return states.getRight().getBlockFaceShape(world, pos, EnumFacing.DOWN);
-            BlockFaceShape topFace = states.getLeft().getBlockFaceShape(world, pos, EnumFacing.UP);
-            BlockFaceShape bottomFace = states.getRight().getBlockFaceShape(world, pos, EnumFacing.DOWN);
+                return tile.getBottomState().getBlockFaceShape(world, pos, EnumFacing.DOWN);
+            BlockFaceShape topFace = tile.getTopState().getBlockFaceShape(world, pos, EnumFacing.UP);
+            BlockFaceShape bottomFace = tile.getBottomState().getBlockFaceShape(world, pos, EnumFacing.DOWN);
             if (topFace == BlockFaceShape.SOLID && bottomFace == BlockFaceShape.SOLID)
                 return BlockFaceShape.SOLID;
             return BlockFaceShape.UNDEFINED;
-        }, () -> BlockFaceShape.SOLID);
+        }).orElse(BlockFaceShape.SOLID);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         IBlockState other = world.getBlockState(pos.offset(side));
-        return runOnDoubleSlab(state, world, pos, states -> runOnDoubleSlab(other, world, pos.offset(side), otherStates -> {
-            boolean selfTransparent = Utils.isTransparent(states.getLeft()) || Utils.isTransparent(states.getRight());
-            boolean otherTransparent = Utils.isTransparent(otherStates.getLeft()) || Utils.isTransparent(otherStates.getRight());
+        return getTile(world, pos).map(tile1 -> getTile(world, pos.offset(side)).map(tile2 -> {
+            boolean selfTransparent = Utils.isTransparent(tile1.getTopState()) || Utils.isTransparent(tile1.getBottomState());
+            boolean otherTransparent = Utils.isTransparent(tile2.getTopState()) || Utils.isTransparent(tile2.getBottomState());
 
             return selfTransparent ^ otherTransparent;
-        }, () -> super.shouldSideBeRendered(state, world, pos, side)), () -> super.shouldSideBeRendered(state, world, pos, side));
+        }).orElse(super.shouldSideBeRendered(state, world, pos, side))).orElse(super.shouldSideBeRendered(state, world, pos, side));
+//        return runOnDoubleSlab(state, world, pos, states -> runOnDoubleSlab(other, world, pos.offset(side), otherStates -> {
+//            boolean selfTransparent = Utils.isTransparent(states.getLeft()) || Utils.isTransparent(states.getRight());
+//            boolean otherTransparent = Utils.isTransparent(otherStates.getLeft()) || Utils.isTransparent(otherStates.getRight());
+//
+//            return selfTransparent ^ otherTransparent;
+//        }, () -> super.shouldSideBeRendered(state, world, pos, side)), () -> super.shouldSideBeRendered(state, world, pos, side));
     }
 
     @Override
@@ -163,12 +287,14 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return runOnDoubleSlab(state, world, pos, states -> states.getLeft().isNormalCube() && states.getRight().isNormalCube(), () -> true);
+        return true;
+//        return runOnDoubleSlab(state, world, pos, states -> states.getLeft().isNormalCube() && states.getRight().isNormalCube(), () -> true);
     }
 
     @Override
     public boolean canEntitySpawn(IBlockState state, Entity entity) {
-        return runOnDoubleSlab(state, states -> states.getLeft().canEntitySpawn(entity), () -> true);
+        return both(state, s -> s.canEntitySpawn(entity));
+//        return runOnDoubleSlab(state, states -> states.getLeft().canEntitySpawn(entity), () -> true);
     }
 
     @Override
@@ -185,23 +311,29 @@ public class BlockDoubleSlab extends Block {
     @Override
     @Nonnull
     public Material getMaterial(IBlockState state) {
-        return runOnDoubleSlab(state, states -> states.getLeft().getMaterial(), () -> Material.ROCK);
+        return getTileState(state).map(s -> s.getValue(TOP).getMaterial()).orElse(Material.ROCK);
+//        return runOnDoubleSlab(state, states -> states.getLeft().getMaterial(), () -> Material.ROCK);
     }
 
     @Override
     @Nonnull
     public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
-        return runOnDoubleSlab(state, states -> states.getLeft().getBlock().getSoundType(state, world, pos, entity), () -> super.getSoundType(state, world, pos, entity));
+        if (entity != null)
+            return getHalfState(world, pos, entity.posY - pos.getY()).map(s -> s.getBlock().getSoundType(s, world, pos, entity)).orElse(super.getSoundType(state, world, pos, entity));
+        return getAvailableState(world, pos).map(s -> s.getBlock().getSoundType(s, world, pos, null)).orElse(super.getSoundType(state, world, pos, null));
+//        return runOnDoubleSlab(state, states -> states.getLeft().getBlock().getSoundType(state, world, pos, entity), () -> super.getSoundType(state, world, pos, entity));
     }
 
     @Override
     public float getAmbientOcclusionLightValue(IBlockState state) {
-        return runOnDoubleSlab(state, states -> Math.max(states.getLeft().getAmbientOcclusionLightValue(), states.getRight().getAmbientOcclusionLightValue()), () -> super.getAmbientOcclusionLightValue(state));
+        return maxFloat(state, IBlockProperties::getAmbientOcclusionLightValue);
+//        return runOnDoubleSlab(state, states -> Math.max(states.getLeft().getAmbientOcclusionLightValue(), states.getRight().getAmbientOcclusionLightValue()), () -> super.getAmbientOcclusionLightValue(state));
     }
 
     @Override
     public boolean causesSuffocation(IBlockState state) {
-        return runOnDoubleSlab(state, states -> states.getLeft().causesSuffocation() || states.getRight().causesSuffocation(), () -> true);
+        return either(state, IBlockProperties::causesSuffocation);
+//        return runOnDoubleSlab(state, states -> states.getLeft().causesSuffocation() || states.getRight().causesSuffocation(), () -> true);
     }
 
     @Override
@@ -212,33 +344,47 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean canHarvestBlock(IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
-        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> canHarvestBlock(states.getLeft().getBlock(), player, states.getLeft()) || canHarvestBlock(states.getRight().getBlock(), player, states.getRight()), () -> true);
+        return either(world, pos, s -> canHarvestBlock(s.getBlock(), player, s));
+//        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> canHarvestBlock(states.getLeft().getBlock(), player, states.getLeft()) || canHarvestBlock(states.getRight().getBlock(), player, states.getRight()), () -> true);
     }
 
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
-        return runOnDoubleSlab(state, world, pos, states -> {
-            RayTraceResult rayTraceResult = Utils.rayTrace(player);
-            Vec3d hitVec = rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK ? rayTraceResult.hitVec : null;
-            if (hitVec == null)
-                return Math.min(blockStrength(states.getLeft(), player, world, pos), blockStrength(states.getRight(), player, world, pos));
-            return (hitVec.y - pos.getY()) > 0.5 ? blockStrength(states.getLeft(), player, world, pos) : blockStrength(states.getRight(), player, world, pos);
-        }, () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        Vec3d hitVec = rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK ? rayTraceResult.hitVec : null;
+        if (hitVec == null)
+            return minFloat(world, pos, s -> s.getPlayerRelativeBlockHardness(player, world, pos));
+        return getHalfState(world, pos, hitVec.y - pos.getY()).map(s -> blockStrength(s, player, world, pos)).orElse(super.getPlayerRelativeBlockHardness(state, player, world, pos));
+//        return runOnDoubleSlab(state, world, pos, states -> {
+//            RayTraceResult rayTraceResult = Utils.rayTrace(player);
+//            Vec3d hitVec = rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK ? rayTraceResult.hitVec : null;
+//            if (hitVec == null)
+//                return Math.min(blockStrength(states.getLeft(), player, world, pos), blockStrength(states.getRight(), player, world, pos));
+//            return (hitVec.y - pos.getY()) > 0.5 ? blockStrength(states.getLeft(), player, world, pos) : blockStrength(states.getRight(), player, world, pos);
+//        }, () -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+    }
+
+    @Override
+    public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return max(world, pos, s -> s.getLightOpacity(world, pos));
     }
 
     @Override
     public float getBlockHardness(IBlockState state, World world, BlockPos pos) {
-        return runOnDoubleSlab(state, world, pos, states -> Math.max(states.getLeft().getBlockHardness(world, pos), states.getRight().getBlockHardness(world, pos)), () -> super.getBlockHardness(state, world, pos));
+        return maxFloat(world, pos, s -> s.getBlockHardness(world, pos));
+//        return runOnDoubleSlab(state, world, pos, states -> Math.max(states.getLeft().getBlockHardness(world, pos), states.getRight().getBlockHardness(world, pos)), () -> super.getBlockHardness(state, world, pos));
     }
 
     @Override
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> Math.min(states.getLeft().getBlock().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getBlock().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(world, pos, exploder, explosion));
+        return minFloat(world, pos, s -> s.getBlock().getExplosionResistance(world, pos, exploder, explosion));
+//        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> Math.min(states.getLeft().getBlock().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getBlock().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(world, pos, exploder, explosion));
     }
 
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return runOnDoubleSlab(state, world, pos, states -> Math.max(states.getLeft().getLightValue(world, pos), states.getRight().getLightValue(world, pos)), () -> super.getLightValue(state, world, pos));
+        return max(world, pos, s -> s.getLightValue(world, pos));
+//        return runOnDoubleSlab(state, world, pos, states -> Math.max(states.getLeft().getLightValue(world, pos), states.getRight().getLightValue(world, pos)), () -> super.getLightValue(state, world, pos));
     }
 
 //    @Override
@@ -249,7 +395,7 @@ public class BlockDoubleSlab extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state) {
-        return new TileEntityDoubleSlab(((IExtendedBlockState) state).getValue(TOP), ((IExtendedBlockState) state).getValue(BOTTOM));
+        return new TileEntityDoubleSlab();
     }
 
     @Override
@@ -271,7 +417,8 @@ public class BlockDoubleSlab extends Block {
     @Override
     @Nonnull
     public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
-        return runOnDoubleSlab(state, world, pos, states -> target.hitVec.y - pos.getY() > 0.5 ? states.getLeft().getBlock().getPickBlock(states.getLeft(), target, world, pos, player) : states.getRight().getBlock().getPickBlock(states.getRight(), target, world, pos, player), () -> ItemStack.EMPTY);
+        return getHalfState(world, pos, target.hitVec.y - pos.getY()).map(s -> s.getBlock().getPickBlock(s, target, world, pos, player)).orElse(ItemStack.EMPTY);
+//        return runOnDoubleSlab(state, world, pos, states -> target.hitVec.y - pos.getY() > 0.5 ? states.getLeft().getBlock().getPickBlock(states.getLeft(), target, world, pos, player) : states.getRight().getBlock().getPickBlock(states.getRight(), target, world, pos, player), () -> ItemStack.EMPTY);
     }
 
     @Override
@@ -297,11 +444,13 @@ public class BlockDoubleSlab extends Block {
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            world.removeTileEntity(pos);
         } else {
             TileEntityDoubleSlab tile = (TileEntityDoubleSlab) te;
 
             double y = hitVec.y - (double) pos.getY();
 
+            TileEntity remainingTile = y > 0.5 ? tile.getNegativeTile() : tile.getPositiveTile();
             IBlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
             IBlockState stateToRemove = y > 0.5 ? tile.getTopState() : tile.getBottomState();
 
@@ -312,34 +461,35 @@ public class BlockDoubleSlab extends Block {
             if (!player.isCreative())
                 stateToRemove.getBlock().harvestBlock(world, player, pos, stateToRemove, null, stack);
 
+            stateToRemove.getBlock().harvestBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, y > 0.5 ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+
             world.setBlockState(pos, remainingState, 11);
+            world.setTileEntity(pos, remainingTile);
         }
-        world.removeTileEntity(pos);
     }
 
     @Override
     public boolean addLandingEffects(IBlockState state, WorldServer world, BlockPos pos, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
-        return runOnDoubleSlab(state, world, pos, states -> {
+        return getTile(world, pos).map(tile -> {
             float f = (float) MathHelper.ceil(entity.fallDistance - 3.0F);
             double d0 = Math.min((0.2F + f / 15.0F), 2.5D);
             int numOfParticles = (int) (150.0D * d0);
             world.spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ, numOfParticles,
-                    0.0D, 0.0D, 0.0D, 0.15000000596046448D, Block.getStateId(states.getLeft()));
+                    0.0D, 0.0D, 0.0D, 0.15000000596046448D, Block.getStateId(tile.getTopState()));
             return true;
-        }, () -> true);
+        }).orElse(false);
     }
 
     @Override
     public boolean addRunningEffects(IBlockState state, World world, BlockPos pos, Entity entity) {
         if (world.isRemote) {
-            return runOnDoubleSlab(state, world, pos, states -> {
+            getTile(world, pos).ifPresent(tile -> {
                 world.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
                         entity.posX + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.width,
                         entity.getEntityBoundingBox().minY + 0.1D,
                         entity.posZ + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.width,
-                        -entity.motionX * 4.0D, 1.5D, -entity.motionZ * 4.0D, Block.getStateId(states.getLeft()));
-                return true;
-            }, () -> true);
+                        -entity.motionX * 4.0D, 1.5D, -entity.motionZ * 4.0D, Block.getStateId(tile.getPositiveState()));
+            });
         }
         return true;
     }
@@ -347,58 +497,58 @@ public class BlockDoubleSlab extends Block {
     @SideOnly(Side.CLIENT)
     @Override
     public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
-        return runOnDoubleSlab(state, world, target.getBlockPos(), states -> {
-            BlockPos pos = target.getBlockPos();
-            EnumFacing side = target.sideHit;
+        if (target.typeOfHit == RayTraceResult.Type.BLOCK) {
+            return getHalfState(world, target.getBlockPos(), target.hitVec.y).map(s -> {
+                BlockPos pos = target.getBlockPos();
+                EnumFacing side = target.sideHit;
 
-            int i = pos.getX();
-            int j = pos.getY();
-            int k = pos.getZ();
+                int i = pos.getX();
+                int j = pos.getY();
+                int k = pos.getZ();
 
-            AxisAlignedBB axisalignedbb = state.getBoundingBox(world, pos);
-            double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
-            double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
-            double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
+                AxisAlignedBB axisalignedbb = state.getBoundingBox(world, pos);
+                double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
+                double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
+                double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
 
-            switch (side) {
-                case DOWN:
-                    d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
-                    break;
-                case UP:
-                    d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
-                    break;
-                case NORTH:
-                    d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
-                    break;
-                case SOUTH:
-                    d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
-                    break;
-                case WEST:
-                    d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
-                    break;
-                case EAST:
-                    d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
-            }
-            IBlockState blockState = target.hitVec.y - pos.getY() > 0.5 ? states.getLeft() : states.getRight();
-            if (blockState == null)
-                return false;
+                switch (side) {
+                    case DOWN:
+                        d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
+                        break;
+                    case UP:
+                        d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
+                        break;
+                    case NORTH:
+                        d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
+                        break;
+                    case SOUTH:
+                        d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
+                        break;
+                    case WEST:
+                        d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
+                        break;
+                    case EAST:
+                        d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
+                }
 
-            ParticleDigging.Factory factory = new ParticleDigging.Factory();
-            ParticleDigging particle = (ParticleDigging) factory.createParticle(1, world, d0, d1, d2,
-                    0.0D, 0.0D, 0.0D, Block.getStateId(blockState));
-            if (particle == null)
-                return false;
-            particle.setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
-            manager.addEffect(particle);
+                ParticleDigging.Factory factory = new ParticleDigging.Factory();
+                ParticleDigging particle = (ParticleDigging) factory.createParticle(1, world, d0, d1, d2,
+                        0.0D, 0.0D, 0.0D, Block.getStateId(s));
+                if (particle == null)
+                    return false;
+                particle.setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
+                manager.addEffect(particle);
 
-            return true;
-        }, () -> false);
+                return true;
+            }).orElse(false);
+        }
+        return false;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
-        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> {
+        return getTile(world, pos).map(tile -> {
             ParticleDigging.Factory factory = new ParticleDigging.Factory();
             for (int j = 0; j < 4; ++j) {
                 for (int k = 0; k < 4; ++k) {
@@ -407,13 +557,15 @@ public class BlockDoubleSlab extends Block {
                         double d1 = ((double) k + 0.5D) / 4.0D;
                         double d2 = ((double) l + 0.5D) / 4.0D;
 
-                        createDestroyParticle(world, pos, manager, states.getLeft(), factory, d0, d1, d2);
-                        createDestroyParticle(world, pos, manager, states.getRight(), factory, d0, d1, d2);
+                        if (tile.getPositiveState() != null)
+                            createDestroyParticle(world, pos, manager, tile.getPositiveState(), factory, d0, d1, d2);
+                        if (tile.getNegativeState() != null)
+                            createDestroyParticle(world, pos, manager, tile.getNegativeState(), factory, d0, d1, d2);
                     }
                 }
             }
             return true;
-        }, () -> true);
+        }).orElse(false);
     }
 
     @SideOnly(Side.CLIENT)
@@ -429,10 +581,147 @@ public class BlockDoubleSlab extends Block {
 
     @SideOnly(Side.CLIENT)
     public IBlockColor getBlockColor() {
-        return (state, world, pos, tintIndex) -> runOnDoubleSlab(state, world, pos, states -> {
+        return (state, world, pos, tintIndex) -> getTile(world, pos).map(tile -> {
             if (tintIndex < DoubleSlabBakedModel.TINT_OFFSET)
-                return Minecraft.getMinecraft().getBlockColors().colorMultiplier(states.getLeft(), world, pos, tintIndex);
-            return Minecraft.getMinecraft().getBlockColors().colorMultiplier(states.getRight(), world, pos, tintIndex - DoubleSlabBakedModel.TINT_OFFSET);
-        }, () -> -1);
+                return Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getTopState(), world, pos, tintIndex);
+            return Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getNegativeState(), world, pos, tintIndex - DoubleSlabBakedModel.TINT_OFFSET);
+        }).orElse(-1);
+    }
+
+    @Override
+    public void randomTick(World world, BlockPos pos, IBlockState state, Random random) {
+        super.randomTick(world, pos, state, random);
+        runIfAvailable(world, pos, s -> s.getBlock().randomTick(world, pos, s, random));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
+        runIfAvailable(world, pos, s -> s.getBlock().randomDisplayTick(s, world, pos, rand));
+    }
+
+    @Override
+    public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
+        if (side == null)
+            return false;
+        return getTile(world, pos).map(tile -> (tile.getPositiveState() != null && tile.getPositiveState().getBlock().canConnectRedstone(tile.getPositiveState(), world, pos, side)) || (tile.getNegativeState() != null && tile.getNegativeState().getBlock().canConnectRedstone(tile.getNegativeState(), world, pos, side))).orElse(false);
+    }
+
+    @Override
+    public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+        if (side == null)
+            return 0;
+        return max(world, pos, s -> s.getWeakPower(world, pos, side));
+    }
+
+    @Override
+    public int getStrongPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+        if (side == null)
+            return 0;
+        return max(world, pos, s -> s.getStrongPower(world, pos, side));
+    }
+
+    @Override
+    public boolean canCreatureSpawn(IBlockState state, IBlockAccess world, BlockPos pos, EntityLiving.SpawnPlacementType type) {
+        return getTile(world, pos).map(tile -> tile.getPositiveState().getBlock().canCreatureSpawn(tile.getPositiveState(), world, pos, type)).orElse(true);
+    }
+
+    @Override
+    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
+        return maxWithWorld(world, pos, pair -> pair.getLeft().getComparatorInputOverride(pair.getRight(), pos));
+    }
+
+    @Override
+    public float getEnchantPowerBonus(World world, BlockPos pos) {
+        return addFloat(world, pos, s -> s.getBlock().getEnchantPowerBonus(world, pos));
+    }
+
+    @Override
+    public int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face) {
+        return max(world, pos, s -> s.getBlock().getFireSpreadSpeed(world, pos, face));
+    }
+
+
+    @Override
+    public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
+        return max(world, pos, s -> s.getBlock().getFlammability(world, pos, face));
+    }
+
+    @Override
+    public boolean getTickRandomly() {
+        return true;
+    }
+
+    @Override
+    public boolean getWeakChanges(IBlockAccess world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean isBeaconBase(IBlockAccess world, BlockPos pos, BlockPos beacon) {
+        return either(world, pos, s -> s.getBlock().isBeaconBase(world, pos, beacon));
+    }
+
+    @Override
+    public boolean isBurning(IBlockAccess world, BlockPos pos) {
+        return either(world, pos, s -> s.getBlock().isBurning(world, pos));
+    }
+
+    @Override
+    public boolean isFertile(World world, BlockPos pos) {
+        return either(world, pos, s -> s.getBlock().isFertile(world, pos));
+    }
+
+    @Override
+    public boolean isFireSource(World world, BlockPos pos, EnumFacing side) {
+        return either(world, pos, s -> s.getBlock().isFireSource(world, pos, side));
+    }
+
+    @Override
+    public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face) {
+        return either(world, pos, s -> s.getBlock().isFlammable(world, pos, face));
+    }
+
+    @Override
+    public boolean isFoliage(IBlockAccess world, BlockPos pos) {
+        return either(world, pos, s -> s.getBlock().isFoliage(world, pos));
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+        super.neighborChanged(state, world, pos, block, fromPos);
+        runIfAvailable(world, pos, s -> s.neighborChanged(world, pos, block, fromPos));
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (state.getBlock() != this)
+            return false;
+        return getHalfStateWithWorld(world, pos, hitY).map(pair -> {
+            boolean result;
+            try {
+                result = pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ);
+            } catch (ClassCastException e) {
+                result = false;
+            }
+            return result;
+        }).orElse(false);
+    }
+
+    @Override
+    public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
+        RayTraceResult result = Utils.rayTrace(player);
+        if (result.hitVec != null)
+            getHalfStateWithWorld(world, pos, result.hitVec.y - pos.getY()).ifPresent(pair -> pair.getLeft().getBlock().onBlockClicked(pair.getRight(), pos, player));
+    }
+
+    @Override
+    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+        runIfAvailable(world, pos, s -> s.getBlock().onNeighborChange(world, pos, neighbor));
+    }
+
+    @Override
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+        runIfAvailable(world, pos, s -> s.getBlock().updateTick(world, pos, s, rand));
     }
 }

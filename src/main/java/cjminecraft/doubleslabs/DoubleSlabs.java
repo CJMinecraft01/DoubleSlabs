@@ -2,13 +2,12 @@ package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.patches.DynamicSurroundings;
+import cjminecraft.doubleslabs.proxy.IProxy;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +21,14 @@ public class DoubleSlabs
     public static final String UPDATE_URL = "https://raw.githubusercontent.com/CJMinecraft01/DoubleSlabs/1.12.x/update.json";
     public static final Logger LOGGER = LogManager.getFormatterLogger(NAME);
     public static final String CERTIFICATE_FINGERPRINT = "${fingerprint}";
+
+    @SidedProxy(serverSide = "cjminecraft.doubleslabs.proxy.ServerProxy", clientSide = "cjminecraft.doubleslabs.proxy.ClientProxy")
+    private static IProxy proxy;
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        proxy.preInit();
+    }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

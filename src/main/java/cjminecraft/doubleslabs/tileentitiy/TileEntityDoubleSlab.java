@@ -10,33 +10,29 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityDoubleSlab extends TileEntity {
+public class TileEntityDoubleSlab extends TileEntityVerticalSlab {
 
-    private IBlockState topState;
-    private IBlockState bottomState;
+//    private IBlockState topState;
+//    private IBlockState bottomState;
 
     public TileEntityDoubleSlab() {}
 
-    public TileEntityDoubleSlab(IBlockState topState, IBlockState bottomState) {
-        this.topState = topState;
-        this.bottomState = bottomState;
-    }
+//    public TileEntityDoubleSlab(IBlockState topState, IBlockState bottomState) {
+//        this.topState = topState;
+//        this.bottomState = bottomState;
+//    }
 
     public IBlockState getTopState() {
-        return topState;
+        return this.positiveState;
     }
 
     public IBlockState getBottomState() {
-        return bottomState;
+        return this.negativeState;
     }
 
     @Override
     @Nonnull
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        if (this.topState != null)
-            nbt.setTag("top", NBTUtil.writeBlockState(new NBTTagCompound(), this.topState));
-        if (this.bottomState != null)
-            nbt.setTag("bottom", NBTUtil.writeBlockState(new NBTTagCompound(), this.bottomState));
         return super.writeToNBT(nbt);
     }
 
@@ -44,9 +40,9 @@ public class TileEntityDoubleSlab extends TileEntity {
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         if (nbt.hasKey("top"))
-            this.topState = NBTUtil.readBlockState(nbt.getCompoundTag("top"));
+            this.positiveState = NBTUtil.readBlockState(nbt.getCompoundTag("top"));
         if (nbt.hasKey("bottom"))
-            this.bottomState = NBTUtil.readBlockState(nbt.getCompoundTag("bottom"));
+            this.negativeState = NBTUtil.readBlockState(nbt.getCompoundTag("bottom"));
     }
 
     @Override

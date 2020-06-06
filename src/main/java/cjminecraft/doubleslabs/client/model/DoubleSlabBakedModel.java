@@ -30,7 +30,7 @@ public class DoubleSlabBakedModel implements IBakedModel {
     private static IBakedModel fallback;
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
-    private static IBakedModel getFallback() {
+    static IBakedModel getFallback() {
         if (fallback != null)
             return fallback;
         fallback = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
@@ -49,7 +49,7 @@ public class DoubleSlabBakedModel implements IBakedModel {
             return getFallback().getQuads(null, side, rand);
         IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
         IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-        String cacheKey = DoubleSlabsConfig.slabToString(topState) + "," + DoubleSlabsConfig.slabToString(bottomState)
+        String cacheKey = (bottomState != null ? bottomState.toString() : "null") + "," + (topState != null ? topState.toString() : "null")
                 + ":" + (side != null ? side.getName() : "null") + ":" +
                 (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
         if (!cache.containsKey(cacheKey)) {
@@ -61,11 +61,6 @@ public class DoubleSlabBakedModel implements IBakedModel {
             boolean topTransparent = Utils.isTransparent(topState);
             boolean bottomTransparent = Utils.isTransparent(bottomState);
 
-//            DoubleSlabs.LOGGER.info(topState);
-//            DoubleSlabs.LOGGER.info(bottomState);
-//            DoubleSlabs.LOGGER.info(topTransparent);
-//            DoubleSlabs.LOGGER.info(bottomTransparent);
-//            DoubleSlabs.LOGGER.info("===============");
 
             List<BakedQuad> quads = new ArrayList<>();
             if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer()) {
