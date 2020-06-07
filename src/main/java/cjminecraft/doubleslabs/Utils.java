@@ -45,11 +45,4 @@ public class Utils {
         return face;
     }
 
-    public static Quaternion fromAngle(Vector3f axis, float angle, boolean degrees) {
-        if (degrees)
-            angle *= DEGREE_TO_RAD;
-        float f = (float) Math.sin(angle / 2.0F);
-        return new Quaternion(axis.getX() * f, axis.getY() * f, axis.getZ() * f, (float) Math.cos(angle / 2.0F));
-    }
-
 }

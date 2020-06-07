@@ -16,10 +16,14 @@ import net.minecraft.world.World;
 
 public interface ISlabSupport {
     @Deprecated
-    boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state);
+    default boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state) {
+        return false;
+    }
 
     @Deprecated
-    boolean isValid(ItemStack stack, EntityPlayer player, EnumHand hand);
+    default boolean isValid(ItemStack stack, EntityPlayer player, EnumHand hand) {
+        return false;
+    }
 
     default boolean isHorizontalSlab(IBlockAccess world, BlockPos pos, IBlockState state) {
         return isValid(world, pos, state);
@@ -45,13 +49,19 @@ public interface ISlabSupport {
         return EnumFacing.NORTH;
     }
 
-    BlockSlab.EnumBlockHalf getHalf(World world, BlockPos pos, IBlockState state);
+    default BlockSlab.EnumBlockHalf getHalf(World world, BlockPos pos, IBlockState state) {
+        return BlockSlab.EnumBlockHalf.BOTTOM;
+    }
 
     default IBlockState getStateFromStack(ItemStack stack, World world, BlockPos pos, EnumFacing facing, Vec3d hitVec, EntityPlayer player, EnumHand hand) {
         return Block.getBlockFromItem(stack.getItem()).getStateForPlacement(world, pos, facing, (float)hitVec.x, (float)hitVec.y, (float)hitVec.z, stack.getMetadata(), player, hand);
     }
 
-    IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half);
+    default IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
+        return state;
+    }
 
-    boolean areSame(World world, BlockPos pos, IBlockState state, ItemStack stack);
+    default boolean areSame(World world, BlockPos pos, IBlockState state, ItemStack stack) {
+        return  Block.getBlockFromItem(stack.getItem()) == state.getBlock();
+    }
 }

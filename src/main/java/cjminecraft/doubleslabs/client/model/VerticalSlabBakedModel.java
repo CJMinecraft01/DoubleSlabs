@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.client.model;
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
+import cjminecraft.doubleslabs.util.Quaternion;
 import cjminecraft.doubleslabs.util.Vector3f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -15,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import org.lwjgl.util.vector.Quaternion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

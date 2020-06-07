@@ -164,7 +164,7 @@ public class Events {
                 boolean verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.getValue(BlockVerticalSlab.DOUBLE) && (((TileEntityVerticalSlab)event.getWorld().getTileEntity(pos)).getPositiveState() != null ? face == state.getValue(BlockVerticalSlab.FACING).getOpposite() : face == state.getValue(BlockVerticalSlab.FACING));
 
                 ISlabSupport blockSupport = SlabSupport.getSupport(event.getWorld(), pos, state);
-                if (blockSupport == null) {
+                if (blockSupport == null && !verticalSlab) {
 
                     // Check if the block is a vertical slab from another mod
                     blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
@@ -291,6 +291,28 @@ public class Events {
                 } else if (state.getBlock().hasTileEntity(state) && state.getBlock().onBlockActivated(event.getWorld(), pos, state, event.getEntityPlayer(), event.getHand(), face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z))
                     return;
 
+                // Check if the block is a vertical slab and try to join the two slabs together
+                if (verticalSlab && state.getBlock() == Registrar.VERTICAL_SLAB && !state.getValue(BlockVerticalSlab.DOUBLE)) {
+                    TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
+                    if (tile != null && !event.getEntityPlayer().isSneaking() && (face != state.getValue(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
+                        IBlockState newState = state.withProperty(BlockVerticalSlab.DOUBLE, true);
+                        if (event.getWorld().setBlockState(pos, newState, 11)) {
+                            IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
+                                    itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
+                                            event.getHitVec(), event.getEntityPlayer(), event.getHand()),
+                                    tile.getPositiveState() != null ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
+
+                            if (tile.getPositiveState() != null)
+                                tile.setNegativeState(slabState);
+                            else
+                                tile.setPositiveState(slabState);
+
+                            finishBlockPlacement(event, pos, slabState);
+                            return;
+                        }
+                    }
+                }
+
                 if (!DoubleSlabsConfig.REPLACE_SAME_SLAB && blockSupport == itemSupport && blockSupport.areSame(event.getWorld(), pos, state, event.getItemStack()))
                     return;
 
@@ -353,38 +375,77 @@ public class Events {
         // Reference net.minecraft.client.renderer.WorldRenderer#drawSelectionBox
 
         IBlockState state = Minecraft.getMinecraft().world.getBlockState(event.getTarget().getBlockPos());
-        // We are trying to render the block highlight for the double slab
-        if (state.getBlock() == Registrar.DOUBLE_SLAB && !Minecraft.getMinecraft().player.isCreative()) {
+
+        if (!Minecraft.getMinecraft().player.isCreative()) {
+
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.glLineWidth(2.0F);
             GlStateManager.disableTexture2D();
             GlStateManager.depthMask(false);
 
-            if (Minecraft.getMinecraft().world.getWorldBorder().contains(event.getTarget().getBlockPos())) {
-                // Offset the position of the block for when we render
-                double x = event.getTarget().getBlockPos().getX() - (event.getPlayer().lastTickPosX + (event.getPlayer().posX - event.getPlayer().lastTickPosX) * (double) event.getPartialTicks());
-                double y = event.getTarget().getBlockPos().getY() - (event.getPlayer().lastTickPosY + (event.getPlayer().posY - event.getPlayer().lastTickPosY) * (double) event.getPartialTicks());
-                double z = event.getTarget().getBlockPos().getZ() - (event.getPlayer().lastTickPosZ + (event.getPlayer().posZ - event.getPlayer().lastTickPosZ) * (double) event.getPartialTicks());
+            // Offset the position of the block for when we render
+            double x = event.getTarget().getBlockPos().getX() - (event.getPlayer().lastTickPosX + (event.getPlayer().posX - event.getPlayer().lastTickPosX) * (double) event.getPartialTicks());
+            double y = event.getTarget().getBlockPos().getY() - (event.getPlayer().lastTickPosY + (event.getPlayer().posY - event.getPlayer().lastTickPosY) * (double) event.getPartialTicks());
+            double z = event.getTarget().getBlockPos().getZ() - (event.getPlayer().lastTickPosZ + (event.getPlayer().posZ - event.getPlayer().lastTickPosZ) * (double) event.getPartialTicks());
 
-                double expansionAmount = 0.0020000000949949026D;
+            // We are trying to render the block highlight for the double slab
+            if (state.getBlock() == Registrar.DOUBLE_SLAB) {
+                if (Minecraft.getMinecraft().world.getWorldBorder().contains(event.getTarget().getBlockPos())) {
 
-                // Check if we are looking at the top slab or bottom slab
-                if (event.getTarget().hitVec.y - event.getTarget().getBlockPos().getY() > 0.5) {
-                    // Draw the top slab bounding box
-                    RenderGlobal.drawBoundingBox(x - expansionAmount, y + 0.5f - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 1 + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
-                } else {
-                    // Draw the bottom slab bounding box
-                    RenderGlobal.drawBoundingBox(x - expansionAmount, y - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 0.5f + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                    final double expansionAmount = 0.0020000000949949026D;
+
+                    // Check if we are looking at the top slab or bottom slab
+                    if (event.getTarget().hitVec.y - event.getTarget().getBlockPos().getY() > 0.5) {
+                        // Draw the top slab bounding box
+                        RenderGlobal.drawBoundingBox(x - expansionAmount, y + 0.5f - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 1 + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                    } else {
+                        // Draw the bottom slab bounding box
+                        RenderGlobal.drawBoundingBox(x - expansionAmount, y - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 0.5f + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                    }
+                }
+
+                // Don't draw the default block highlight
+                event.setCanceled(true);
+            }
+
+            if (state.getBlock() == Registrar.VERTICAL_SLAB && state.getValue(BlockVerticalSlab.DOUBLE)) {
+
+                final double expansionAmount = 0.0020000000949949026D;
+
+                switch (state.getValue(BlockVerticalSlab.FACING).getAxis()) {
+                    case X:
+                        // Check if we are looking at the top slab or bottom slab
+                        if (event.getTarget().hitVec.x - event.getTarget().getBlockPos().getX() > 0.5) {
+                            // Draw the top slab bounding box
+                            RenderGlobal.drawBoundingBox(x + 0.5f - expansionAmount, y - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 1 + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                        } else {
+                            // Draw the bottom slab bounding box
+                            RenderGlobal.drawBoundingBox(x - expansionAmount, y - expansionAmount, z - expansionAmount, x + 0.5f + expansionAmount, y + 1 + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                        }
+                        // Don't draw the default block highlight
+                        event.setCanceled(true);
+                        break;
+                    case Z:
+                        // Check if we are looking at the top slab or bottom slab
+                        if (event.getTarget().hitVec.z - event.getTarget().getBlockPos().getZ() > 0.5) {
+                            // Draw the top slab bounding box
+                            RenderGlobal.drawBoundingBox(x - expansionAmount, y - expansionAmount, z + 0.5f - expansionAmount, x + 1 + expansionAmount, y + 1 + expansionAmount, z + 1 + expansionAmount, 0, 0, 0, 0.4f);
+                        } else {
+                            // Draw the bottom slab bounding box
+                            RenderGlobal.drawBoundingBox(x - expansionAmount, y - expansionAmount, z - expansionAmount, x + 1 + expansionAmount, y + 1 + expansionAmount, z + 0.5f + expansionAmount, 0, 0, 0, 0.4f);
+                        }
+                        // Don't draw the default block highlight
+                        event.setCanceled(true);
+                        break;
+                    default:
+                        break;
                 }
             }
 
             GlStateManager.depthMask(true);
             GlStateManager.enableTexture2D();
             GlStateManager.disableBlend();
-
-            // Don't draw the default block highlight
-            event.setCanceled(true);
         }
     }
 

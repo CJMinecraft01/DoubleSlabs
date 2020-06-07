@@ -65,7 +65,8 @@ public class WorldWrapper extends World {
 
     @Override
     public IBlockState getBlockState(BlockPos pos) {
-        return pos.equals(this.verticalSlab.getPos()) ? (this.positive ? this.verticalSlab.getPositiveState() : this.verticalSlab.getNegativeState()) : this.world.getBlockState(pos);
+        IBlockState state = pos.equals(this.verticalSlab.getPos()) ? (this.positive ? this.verticalSlab.getPositiveState() : this.verticalSlab.getNegativeState()) : this.world.getBlockState(pos);
+        return state == null ? super.getBlockState(pos) : state;
     }
 
     @Override

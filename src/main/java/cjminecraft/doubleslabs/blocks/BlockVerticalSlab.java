@@ -347,7 +347,8 @@ public class BlockVerticalSlab extends Block {
 
     @Override
     public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return min(world, pos, s -> s.getLightOpacity(world, pos));
+        return super.getLightOpacity(state, world, pos);
+//        return min(world, pos, s -> s.getLightOpacity(world, pos));
     }
 
     @Override
@@ -426,11 +427,14 @@ public class BlockVerticalSlab extends Block {
 
                 IBlockState stateToRemove = positive ? tile.getPositiveState() : tile.getNegativeState();
 
-                player.addStat(StatList.getBlockStats(stateToRemove.getBlock()));
-                world.playEvent(2001, pos, Block.getStateId(stateToRemove));
-                player.addExhaustion(0.005F);
+//                player.addStat(StatList.getBlockStats(stateToRemove.getBlock()));
+//                world.playEvent(2001, pos, Block.getStateId(stateToRemove));
+//                player.addExhaustion(0.005F);
 
-                stateToRemove.getBlock().harvestBlock(positive ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, positive ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+                if (!player.isCreative())
+                    stateToRemove.getBlock().harvestBlock(positive ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, positive ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+                if (!world.isRemote)
+                    stateToRemove.getBlock().breakBlock(positive ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, stateToRemove);
 
                 if (positive)
                     tile.setPositiveState(null);
@@ -442,11 +446,15 @@ public class BlockVerticalSlab extends Block {
             } else {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
                 IBlockState remainingState = tile.getPositiveState() != null ? tile.getPositiveState() : tile.getNegativeState();
-                player.addStat(StatList.getBlockStats(remainingState.getBlock()));
-                world.playEvent(2001, pos, Block.getStateId(remainingState));
-                player.addExhaustion(0.005F);
+//                player.addStat(StatList.getBlockStats(remainingState.getBlock()));
+//                world.playEvent(2001, pos, Block.getStateId(remainingState));
+//                player.addExhaustion(0.005F);
 
-                remainingState.getBlock().harvestBlock(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, remainingState, tile.getPositiveState() != null ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+                if (!player.isCreative())
+                    remainingState.getBlock().harvestBlock(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, remainingState, tile.getPositiveState() != null ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+
+                if (!world.isRemote)
+                    remainingState.getBlock().breakBlock(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, remainingState);
 
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }

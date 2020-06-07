@@ -454,14 +454,16 @@ public class BlockDoubleSlab extends Block {
             IBlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
             IBlockState stateToRemove = y > 0.5 ? tile.getTopState() : tile.getBottomState();
 
-            player.addStat(StatList.getBlockStats(stateToRemove.getBlock()));
-            player.addExhaustion(0.005F);
-            world.playEvent(2001, pos, Block.getStateId(stateToRemove));
+//            player.addStat(StatList.getBlockStats(stateToRemove.getBlock()));
+//            player.addExhaustion(0.005F);
+//            world.playEvent(2001, pos, Block.getStateId(stateToRemove));
 
+            if (!world.isRemote)
+                stateToRemove.getBlock().breakBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, y > 0.5 ? tile.getPositiveState() : tile.getNegativeState());
             if (!player.isCreative())
-                stateToRemove.getBlock().harvestBlock(world, player, pos, stateToRemove, null, stack);
+                stateToRemove.getBlock().harvestBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, y > 0.5 ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
 
-            stateToRemove.getBlock().harvestBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, y > 0.5 ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
+//            stateToRemove.getBlock().harvestBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, y > 0.5 ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
 
             world.setBlockState(pos, remainingState, 11);
             world.setTileEntity(pos, remainingTile);
