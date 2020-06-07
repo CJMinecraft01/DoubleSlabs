@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
@@ -12,10 +13,14 @@ import net.minecraft.world.World;
 
 public interface ISlabSupport {
     @Deprecated
-    boolean isValid(IBlockReader world, BlockPos pos, BlockState state);
+    default boolean isValid(IBlockReader world, BlockPos pos, BlockState state) {
+        return false;
+    };
 
     @Deprecated
-    boolean isValid(ItemStack stack, PlayerEntity player, Hand hand);
+    default boolean isValid(ItemStack stack, PlayerEntity player, Hand hand) {
+        return false;
+    };
 
     default boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
         return isValid(world, pos, state);
@@ -41,9 +46,16 @@ public interface ISlabSupport {
         return Direction.NORTH;
     }
 
-    SlabType getHalf(World world, BlockPos pos, BlockState state);
+    default SlabType getHalf(World world, BlockPos pos, BlockState state) {
+        return SlabType.BOTTOM;
+    };
 
-    BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half);
+    default BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
+        BlockItem slab = (BlockItem) stack.getItem();
+        return slab.getBlock().getDefaultState();
+    };
 
-    boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack);
+    default boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
+        return ((BlockItem) stack.getItem()).getBlock() == state.getBlock();
+    };
 }

@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
+import cjminecraft.doubleslabs.addons.swampexpansion.SwampExpansionSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,6 +33,9 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("quark"))
             addSlabSupport(new QuarkSlabSupport());
+
+        if (ModList.get().isLoaded("swampexpansion"))
+            addSlabSupport(new SwampExpansionSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
