@@ -1,6 +1,8 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreDirectionalVerticalSlabBlock;
+import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
@@ -36,6 +38,11 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("mubble"))
             addSlabSupport(new MubbleSlabSupport());
+
+        if (ModList.get().isLoaded("abnormals_core")) {
+            addSlabSupport(new AbnormalsCoreVerticalSlabSupport());
+            addSlabSupport(new AbnormalsCoreDirectionalVerticalSlabBlock());
+        }
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {

@@ -204,7 +204,8 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return getTile(world, pos).map(tile -> tile.getPositiveState().canHarvestBlock(world, pos, player) || tile.getNegativeState().canHarvestBlock(world, pos, player)).orElse(false);
+        return either(world, pos, s -> s.canHarvestBlock(world, pos, player));
+//        return getTile(world, pos).map(tile -> tile.getPositiveState().canHarvestBlock(world, pos, player) || tile.getNegativeState().canHarvestBlock(world, pos, player)).orElse(false);
     }
 
     @Override
@@ -384,13 +385,17 @@ public class BlockDoubleSlab extends Block {
                         double d1 = ((double) k + 0.5D) / 4.0D + pos.getY();
                         double d2 = ((double) l + 0.5D) / 4.0D + pos.getZ();
 
-                        Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                        if (particle1 != null)
-                            manager.addEffect(particle1);
+                        if (tile.getPositiveState() != null) {
+                            Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            if (particle1 != null)
+                                manager.addEffect(particle1);
+                        }
 
-                        Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                        if (particle2 != null)
-                            manager.addEffect(particle2);
+                        if (tile.getNegativeState() != null) {
+                            Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            if (particle2 != null)
+                                manager.addEffect(particle2);
+                        }
                     }
                 }
             }
