@@ -2,11 +2,15 @@ package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBlockState;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBoolean;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
+import cjminecraft.doubleslabs.util.WorldWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -26,7 +30,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -36,6 +39,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,7 +87,7 @@ public class BlockVerticalSlab extends Block {
                         Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
     }
 
-    public static Optional<Pair<IBlockState, World>> getHalfStateWithWorld(IBlockAccess world, BlockPos pos, double x, double z) {
+    public static Optional<Pair<IBlockState, WorldWrapper>> getHalfStateWithWorld(IBlockAccess world, BlockPos pos, double x, double z) {
         IBlockState state = world.getBlockState(pos);
 
         return getTile(world, pos).flatMap(tile ->
@@ -106,7 +110,7 @@ public class BlockVerticalSlab extends Block {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(tile.getPositiveState()) : 0, tile.getNegativeState() != null ? converter.applyAsInt(tile.getNegativeState()) : 0)).orElse(0);
     }
 
-    public static int maxWithWorld(IBlockAccess world, BlockPos pos, ToIntFunction<Pair<IBlockState, World>> converter) {
+    public static int maxWithWorld(IBlockAccess world, BlockPos pos, ToIntFunction<Pair<IBlockState, WorldWrapper>> converter) {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : 0, tile.getNegativeState() != null ? converter.applyAsInt(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())) : 0)).orElse(0);
     }
 
@@ -695,13 +699,22 @@ public class BlockVerticalSlab extends Block {
         if (state.getBlock() != this)
             return false;
         return getHalfStateWithWorld(world, pos, hitX, hitZ).map(pair -> {
-            boolean result;
-            try {
-                result = pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ);
-            } catch (ClassCastException e) {
-                result = false;
+            IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
+            if (support == null) {
+                boolean result;
+                try {
+                    result = pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ);
+                } catch (Exception e) {
+                    result = false;
+                }
+                return result;
+            } else {
+                if (!world.isRemote) {
+                    NetworkUtils.openGui(player, support.getMod(), support.getGuiId(pair.getRight(), pos, pair.getLeft()), pair.getRight(), pos.getX(), pos.getY(), pos.getZ(), pair.getRight().isPositive());
+                    support.onClicked(pair.getRight(), pos, pair.getLeft(), player, hand, facing);
+                }
+                return true;
             }
-            return result;
         }).orElse(false);
     }
 

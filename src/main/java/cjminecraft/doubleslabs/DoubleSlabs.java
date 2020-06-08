@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs;
 
+import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.patches.DynamicSurroundings;
 import cjminecraft.doubleslabs.proxy.IProxy;
@@ -39,6 +40,7 @@ public class DoubleSlabs
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         SlabSupport.init();
+        ContainerSupport.init();
     }
 
     @Mod.EventHandler

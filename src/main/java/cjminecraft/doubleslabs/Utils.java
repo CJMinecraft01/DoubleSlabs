@@ -13,7 +13,7 @@ public class Utils {
     private static final double DEGREE_TO_RAD = Math.PI / 180.0D;
 
     public static boolean isTransparent(IBlockState state) {
-        return !state.getMaterial().isOpaque();
+        return state == null || !state.getMaterial().isOpaque();
     }
 
     public static RayTraceResult rayTrace(EntityPlayer player) {

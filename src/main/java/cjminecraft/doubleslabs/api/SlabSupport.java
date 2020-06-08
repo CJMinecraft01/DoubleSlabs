@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.Loader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SlabSupport {
@@ -48,7 +49,7 @@ public class SlabSupport {
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
         if (supportedSlabs.contains(support)) {
-            DoubleSlabs.LOGGER.info("A slab support of type %s has already been registered - SKIPPING", support.getClass().getSimpleName());
+            DoubleSlabs.LOGGER.warn("A slab support of type %s has already been registered - SKIPPING", support.getClass().getSimpleName());
         } else {
             supportedSlabs.add(support);
             DoubleSlabs.LOGGER.info("Successfully added slab support for type %s", support.getClass().getSimpleName());

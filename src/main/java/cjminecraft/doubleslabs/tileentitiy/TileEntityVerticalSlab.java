@@ -237,7 +237,7 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickable {
         if (this.negativeTile != null) {
             this.negativeTile.setWorld(this.negativeWorld);
             this.negativeTile.setPos(this.pos);
-            this.positiveTile.onLoad();
+            this.negativeTile.onLoad();
         }
     }
 
@@ -293,22 +293,22 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickable {
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        EnumFacing direction = this.world.getBlockState(this.pos).getValue(BlockVerticalSlab.FACING);
-        if (facing == direction && this.positiveTile != null)
-            return this.positiveTile.hasCapability(capability, null);
-        if (facing == direction.getOpposite() && this.negativeTile != null)
-            return this.negativeTile.hasCapability(capability, null);
-        return super.hasCapability(capability, facing);
+        return (this.positiveTile != null && this.positiveTile.hasCapability(capability, facing)) || (this.negativeTile != null && this.negativeTile.hasCapability(capability, facing));
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        EnumFacing direction = this.world.getBlockState(this.pos).getValue(BlockVerticalSlab.FACING);
-        if (facing == direction && this.positiveTile != null)
-            return this.positiveTile.getCapability(capability, null);
-        if (facing == direction.getOpposite() && this.negativeTile != null)
-            return this.negativeTile.getCapability(capability, null);
+        if (this.positiveTile != null && this.negativeTile == null)
+            return this.positiveTile.getCapability(capability, facing);
+        else if (this.negativeTile != null && this.positiveTile == null)
+            return this.negativeTile.getCapability(capability, facing);
+        else if (this.positiveTile != null && this.negativeTile != null) {
+            if (this.positiveTile.hasCapability(capability, facing))
+                return this.positiveTile.getCapability(capability, facing);
+            if (this.negativeTile.hasCapability(capability, facing))
+                return this.negativeTile.getCapability(capability, facing);
+        }
         return super.getCapability(capability, facing);
     }
 

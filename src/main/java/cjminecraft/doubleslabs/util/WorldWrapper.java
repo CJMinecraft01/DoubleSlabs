@@ -63,6 +63,10 @@ public class WorldWrapper extends World {
         this.positive = positive;
     }
 
+    public boolean isPositive() {
+        return this.positive;
+    }
+
     @Override
     public IBlockState getBlockState(BlockPos pos) {
         IBlockState state = pos.equals(this.verticalSlab.getPos()) ? (this.positive ? this.verticalSlab.getPositiveState() : this.verticalSlab.getNegativeState()) : this.world.getBlockState(pos);
@@ -679,7 +683,13 @@ public class WorldWrapper extends World {
 
     @Override
     public void removeTileEntity(BlockPos pos) {
-        this.world.removeTileEntity(pos);
+        if (pos == this.verticalSlab.getPos())
+            if (this.positive)
+                this.verticalSlab.setPositiveTile(null);
+            else
+                this.verticalSlab.setNegativeTile(null);
+        else
+            this.world.removeTileEntity(pos);
     }
 
     @Override
