@@ -40,12 +40,12 @@ public class TheBetweenlandsSlabSupport<T extends Enum<T> & IStringSerializable>
 
     @Override
     public boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state) {
-        return slab != null && state.getBlock().getClass().equals(slab) && state.getValue(slabTypeProperty) != slabTypes[2];
+        return slab != null && slab.isAssignableFrom(state.getBlock().getClass()) && state.getValue(slabTypeProperty) != slabTypes[2];
     }
 
     @Override
     public boolean isValid(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        return slab != null && stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock().getClass().equals(slab);
+        return slab != null && stack.getItem() instanceof ItemBlock && slab.isAssignableFrom(((ItemBlock) stack.getItem()).getBlock().getClass());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.addons.atum2;
 
+import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.properties.PropertyEnum;
@@ -40,12 +41,12 @@ public class Atum2SlabSupport<T extends Enum<T> & IStringSerializable> implement
 
     @Override
     public boolean isValid(IBlockAccess world, BlockPos pos, IBlockState state) {
-        return slab != null && state.getBlock().getClass() == slab && state.getValue(slabTypeProperty) != slabTypes[2];
+        return slab != null && slab.isAssignableFrom(state.getBlock().getClass()) && state.getValue(slabTypeProperty) != slabTypes[2];
     }
 
     @Override
     public boolean isValid(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        return slab != null && stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock().getClass().equals(slab);
+        return slab != null && stack.getItem() instanceof ItemBlock && slab.isAssignableFrom(((ItemBlock) stack.getItem()).getBlock().getClass());
     }
 
     @Override
