@@ -1,8 +1,8 @@
 package cjminecraft.doubleslabs.network;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
@@ -11,11 +11,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.internal.OpenGuiHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketOpenGui implements IMessage {
 
@@ -70,19 +70,20 @@ public class PacketOpenGui implements IMessage {
 
         @Override
         public IMessage onMessage(PacketOpenGui message, MessageContext ctx) {
+            if (ctx.side == Side.SERVER)
+                return null;
+//            Minecraft.getMinecraft().addScheduledTask(() -> process(message));
             IThreadListener thread = FMLCommonHandler.instance().getWorldThread(ctx.netHandler);
-            if (thread.isCallingFromMinecraftThread())
-            {
+            if (thread.isCallingFromMinecraftThread()) {
                 process(message);
-            }
-            else
-            {
+            } else {
                 thread.addScheduledTask(() -> Handler.this.process(message));
             }
             return null;
         }
 
-        void process(PacketOpenGui message) {
+        @SideOnly(Side.CLIENT)
+        private void process(PacketOpenGui message) {
             EntityPlayer player = FMLClientHandler.instance().getClient().player;
             World world = player.world;
             BlockPos pos = new BlockPos(message.x, message.y, message.z);

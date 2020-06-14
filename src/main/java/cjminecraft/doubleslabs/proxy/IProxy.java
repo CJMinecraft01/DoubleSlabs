@@ -6,5 +6,5 @@ import cjminecraft.doubleslabs.network.PacketHandler;
 public interface IProxy {
     default void preInit() {
         PacketHandler.registerMessages(DoubleSlabs.MODID);
-    };
+    }
 }

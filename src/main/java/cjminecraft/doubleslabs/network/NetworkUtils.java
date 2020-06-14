@@ -1,18 +1,14 @@
 package cjminecraft.doubleslabs.network;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
-import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.internal.FMLMessage;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class NetworkUtils {

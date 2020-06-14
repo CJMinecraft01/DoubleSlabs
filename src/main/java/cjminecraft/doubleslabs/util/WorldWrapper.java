@@ -1072,7 +1072,7 @@ public class WorldWrapper extends World {
 
     @Override
     public WorldInfo getWorldInfo() {
-        return this.world.getWorldInfo();
+        return this.worldInfo;
     }
 
     @Override
