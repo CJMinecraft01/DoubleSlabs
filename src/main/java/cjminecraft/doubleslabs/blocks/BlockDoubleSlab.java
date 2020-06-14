@@ -381,7 +381,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return minFloat(world, pos, s -> s.getBlock().getExplosionResistance(world, pos, exploder, explosion));
+        return maxFloat(world, pos, s -> s.getBlock().getExplosionResistance(world, pos, exploder, explosion));
 //        return runOnDoubleSlab(world.getBlockState(pos), world, pos, states -> Math.min(states.getLeft().getBlock().getExplosionResistance(world, pos, exploder, explosion), states.getRight().getBlock().getExplosionResistance(world, pos, exploder, explosion)), () -> super.getExplosionResistance(world, pos, exploder, explosion));
     }
 
@@ -738,5 +738,42 @@ public class BlockDoubleSlab extends Block {
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
         runIfAvailable(world, pos, s -> s.getBlock().updateTick(world, pos, s, rand));
+    }
+
+    @Override
+    public void onFallenUpon(World world, BlockPos pos, Entity entity, float fallDistance) {
+        if (!getTile(world, pos).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onFallenUpon(tile.getPositiveWorld(), pos, entity, fallDistance);
+                return true;
+            }
+            return false;
+        }).orElse(false)) {
+            super.onFallenUpon(world, pos, entity, fallDistance);
+        }
+    }
+
+    @Override
+    public void onLanded(World world, Entity entity) {
+        if (!getTile(world, entity.getPosition().down()).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
+                return true;
+            }
+            return false;
+        }).orElse(false)) {
+            super.onLanded(world, entity);
+        }
+    }
+
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entity) {
+        getTile(world, pos).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onEntityWalk(world, pos, entity);
+                return true;
+            }
+            return false;
+        }).orElse(null);
     }
 }

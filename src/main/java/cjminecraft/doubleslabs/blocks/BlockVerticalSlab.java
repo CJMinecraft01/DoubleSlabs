@@ -336,7 +336,7 @@ public class BlockVerticalSlab extends Block {
 
     @Override
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return minFloat(world, pos, s -> s.getBlock().getExplosionResistance(world, pos, exploder, explosion));
+        return maxFloat(world, pos, s -> s.getBlock().getExplosionResistance(world, pos, exploder, explosion));
     }
 
     @Override
@@ -743,5 +743,33 @@ public class BlockVerticalSlab extends Block {
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING).getHorizontalIndex() + (state.getValue(DOUBLE) ? 4 : 0);
+    }
+
+    @Override
+    public void onFallenUpon(World world, BlockPos pos, Entity entity, float fallDistance) {
+        if (!getHalfStateWithWorld(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onFallenUpon(pair.getRight(), pos, entity, fallDistance);
+            return true;
+        }).orElse(false))
+            super.onFallenUpon(world, pos, entity, fallDistance);
+    }
+
+    @Override
+    public void onLanded(World world, Entity entity) {
+        BlockPos pos = entity.getPosition().down();
+        if (!getHalfStateWithWorld(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onLanded(pair.getRight(), entity);
+            return true;
+        }).orElse(false))
+            super.onLanded(world, entity);
+    }
+
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entity) {
+        if (!getHalfStateWithWorld(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onEntityWalk(pair.getRight(), pos, entity);
+            return true;
+        }).orElse(false))
+            super.onEntityWalk(world, pos, entity);
     }
 }
