@@ -21,7 +21,8 @@
     "0.4.1": "=Ensured that if a slab is blacklisted, no checks will be done on the slab\n=Fixed a crash with the midnight mod",
     "0.4.2": "+Added the ability for double slabs to emit light if one of the slabs emits light",
     "0.5.0": "+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine",
-    "0.6.0": "+Added vertical slabs (placed by holding shift with a regular slab)\n+Added support for slabs with tile entities\n=Tweaked mod support"
+    "0.6.0": "+Added vertical slabs (placed by holding shift with a regular slab)\n+Added support for slabs with tile entities\n=Tweaked mod support",
+    "0.6.1": "=Tweaked blast resistance calculation to better support blast resistant slabs\n+Added support for more slab features by adding support for slime block slabs\n=Fixed a server crash"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -71,8 +72,8 @@
     "2.4.5": "=Attempted to fix a client crash"
   },
   "promos": {
-    "1.12.2-latest": "0.6.0",
-    "1.12.2-recommended": "0.6.0",
+    "1.12.2-latest": "0.6.1",
+    "1.12.2-recommended": "0.6.1",
     "1.14.4-latest": "1.4.4",
     "1.14.4-recommended": "1.4.4",
     "1.15.2-latest": "2.4.5",
