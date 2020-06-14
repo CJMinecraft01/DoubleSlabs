@@ -8,6 +8,8 @@ import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVertica
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
+import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderDirectionVerticalSlabSupport;
+import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderVerticalSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,6 +49,11 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("extendedmushrooms"))
             addSlabSupport(new ExtendedMushroomsVerticalSlabSupport());
+
+        if (ModList.get().isLoaded("worldofwonder")) {
+            addSlabSupport(new WorldOfWonderVerticalSlabSupport());
+            addSlabSupport(new WorldOfWonderDirectionVerticalSlabSupport());
+        }
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
