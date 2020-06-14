@@ -3,8 +3,12 @@ package cjminecraft.doubleslabs.blocks;
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IContainerSupport;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
+import cjminecraft.doubleslabs.util.WorldWrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -17,6 +21,7 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
@@ -82,7 +87,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public static Optional<BlockState> getHalfState(IBlockReader world, BlockPos pos, double x, double z) {
         BlockState state = world.getBlockState(pos);
 
-        return getTile(world, pos).flatMap(tile ->
+        return getTile(world, pos).flatMap(tile -> tile.getPositiveState() == null && tile.getNegativeState() == null ? Optional.empty() :
                 ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) > 0.5 :
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) < 0.5)
@@ -90,10 +95,10 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                         Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
     }
 
-    public static Optional<Pair<BlockState, World>> getHalfStateWithWorld(IBlockReader world, BlockPos pos, double x, double z) {
+    public static Optional<Pair<BlockState, WorldWrapper>> getHalfStateWithWorld(IBlockReader world, BlockPos pos, double x, double z) {
         BlockState state = world.getBlockState(pos);
 
-        return getTile(world, pos).flatMap(tile ->
+        return getTile(world, pos).flatMap(tile -> tile.getPositiveState() == null && tile.getNegativeState() == null ? Optional.empty() :
                 ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) > 0.5 :
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) < 0.5)
@@ -113,7 +118,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(tile.getPositiveState()) : 0, tile.getNegativeState() != null ? converter.applyAsInt(tile.getNegativeState()) : 0)).orElse(0);
     }
 
-    public static int maxWithWorld(IBlockReader world, BlockPos pos, ToIntFunction<Pair<BlockState, World>> converter) {
+    public static int maxWithWorld(IBlockReader world, BlockPos pos, ToIntFunction<Pair<BlockState, WorldWrapper>> converter) {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : 0, tile.getNegativeState() != null ? converter.applyAsInt(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())) : 0)).orElse(0);
     }
 
@@ -272,7 +277,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return minFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
+        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
 //        return runOnVerticalSlab(world, pos, (states) -> Math.min(states.getLeft() != null ? states.getLeft().getExplosionResistance(world, pos, exploder, explosion) : Integer.MAX_VALUE, states.getRight() != null ? states.getRight().getExplosionResistance(world, pos, exploder, explosion) : Integer.MAX_VALUE), () -> super.getExplosionResistance(state, world, pos, exploder, explosion));
     }
 
@@ -381,6 +386,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            world.removeTileEntity(pos);
         } else {
             if (state.get(DOUBLE)) {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
@@ -406,8 +412,6 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                     tile.setNegativeState(null);
 
                 world.setBlockState(pos, state.with(DOUBLE, false), 11);
-
-                return;
             } else {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
                 BlockState remainingState = tile.getPositiveState() != null ? tile.getPositiveState() : tile.getNegativeState();
@@ -421,9 +425,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                 remainingState.onReplaced(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                world.removeTileEntity(pos);
             }
         }
-        world.removeTileEntity(pos);
     }
 
     @Override
@@ -739,13 +743,22 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         if (state.getBlock() != this)
             return ActionResultType.PASS;
         return getHalfStateWithWorld(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(pair -> {
-            ActionResultType result;
-            try {
-                result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
-            } catch (ClassCastException e) {
-                result = ActionResultType.PASS;
+            IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
+            if (support == null) {
+                ActionResultType result;
+                try {
+                    result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+                } catch (Exception e) {
+                    result = ActionResultType.PASS;
+                }
+                return result;
+            } else {
+                if (!world.isRemote) {
+                    NetworkUtils.openGui((ServerPlayerEntity) player, support.getNamedContainerProvider(pair.getRight(), pos, pair.getLeft(), player, hand, hit), pos, pair.getRight(), pair.getRight().isPositive());
+                    support.onClicked(pair.getRight(), pos, pair.getLeft(), player, hand, hit);
+                }
+                return ActionResultType.SUCCESS;
             }
-            return result;
         }).orElse(ActionResultType.PASS);
 //        return runOnVerticalSlab(world, pos, states -> ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) > 0.5 : (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) < 0.5) || states.getRight() == null) && states.getLeft() != null ? states.getLeft().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getPositiveWorld(), player, hand, hit) : states.getRight().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getNegativeWorld(), player, hand, hit), () -> super.onBlockActivated(state, world, pos, player, hand, hit));
     }
@@ -766,5 +779,33 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         runIfAvailable(world, pos, s -> s.tick(world, pos, rand));
+    }
+
+    @Override
+    public void onFallenUpon(World world, BlockPos pos, Entity entity, float fallDistance) {
+        if (!getHalfStateWithWorld(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onFallenUpon(pair.getRight(), pos, entity, fallDistance);
+            return true;
+        }).orElse(false))
+            super.onFallenUpon(world, pos, entity, fallDistance);
+    }
+
+    @Override
+    public void onLanded(IBlockReader world, Entity entity) {
+        BlockPos pos = entity.getPosition().down();
+        if (!getHalfStateWithWorld(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onLanded(pair.getRight(), entity);
+            return true;
+        }).orElse(false))
+            super.onLanded(world, entity);
+    }
+
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entity) {
+        if (!getHalfStateWithWorld(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(pair -> {
+            pair.getLeft().getBlock().onEntityWalk(pair.getRight(), pos, entity);
+            return true;
+        }).orElse(false))
+            super.onEntityWalk(world, pos, entity);
     }
 }

@@ -3,8 +3,12 @@ package cjminecraft.doubleslabs.blocks;
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IContainerSupport;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
+import cjminecraft.doubleslabs.util.WorldWrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -17,6 +21,7 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
@@ -71,7 +76,7 @@ public class BlockDoubleSlab extends Block {
                         Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
     }
 
-    public static Optional<Pair<BlockState, World>> getHalfStateWithWorld(IBlockReader world, BlockPos pos, double y) {
+    public static Optional<Pair<BlockState, WorldWrapper>> getHalfStateWithWorld(IBlockReader world, BlockPos pos, double y) {
         return getTile(world, pos).flatMap(tile ->
                 (y > 0.5 || tile.getNegativeState() == null) && tile.getPositiveState() != null ?
                         Optional.of(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : Optional.of(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())));
@@ -89,7 +94,7 @@ public class BlockDoubleSlab extends Block {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(tile.getPositiveState()) : 0, tile.getNegativeState() != null ? converter.applyAsInt(tile.getNegativeState()) : 0)).orElse(0);
     }
 
-    public static int maxWithWorld(IBlockReader world, BlockPos pos, ToIntFunction<Pair<BlockState, World>> converter) {
+    public static int maxWithWorld(IBlockReader world, BlockPos pos, ToIntFunction<Pair<BlockState, WorldWrapper>> converter) {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveState() != null ? converter.applyAsInt(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : 0, tile.getNegativeState() != null ? converter.applyAsInt(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())) : 0)).orElse(0);
     }
 
@@ -169,7 +174,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return minFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
+        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
     }
 
     @Override
@@ -451,7 +456,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, @Nullable EntityType<?> entityType) {
-        return getTile(world, pos).map(tile -> tile.getPositiveState().getBlock().canCreatureSpawn(tile.getPositiveState(), world, pos, type, entityType)).orElse(true);
+        return getTile(world, pos).map(tile -> tile.getPositiveState() != null && tile.getPositiveState().getBlock().canCreatureSpawn(tile.getPositiveState(), world, pos, type, entityType)).orElse(true);
     }
 
     @Override
@@ -525,13 +530,22 @@ public class BlockDoubleSlab extends Block {
         if (state.getBlock() != this)
             return ActionResultType.PASS;
         return getHalfStateWithWorld(world, pos, hit.getHitVec().y - pos.getY()).map(pair -> {
-            ActionResultType result;
-            try {
-                result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
-            } catch (ClassCastException e) {
-                result = ActionResultType.PASS;
+            IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
+            if (support == null) {
+                ActionResultType result;
+                try {
+                    result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+                } catch (Exception e) {
+                    result = ActionResultType.PASS;
+                }
+                return result;
+            } else {
+                if (!world.isRemote) {
+                    NetworkUtils.openGui((ServerPlayerEntity) player, support.getNamedContainerProvider(pair.getRight(), pos, pair.getLeft(), player, hand, hit), pos, pair.getRight(), pair.getRight().isPositive());
+                    support.onClicked(pair.getRight(), pos, pair.getLeft(), player, hand, hit);
+                }
+                return ActionResultType.SUCCESS;
             }
-            return result;
         }).orElse(ActionResultType.PASS);
 //        return runOnVerticalSlab(world, pos, states -> ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ? (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) > 0.5 : (state.get(FACING).getAxis() == Direction.Axis.X ? hit.getHitVec().x - pos.getX() : hit.getHitVec().z - pos.getZ()) < 0.5) || states.getRight() == null) && states.getLeft() != null ? states.getLeft().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getPositiveWorld(), player, hand, hit) : states.getRight().onBlockActivated(((TileEntityVerticalSlab) world.getTileEntity(pos)).getNegativeWorld(), player, hand, hit), () -> super.onBlockActivated(state, world, pos, player, hand, hit));
     }
@@ -552,5 +566,42 @@ public class BlockDoubleSlab extends Block {
     @Override
     public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         runIfAvailable(world, pos, s -> s.tick(world, pos, rand));
+    }
+
+    @Override
+    public void onFallenUpon(World world, BlockPos pos, Entity entity, float fallDistance) {
+        if (!getTile(world, pos).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onFallenUpon(tile.getPositiveWorld(), pos, entity, fallDistance);
+                return true;
+            }
+            return false;
+        }).orElse(false)) {
+            super.onFallenUpon(world, pos, entity, fallDistance);
+        }
+    }
+
+    @Override
+    public void onLanded(IBlockReader world, Entity entity) {
+        if (!getTile(world, entity.getPosition().down()).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
+                return true;
+            }
+            return false;
+        }).orElse(false)) {
+            super.onLanded(world, entity);
+        }
+    }
+
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entity) {
+        getTile(world, pos).map(tile -> {
+            if (tile.getPositiveState() != null) {
+                tile.getPositiveState().getBlock().onEntityWalk(world, pos, entity);
+                return true;
+            }
+            return false;
+        }).orElse(null);
     }
 }
