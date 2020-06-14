@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.util;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,7 +38,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.lighting.WorldLightManager;
@@ -52,7 +50,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -69,6 +66,10 @@ public class WorldWrapper extends World {
         this.world = world;
     }
 
+    public boolean isPositive() {
+        return this.positive;
+    }
+
     public void setWorld(World world) {
         this.world = world;
     }
@@ -76,6 +77,10 @@ public class WorldWrapper extends World {
     public void setVerticalSlab(TileEntityVerticalSlab verticalSlab, boolean positive) {
         this.verticalSlab = verticalSlab;
         this.positive = positive;
+    }
+
+    public TileEntityVerticalSlab getVerticalSlab() {
+        return this.verticalSlab;
     }
 
     @Override
@@ -589,7 +594,7 @@ public class WorldWrapper extends World {
 
     @Override
     public WorldInfo getWorldInfo() {
-        return this.world.getWorldInfo();
+        return this.worldInfo;
     }
 
     @Override
