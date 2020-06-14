@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreDirectionalVerticalSlabBlock;
 import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
+import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
@@ -43,6 +44,9 @@ public class SlabSupport {
             addSlabSupport(new AbnormalsCoreVerticalSlabSupport());
             addSlabSupport(new AbnormalsCoreDirectionalVerticalSlabBlock());
         }
+
+        if (ModList.get().isLoaded("extendedmushrooms"))
+            addSlabSupport(new ExtendedMushroomsVerticalSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
