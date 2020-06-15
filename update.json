@@ -20,7 +20,9 @@
     "0.4.0": "=Tweaked double slab placement mechanics to work better with directional slabs\n=Optimised rendering of slabs\n=Fixed rendering of transparent slabs giving x-ray vision through other double slabs\n+Began JAR signing\n=Fixed a couple of crashes by improving stability of block overrides\n+Added Engineers Decor slab support",
     "0.4.1": "=Ensured that if a slab is blacklisted, no checks will be done on the slab\n=Fixed a crash with the midnight mod",
     "0.4.2": "+Added the ability for double slabs to emit light if one of the slabs emits light",
-    "0.5.0": "+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine"
+    "0.5.0": "+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine",
+    "0.6.0": "+Added vertical slabs (placed by holding shift with a regular slab)\n+Added support for slabs with tile entities\n=Tweaked mod support",
+    "0.6.1": "=Tweaked blast resistance calculation to better support blast resistant slabs\n+Added support for more slab features by adding support for slime block slabs\n=Fixed a server crash"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -38,7 +40,13 @@
     "1.2.5": "=Fixed a placement issue below y level 32",
     "1.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light",
     "1.2.7": "=Tweaked model caching\n=Fixed a crash with engineers decor",
-    "1.3.0": "=Tweaked Minecraft default slab support to hopefully support more blocks\n+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine"
+    "1.3.0": "=Tweaked Minecraft default slab support to hopefully support more blocks\n+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine",
+    "1.4.0": "+Added vertical slabs (placed by holding shift with a regular slab)\n+Added support for slabs with tile entities\n+Added support for quark vertical slabs\n=Fixed a model error",
+    "1.4.1": "=Fixed a server crash",
+    "1.4.2": "+Added option to disable placing vertical slabs using horizontal slabs\n=Fixed vertical slab texture alignment\n=Fixed ambient occlusion on vertical slabs\n=Fixed a capability related crash",
+    "1.4.3": "+Addded Swamp Expansion support",
+    "1.4.4": "=Attempted to fix a client crash",
+    "1.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash\n=Improved mod support"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -56,14 +64,22 @@
     "2.2.5": "=Fixed a placement issue below y level 32",
     "2.2.6": "+Added the ability for double slabs to emit light if one of the slabs emits light",
     "2.2.7": "=Tweaked model caching\n=Fixed a crash with engineers decor",
-    "2.3.0": "=Tweaked Minecraft default slab support to hopefully support more blocks\n+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine"
+    "2.3.0": "=Tweaked Minecraft default slab support to hopefully support more blocks\n+Added klee slab behaviour - when breaking a double slab (survival only) the slab will break depending on which half of the slab you mine and so the breaking speed will vary respectively depending on which side of the slab you mine",
+    "2.4.0": "+Added vertical slabs (placed by holding shift with a regular slab)\n+Added support for slabs with tile entities\n+Added support for quark vertical slabs\n=Fixed a model error",
+    "2.4.1": "=Fixed a server crash",
+    "2.4.2": "=Fixed another server crash",
+    "2.4.3": "+Added mubble support\n+Added option to disable placing vertical slabs using horizontal slabs\n=Fixed vertical slab texture alignment\n=Fixed ambient occlusion on vertical slabs\n=Fixed a capability related crash",
+    "2.4.4": "+Added Abnormal's Core vertical slab support",
+    "2.4.5": "=Attempted to fix a client crash",
+    "2.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash",
+    "2.5.1": "=Improved mod support"
   },
   "promos": {
-    "1.12.2-latest": "0.5.0",
-    "1.12.2-recommended": "0.5.0",
-    "1.14.4-latest": "1.3.0",
-    "1.14.4-recommended": "1.3.0",
-    "1.15.2-latest": "2.3.0",
-    "1.15.2-recommended": "2.3.0"
+    "1.12.2-latest": "0.6.1",
+    "1.12.2-recommended": "0.6.1",
+    "1.14.4-latest": "1.5.0",
+    "1.14.4-recommended": "1.5.0",
+    "1.15.2-latest": "2.5.1",
+    "1.15.2-recommended": "2.5.1"
   }
 }

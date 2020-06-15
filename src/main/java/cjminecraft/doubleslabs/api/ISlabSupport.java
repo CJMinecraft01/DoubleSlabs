@@ -15,12 +15,12 @@ public interface ISlabSupport {
     @Deprecated
     default boolean isValid(IBlockReader world, BlockPos pos, BlockState state) {
         return false;
-    };
+    }
 
     @Deprecated
     default boolean isValid(ItemStack stack, PlayerEntity player, Hand hand) {
         return false;
-    };
+    }
 
     default boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
         return isValid(world, pos, state);
@@ -48,14 +48,14 @@ public interface ISlabSupport {
 
     default SlabType getHalf(World world, BlockPos pos, BlockState state) {
         return SlabType.BOTTOM;
-    };
+    }
 
     default BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
         BlockItem slab = (BlockItem) stack.getItem();
         return slab.getBlock().getDefaultState();
-    };
+    }
 
     default boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
         return ((BlockItem) stack.getItem()).getBlock() == state.getBlock();
-    };
+    }
 }

@@ -43,12 +43,12 @@ public class VerticalSlabSupport<T extends Enum<T> & IStringSerializable> implem
 
     @Override
     public boolean isVerticalSlab(IBlockReader world, BlockPos pos, BlockState state) {
-        return verticalSlab != null && state.getBlock().getClass().equals(verticalSlab) && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[4]);
+        return verticalSlab != null && verticalSlab.isAssignableFrom(state.getBlock().getClass()) && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[4]);
     }
 
     @Override
     public boolean isVerticalSlab(ItemStack stack, PlayerEntity player, net.minecraft.util.Hand hand) {
-        return verticalSlab != null && (stack.getItem() instanceof BlockItem) && (((BlockItem)stack.getItem()).getBlock().getClass().equals(verticalSlab));
+        return verticalSlab != null && (stack.getItem() instanceof BlockItem) && verticalSlab.isAssignableFrom(((BlockItem)stack.getItem()).getBlock().getClass());
     }
 
     @Override
