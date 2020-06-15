@@ -45,7 +45,8 @@
     "1.4.1": "=Fixed a server crash",
     "1.4.2": "+Added option to disable placing vertical slabs using horizontal slabs\n=Fixed vertical slab texture alignment\n=Fixed ambient occlusion on vertical slabs\n=Fixed a capability related crash",
     "1.4.3": "+Addded Swamp Expansion support",
-    "1.4.4": "=Attempted to fix a client crash"
+    "1.4.4": "=Attempted to fix a client crash",
+    "1.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash\n=Improved mod support"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -70,14 +71,15 @@
     "2.4.3": "+Added mubble support\n+Added option to disable placing vertical slabs using horizontal slabs\n=Fixed vertical slab texture alignment\n=Fixed ambient occlusion on vertical slabs\n=Fixed a capability related crash",
     "2.4.4": "+Added Abnormal's Core vertical slab support",
     "2.4.5": "=Attempted to fix a client crash",
-    "2.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash"
+    "2.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash",
+    "2.5.1": "=Improved mod support"
   },
   "promos": {
     "1.12.2-latest": "0.6.1",
     "1.12.2-recommended": "0.6.1",
-    "1.14.4-latest": "1.4.4",
-    "1.14.4-recommended": "1.4.4",
-    "1.15.2-latest": "2.5.0",
-    "1.15.2-recommended": "2.5.0"
+    "1.14.4-latest": "1.5.0",
+    "1.14.4-recommended": "1.5.0",
+    "1.15.2-latest": "2.5.1",
+    "1.15.2-recommended": "2.5.1"
   }
 }
