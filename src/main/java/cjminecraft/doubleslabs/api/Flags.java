@@ -8,7 +8,6 @@ import net.minecraft.world.IBlockReader;
 
 import java.util.HashMap;
 
-@Deprecated
 public class Flags {
 
     private static final HashMap<BlockPos, Boolean> POSITIVE = new HashMap<>();
