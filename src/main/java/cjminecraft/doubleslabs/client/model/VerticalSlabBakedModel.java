@@ -1,27 +1,24 @@
 package cjminecraft.doubleslabs.client.model;
 
-import cjminecraft.doubleslabs.Config;
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
-import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.Vector4f;
-import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.FaceBakery;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ILightReader;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
@@ -134,7 +131,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
         int[] finalData = new int[data.length];
         for (int i = 0; i < vertexOrder.length; i++) {
-            int j = vertexOrder[i] * 8;
+            int j = !Utils.isOptiFineInstalled() ? vertexOrder[i] * 8 : i * 8;
             finalData[i * 8] = data[j];
             finalData[i * 8 + 1] = data[j + 1];
             finalData[i * 8 + 2] = data[j + 2];

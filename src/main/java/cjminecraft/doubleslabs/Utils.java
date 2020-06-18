@@ -9,6 +9,22 @@ import net.minecraft.util.math.Vec3d;
 
 public class Utils {
 
+    private static boolean optifine = false;
+
+    public static boolean isOptiFineInstalled() {
+        return optifine;
+    }
+
+    public static void checkOptiFineInstalled() {
+        try {
+            Class.forName("net.optifine.Config");
+            optifine = true;
+            DoubleSlabs.LOGGER.info("Detected OptiFine is installed, tweaking vertical slabs rendering");
+        } catch (ClassNotFoundException ignored) {
+            optifine = false;
+        }
+    }
+
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque();
     }
