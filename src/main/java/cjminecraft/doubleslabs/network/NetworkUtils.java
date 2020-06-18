@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.network;
 
-import cjminecraft.doubleslabs.Flags;
-import cjminecraft.doubleslabs.util.WorldWrapper;
+import cjminecraft.doubleslabs.api.Flags;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;

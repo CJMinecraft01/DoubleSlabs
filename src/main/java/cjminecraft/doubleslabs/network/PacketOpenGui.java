@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.network;
 
-import cjminecraft.doubleslabs.Flags;
-import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
+import cjminecraft.doubleslabs.api.Flags;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
@@ -10,11 +9,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;

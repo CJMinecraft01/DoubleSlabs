@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs;
+package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.BlockState;
@@ -8,6 +8,7 @@ import net.minecraft.world.IBlockReader;
 
 import java.util.HashMap;
 
+@Deprecated
 public class Flags {
 
     private static final HashMap<BlockPos, Boolean> POSITIVE = new HashMap<>();
