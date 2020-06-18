@@ -58,6 +58,10 @@ public class WorldWrapper extends World {
         this.world = world;
     }
 
+    public World getActualWorld() {
+        return this.world;
+    }
+
     public void setVerticalSlab(TileEntityVerticalSlab verticalSlab, boolean positive) {
         this.verticalSlab = verticalSlab;
         this.positive = positive;
