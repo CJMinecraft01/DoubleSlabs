@@ -236,7 +236,7 @@ public class Events {
 
                             return;
                         }
-                        if (event.getEntityPlayer().isSneaking() && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
+                        if ((event.getEntityPlayer().isSneaking() || DoubleSlabsConfig.INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT) && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
                             // Try to place a horizontal slab as a vertical slab
                             RayTraceResult result = Utils.rayTrace(event.getEntityPlayer());
                             if (face.getAxis() == EnumFacing.Axis.Y) {
