@@ -46,12 +46,12 @@ public class AbnormalsCoreDirectionalVerticalSlabBlock<T extends Enum<T> & IStri
 
     @Override
     public boolean isVerticalSlab(IBlockReader world, BlockPos pos, BlockState state) {
-        return verticalSlab != null && state.getBlock().getClass().equals(verticalSlab) && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[1]);
+        return verticalSlab != null && verticalSlab.isAssignableFrom(state.getBlock().getClass()) && !state.get(verticalSlabTypeProperty).equals(verticalSlabTypes[1]);
     }
 
     @Override
     public boolean isVerticalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return verticalSlab != null && (stack.getItem() instanceof BlockItem) && (((BlockItem)stack.getItem()).getBlock().getClass().equals(verticalSlab));
+        return verticalSlab != null && (stack.getItem() instanceof BlockItem) && verticalSlab.isAssignableFrom(((BlockItem)stack.getItem()).getBlock().getClass());
     }
 
     @Override
