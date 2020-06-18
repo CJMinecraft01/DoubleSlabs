@@ -130,7 +130,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
         int[] finalData = new int[data.length];
         for (int i = 0; i < vertexOrder.length; i++) {
-            int j = vertexOrder[i] * 7;
+            int j = !Utils.isOptiFineInstalled() ? vertexOrder[i] * 7 : i * 7;
             finalData[i * 7] = data[j];
             finalData[i * 7 + 1] = data[j + 1];
             finalData[i * 7 + 2] = data[j + 2];

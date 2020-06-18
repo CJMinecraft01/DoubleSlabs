@@ -1,16 +1,28 @@
 package cjminecraft.doubleslabs;
 
-import cjminecraft.doubleslabs.util.Vector3f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.util.vector.Quaternion;
 
 public class Utils {
 
-    private static final double DEGREE_TO_RAD = Math.PI / 180.0D;
+    private static boolean optifine = false;
+
+    public static boolean isOptiFineInstalled() {
+        return optifine;
+    }
+
+    public static void checkOptiFineInstalled() {
+        try {
+            Class.forName("net.optifine.Lang");
+            optifine = true;
+            DoubleSlabs.LOGGER.info("Detected OptiFine is installed, tweaking vertical slabs rendering");
+        } catch (ClassNotFoundException ignored) {
+            optifine = false;
+        }
+    }
 
     public static boolean isTransparent(IBlockState state) {
         return state == null || !state.getMaterial().isOpaque();

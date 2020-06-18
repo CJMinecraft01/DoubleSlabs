@@ -41,6 +41,7 @@ public class DoubleSlabs
     public void postInit(FMLPostInitializationEvent event) {
         SlabSupport.init();
         ContainerSupport.init();
+        Utils.checkOptiFineInstalled();
     }
 
     @Mod.EventHandler
