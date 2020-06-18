@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -20,6 +21,13 @@ public class Flags {
         if (tile instanceof TileEntityVerticalSlab)
             return isPositive(pos) ? ((TileEntityVerticalSlab) tile).getPositiveTile() : ((TileEntityVerticalSlab) tile).getNegativeTile();
         return tile;
+    }
+
+    public static BlockState getBlockStateAtPos(BlockPos pos, IBlockReader world) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileEntityVerticalSlab)
+            return isPositive(pos) ? ((TileEntityVerticalSlab) tile).getPositiveState() : ((TileEntityVerticalSlab) tile).getNegativeState();
+        return world.getBlockState(pos);
     }
 
     public static void setPositive(BlockPos pos, boolean value) {
