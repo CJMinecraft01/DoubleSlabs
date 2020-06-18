@@ -541,7 +541,7 @@ public class BlockDoubleSlab extends Block {
                 return result;
             } else {
                 if (!world.isRemote) {
-                    NetworkUtils.openGui((ServerPlayerEntity) player, support.getNamedContainerProvider(pair.getRight(), pos, pair.getLeft(), player, hand, hit), pos, pair.getRight(), pair.getRight().isPositive());
+                    NetworkUtils.openGui((ServerPlayerEntity) player, support.getNamedContainerProvider(pair.getRight(), pos, pair.getLeft(), player, hand, hit), pos, pair.getRight().isPositive());
                     support.onClicked(pair.getRight(), pos, pair.getLeft(), player, hand, hit);
                 }
                 return ActionResultType.SUCCESS;
