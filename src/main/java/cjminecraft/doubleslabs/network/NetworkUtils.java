@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.network;
 
+import cjminecraft.doubleslabs.api.Flags;
 import cjminecraft.doubleslabs.util.WorldWrapper;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 
 public class NetworkUtils {
 
-    public static void openGui(ServerPlayerEntity player, INamedContainerProvider containerSupplier, BlockPos pos, WorldWrapper world, boolean positive)
+    public static void openGui(ServerPlayerEntity player, INamedContainerProvider containerSupplier, BlockPos pos, boolean positive)
     {
         if (player.world.isRemote) return;
         player.closeContainer();
@@ -30,9 +31,8 @@ public class NetworkUtils {
         if (output.readableBytes() > 32600 || output.readableBytes() < 1) {
             throw new IllegalArgumentException("Invalid PacketBuffer for openGui, found "+ output.readableBytes()+ " bytes");
         }
-        player.setWorld(world);
+        Flags.setPositive(pos, positive);
         Container c = containerSupplier.createMenu(openContainerId, player.inventory, player);
-        player.setWorld(world.getWorld());
         ContainerType<?> type = c.getType();
         PacketOpenGui msg = new PacketOpenGui(type, openContainerId, containerSupplier.getDisplayName(), output, positive);
         PacketHandler.INSTANCE.sendTo(msg, player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);

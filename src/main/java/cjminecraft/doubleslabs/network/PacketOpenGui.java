@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.network;
 
+import cjminecraft.doubleslabs.api.Flags;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
@@ -54,20 +55,11 @@ public class PacketOpenGui {
         ctx.get().enqueueWork(() -> {
             ScreenManager.getScreenFactory(msg.getType(), Minecraft.getInstance(), msg.getWindowId(), msg.getName())
                     .ifPresent(f -> {
-                        World world = Minecraft.getInstance().player.world;
                         BlockPos pos = new PacketBuffer(msg.getAdditionalData().copy()).readBlockPos();
-                        TileEntity tile = world.getTileEntity(pos);
-                        if (tile != null && tile instanceof TileEntityVerticalSlab) {
-                            if (msg.positive)
-                                world = ((TileEntityVerticalSlab) tile).getPositiveWorld();
-                            else
-                                world = ((TileEntityVerticalSlab) tile).getNegativeWorld();
-                        }
-                        Minecraft.getInstance().player.world = world;
+                        Flags.setPositive(pos, msg.positive);
                         Container c = msg.getType().create(msg.getWindowId(), Minecraft.getInstance().player.inventory, msg.getAdditionalData());
                         @SuppressWarnings("unchecked")
                         Screen s = ((ScreenManager.IScreenFactory<Container, ?>) f).create(c, Minecraft.getInstance().player.inventory, msg.getName());
-                        Minecraft.getInstance().player.world = world.getWorld();
                         Minecraft.getInstance().player.openContainer = ((IHasContainer<?>) s).getContainer();
                         Minecraft.getInstance().displayGuiScreen(s);
                     });

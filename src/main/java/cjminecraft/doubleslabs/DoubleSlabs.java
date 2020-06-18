@@ -37,6 +37,7 @@ public class DoubleSlabs
         SlabSupport.init();
         ContainerSupport.init();
         PacketHandler.registerPackets();
+        Utils.checkOptiFineInstalled();
     }
 
 //    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {

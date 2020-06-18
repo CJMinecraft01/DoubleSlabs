@@ -12,6 +12,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -29,6 +30,12 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Events {
+
+    private static BlockState removeWaterloggedPropertyFromState(BlockState state) {
+        if (state.has(BlockStateProperties.WATERLOGGED))
+            return state.with(BlockStateProperties.WATERLOGGED, false);
+        return state;
+    }
 
     @SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickBlock event) {
@@ -112,6 +119,8 @@ public class Events {
                             face = blockSupport.getDirection(event.getWorld(), pos, state);
                         }
 
+                        state = removeWaterloggedPropertyFromState(state);
+
                         // Get the direction that the vertical slab block is facing
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
@@ -165,6 +174,7 @@ public class Events {
                     if (blockSupport != null) {
                         // We are trying to combine a mod vertical slab with a regular slab
 
+                        state = removeWaterloggedPropertyFromState(state);
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
                         if (face == direction) {
                             BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
@@ -205,6 +215,7 @@ public class Events {
                         if (blockSupport != null) {
                             // We are trying to combine a mod vertical slab with a regular slab
 
+                            state = removeWaterloggedPropertyFromState(state);
                             Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
                             BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
@@ -222,7 +233,7 @@ public class Events {
 
                             return;
                         }
-                        if (event.getPlayer().isSneaking() && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
+                        if ((event.getPlayer().isSneaking() || Config.INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT.get()) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
                             if (face.getAxis() == Direction.Axis.Y) {
@@ -301,6 +312,7 @@ public class Events {
                     return;
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
+                    state = removeWaterloggedPropertyFromState(state);
                     BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 

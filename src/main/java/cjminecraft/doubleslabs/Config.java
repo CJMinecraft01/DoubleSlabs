@@ -16,6 +16,7 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<ArrayList<String>> SLAB_BLACKLIST;
     public static ForgeConfigSpec.BooleanValue REPLACE_SAME_SLAB;
     public static ForgeConfigSpec.BooleanValue DISABLE_VERTICAL_SLAB_PLACEMENT;
+    public static ForgeConfigSpec.BooleanValue INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT;
 
     static {
         COMMON_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
@@ -26,6 +27,8 @@ public class Config {
                 .define("replace_same_slab", true);
         DISABLE_VERTICAL_SLAB_PLACEMENT = COMMON_BUILDER.comment("Whether to disable the placement of vertical slabs from regualar horizontal slabs when holding shift")
                 .define("disable_vertical_slab_placement", false);
+        INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT = COMMON_BUILDER.comment("Whether to invert the placement of vertical slabs to not require the player to sneak")
+                .define("invert_sneak_vertical_slab_placement", false);
 
         COMMON_BUILDER.pop();
 
