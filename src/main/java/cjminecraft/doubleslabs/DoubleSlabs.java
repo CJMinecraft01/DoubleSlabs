@@ -22,7 +22,7 @@ public class DoubleSlabs
     public static final String MODID = "doubleslabs";
     public static final Logger LOGGER = LogManager.getFormatterLogger(MODID);
 
-    public static IProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+    public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public DoubleSlabs() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
