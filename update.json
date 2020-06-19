@@ -75,14 +75,15 @@
     "2.4.5": "=Attempted to fix a client crash",
     "2.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash",
     "2.5.1": "=Improved mod support",
-    "2.6.0": "=Fixed waterlogged slab placement\n=Fixed vertical slab rendering with OptiFine\n=Improved slabs with Tile Entities support\n=Added a config option to invert the requirement of holding shift to place a vertical slab"
+    "2.6.0": "=Fixed waterlogged slab placement\n=Fixed vertical slab rendering with OptiFine\n=Improved slabs with Tile Entities support\n=Added a config option to invert the requirement of holding shift to place a vertical slab",
+    "2.6.1": "=Fixed a server crash"
   },
   "promos": {
     "1.12.2-latest": "0.6.2",
     "1.12.2-recommended": "0.6.2",
     "1.14.4-latest": "1.6.0",
     "1.14.4-recommended": "1.6.0",
-    "1.15.2-latest": "2.6.0",
-    "1.15.2-recommended": "2.6.0"
+    "1.15.2-latest": "2.6.1",
+    "1.15.2-recommended": "2.6.1"
   }
 }
