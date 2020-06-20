@@ -79,14 +79,15 @@
     "2.5.1": "=Improved mod support",
     "2.6.0": "=Fixed waterlogged slab placement\n=Fixed vertical slab rendering with OptiFine\n=Improved slabs with Tile Entities support\n=Added a config option to invert the requirement of holding shift to place a vertical slab",
     "2.6.1": "=Fixed a server crash",
-    "2.7.0": "=Fixed a server crash\n-Removed invert vertical slab placement\n+Added new option to use an alternate and more intuitive placement option (enabled by default)\n=Moved the config from COMMON to SERVER so that it is synced with clients\n=Fixed an issue with OptiFine on a server"
+    "2.7.0": "=Fixed a server crash\n-Removed invert vertical slab placement\n+Added new option to use an alternate and more intuitive placement option (enabled by default)\n=Moved the config from COMMON to SERVER so that it is synced with clients\n=Fixed an issue with OptiFine on a server",
+    "2.7.1": "=Fixed rendering under water"
   },
   "promos": {
     "1.12.2-latest": "0.7.0",
     "1.12.2-recommended": "0.7.0",
     "1.14.4-latest": "1.7.0",
     "1.14.4-recommended": "1.7.0",
-    "1.15.2-latest": "2.7.0",
-    "1.15.2-recommended": "2.7.0"
+    "1.15.2-latest": "2.7.1",
+    "1.15.2-recommended": "2.7.1"
   }
 }
