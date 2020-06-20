@@ -158,6 +158,7 @@ public class Events {
                 BlockPos pos = event.getPos();
                 EnumFacing face = event.getFace();
                 IBlockState state = event.getWorld().getBlockState(pos);
+                IBlockState originalState = state;
                 if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)))
                     return;
 
@@ -236,7 +237,9 @@ public class Events {
 
                             return;
                         }
-                        if ((event.getEntityPlayer().isSneaking() || DoubleSlabsConfig.INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT) && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
+                        if (((event.getEntityPlayer().isSneaking() && !DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT) || (DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT && ((event.getEntityPlayer().isSneaking() && face.getAxis() == EnumFacing.Axis.Y) || (!event.getEntityPlayer().isSneaking() && face.getAxis() != EnumFacing.Axis.Y)))) && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
+                            if ((originalState.getBlock().hasTileEntity(originalState) && originalState.getBlock().onBlockActivated(event.getWorld(), event.getPos(), originalState, event.getEntityPlayer(), event.getHand(), face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z)))
+                                return;
                             // Try to place a horizontal slab as a vertical slab
                             RayTraceResult result = Utils.rayTrace(event.getEntityPlayer());
                             if (face.getAxis() == EnumFacing.Axis.Y) {

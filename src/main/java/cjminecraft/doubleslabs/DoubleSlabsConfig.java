@@ -30,10 +30,10 @@ public class DoubleSlabsConfig {
     @Config.LangKey("config.doubleslabs.disable_vertical_slab_placement")
     public static boolean DISABLE_VERTICAL_SLAB_PLACEMENT = false;
 
-    @Config.Name("Invert Sneak Vertical Slab Placement")
-    @Config.Comment({"Whether to invert the placement of vertical slabs to not require the player to sneak"})
-    @Config.LangKey("config.doubleslabs.invert_sneak_vertical_slab_placement")
-    public static boolean INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT = false;
+    @Config.Name("Alternate Vertical Slab Placement")
+    @Config.Comment({"Whether to use an alternate system when placing vertical slabs"})
+    @Config.LangKey("config.doubleslabs.alternate_vertical_slab_placement")
+    public static boolean ALTERNATE_VERTICAL_SLAB_PLACEMENT = true;
 
 
     public static String slabToString(IBlockState state) {

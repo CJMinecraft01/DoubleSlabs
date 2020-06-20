@@ -6,9 +6,11 @@ import cjminecraft.doubleslabs.patches.DynamicSurroundings;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +43,8 @@ public class DoubleSlabs
     public void postInit(FMLPostInitializationEvent event) {
         SlabSupport.init();
         ContainerSupport.init();
-        Utils.checkOptiFineInstalled();
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+            Utils.checkOptiFineInstalled();
     }
 
     @Mod.EventHandler
