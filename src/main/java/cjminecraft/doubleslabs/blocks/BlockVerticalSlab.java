@@ -808,4 +808,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         }).orElse(false))
             super.onEntityWalk(world, pos, entity);
     }
+
+    @Override
+    public boolean shouldDisplayFluidOverlay(BlockState state, ILightReader world, BlockPos pos, IFluidState fluidState) {
+        return state.get(DOUBLE);
+    }
 }
