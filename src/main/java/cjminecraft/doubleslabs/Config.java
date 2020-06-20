@@ -11,30 +11,30 @@ public class Config {
 
     public static final String CATEGORY_GENERAL = "general";
 
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
 
-    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec SERVER_CONFIG;
 
     public static ForgeConfigSpec.ConfigValue<ArrayList<String>> SLAB_BLACKLIST;
     public static ForgeConfigSpec.BooleanValue REPLACE_SAME_SLAB;
     public static ForgeConfigSpec.BooleanValue DISABLE_VERTICAL_SLAB_PLACEMENT;
-    public static ForgeConfigSpec.BooleanValue INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT;
+    public static ForgeConfigSpec.BooleanValue ALTERNATE_VERTICAL_SLAB_PLACEMENT;
 
     static {
-        COMMON_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
+        SERVER_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
 
-        SLAB_BLACKLIST = COMMON_BUILDER.comment("The list of slab types and variants to ignore when creating double slabs", "Example: minecraft:purpur_slab")
+        SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slab types and variants to ignore when creating double slabs", "Example: minecraft:purpur_slab")
                 .define("slab_blacklist", new ArrayList<>());
-        REPLACE_SAME_SLAB = COMMON_BUILDER.comment("Whether to use the custom double slab when combining slabs of the same type")
+        REPLACE_SAME_SLAB = SERVER_BUILDER.comment("Whether to use the custom double slab when combining slabs of the same type")
                 .define("replace_same_slab", true);
-        DISABLE_VERTICAL_SLAB_PLACEMENT = COMMON_BUILDER.comment("Whether to disable the placement of vertical slabs from regular horizontal slabs when holding shift")
+        DISABLE_VERTICAL_SLAB_PLACEMENT = SERVER_BUILDER.comment("Whether to disable the placement of vertical slabs from regular horizontal slabs when holding shift")
             .define("disable_vertical_slab_placement", false);
-        INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT = COMMON_BUILDER.comment("Whether to invert the placement of vertical slabs to not require the player to sneak")
-                .define("invert_sneak_vertical_slab_placement", false);
+        ALTERNATE_VERTICAL_SLAB_PLACEMENT = SERVER_BUILDER.comment("Whether to use an alternate system when placing vertical slabs")
+                .define("alternate_vertical_slab_placement", true);
 
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
-        COMMON_CONFIG = COMMON_BUILDER.build();
+        SERVER_CONFIG = SERVER_BUILDER.build();
     }
 
     public static String slabToString(BlockState state) {
