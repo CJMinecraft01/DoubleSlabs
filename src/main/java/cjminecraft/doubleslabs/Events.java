@@ -233,7 +233,7 @@ public class Events {
 
                             return;
                         }
-                        if ((event.getPlayer().isSneaking() || Config.INVERT_SNEAK_VERTICAL_SLAB_PLACEMENT.get()) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
+                        if (((event.getPlayer().isSneaking() && !Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get()) || (Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get() && ((event.getPlayer().isSneaking() && face.getAxis() == Direction.Axis.Y) || (!event.getPlayer().isSneaking() && face.getAxis() != Direction.Axis.Y)))) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
                             if (face.getAxis() == Direction.Axis.Y) {

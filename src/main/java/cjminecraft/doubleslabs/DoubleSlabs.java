@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.network.PacketHandler;
 import cjminecraft.doubleslabs.proxy.ClientProxy;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import cjminecraft.doubleslabs.proxy.ServerProxy;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -17,15 +18,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(DoubleSlabs.MODID)
-public class DoubleSlabs
-{
+public class DoubleSlabs {
     public static final String MODID = "doubleslabs";
     public static final Logger LOGGER = LogManager.getFormatterLogger(MODID);
 
     public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public DoubleSlabs() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
@@ -37,7 +37,10 @@ public class DoubleSlabs
         SlabSupport.init();
         ContainerSupport.init();
         PacketHandler.registerPackets();
-        Utils.checkOptiFineInstalled();
+        DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> {
+            Utils.checkOptiFineInstalled();
+            return null;
+        });
     }
 
 //    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {

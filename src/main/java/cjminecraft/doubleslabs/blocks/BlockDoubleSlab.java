@@ -61,7 +61,7 @@ public class BlockDoubleSlab extends Block {
 
     public static Optional<TileEntityDoubleSlab> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile != null && tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
+        return tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
     }
 
     public static Optional<BlockState> getAvailableState(IBlockReader world, BlockPos pos) {
@@ -69,13 +69,13 @@ public class BlockDoubleSlab extends Block {
     }
 
     public static Optional<BlockState> getHalfState(IBlockReader world, BlockPos pos, double y) {
-        return getTile(world, pos).flatMap(tile ->
+        return getTile(world, pos).flatMap(tile -> tile.getNegativeState() == null && tile.getPositiveState() == null ? Optional.empty() :
                 (y > 0.5 || tile.getNegativeState() == null) && tile.getPositiveState() != null ?
                         Optional.of(tile.getPositiveState()) : Optional.of(tile.getNegativeState()));
     }
 
     public static Optional<Pair<BlockState, WorldWrapper>> getHalfStateWithWorld(IBlockReader world, BlockPos pos, double y) {
-        return getTile(world, pos).flatMap(tile ->
+        return getTile(world, pos).flatMap(tile -> tile.getNegativeState() == null && tile.getPositiveState() == null ? Optional.empty() :
                 (y > 0.5 || tile.getNegativeState() == null) && tile.getPositiveState() != null ?
                         Optional.of(Pair.of(tile.getPositiveState(), tile.getPositiveWorld())) : Optional.of(Pair.of(tile.getNegativeState(), tile.getNegativeWorld())));
     }
