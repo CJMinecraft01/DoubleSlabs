@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -236,6 +237,8 @@ public class Events {
                             return;
                         }
                         if (((event.getPlayer().isShiftKeyDown() && !Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get()) || (Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get() && ((event.getPlayer().isShiftKeyDown() && face.getAxis() == Direction.Axis.Y) || (!event.getPlayer().isShiftKeyDown() && face.getAxis() != Direction.Axis.Y)))) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
+                            if (!state.isAir(event.getWorld(), pos))
+                                return;
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
                             if (face.getAxis() == Direction.Axis.Y) {

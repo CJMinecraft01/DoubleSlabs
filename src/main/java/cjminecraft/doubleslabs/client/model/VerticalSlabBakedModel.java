@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.model;
 
+import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
@@ -41,7 +42,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
-    private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side, boolean positiveState) {
+    private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side) {
         int[] data = new int[vertexData.length];
         int[] vertexOrder = new int[vertexData.length / 8];
         for (int i = 0; i < vertexData.length / 8; i++) {
@@ -168,7 +169,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         if ((positiveState && !extraData.getData(ROTATE_POSITIVE)) || (!positiveState && !extraData.getData(ROTATE_NEGATIVE)))
             return new ArrayList<>(model.getQuads(state, side, rand, extraData));
         return new ArrayList<>(model.getQuads(state, Utils.rotateFace(side, direction), rand, extraData).stream().map(quad -> {
-            int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side, positiveState);
+            int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
         }).collect(Collectors.toList()));
     }
