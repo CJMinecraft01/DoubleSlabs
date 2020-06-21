@@ -240,6 +240,8 @@ public class Events {
                         if (((event.getEntityPlayer().isSneaking() && !DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT) || (DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT && ((event.getEntityPlayer().isSneaking() && face.getAxis() == EnumFacing.Axis.Y) || (!event.getEntityPlayer().isSneaking() && face.getAxis() != EnumFacing.Axis.Y)))) && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
                             if ((originalState.getBlock().hasTileEntity(originalState) && originalState.getBlock().onBlockActivated(event.getWorld(), event.getPos(), originalState, event.getEntityPlayer(), event.getHand(), face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z)))
                                 return;
+                            if (!state.getBlock().isAir(state, event.getWorld(), pos))
+                                return;
                             // Try to place a horizontal slab as a vertical slab
                             RayTraceResult result = Utils.rayTrace(event.getEntityPlayer());
                             if (face.getAxis() == EnumFacing.Axis.Y) {
