@@ -61,7 +61,7 @@ public class BlockDoubleSlab extends Block {
 
     public static Optional<TileEntityDoubleSlab> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
+        return world.getBlockState(pos).getBlock() == Registrar.DOUBLE_SLAB && tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
     }
 
     public static Optional<BlockState> getAvailableState(IBlockReader world, BlockPos pos) {

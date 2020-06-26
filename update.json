@@ -25,7 +25,8 @@
     "0.6.1": "=Tweaked blast resistance calculation to better support blast resistant slabs\n+Added support for more slab features by adding support for slime block slabs\n=Fixed a server crash",
     "0.6.2": "=Fixed an issue with vertical slab rendering when OptiFine is installed\n+Added a config option to invert the sneak requirement when placing vertical slabs",
     "0.7.0": "=Fixed a server crash\n-Removed invert vertical slab placement\n+Added new option to use an alternate and more intuitive placement option (enabled by default)\n=Fixed an issue with OptiFine on a server",
-    "0.7.1": "=Fixed a placement bug"
+    "0.7.1": "=Fixed a placement bug",
+    "0.7.2": "=Fixed a crash"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -52,7 +53,8 @@
     "1.5.0": "+Added more support for slabs with containers\n+Added support for slime slabs\n=Improved slab blast resistance\n+Added World of Wonder support\n+Added extended mushrooms support\n=Fixed a server crash\n=Improved mod support",
     "1.6.0": "=Fixed waterlogged slab placement\n=Fixed vertical slab rendering with OptiFine\n=Improved slabs with Tile Entities support\n=Added a config option to invert the requirement of holding shift to place a vertical slab",
     "1.7.0": "=Fixed a server crash\n-Removed invert vertical slab placement\n+Added new option to use an alternate and more intuitive placement option (enabled by default)\n=Moved the config from COMMON to SERVER so that it is synced with clients\n=Fixed an issue with OptiFine on a server",
-    "1.7.1": "=Fixed a placement bug"
+    "1.7.1": "=Fixed a placement bug",
+    "1.7.2": "=Fixed a crash"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -83,14 +85,15 @@
     "2.6.1": "=Fixed a server crash",
     "2.7.0": "=Fixed a server crash\n-Removed invert vertical slab placement\n+Added new option to use an alternate and more intuitive placement option (enabled by default)\n=Moved the config from COMMON to SERVER so that it is synced with clients\n=Fixed an issue with OptiFine on a server",
     "2.7.1": "=Fixed rendering under water",
-    "2.7.2": "=Fixed a placement bug"
+    "2.7.2": "=Fixed a placement bug",
+    "2.7.3": "=Fixed a crash"
   },
   "promos": {
-    "1.12.2-latest": "0.7.1",
-    "1.12.2-recommended": "0.7.1",
-    "1.14.4-latest": "1.7.1",
-    "1.14.4-recommended": "1.7.1",
-    "1.15.2-latest": "2.7.2",
-    "1.15.2-recommended": "2.7.2"
+    "1.12.2-latest": "0.7.2",
+    "1.12.2-recommended": "0.7.2",
+    "1.14.4-latest": "1.7.2",
+    "1.14.4-recommended": "1.7.2",
+    "1.15.2-latest": "2.7.3",
+    "1.15.2-recommended": "2.7.3"
   }
 }
