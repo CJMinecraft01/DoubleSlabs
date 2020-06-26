@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.blocks;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
@@ -69,7 +70,7 @@ public class BlockVerticalSlab extends Block {
 
     public static Optional<TileEntityVerticalSlab> getTile(IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile != null && tile instanceof TileEntityVerticalSlab ? Optional.of((TileEntityVerticalSlab) tile) : Optional.empty();
+        return world.getBlockState(pos).getBlock() == Registrar.VERTICAL_SLAB && tile instanceof TileEntityVerticalSlab ? Optional.of((TileEntityVerticalSlab) tile) : Optional.empty();
     }
 
     public static Optional<IBlockState> getAvailableState(IBlockAccess world, BlockPos pos) {
