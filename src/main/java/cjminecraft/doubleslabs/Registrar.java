@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -24,6 +25,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Map;
+
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Registrar {
 
@@ -38,11 +41,39 @@ public class Registrar {
         GameRegistry.registerTileEntity(TileEntityVerticalSlab.class, new ResourceLocation(DoubleSlabs.MODID, "vertical_slab"));
     }
 
-	@SideOnly(Side.CLIENT)
+    private static String getPropertyString(Map<IProperty<?>, Comparable<?>> values) {
+        StringBuilder stringbuilder = new StringBuilder();
+
+        for (Map.Entry<IProperty<?>, Comparable<?>> entry : values.entrySet()) {
+            if (stringbuilder.length() != 0) {
+                stringbuilder.append(",");
+            }
+
+            IProperty<?> iproperty = entry.getKey();
+            stringbuilder.append(iproperty.getName());
+            stringbuilder.append("=");
+            stringbuilder.append(getPropertyName(iproperty, entry.getValue()));
+        }
+
+        if (stringbuilder.length() == 0) {
+            stringbuilder.append("normal");
+        }
+
+        return stringbuilder.toString();
+    }
+
+    private static <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> value) {
+        return property.getName((T) value);
+    }
+
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onModelBakeEvent(ModelBakeEvent event) {
         event.getModelRegistry().putObject(DoubleSlabBakedModel.variantTag, new DoubleSlabBakedModel());
-        event.getModelRegistry().putObject(VerticalSlabBakedModel.variantTag, new VerticalSlabBakedModel());
+        VerticalSlabBakedModel model = new VerticalSlabBakedModel();
+        for (IBlockState state : VERTICAL_SLAB.getBlockState().getValidStates())
+            event.getModelRegistry().putObject(new ModelResourceLocation(Block.REGISTRY.getNameForObject(VERTICAL_SLAB), getPropertyString(state.getProperties())), model);
+//        event.getModelRegistry().putObject(VerticalSlabBakedModel.variantTag, model);
     }
 
     @SideOnly(Side.CLIENT)
