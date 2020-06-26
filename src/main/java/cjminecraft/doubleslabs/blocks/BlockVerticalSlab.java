@@ -77,7 +77,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     public static Optional<TileEntityVerticalSlab> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile != null && tile instanceof TileEntityVerticalSlab ? Optional.of((TileEntityVerticalSlab) tile) : Optional.empty();
+        return world.getBlockState(pos).getBlock() == Registrar.VERTICAL_SLAB && tile instanceof TileEntityVerticalSlab ? Optional.of((TileEntityVerticalSlab) tile) : Optional.empty();
     }
 
     public static Optional<BlockState> getAvailableState(IBlockReader world, BlockPos pos) {
