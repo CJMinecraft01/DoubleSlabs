@@ -16,14 +16,17 @@ import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
@@ -32,10 +35,9 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -151,17 +153,16 @@ public class BlockDoubleSlab extends Block {
         //        return adjacentBlockState.getBlock() == this;
     }
 
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return true;
-        //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
-    }
+    //    @Override
+//    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
+//        return true;
+//    }
 
-    @Override
-    public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
-        return both(world, pos, s -> s.canEntitySpawn(world, pos, type));
+//    @Override
+//    public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
+//        return both(world, pos, s -> s.canEntitySpawn(world, pos, type));
 //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().canEntitySpawn(world, pos, type), () -> true);
-    }
+//    }
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
@@ -172,8 +173,8 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
+    public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
+        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, explosion));
     }
 
     @Override
@@ -188,11 +189,11 @@ public class BlockDoubleSlab extends Block {
 //        return runOnDoubleSlab(world, pos, (states) -> Math.max(states.getLeft().getAmbientOcclusionLightValue(world, pos), states.getRight().getAmbientOcclusionLightValue(world, pos)), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 
-    @Override
-    public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
-        return getTile(world, pos).map(tile -> !Utils.isTransparent(tile.getPositiveState()) || !Utils.isTransparent(tile.getNegativeState())).orElse(true);
-//        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos), () -> true);
-    }
+    // TODO suffocation
+//    @Override
+//    public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
+//        return getTile(world, pos).map(tile -> !Utils.isTransparent(tile.getPositiveState()) || !Utils.isTransparent(tile.getNegativeState())).orElse(true);
+//    }
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
@@ -215,7 +216,7 @@ public class BlockDoubleSlab extends Block {
     @Override
     public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
         RayTraceResult rayTraceResult = Utils.rayTrace(player);
-        Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+        Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null)
             return minFloat(world, pos, s -> s.getPlayerRelativeBlockHardness(player, world, pos));
         return getHalfState(world, pos, hitVec.y - pos.getY())
@@ -238,7 +239,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
         if (willHarvest)
             return true;
         return super.removedByPlayer(state, world, pos, player, false, fluid);
@@ -272,7 +273,7 @@ public class BlockDoubleSlab extends Block {
     @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         RayTraceResult rayTraceResult = Utils.rayTrace(player);
-        Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+        Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
@@ -364,7 +365,7 @@ public class BlockDoubleSlab extends Block {
 
                 DiggingParticle.Factory factory = new DiggingParticle.Factory();
 
-                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
                     particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
@@ -379,6 +380,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager manager) {
         return getTile(world, pos).map(tile -> {
             DiggingParticle.Factory factory = new DiggingParticle.Factory();
@@ -390,13 +392,13 @@ public class BlockDoubleSlab extends Block {
                         double d2 = ((double) l + 0.5D) / 4.0D + pos.getZ();
 
                         if (tile.getPositiveState() != null) {
-                            Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                             if (particle1 != null)
                                 manager.addEffect(particle1);
                         }
 
                         if (tile.getNegativeState() != null) {
-                            Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                             if (particle2 != null)
                                 manager.addEffect(particle2);
                         }
@@ -504,7 +506,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public boolean isFireSource(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public boolean isFireSource(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
         return either(world, pos, s -> s.isFireSource(world, pos, side));
     }
 
@@ -582,7 +584,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onLanded(IBlockReader world, Entity entity) {
-        BlockPos pos = entity.getPosition().down();
+        BlockPos pos = new BlockPos(entity.getPositionVec()).down();
         if (world.getBlockState(pos).getBlock() == this) {
             if (!getTile(world, pos).map(tile -> {
                 if (tile.getPositiveState() != null) {
@@ -608,7 +610,7 @@ public class BlockDoubleSlab extends Block {
     }
 
     @Override
-    public boolean shouldDisplayFluidOverlay(BlockState state, ILightReader world, BlockPos pos, IFluidState fluidState) {
+    public boolean shouldDisplayFluidOverlay(BlockState state, IBlockDisplayReader world, BlockPos pos, FluidState fluidState) {
         return true;
     }
 }

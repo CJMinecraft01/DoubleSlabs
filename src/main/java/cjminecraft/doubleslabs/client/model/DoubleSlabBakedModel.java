@@ -1,18 +1,14 @@
 package cjminecraft.doubleslabs.client.model;
 
-import cjminecraft.doubleslabs.Config;
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
@@ -78,7 +74,7 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
     private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, side, rand, extraData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.func_187508_a(), quad.shouldApplyDiffuseLighting())).collect(Collectors.toList());
+        return model.getQuads(state, side, rand, extraData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.func_187508_a(), quad.func_239287_f_())).collect(Collectors.toList());
     }
 
     @Nonnull
@@ -88,7 +84,7 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             BlockState topState = extraData.getData(TileEntityDoubleSlab.TOP_STATE);
             BlockState bottomState = extraData.getData(TileEntityDoubleSlab.BOTTOM_STATE);
             String cacheKey = (bottomState != null ? bottomState.toString() : "null") + "," + (topState != null ? topState.toString() : "null") +
-                    ":" + (side != null ? side.getName() : "null") + ":" +
+                    ":" + (side != null ? side.getName2() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
             if (!cache.containsKey(cacheKey)) {
                 if (topState == null || bottomState == null)

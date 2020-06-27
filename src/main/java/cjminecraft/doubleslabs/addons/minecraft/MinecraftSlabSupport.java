@@ -20,7 +20,7 @@ public class MinecraftSlabSupport implements ISlabSupport {
     }
 
     private boolean hasEnumHalfProperty(BlockState state) {
-        return state.getProperties().contains(BlockStateProperties.SLAB_TYPE);
+        return state.func_235904_r_().contains(BlockStateProperties.SLAB_TYPE);
     }
 
     @Override

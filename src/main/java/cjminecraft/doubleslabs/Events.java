@@ -35,7 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 public class Events {
 
     private static BlockState removeWaterloggedPropertyFromState(BlockState state) {
-        if (state.has(BlockStateProperties.WATERLOGGED))
+        if (state.func_235901_b_(BlockStateProperties.WATERLOGGED))
             return state.with(BlockStateProperties.WATERLOGGED, false);
         return state;
     }
@@ -78,7 +78,7 @@ public class Events {
                         if (!state.get(BlockVerticalSlab.DOUBLE)) {
                             TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                             // Check that the tile has been created and that the shift key isn't pressed and that we are clicking on the face that is inside of the block
-                            if (tile != null && !event.getPlayer().isShiftKeyDown() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
+                            if (tile != null && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                                 // The new state for the vertical slab with the double property set
                                 BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
                                 // If we could set the block
@@ -236,7 +236,7 @@ public class Events {
 
                             return;
                         }
-                        if (((event.getPlayer().isShiftKeyDown() && !Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get()) || (Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get() && ((event.getPlayer().isShiftKeyDown() && face.getAxis() == Direction.Axis.Y) || (!event.getPlayer().isShiftKeyDown() && face.getAxis() != Direction.Axis.Y)))) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
+                        if (((event.getPlayer().isSneaking() && !Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get()) || (Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get() && ((event.getPlayer().isSneaking() && face.getAxis() == Direction.Axis.Y) || (!event.getPlayer().isSneaking() && face.getAxis() != Direction.Axis.Y)))) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
                             if (!state.isAir(event.getWorld(), pos))
                                 return;
                             // Try to place a horizontal slab as a vertical slab
@@ -291,7 +291,7 @@ public class Events {
                 // Check if the block is a vertical slab and try to join the two slabs together
                 if (verticalSlab && state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE)) {
                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
-                    if (tile != null && !event.getPlayer().isShiftKeyDown() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
+                    if (tile != null && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                         BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
                         if (event.getWorld().setBlockState(pos, newState, 11)) {
                             BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);

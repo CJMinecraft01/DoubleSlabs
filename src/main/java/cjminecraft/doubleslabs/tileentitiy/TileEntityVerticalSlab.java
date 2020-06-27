@@ -157,17 +157,18 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         return super.write(nbt);
     }
 
+    // read from NBT
     @Override
-    public void read(CompoundNBT read) {
-        super.read(read);
+    public void func_230337_a_(BlockState state, CompoundNBT read) {
+        super.func_230337_a_(state, read);
         if (read.contains("negative"))
             this.negativeState = NBTUtil.readBlockState(read.getCompound("negative"));
         if (read.contains("negative_tile"))
-            this.negativeTile = TileEntity.create(read.getCompound("negative_tile"));
+            this.negativeTile = TileEntity.func_235657_b_(this.negativeState, read.getCompound("negative_tile"));
         if (read.contains("positive"))
             this.positiveState = NBTUtil.readBlockState(read.getCompound("positive"));
         if (read.contains("positive_tile"))
-            this.positiveTile = TileEntity.create(read.getCompound("positive_tile"));
+            this.positiveTile = TileEntity.func_235657_b_(this.positiveState, read.getCompound("positive_tile"));
         markDirtyClient();
     }
 
@@ -187,9 +188,9 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
     }
 
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
-        super.handleUpdateTag(tag);
-        this.read(tag);
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
+        this.func_230337_a_(state, tag);
     }
 
     @Override
@@ -197,7 +198,7 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         super.onDataPacket(net, pkt);
         BlockState oldTopState = this.negativeState;
         BlockState oldBottomState = this.positiveState;
-        this.read(pkt.getNbtCompound());
+        this.func_230337_a_(this.world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
         if (this.world.isRemote)
             if (oldTopState != this.negativeState || oldBottomState != this.positiveState)
                 this.world.markChunkDirty(getPos(), getTileEntity());

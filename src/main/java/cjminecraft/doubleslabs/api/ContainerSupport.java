@@ -1,12 +1,9 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.addons.craftingstation.CraftingStationContainerSupport;
-import cjminecraft.doubleslabs.addons.istations.ImprovedStationsContainerSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,11 +15,6 @@ public class ContainerSupport {
     private static final List<IContainerSupport> supportedContainers = new ArrayList<>();
 
     public static void init() {
-        if (ModList.get().isLoaded("improved-stations"))
-            addContainerSupport(new ImprovedStationsContainerSupport());
-
-        if (ModList.get().isLoaded("craftingstation"))
-            addContainerSupport(new CraftingStationContainerSupport());
     }
 
     public static void addContainerSupport(@Nonnull IContainerSupport support) {

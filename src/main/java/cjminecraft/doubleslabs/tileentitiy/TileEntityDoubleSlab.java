@@ -19,9 +19,6 @@ public class TileEntityDoubleSlab extends TileEntityVerticalSlab {
     public static final ModelProperty<BlockState> TOP_STATE = new ModelProperty<>();
     public static final ModelProperty<BlockState> BOTTOM_STATE = new ModelProperty<>();
 
-//    private BlockState topState;
-//    private BlockState bottomState;
-
     public TileEntityDoubleSlab() {
         super(Registrar.TILE_DOUBLE_SLAB);
     }
@@ -40,20 +37,6 @@ public class TileEntityDoubleSlab extends TileEntityVerticalSlab {
 
     public void setBottomState(BlockState bottomState) {
         setNegativeState(bottomState);
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        return super.write(nbt);
-    }
-
-    @Override
-    public void read(CompoundNBT read) {
-        super.read(read);
-        if (read.contains("top"))
-            this.positiveState = NBTUtil.readBlockState(read.getCompound("top"));
-        if (read.contains("bottom"))
-            this.negativeState = NBTUtil.readBlockState(read.getCompound("bottom"));
     }
 
     @Nonnull

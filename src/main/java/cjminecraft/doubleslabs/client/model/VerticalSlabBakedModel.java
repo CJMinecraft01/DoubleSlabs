@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.client.model;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
@@ -8,16 +7,16 @@ import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IModelData;
@@ -170,7 +169,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             return new ArrayList<>(model.getQuads(state, side, rand, extraData));
         return new ArrayList<>(model.getQuads(state, Utils.rotateFace(side, direction), rand, extraData).stream().map(quad -> {
             int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side);
-            return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
+            return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
         }).collect(Collectors.toList()));
     }
 
@@ -182,8 +181,8 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             BlockState positiveState = extraData.getData(TileEntityVerticalSlab.POSITIVE_STATE);
             Direction direction = state.get(BlockVerticalSlab.FACING);
             String cacheKey = (negativeState != null ? negativeState.toString() : "null") + "," + (positiveState != null ? positiveState.toString() : "null") +
-                    ":" + (side != null ? side.getName() : "null") + ":" +
-                    (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName();
+                    ":" + (side != null ? side.getName2() : "null") + ":" +
+                    (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName2();
             if (!cache.containsKey(cacheKey)) {
                 boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);
                 boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
@@ -220,7 +219,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         boolean rotatePositive = true;
         boolean rotateNegative = true;
         if (tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE) != null) {

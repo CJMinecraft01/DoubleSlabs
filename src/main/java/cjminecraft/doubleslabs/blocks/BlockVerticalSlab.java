@@ -16,6 +16,7 @@ import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
@@ -23,9 +24,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.PathType;
@@ -43,10 +46,9 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -210,12 +212,12 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
-    public IFluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
     @Override
-    public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull IFluidState fluidState) {
+    public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidState) {
         return !state.get(DOUBLE) && IWaterLoggable.super.receiveFluid(world, pos, state, fluidState);
     }
 
@@ -255,17 +257,17 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 //        return adjacentBlockState.getBlock() == this;
     }
 
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.get(DOUBLE);
-        //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
-    }
+//    @Override
+//    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
+//        return state.get(DOUBLE);
+//        //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().isNormalCube(world, pos) && states.getRight().isNormalCube(world, pos), () -> true);
+//    }
 
-    @Override
-    public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
-        return getTile(world, pos).map(tile -> tile.getPositiveState() != null && tile.getPositiveState().canEntitySpawn(world, pos, type) && tile.getNegativeState() != null && tile.getNegativeState().canEntitySpawn(world, pos, type)).orElse(false);
-//        return runOnVerticalSlab(world, pos, (states) -> states.getLeft() != null ? states.getLeft().canEntitySpawn(world, pos, type) : states.getRight().canEntitySpawn(world, pos, type), () -> true);
-    }
+//    @Override
+//    public boolean canEntitySpawn(BlockState state, IBlockReader world, BlockPos pos, EntityType<?> type) {
+//        return getTile(world, pos).map(tile -> tile.getPositiveState() != null && tile.getPositiveState().canEntitySpawn(world, pos, type) && tile.getNegativeState() != null && tile.getNegativeState().canEntitySpawn(world, pos, type)).orElse(false);
+////        return runOnVerticalSlab(world, pos, (states) -> states.getLeft() != null ? states.getLeft().canEntitySpawn(world, pos, type) : states.getRight().canEntitySpawn(world, pos, type), () -> true);
+//    }
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
@@ -276,8 +278,8 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
-    public float getExplosionResistance(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
-        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, exploder, explosion));
+    public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
+        return maxFloat(world, pos, s -> s.getExplosionResistance(world, pos, explosion));
 //        return runOnVerticalSlab(world, pos, (states) -> Math.min(states.getLeft() != null ? states.getLeft().getExplosionResistance(world, pos, exploder, explosion) : Integer.MAX_VALUE, states.getRight() != null ? states.getRight().getExplosionResistance(world, pos, exploder, explosion) : Integer.MAX_VALUE), () -> super.getExplosionResistance(state, world, pos, exploder, explosion));
     }
 
@@ -293,12 +295,12 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 //        return runOnVerticalSlab(world, pos, (states) -> Math.max(states.getLeft() != null ? states.getLeft().getAmbientOcclusionLightValue(world, pos) : 0, states.getRight() != null ? states.getRight().getAmbientOcclusionLightValue(world, pos) : 0), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 
-    @Override
-    public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
-        return getTile(world, pos).map(tile -> !(tile.getPositiveState() == null || Utils.isTransparent(tile.getPositiveState()) || tile.getNegativeState() == null || Utils.isTransparent(tile.getNegativeState()))).orElse(true);
+//    @Override
+//    public boolean causesSuffocation(BlockState state, IBlockReader world, BlockPos pos) {
+//        return getTile(world, pos).map(tile -> !(tile.getPositiveState() == null || Utils.isTransparent(tile.getPositiveState()) || tile.getNegativeState() == null || Utils.isTransparent(tile.getNegativeState()))).orElse(true);
 //        return runOnVerticalSlab(world, pos, (states) -> !(states.getLeft() == null || Utils.isTransparent(states.getLeft()) || states.getRight() == null || Utils.isTransparent(states.getRight())), () -> true);
 //        return runOnDoubleSlab(world, pos, (states) -> states.getLeft().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos) || states.getRight().with(SlabBlock.TYPE, SlabType.DOUBLE).isSuffocating(world, pos), () -> true);
-    }
+//    }
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
@@ -322,7 +324,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
         RayTraceResult rayTraceResult = Utils.rayTrace(player);
-        Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+        Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null)
             return minFloat(world, pos, s -> s.getPlayerRelativeBlockHardness(player, world, pos));
         return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ())
@@ -346,7 +348,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
         if (willHarvest)
             return true;
         return super.removedByPlayer(state, world, pos, player, false, fluid);
@@ -382,7 +384,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         RayTraceResult rayTraceResult = Utils.rayTrace(player);
-        Vec3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
+        Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
@@ -521,7 +523,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
                 DiggingParticle.Factory factory = new DiggingParticle.Factory();
 
-                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
                     particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
@@ -531,61 +533,12 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
                 return false;
             }).orElse(false);
-
-//            return runOnVerticalSlab(world, result.getPos(), (states) -> {
-//                BlockPos pos = result.getPos();
-//                Direction side = result.getFace();
-//                int i = pos.getX();
-//                int j = pos.getY();
-//                int k = pos.getZ();
-//
-//                AxisAlignedBB axisalignedbb = state.getCollisionShape(world, pos).getBoundingBox();
-//                double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
-//                double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
-//                double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
-//
-//                switch (side) {
-//                    case DOWN:
-//                        d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
-//                        break;
-//                    case UP:
-//                        d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
-//                        break;
-//                    case NORTH:
-//                        d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
-//                        break;
-//                    case SOUTH:
-//                        d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
-//                        break;
-//                    case WEST:
-//                        d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
-//                        break;
-//                    case EAST:
-//                        d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
-//                }
-//
-//                DiggingParticle.Factory factory = new DiggingParticle.Factory();
-//
-//                BlockState state1 = ((state.get(FACING).getAxis() == Direction.Axis.X ? target.getHitVec().x : target.getHitVec().z) > 0.5 || states.getRight() == null) && states.getLeft() != null ? states.getLeft() : states.getRight();
-//
-//                if (state1 == null)
-//                    return false;
-//
-//                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, state1), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-//                if (particle != null) {
-//                    ((DiggingParticle) particle).setBlockPos(pos);
-//                    particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
-//                    manager.addEffect(particle);
-//                    return true;
-//                }
-//
-//                return false;
-//            }, () -> false);
         }
         return false;
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager manager) {
         return getTile(world, pos).map(tile -> {
             DiggingParticle.Factory factory = new DiggingParticle.Factory();
@@ -597,13 +550,13 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                         double d2 = ((double) l + 0.5D) / 4.0D + pos.getZ();
 
                         if (tile.getPositiveState() != null) {
-                            Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            Particle particle1 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getPositiveState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                             if (particle1 != null)
                                 manager.addEffect(particle1);
                         }
 
                         if (tile.getNegativeState() != null) {
-                            Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            Particle particle2 = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, tile.getNegativeState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                             if (particle2 != null)
                                 manager.addEffect(particle2);
                         }
@@ -716,7 +669,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
-    public boolean isFireSource(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public boolean isFireSource(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
         Direction face = Utils.rotateFace(side, state.get(FACING));
         return either(world, pos, s -> s.isFireSource(world, pos, face));
     }
@@ -792,7 +745,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public void onLanded(IBlockReader world, Entity entity) {
-        BlockPos pos = entity.getPosition().down();
+        BlockPos pos = new BlockPos(entity.getPositionVec()).down();
         if (world.getBlockState(pos).getBlock() == this)
             if (!getHalfStateWithWorld(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(pair -> {
                 pair.getLeft().getBlock().onLanded(pair.getRight(), entity);
@@ -811,7 +764,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
-    public boolean shouldDisplayFluidOverlay(BlockState state, ILightReader world, BlockPos pos, IFluidState fluidState) {
+    public boolean shouldDisplayFluidOverlay(BlockState state, IBlockDisplayReader world, BlockPos pos, FluidState fluidState) {
         return state.get(DOUBLE);
     }
 }

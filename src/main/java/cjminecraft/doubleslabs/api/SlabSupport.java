@@ -1,15 +1,7 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreDirectionalVerticalSlabBlock;
-import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreVerticalSlabSupport;
-import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
-import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
-import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
-import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
-import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderDirectionVerticalSlabSupport;
-import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderVerticalSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,28 +22,6 @@ public class SlabSupport {
 
     public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
-
-        if (ModList.get().isLoaded("engineersdecor"))
-            addSlabSupport(new EngineersDecorSlabSupport());
-
-        if (ModList.get().isLoaded("quark"))
-            addSlabSupport(new QuarkSlabSupport());
-
-        if (ModList.get().isLoaded("mubble"))
-            addSlabSupport(new MubbleSlabSupport());
-
-        if (ModList.get().isLoaded("abnormals_core")) {
-            addSlabSupport(new AbnormalsCoreVerticalSlabSupport());
-            addSlabSupport(new AbnormalsCoreDirectionalVerticalSlabBlock());
-        }
-
-        if (ModList.get().isLoaded("extendedmushrooms"))
-            addSlabSupport(new ExtendedMushroomsVerticalSlabSupport());
-
-        if (ModList.get().isLoaded("worldofwonder")) {
-            addSlabSupport(new WorldOfWonderVerticalSlabSupport());
-            addSlabSupport(new WorldOfWonderDirectionVerticalSlabSupport());
-        }
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {

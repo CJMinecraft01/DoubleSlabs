@@ -3,7 +3,6 @@ package cjminecraft.doubleslabs.util;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -12,7 +11,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -22,13 +21,14 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
@@ -37,21 +37,26 @@ import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.lighting.WorldLightManager;
+import net.minecraft.world.storage.ISpawnWorldInfo;
+import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.storage.MapData;
-import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class WorldWrapper extends World {
@@ -62,7 +67,7 @@ public class WorldWrapper extends World {
     private boolean positive;
 
     public WorldWrapper(World world) {
-        super(world.getWorldInfo(), world.dimension.getType(), (world1, dimension) -> world.getChunkProvider(), world.getProfiler(), world.isRemote);
+        super((ISpawnWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_234922_V_(), world.func_230315_m_(), world.func_234924_Y_(), world.isRemote, world.func_234925_Z_(), 0L);
         this.world = world;
     }
 
@@ -97,8 +102,6 @@ public class WorldWrapper extends World {
     public void playMovingSound(@Nullable PlayerEntity playerIn, Entity entityIn, SoundEvent eventIn, SoundCategory categoryIn, float volume, float pitch) {
         this.world.playMovingSound(playerIn, entityIn, eventIn, categoryIn, volume, pitch);
     }
-
-
 
     @Override
     public void notifyBlockUpdate(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
@@ -181,6 +184,11 @@ public class WorldWrapper extends World {
     }
 
     @Override
+    public int func_234938_ad_() {
+        return 0;
+    }
+
+    @Override
     public List<? extends PlayerEntity> getPlayers() {
         return this.world.getPlayers();
     }
@@ -202,16 +210,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public void setInitialSpawnLocation() {
-        this.world.setInitialSpawnLocation();
-    }
-
-    @Override
-    public BlockState getGroundAboveSeaLevel(BlockPos pos) {
-        return this.world.getGroundAboveSeaLevel(pos);
-    }
-
-    @Override
     public Chunk getChunkAt(BlockPos pos) {
         return this.world.getChunkAt(pos);
     }
@@ -227,8 +225,8 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public void markAndNotifyBlock(BlockPos pos, @Nullable Chunk chunk, BlockState blockstate, BlockState newState, int flags) {
-        this.world.markAndNotifyBlock(pos, chunk, blockstate, newState, flags);
+    public void markAndNotifyBlock(BlockPos pos, @Nullable Chunk chunk, BlockState blockstate, BlockState newState, int flags, int p_241211_4_) {
+        this.world.markAndNotifyBlock(pos, chunk, blockstate, newState, flags, p_241211_4_);
     }
 
     @Override
@@ -249,11 +247,6 @@ public class WorldWrapper extends World {
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state) {
         return this.world.setBlockState(pos, state);
-    }
-
-    @Override
-    public void notifyNeighbors(BlockPos pos, Block blockIn) {
-        this.world.notifyNeighbors(pos, blockIn);
     }
 
     @Override
@@ -282,12 +275,17 @@ public class WorldWrapper extends World {
     }
 
     @Override
+    public float func_230487_a_(Direction p_230487_1_, boolean p_230487_2_) {
+        return 0;
+    }
+
+    @Override
     public WorldLightManager getLightManager() {
         return this.world.getLightManager();
     }
 
     @Override
-    public IFluidState getFluidState(BlockPos pos) {
+    public FluidState getFluidState(BlockPos pos) {
         return this.world.getFluidState(pos);
     }
 
@@ -357,27 +355,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public boolean checkBlockCollision(AxisAlignedBB bb) {
-        return this.world.checkBlockCollision(bb);
-    }
-
-    @Override
-    public boolean isFlammableWithin(AxisAlignedBB bb) {
-        return this.world.isFlammableWithin(bb);
-    }
-
-    @Nullable
-    @Override
-    public BlockState findBlockstateInArea(AxisAlignedBB area, Block blockIn) {
-        return this.world.findBlockstateInArea(area, blockIn);
-    }
-
-    @Override
-    public boolean isMaterialInBB(AxisAlignedBB bb, Material materialIn) {
-        return this.world.isMaterialInBB(bb, materialIn);
-    }
-
-    @Override
     public Explosion createExplosion(@Nullable Entity entityIn, double xIn, double yIn, double zIn, float explosionRadius, Explosion.Mode modeIn) {
         return this.world.createExplosion(entityIn, xIn, yIn, zIn, explosionRadius, modeIn);
     }
@@ -385,16 +362,6 @@ public class WorldWrapper extends World {
     @Override
     public Explosion createExplosion(@Nullable Entity entityIn, double xIn, double yIn, double zIn, float explosionRadius, boolean causesFire, Explosion.Mode modeIn) {
         return this.world.createExplosion(entityIn, xIn, yIn, zIn, explosionRadius, causesFire, modeIn);
-    }
-
-    @Override
-    public Explosion createExplosion(@Nullable Entity entityIn, @Nullable DamageSource damageSourceIn, double xIn, double yIn, double zIn, float explosionRadius, boolean causesFire, Explosion.Mode modeIn) {
-        return this.world.createExplosion(entityIn, damageSourceIn, xIn, yIn, zIn, explosionRadius, causesFire, modeIn);
-    }
-
-    @Override
-    public boolean extinguishFire(@Nullable PlayerEntity player, BlockPos pos, Direction side) {
-        return this.world.extinguishFire(player, pos, side);
     }
 
     @Override
@@ -431,16 +398,6 @@ public class WorldWrapper extends World {
     @Override
     public void setAllowedSpawnTypes(boolean hostile, boolean peaceful) {
         this.world.setAllowedSpawnTypes(hostile, peaceful);
-    }
-
-    @Override
-    protected void calculateInitialWeather() {
-        this.world.dimension.calculateInitialWeather();
-    }
-
-    @Override
-    public void calculateInitialWeatherBody() {
-        this.world.calculateInitialWeatherBody();
     }
 
     @Override
@@ -490,11 +447,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public WorldType getWorldType() {
-        return this.world.getWorldType();
-    }
-
-    @Override
     public int getStrongPower(BlockPos pos) {
         return this.world.getStrongPower(pos);
     }
@@ -525,16 +477,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public void setGameTime(long worldTime) {
-        this.world.setGameTime(worldTime);
-    }
-
-    @Override
-    public long getSeed() {
-        return this.world.getSeed();
-    }
-
-    @Override
     public long getGameTime() {
         return this.world.getGameTime();
     }
@@ -545,36 +487,8 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public void setDayTime(long time) {
-        this.world.setDayTime(time);
-    }
-
-    @Override
-    protected void advanceTime() {
-        this.world.setGameTime(this.worldInfo.getGameTime() + 1L);
-        if (this.worldInfo.getGameRulesInstance().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-            this.world.setDayTime(this.worldInfo.getDayTime() + 1L);
-        }
-    }
-
-    @Override
-    public BlockPos getSpawnPoint() {
-        return this.world.getSpawnPoint();
-    }
-
-    @Override
-    public void setSpawnPoint(BlockPos pos) {
-        this.world.setSpawnPoint(pos);
-    }
-
-    @Override
     public boolean isBlockModifiable(PlayerEntity player, BlockPos pos) {
         return this.world.isBlockModifiable(player, pos);
-    }
-
-    @Override
-    public boolean canMineBlockBody(PlayerEntity player, BlockPos pos) {
-        return this.world.canMineBlockBody(player, pos);
     }
 
     @Override
@@ -593,7 +507,7 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public WorldInfo getWorldInfo() {
+    public IWorldInfo getWorldInfo() {
         return this.worldInfo;
     }
 
@@ -648,11 +562,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public int getActualHeight() {
-        return this.world.getActualHeight();
-    }
-
-    @Override
     public CrashReportCategory fillCrashReport(CrashReport report) {
         return this.world.fillCrashReport(report);
     }
@@ -693,13 +602,13 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public Dimension getDimension() {
-        return this.world.getDimension();
+    public Random getRandom() {
+        return this.world.getRandom();
     }
 
     @Override
-    public Random getRandom() {
-        return this.world.getRandom();
+    public void func_230547_a_(BlockPos p_230547_1_, Block p_230547_2_) {
+
     }
 
     @Override
@@ -768,8 +677,13 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
-        return this.world.getEmptyCollisionShapes(entityIn, aabb, entitiesToIgnore);
+    public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
+        return null;
+    }
+
+    @Override
+    public Stream<VoxelShape> func_234867_d_(@Nullable Entity p_234867_1_, AxisAlignedBB p_234867_2_, Predicate<Entity> p_234867_3_) {
+        return null;
     }
 
     @Override
@@ -808,18 +722,18 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public boolean hasNoCollisions(@Nullable Entity p_226662_1_, AxisAlignedBB p_226662_2_, Set<Entity> p_226662_3_) {
-        return this.world.hasNoCollisions(p_226662_1_, p_226662_2_, p_226662_3_);
-    }
-
-    @Override
-    public Stream<VoxelShape> getCollisionShapes(@Nullable Entity p_226667_1_, AxisAlignedBB p_226667_2_, Set<Entity> p_226667_3_) {
-        return this.world.getCollisionShapes(p_226667_1_, p_226667_2_, p_226667_3_);
+    public boolean func_234865_b_(@Nullable Entity p_234865_1_, AxisAlignedBB p_234865_2_, Predicate<Entity> p_234865_3_) {
+        return false;
     }
 
     @Override
     public Stream<VoxelShape> getCollisionShapes(@Nullable Entity p_226666_1_, AxisAlignedBB p_226666_2_) {
         return this.world.getCollisionShapes(p_226666_1_, p_226666_2_);
+    }
+
+    @Override
+    public Stream<VoxelShape> func_241457_a_(@Nullable Entity p_241457_1_, AxisAlignedBB p_241457_2_, BiPredicate<BlockState, BlockPos> p_241457_3_) {
+        return null;
     }
 
     @Override
@@ -838,14 +752,19 @@ public class WorldWrapper extends World {
     }
 
     @Override
+    public Stream<BlockState> func_234853_a_(AxisAlignedBB p_234853_1_) {
+        return null;
+    }
+
+    @Override
     public BlockRayTraceResult rayTraceBlocks(RayTraceContext context) {
         return this.world.rayTraceBlocks(context);
     }
 
     @Nullable
     @Override
-    public BlockRayTraceResult rayTraceBlocks(Vec3d p_217296_1_, Vec3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
-        return this.world.rayTraceBlocks(p_217296_1_, p_217296_2_, p_217296_3_, p_217296_4_, p_217296_5_);
+    public BlockRayTraceResult rayTraceBlocks(Vector3d p_217296_1_, Vector3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
+        return null;
     }
 
     @Override
@@ -859,8 +778,8 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public <T extends Entity> List<T> func_225317_b(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
-        return this.world.func_225317_b(p_225317_1_, p_225317_2_);
+    public <T extends Entity> List<T> getLoadedEntitiesWithinAABB(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
+        return null;
     }
 
     @Nullable
@@ -879,12 +798,6 @@ public class WorldWrapper extends World {
     @Override
     public PlayerEntity getClosestPlayer(double x, double y, double z, double distance, boolean creativePlayers) {
         return this.world.getClosestPlayer(x, y, z, distance, creativePlayers);
-    }
-
-    @Nullable
-    @Override
-    public PlayerEntity getClosestPlayer(double x, double y, double z) {
-        return this.getClosestPlayer(x, y, z);
     }
 
     @Override
@@ -947,6 +860,11 @@ public class WorldWrapper extends World {
     @Override
     public Biome getBiome(BlockPos pos) {
         return this.world.getBiome(pos);
+    }
+
+    @Override
+    public Stream<BlockState> func_234939_c_(AxisAlignedBB p_234939_1_) {
+        return null;
     }
 
     @Override
@@ -1054,11 +972,6 @@ public class WorldWrapper extends World {
         return this.world.addEntity(entityIn);
     }
 
-    @Override
-    public int getMaxHeight() {
-        return this.world.getMaxHeight();
-    }
-
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -1069,5 +982,78 @@ public class WorldWrapper extends World {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
         return this.world.getCapability(cap);
+    }
+
+    @Override
+    public double func_234936_m_(BlockPos p_234936_1_) {
+        return this.world.func_234936_m_(p_234936_1_);
+    }
+
+    @Override
+    public double func_234932_c_(BlockPos p_234932_1_, Predicate<BlockState> p_234932_2_) {
+        return this.world.func_234932_c_(p_234932_1_, p_234932_2_);
+    }
+
+    @Override
+    public double func_234928_a_(BlockPos p_234928_1_, double p_234928_2_) {
+        return this.world.func_234928_a_(p_234928_1_, p_234928_2_);
+    }
+
+    @Override
+    public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
+        return super.setBlockState(pos, newState, flags);
+    }
+
+    @Override
+    public boolean func_241211_a_(BlockPos pos, BlockState state, int flags, int p_241211_4_) {
+        if (pos.equals(this.verticalSlab.getPos())) {
+            if (this.positive)
+                this.verticalSlab.setPositiveState(state);
+            else
+                this.verticalSlab.setNegativeState(state);
+            return true;
+        } else {
+            return super.func_241211_a_(pos, state, flags, p_241211_4_);
+        }
+    }
+
+    @Override
+    public boolean func_241212_a_(BlockPos p_241212_1_, boolean p_241212_2_, @Nullable Entity p_241212_3_, int p_241212_4_) {
+        return this.world.func_241212_a_(p_241212_1_, p_241212_2_, p_241212_3_, p_241212_4_);
+    }
+
+    @Override
+    public Explosion func_230546_a_(@Nullable Entity p_230546_1_, @Nullable DamageSource p_230546_2_, @Nullable IExplosionContext p_230546_3_, double p_230546_4_, double p_230546_6_, double p_230546_8_, float p_230546_10_, boolean p_230546_11_, Explosion.Mode p_230546_12_) {
+        return this.world.func_230546_a_(p_230546_1_, p_230546_2_, p_230546_3_, p_230546_4_, p_230546_6_, p_230546_8_, p_230546_10_, p_230546_11_, p_230546_12_);
+    }
+
+    @Override
+    public boolean func_234929_a_(BlockPos p_234929_1_, Entity p_234929_2_, Direction p_234929_3_) {
+        return this.world.func_234929_a_(p_234929_1_, p_234929_2_, p_234929_3_);
+    }
+
+    @Override
+    protected void calculateInitialWeather() {
+        super.calculateInitialWeather();
+    }
+
+    @Override
+    public DimensionType func_230315_m_() {
+        return super.func_230315_m_();
+    }
+
+    @Override
+    public RegistryKey<DimensionType> func_234922_V_() {
+        return super.func_234922_V_();
+    }
+
+    @Override
+    public RegistryKey<World> func_234923_W_() {
+        return super.func_234923_W_();
+    }
+
+    @Override
+    public Supplier<IProfiler> func_234924_Y_() {
+        return super.func_234924_Y_();
     }
 }
