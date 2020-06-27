@@ -758,11 +758,12 @@ public class BlockVerticalSlab extends Block {
     @Override
     public void onLanded(World world, Entity entity) {
         BlockPos pos = entity.getPosition().down();
-        if (!getHalfStateWithWorld(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).map(pair -> {
-            pair.getLeft().getBlock().onLanded(pair.getRight(), entity);
-            return true;
-        }).orElse(false))
-            super.onLanded(world, entity);
+        if (world.getBlockState(pos).getBlock() == this)
+            if (!getHalfStateWithWorld(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).map(pair -> {
+                pair.getLeft().getBlock().onLanded(pair.getRight(), entity);
+                return true;
+            }).orElse(false))
+                super.onLanded(world, entity);
     }
 
     @Override

@@ -41,10 +41,9 @@ public class DoubleSlabs
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit();
         SlabSupport.init();
         ContainerSupport.init();
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
-            Utils.checkOptiFineInstalled();
     }
 
     @Mod.EventHandler

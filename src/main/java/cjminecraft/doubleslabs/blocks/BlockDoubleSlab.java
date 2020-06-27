@@ -756,14 +756,17 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onLanded(World world, Entity entity) {
-        if (!getTile(world, entity.getPosition().down()).map(tile -> {
-            if (tile.getPositiveState() != null) {
-                tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
-                return true;
+        BlockPos pos = entity.getPosition().down();
+        if (world.getBlockState(pos).getBlock() == this) {
+            if (!getTile(world, pos).map(tile -> {
+                if (tile.getPositiveState() != null) {
+                    tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
+                    return true;
+                }
+                return false;
+            }).orElse(false)) {
+                super.onLanded(world, entity);
             }
-            return false;
-        }).orElse(false)) {
-            super.onLanded(world, entity);
         }
     }
 
