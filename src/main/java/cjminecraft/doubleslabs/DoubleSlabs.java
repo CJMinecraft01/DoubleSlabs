@@ -12,6 +12,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,7 @@ public class DoubleSlabs {
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
+        bus.addListener(this::clientSetup);
         proxy.setup(bus);
     }
 
@@ -36,10 +38,10 @@ public class DoubleSlabs {
         SlabSupport.init();
         ContainerSupport.init();
         PacketHandler.registerPackets();
-        DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> {
-            Utils.checkOptiFineInstalled();
-            return null;
-        });
+    }
+
+    public void clientSetup(FMLClientSetupEvent event) {
+        Utils.checkOptiFineInstalled();
     }
 
 }

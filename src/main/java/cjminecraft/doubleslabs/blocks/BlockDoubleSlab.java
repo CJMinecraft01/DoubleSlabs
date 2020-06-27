@@ -61,7 +61,7 @@ public class BlockDoubleSlab extends Block {
 
     public static Optional<TileEntityDoubleSlab> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return world.getBlockState(pos).getBlock() == Registrar.DOUBLE_SLAB &&  tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
+        return world.getBlockState(pos).getBlock() == Registrar.DOUBLE_SLAB && tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
     }
 
     public static Optional<BlockState> getAvailableState(IBlockReader world, BlockPos pos) {
@@ -582,14 +582,17 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onLanded(IBlockReader world, Entity entity) {
-        if (!getTile(world, entity.getPosition().down()).map(tile -> {
-            if (tile.getPositiveState() != null) {
-                tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
-                return true;
+        BlockPos pos = entity.getPosition().down();
+        if (world.getBlockState(pos).getBlock() == this) {
+            if (!getTile(world, pos).map(tile -> {
+                if (tile.getPositiveState() != null) {
+                    tile.getPositiveState().getBlock().onLanded(tile.getPositiveWorld(), entity);
+                    return true;
+                }
+                return false;
+            }).orElse(false)) {
+                super.onLanded(world, entity);
             }
-            return false;
-        }).orElse(false)) {
-            super.onLanded(world, entity);
         }
     }
 
