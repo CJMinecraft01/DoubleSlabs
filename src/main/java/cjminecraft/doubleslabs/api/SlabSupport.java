@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
+import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import cjminecraft.doubleslabs.addons.swampexpansion.SwampExpansionSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -36,6 +37,9 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("swampexpansion"))
             addSlabSupport(new SwampExpansionSupport());
+
+        if (ModList.get().isLoaded("stairway"))
+            addSlabSupport(new StairwayToAetherSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
