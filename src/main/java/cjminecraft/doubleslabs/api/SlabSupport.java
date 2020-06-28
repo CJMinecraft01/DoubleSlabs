@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
+import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +24,9 @@ public class SlabSupport {
 
     public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+
+        if (ModList.get().isLoaded("stairway"))
+            addSlabSupport(new StairwayToAetherSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
