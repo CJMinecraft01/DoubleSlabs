@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.network.PacketHandler;
 import cjminecraft.doubleslabs.proxy.ClientProxy;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import cjminecraft.doubleslabs.proxy.ServerProxy;
+import com.electronwill.nightconfig.core.CommentedConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -27,6 +28,7 @@ public class DoubleSlabs {
 
     public DoubleSlabs() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);

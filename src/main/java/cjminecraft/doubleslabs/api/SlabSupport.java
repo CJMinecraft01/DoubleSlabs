@@ -8,6 +8,7 @@ import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVertica
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
+import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderDirectionVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderVerticalSlabSupport;
 import net.minecraft.block.Block;
@@ -54,6 +55,9 @@ public class SlabSupport {
             addSlabSupport(new WorldOfWonderVerticalSlabSupport());
             addSlabSupport(new WorldOfWonderDirectionVerticalSlabSupport());
         }
+
+        if (ModList.get().isLoaded("stairway"))
+            addSlabSupport(new StairwayToAetherSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
