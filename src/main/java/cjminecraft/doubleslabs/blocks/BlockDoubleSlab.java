@@ -367,7 +367,7 @@ public class BlockDoubleSlab extends Block {
                 Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
-                    particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
+                    particle = particle.multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F);
                     manager.addEffect(particle);
                     return true;
                 }
