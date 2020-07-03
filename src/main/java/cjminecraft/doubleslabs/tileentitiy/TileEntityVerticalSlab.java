@@ -77,8 +77,6 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
     }
 
     public void setNegativeState(BlockState negativeState) {
-//        this.negativeWorld.setBlockState(this.pos, negativeState);
-//        this.negativeWorld.setTileEntity(this.pos, negativeState.createTileEntity(this.negativeWorld));
         if (this.negativeState != null && this.negativeState.hasTileEntity() && this.negativeTile != null)
             this.negativeTile.updateContainingBlockInfo();
         if (this.negativeState != null && negativeState != null && (this.negativeState.getBlock() != negativeState.getBlock() || !negativeState.hasTileEntity()) && this.negativeState.hasTileEntity())
@@ -95,8 +93,6 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
     }
 
     public void setPositiveState(BlockState positiveState) {
-//        this.positiveWorld.setBlockState(this.pos, positiveState);
-//        this.positiveWorld.setTileEntity(this.pos, positiveState.createTileEntity(this.positiveWorld));
         if (this.positiveState != null && this.positiveState.hasTileEntity() && this.positiveTile != null)
             this.positiveTile.updateContainingBlockInfo();
         if (this.positiveState != null && positiveState != null && (this.positiveState.getBlock() != positiveState.getBlock() || !positiveState.hasTileEntity()) && this.positiveState.hasTileEntity())

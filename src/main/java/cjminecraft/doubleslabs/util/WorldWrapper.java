@@ -859,8 +859,8 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public <T extends Entity> List<T> func_225317_b(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
-        return this.world.func_225317_b(p_225317_1_, p_225317_2_);
+    public <T extends Entity> List<T> getLoadedEntitiesWithinAABB(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
+        return this.world.getLoadedEntitiesWithinAABB(p_225317_1_, p_225317_2_);
     }
 
     @Nullable
