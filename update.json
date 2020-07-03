@@ -58,7 +58,8 @@
     "1.7.1": "=Fixed a placement bug",
     "1.7.2": "=Fixed a crash",
     "1.7.3": "=Attempted to fix a crash",
-    "1.7.4": "+Added Stairway to Aether slab support"
+    "1.7.4": "+Added Stairway to Aether slab support",
+    "1.7.5": "=Improved slab placement"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -92,20 +93,22 @@
     "2.7.2": "=Fixed a placement bug",
     "2.7.3": "=Fixed a crash",
     "2.7.4": "=Attempted to fix a crash",
-    "2.7.5": "+Added Stairway to Aether slab support"
+    "2.7.5": "+Added Stairway to Aether slab support",
+    "2.7.6": "=Improved slab placement"
   },
   "1.16.1": {
     "3.0.0": "=Ported to 1.16",
-    "3.0.1": "+Added Stairway to Aether slab support"
+    "3.0.1": "+Added Stairway to Aether slab support",
+    "3.0.2": "=Improved slab placement"
   },
   "promos": {
     "1.12.2-latest": "0.7.4",
     "1.12.2-recommended": "0.7.4",
-    "1.14.4-latest": "1.7.4",
-    "1.14.4-recommended": "1.7.4",
-    "1.15.2-latest": "2.7.5",
-    "1.15.2-recommended": "2.7.5",
-    "1.16.1-latest": "3.0.1",
-    "1.16.1-recommended": "3.0.1"
+    "1.14.4-latest": "1.7.5",
+    "1.14.4-recommended": "1.7.5",
+    "1.15.2-latest": "2.7.6",
+    "1.15.2-recommended": "2.7.6",
+    "1.16.1-latest": "3.0.2",
+    "1.16.1-recommended": "3.0.2"
   }
 }
