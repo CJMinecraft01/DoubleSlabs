@@ -232,7 +232,7 @@ public class Events {
                     state = event.getWorld().getBlockState(pos);
                     if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
                         return;
-                    if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
+                    if (!event.getPlayer().canPlayerEdit(pos, face, event.getItemStack()))
                         return;
 
                     verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE);
