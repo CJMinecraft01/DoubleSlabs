@@ -184,7 +184,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return maxFloat(world, pos, s -> s.getAmbientOcclusionLightValue(world, pos));
+        return 1.0F;
 //        return runOnDoubleSlab(world, pos, (states) -> Math.max(states.getLeft().getAmbientOcclusionLightValue(world, pos), states.getRight().getAmbientOcclusionLightValue(world, pos)), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 

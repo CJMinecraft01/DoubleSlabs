@@ -289,7 +289,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return maxFloat(world, pos, s -> s.getAmbientOcclusionLightValue(world, pos));
+        return 1.0F;
 //        return runOnVerticalSlab(world, pos, (states) -> Math.max(states.getLeft() != null ? states.getLeft().getAmbientOcclusionLightValue(world, pos) : 0, states.getRight() != null ? states.getRight().getAmbientOcclusionLightValue(world, pos) : 0), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 
@@ -531,56 +531,6 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
                 return false;
             }).orElse(false);
-
-//            return runOnVerticalSlab(world, result.getPos(), (states) -> {
-//                BlockPos pos = result.getPos();
-//                Direction side = result.getFace();
-//                int i = pos.getX();
-//                int j = pos.getY();
-//                int k = pos.getZ();
-//
-//                AxisAlignedBB axisalignedbb = state.getCollisionShape(world, pos).getBoundingBox();
-//                double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
-//                double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
-//                double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
-//
-//                switch (side) {
-//                    case DOWN:
-//                        d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
-//                        break;
-//                    case UP:
-//                        d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
-//                        break;
-//                    case NORTH:
-//                        d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
-//                        break;
-//                    case SOUTH:
-//                        d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
-//                        break;
-//                    case WEST:
-//                        d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
-//                        break;
-//                    case EAST:
-//                        d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
-//                }
-//
-//                DiggingParticle.Factory factory = new DiggingParticle.Factory();
-//
-//                BlockState state1 = ((state.get(FACING).getAxis() == Direction.Axis.X ? target.getHitVec().x : target.getHitVec().z) > 0.5 || states.getRight() == null) && states.getLeft() != null ? states.getLeft() : states.getRight();
-//
-//                if (state1 == null)
-//                    return false;
-//
-//                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, state1), world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-//                if (particle != null) {
-//                    ((DiggingParticle) particle).setBlockPos(pos);
-//                    particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
-//                    manager.addEffect(particle);
-//                    return true;
-//                }
-//
-//                return false;
-//            }, () -> false);
         }
         return false;
     }

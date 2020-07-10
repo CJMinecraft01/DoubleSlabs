@@ -1,5 +1,12 @@
 {
   "variants": {
-    "": { "model": "doubleslabs:dummy" }
+    "facing=north,double=false": { "model": "doubleslabs:vertical_slab", "y": 180, "uvlock": true },
+    "facing=south,double=false": { "model": "doubleslabs:vertical_slab", "y": 0, "uvlock": true },
+    "facing=east,double=false": { "model": "doubleslabs:vertical_slab", "y": 270, "uvlock": true },
+    "facing=west,double=false": { "model": "doubleslabs:vertical_slab", "y": 90, "uvlock": true },
+    "facing=north,double=true": { "model": "doubleslabs:cube", "y": 0, "uvlock": true },
+    "facing=south,double=true": { "model": "doubleslabs:cube", "y": 180, "uvlock": true },
+    "facing=east,double=true": { "model": "doubleslabs:cube", "y": 90, "uvlock": true },
+    "facing=west,double=true": { "model": "doubleslabs:cube", "y": 270, "uvlock": true }
   }
 }
