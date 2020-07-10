@@ -63,13 +63,13 @@ public class DoubleSlabBakedModel implements IBakedModel {
 
 
             List<BakedQuad> quads = new ArrayList<>();
-            if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer()) {
+            if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                 List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
                 if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                     topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
                 quads.addAll(topQuads);
             }
-            if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer()) {
+            if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                 List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
                 if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                     bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
