@@ -291,7 +291,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
 
     @Override
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return maxFloat(world, pos, s -> s.getAmbientOcclusionLightValue(world, pos));
+        return 1.0F;
 //        return runOnVerticalSlab(world, pos, (states) -> Math.max(states.getLeft() != null ? states.getLeft().getAmbientOcclusionLightValue(world, pos) : 0, states.getRight() != null ? states.getRight().getAmbientOcclusionLightValue(world, pos) : 0), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 
@@ -678,11 +678,6 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
         Direction side = Utils.rotateFace(face, state.get(FACING));
         return either(world, pos, s -> s.isFlammable(world, pos, side));
-    }
-
-    @Override
-    public boolean isFoliage(BlockState state, IWorldReader world, BlockPos pos) {
-        return either(world, pos, s -> s.isFoliage(world, pos));
     }
 
     @Override

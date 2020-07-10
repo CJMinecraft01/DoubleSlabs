@@ -33,6 +33,7 @@ public class ClientProxy implements IProxy {
             } else if (existingModel instanceof VerticalSlabBakedModel) {
                 DoubleSlabs.LOGGER.warn("Tried to replace VerticalSlabBakedModel twice");
             } else {
+                verticalSlabBakedModel.addModel(existingModel, state);
                 event.getModelRegistry().put(variantResourceLocation, verticalSlabBakedModel);
             }
         }
