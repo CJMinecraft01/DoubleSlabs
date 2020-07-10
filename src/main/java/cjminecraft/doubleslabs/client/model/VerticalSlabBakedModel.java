@@ -186,13 +186,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
 
             List<BakedQuad> quads = new ArrayList<>();
-            if (positiveState != null && MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer()) {
+            if (positiveState != null && (MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, 0, direction, true, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_POSITIVE));
                 if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
                     positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                 quads.addAll(positiveQuads);
             }
-            if (negativeState != null && MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer()) {
+            if (negativeState != null && (MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, TINT_OFFSET, direction, false, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_NEGATIVE));
                 if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
                     negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);

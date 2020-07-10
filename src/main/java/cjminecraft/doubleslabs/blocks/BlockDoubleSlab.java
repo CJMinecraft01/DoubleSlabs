@@ -331,7 +331,7 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public float getAmbientOcclusionLightValue(IBlockState state) {
-        return maxFloat(state, IBlockProperties::getAmbientOcclusionLightValue);
+        return 1.0F;
 //        return runOnDoubleSlab(state, states -> Math.max(states.getLeft().getAmbientOcclusionLightValue(), states.getRight().getAmbientOcclusionLightValue()), () -> super.getAmbientOcclusionLightValue(state));
     }
 

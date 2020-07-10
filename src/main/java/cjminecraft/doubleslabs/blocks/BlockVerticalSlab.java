@@ -19,6 +19,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockProperties;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -342,7 +343,7 @@ public class BlockVerticalSlab extends Block {
 
     @Override
     public float getAmbientOcclusionLightValue(IBlockState state) {
-        return maxFloat(state, s -> s.getAmbientOcclusionLightValue());
+        return 1.0F;
     }
 
     @Override
