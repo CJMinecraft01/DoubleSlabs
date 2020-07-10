@@ -92,13 +92,13 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
                 boolean bottomTransparent = Utils.isTransparent(bottomState);
 
                 List<BakedQuad> quads = new ArrayList<>();
-                if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer()) {
+                if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0);
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                         topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                     quads.addAll(topQuads);
                 }
-                if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer()) {
+                if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET);
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                         bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);

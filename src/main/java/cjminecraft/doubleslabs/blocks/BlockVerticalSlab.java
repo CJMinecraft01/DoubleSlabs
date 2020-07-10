@@ -300,8 +300,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return maxFloat(world, pos, s -> s.getAmbientOcclusionLightValue(world, pos));
+        return 1.0F;
 //        return runOnVerticalSlab(world, pos, (states) -> Math.max(states.getLeft() != null ? states.getLeft().getAmbientOcclusionLightValue(world, pos) : 0, states.getRight() != null ? states.getRight().getAmbientOcclusionLightValue(world, pos) : 0), () -> super.getAmbientOcclusionLightValue(state, world, pos));
     }
 

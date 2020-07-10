@@ -40,6 +40,12 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
 
+    private final Map<BlockState, IBakedModel> models = new HashMap<>();
+
+    public void addModel(IBakedModel model, BlockState state) {
+        this.models.put(state, model);
+    }
+
     private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side, boolean positiveState) {
         int[] data = new int[vertexData.length];
         int[] vertexOrder = new int[vertexData.length / 7];
@@ -183,13 +189,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
                 
                 List<BakedQuad> quads = new ArrayList<>();
-                if (positiveState != null && MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer()) {
+                if (positiveState != null && (MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction, true);
                     if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(positiveQuads);
                 }
-                if (negativeState != null && MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer()) {
+                if (negativeState != null && (MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction, false);
                     if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
                         negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
@@ -201,6 +207,11 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             } else {
                 return cache.get(cacheKey);
             }
+        } else if (MinecraftForgeClient.getRenderLayer() == null) {
+            // This should only be called when we are trying to render the breaking animation
+            IBakedModel model = this.models.getOrDefault(state, null);
+            if (model != null)
+                return model.getQuads(state, side, rand, extraData);
         }
         return getFallback().getQuads(state, side, rand, extraData);
     }
