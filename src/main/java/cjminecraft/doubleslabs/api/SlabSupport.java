@@ -5,10 +5,12 @@ import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreDirectionalVer
 import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVerticalSlabSupport;
+import cjminecraft.doubleslabs.addons.lottaterracotta.LottaTerracottaVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
 import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
+import cjminecraft.doubleslabs.addons.sweetconcrete.SweetConcreteVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderDirectionVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.worldofwonder.WorldOfWonderVerticalSlabSupport;
 import net.minecraft.block.Block;
@@ -58,6 +60,12 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("stairway"))
             addSlabSupport(new StairwayToAetherSlabSupport());
+
+        if (ModList.get().isLoaded("lottaterracotta"))
+            addSlabSupport(new LottaTerracottaVerticalSlabSupport());
+
+        if (ModList.get().isLoaded("sweetconcrete"))
+            addSlabSupport(new SweetConcreteVerticalSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
