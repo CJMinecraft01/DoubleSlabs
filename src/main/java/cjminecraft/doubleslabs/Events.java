@@ -54,9 +54,11 @@ public class Events {
         return state;
     }
 
-    public static boolean canPlace(World world, BlockPos pos, Direction face, PlayerEntity player, Hand hand, ItemStack stack, PlayerInteractEvent.RightClickBlock event) {
+    public static boolean canPlace(World world, BlockPos pos, Direction face, PlayerEntity player, Hand hand, ItemStack stack, PlayerInteractEvent.RightClickBlock event, boolean activateBlock) {
         if (!player.canPlayerEdit(pos, face, stack))
             return false;
+        if (!activateBlock)
+            return true;
         boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
@@ -87,7 +89,7 @@ public class Events {
                     return;
 
                 // Check that the player can actually place a block here
-                if (canPlace(event.getWorld(), event.getPos(), event.getFace(), event.getPlayer(), event.getHand(), event.getItemStack(), event)) {
+                if (canPlace(event.getWorld(), event.getPos(), event.getFace(), event.getPlayer(), event.getHand(), event.getItemStack(), event, true)) {
                     BlockPos pos = event.getPos();
                     // Check that the player isn't trying to place a block in the same position as them
                     if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
@@ -103,19 +105,19 @@ public class Events {
                         if (tile != null)
                             face = tile.getPositiveState() != null ? state.get(BlockVerticalSlab.FACING).getOpposite() : state.get(BlockVerticalSlab.FACING);
 
-                        if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
+                        if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
                             return;
                     }
 
                     // Check if the block that they clicked on is a vertical slab
                     if (state.getBlock() == Registrar.VERTICAL_SLAB) {
                         // If we are trying to mix to one of our vertical slabs
-                        if (!state.get(BlockVerticalSlab.DOUBLE)) {
+                        if (!state.get(BlockVerticalSlab.DOUBLE) && face == state.get(BlockVerticalSlab.FACING).getOpposite()) {
                             TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                             // Check that the tile has been created and that the shift key isn't pressed and that we are clicking on the face that is inside of the block
-                            if (tile != null && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
-                                if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
-                                    return;
+                            if (tile != null && !event.getPlayer().isSneaking()) {
+//                                if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
+//                                    return;
                                 // The new state for the vertical slab with the double property set
                                 BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
                                 // If we could set the block
@@ -149,14 +151,14 @@ public class Events {
                                 return;
                             state = event.getWorld().getBlockState(pos);
 
-                            if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
+                            if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
                                 return;
 
                             blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
                             if (blockSupport == null)
                                 return;
 
-                            face = blockSupport.getDirection(event.getWorld(), pos, state);
+                            face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
                         }
 
                         state = removeWaterloggedPropertyFromState(state);
@@ -164,7 +166,7 @@ public class Events {
                         // Get the direction that the vertical slab block is facing
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
-                        if (face == direction) {
+                        if (face == direction.getOpposite()) {
                             // Get the state for the vertical slab item using the direction of the already placed vertical slab
                             BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), direction.getOpposite());
                             // Create the state for the vertical slab
@@ -190,7 +192,7 @@ public class Events {
             }
 
             // If the slab is a horizontal slab and we can edit the face that was clicked
-            if (canPlace(event.getWorld(), event.getPos(), event.getFace(), event.getPlayer(), event.getHand(), event.getItemStack(), event)) {
+            if (canPlace(event.getWorld(), event.getPos(), event.getFace(), event.getPlayer(), event.getHand(), event.getItemStack(), event, true)) {
                 BlockPos pos = event.getPos();
                 // Check the player is not standing in the same space as where was clicked
                 if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
@@ -213,12 +215,12 @@ public class Events {
                     blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
                     if (blockSupport != null) {
                         // We are trying to combine a mod vertical slab with a regular slab
-                        if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
-                            return;
+//                        if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
+//                            return;
 
                         state = removeWaterloggedPropertyFromState(state);
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
-                        if (face == direction) {
+                        if (face == direction.getOpposite()) {
                             BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false).with(BlockVerticalSlab.FACING, direction);
 
@@ -244,8 +246,8 @@ public class Events {
                     state = event.getWorld().getBlockState(pos);
                     if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
                         return;
-                    if (!event.getPlayer().canPlayerEdit(pos, face, event.getItemStack()))
-                        return;
+                    if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
+                            return;
 
                     verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE);
 
