@@ -67,9 +67,7 @@ public class Config {
         return LAZY_VERTICAL_SLABS.get().stream().anyMatch(entry -> {
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                DoubleSlabs.LOGGER.info(tagLocation);
                 Tag<Block> tag = BlockTags.getCollection().get(tagLocation);
-                DoubleSlabs.LOGGER.info(tag);
                 return tag != null && tag.contains(block);
             }
             return entry.equals(block.getRegistryName().toString());

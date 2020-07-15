@@ -220,7 +220,7 @@ public class Events {
 
                         state = removeWaterloggedPropertyFromState(state);
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
-                        if (face == direction.getOpposite()) {
+                        if (face == direction) {
                             BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false).with(BlockVerticalSlab.FACING, direction);
 
