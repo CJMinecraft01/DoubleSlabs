@@ -42,7 +42,12 @@ public class DoubleSlabsConfig {
     @Config.Comment({"The list of slabs (or tags) which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs"})
     @Config.LangKey("config.doubleslabs.lazy_vertical_slabs")
     public static String[] LAZY_VERTICAL_SLABS_ARRAY = new String[]{
-            "minecraft:wooden_slab[variant=oak]"
+            "minecraft:wooden_slab#variant=oak",
+            "minecraft:wooden_slab#variant=spruce",
+            "minecraft:wooden_slab#variant=birch",
+            "minecraft:wooden_slab#variant=jungle",
+            "minecraft:wooden_slab#variant=acacia",
+            "minecraft:wooden_slab#variant=dark_oak"
     };
 
     @Config.Ignore

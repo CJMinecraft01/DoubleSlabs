@@ -14,16 +14,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(name = DoubleSlabs.NAME, version = DoubleSlabs.VERSION, modid = DoubleSlabs.MODID, acceptedMinecraftVersions = DoubleSlabs.ACCEPTED_MC_VERSIONS, updateJSON = DoubleSlabs.UPDATE_URL, certificateFingerprint = DoubleSlabs.CERTIFICATE_FINGERPRINT)
+@Mod(name = DoubleSlabs.NAME, modid = DoubleSlabs.MODID, acceptedMinecraftVersions = DoubleSlabs.ACCEPTED_MC_VERSIONS, updateJSON = DoubleSlabs.UPDATE_URL, useMetadata = true)
 public class DoubleSlabs
 {
     public static final String NAME = "DoubleSlabs";
     public static final String MODID = "doubleslabs";
-    public static final String VERSION = "${version}";
+//    public static final String VERSION = "${version}";
     public static final String ACCEPTED_MC_VERSIONS = "[1.12,1.12.2]";
     public static final String UPDATE_URL = "https://raw.githubusercontent.com/CJMinecraft01/DoubleSlabs/1.12.x/update.json";
     public static final Logger LOGGER = LogManager.getFormatterLogger(NAME);
-    public static final String CERTIFICATE_FINGERPRINT = "${fingerprint}";
+//    public static final String CERTIFICATE_FINGERPRINT = "${fingerprint}";
 
     @SidedProxy(serverSide = "cjminecraft.doubleslabs.proxy.ServerProxy", clientSide = "cjminecraft.doubleslabs.proxy.ClientProxy")
     private static IProxy proxy;
@@ -46,10 +46,10 @@ public class DoubleSlabs
         ContainerSupport.init();
     }
 
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() + " may have been tampered with. This version will NOT be supported by the author!");
-    }
+//    @Mod.EventHandler
+//    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+//        LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() + " may have been tampered with. This version will NOT be supported by the author!");
+//    }
 
     @Mod.EventHandler
     public void processIMC(FMLInterModComms.IMCEvent event) {
