@@ -29,7 +29,8 @@
     "0.7.2": "=Fixed a crash",
     "0.7.3": "=Attempted to fix a crash",
     "0.7.4": "+Added Stairway to Aether slab support",
-    "0.7.5": "=Improved vertical slab lighting\n=Fixed slab breaking animation"
+    "0.7.5": "=Improved vertical slab lighting\n=Fixed slab breaking animation",
+    "0.8.0": "+Added \"lazy vertical slab models\" which don't rotate the original slab model but rather apply the same texture as the original model. This is configured using a client config value and applies to all plank vertical slabs by default\n=Attempted to fix a compatibility crash\n=Squashed placement bugs"
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
@@ -61,7 +62,8 @@
     "1.7.3": "=Attempted to fix a crash",
     "1.7.4": "+Added Stairway to Aether slab support",
     "1.7.5": "=Improved slab placement",
-    "1.7.6": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation"
+    "1.7.6": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation",
+    "1.8.0": "+Added LottaTerracotta and SweetConcrete vertical slab support\n+Added \"lazy vertical slab models\" which don't rotate the original slab model but rather apply the same texture as the original model. This is configured using a client config value and applies to all plank vertical slabs by default\n=Attempted to fix a compatibility crash\n=Squashed placement bugs"
   },
   "1.15.2": {
     "2.0.0": "Initial port to 1.15",
@@ -97,22 +99,27 @@
     "2.7.4": "=Attempted to fix a crash",
     "2.7.5": "+Added Stairway to Aether slab support",
     "2.7.6": "=Improved slab placement",
-    "2.7.7": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation"
+    "2.7.7": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation",
+    "2.8.0": "+Added LottaTerracotta and SweetConcrete vertical slab support\n+Added \"lazy vertical slab models\" which don't rotate the original slab model but rather apply the same texture as the original model. This is configured using a client config value and applies to all plank vertical slabs by default\n=Attempted to fix a compatibility crash\n=Squashed placement bugs",
+    "2.8.1": "-Removed debug messages",
+    "2.8.2": "=Fixed vertical slab placement"
   },
   "1.16.1": {
     "3.0.0": "=Ported to 1.16",
     "3.0.1": "+Added Stairway to Aether slab support",
     "3.0.2": "=Improved slab placement",
-    "3.0.3": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation"
+    "3.0.3": "=Improved vertical slab shading\n=Fixed vertical slab breaking animation",
+    "3.1.0": "+Added \"lazy vertical slab models\" which don't rotate the original slab model but rather apply the same texture as the original model. This is configured using a client config value and applies to all plank vertical slabs by default\n=Attempted to fix a compatibility crash\n=Squashed placement bugs",
+    "3.1.1": "+Added nether plank slabs to use lazy models by default"
   },
   "promos": {
-    "1.12.2-latest": "0.7.5",
-    "1.12.2-recommended": "0.7.5",
-    "1.14.4-latest": "1.7.6",
-    "1.14.4-recommended": "1.7.6",
-    "1.15.2-latest": "2.7.7",
-    "1.15.2-recommended": "2.7.7",
-    "1.16.1-latest": "3.0.3",
-    "1.16.1-recommended": "3.0.3"
+    "1.12.2-latest": "0.8.0",
+    "1.12.2-recommended": "0.8.0",
+    "1.14.4-latest": "1.8.0",
+    "1.14.4-recommended": "1.8.0",
+    "1.15.2-latest": "2.8.2",
+    "1.15.2-recommended": "2.8.2",
+    "1.16.1-latest": "3.1.1",
+    "1.16.1-recommended": "3.1.1"
   }
 }
