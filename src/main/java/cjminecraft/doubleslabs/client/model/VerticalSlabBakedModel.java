@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.model;
 
+import cjminecraft.doubleslabs.Config;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
@@ -154,12 +156,37 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         return finalData;
     }
 
-    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, @Nonnull Direction direction, boolean positiveState) {
+    private int[] changeUVs(int[] vertexData, TextureAtlasSprite originalSprite, TextureAtlasSprite newSprite) {
+        int[] data = new int[vertexData.length];
+        for (int i = 0; i < vertexData.length / 8; i ++) {
+            data[i * 8] = vertexData[i * 8]; // x
+            data[i * 8 + 1] = vertexData[i * 8 + 1]; // y
+            data[i * 8 + 2] = vertexData[i * 8 + 2]; // z
+            data[i * 8 + 3] = vertexData[i * 8 + 3]; // shade colour
+            data[i * 8 + 4] = Float.floatToRawIntBits(Float.intBitsToFloat(vertexData[i * 8 + 4]) - originalSprite.getMinU() + newSprite.getMinU()); // texture U
+            data[i * 8 + 5] = Float.floatToRawIntBits(Float.intBitsToFloat(vertexData[i * 8 + 5]) - originalSprite.getMinV() + newSprite.getMinV()); // texture V
+            data[i * 8 + 6] = vertexData[i * 8 + 6]; // baked lighting
+            data[i * 8 + 7] = vertexData[i * 8 + 7]; // normal
+        }
+        return data;
+    }
+
+    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, BlockState slabState, boolean positiveState) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         if ((positiveState && !extraData.getData(ROTATE_POSITIVE)) || (!positiveState && !extraData.getData(ROTATE_NEGATIVE)))
             return new ArrayList<>(model.getQuads(state, side, rand, extraData));
-        return new ArrayList<>(model.getQuads(state, Utils.rotateFace(side, direction), rand, extraData).stream().map(quad -> {
+        Direction direction = slabState.get(BlockVerticalSlab.FACING);
+        List<BakedQuad> quads = model.getQuads(state, Utils.rotateFace(side, direction), rand, EmptyModelData.INSTANCE);
+        if (Config.useLazyModel(state.getBlock())) {
+            BlockState state1 = (positiveState ? slabState : slabState.with(BlockVerticalSlab.FACING, direction.getOpposite())).with(BlockVerticalSlab.DOUBLE, false);
+            if (quads.size() == 0)
+                return new ArrayList<>();
+            TextureAtlasSprite sprite = quads.get(0).func_187508_a();
+            return new ArrayList<>(this.models.get(state1).getQuads(state1, side, rand, EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(changeUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() : -1, quad.getFace(), sprite, quad.func_239287_f_())).collect(Collectors.toList()));
+        }
+
+        return new ArrayList<>(quads.stream().map(quad -> {
             int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
         }).collect(Collectors.toList()));
@@ -181,13 +208,13 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (positiveState != null && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                    List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, direction, true);
+                    List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, state, true);
                     if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                    List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, direction, false);
+                    List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, state, false);
                     if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
                         negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(negativeQuads);
