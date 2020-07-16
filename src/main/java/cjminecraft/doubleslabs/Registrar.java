@@ -70,9 +70,19 @@ public class Registrar {
     @SubscribeEvent
     public static void onModelBakeEvent(ModelBakeEvent event) {
         event.getModelRegistry().putObject(DoubleSlabBakedModel.variantTag, new DoubleSlabBakedModel());
-        VerticalSlabBakedModel model = new VerticalSlabBakedModel();
-        for (IBlockState state : VERTICAL_SLAB.getBlockState().getValidStates())
-            event.getModelRegistry().putObject(new ModelResourceLocation(Block.REGISTRY.getNameForObject(VERTICAL_SLAB), getPropertyString(state.getProperties())), model);
+        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
+        for (IBlockState state : VERTICAL_SLAB.getBlockState().getValidStates()) {
+            ModelResourceLocation variantResourceLocation = new ModelResourceLocation(Block.REGISTRY.getNameForObject(VERTICAL_SLAB), getPropertyString(state.getProperties()));
+            IBakedModel existingModel = event.getModelRegistry().getObject(variantResourceLocation);
+            if (existingModel == null) {
+                DoubleSlabs.LOGGER.warn("Did not find the expected vanilla baked model(s) for the vertical slab in registry");
+            } else if (existingModel instanceof VerticalSlabBakedModel) {
+                DoubleSlabs.LOGGER.warn("Tried to replace VerticalSlabBakedModel twice");
+            } else {
+                verticalSlabBakedModel.addModel(existingModel, state);
+                event.getModelRegistry().putObject(variantResourceLocation, verticalSlabBakedModel);
+            }
+        }
 //        event.getModelRegistry().putObject(VerticalSlabBakedModel.variantTag, model);
     }
 

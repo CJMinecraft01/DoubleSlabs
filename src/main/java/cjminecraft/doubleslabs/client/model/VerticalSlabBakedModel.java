@@ -1,18 +1,18 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.DoubleSlabsConfig;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.util.Quaternion;
 import cjminecraft.doubleslabs.util.Vector3f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -38,6 +38,12 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
     private static final Quaternion ROTATE_Z_180 = Vector3f.ZP.rotationDegrees(180);
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
+
+    private final Map<IBlockState, IBakedModel> models = new HashMap<>();
+
+    public void addModel(IBakedModel model, IBlockState state) {
+        this.models.put(state, model);
+    }
 
     private static int[] rotateVertexData(int[] vertexData, EnumFacing direction, @Nullable EnumFacing side, boolean positiveState) {
         int[] data = new int[vertexData.length];
@@ -159,12 +165,24 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
 //        return EnumFacing.DOWN;
 //    }
 
-    private List<BakedQuad> getQuadsForState(@Nullable IBlockState state, @Nullable EnumFacing side, long rand, int tintOffset, @Nonnull EnumFacing direction, boolean positiveState, boolean rotate) {
+    private List<BakedQuad> getQuadsForState(@Nullable IBlockState state, @Nullable EnumFacing side, long rand, int tintOffset, IBlockState slabState, boolean positiveState, boolean rotate) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
         if (!rotate)
             return new ArrayList<>(model.getQuads(state, side, rand));
-        return new ArrayList<>(model.getQuads(state, Utils.rotateFace(side, direction), rand).stream().map(quad -> {
+        EnumFacing direction = slabState.getValue(BlockVerticalSlab.FACING);
+        List<BakedQuad> quads = model.getQuads(state, Utils.rotateFace(side, direction), rand);
+        if (DoubleSlabsConfig.useLazyModel(state)) {
+            IBlockState state1 = ((IExtendedBlockState)(positiveState ? slabState : slabState.withProperty(BlockVerticalSlab.FACING, direction.getOpposite())).withProperty(BlockVerticalSlab.DOUBLE, false)).getClean();
+            if (quads.size() == 0)
+                return new ArrayList<>();
+            TextureAtlasSprite sprite = quads.get(0).getSprite();
+            IBakedModel blockModel = this.models.get(state1);
+            if (blockModel != null)
+                return new SimpleBakedModel.Builder(state, blockModel, sprite, BlockPos.ORIGIN).makeBakedModel().getQuads(state, side, rand);
+        }
+
+        return new ArrayList<>(quads.stream().map(quad -> {
             int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side, positiveState);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat());
         }).collect(Collectors.toList()));
@@ -181,19 +199,20 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         String cacheKey = (negativeState != null ? negativeState.toString() : "null") + "," + (positiveState != null ? positiveState.toString() : "null") +
                 ":" + (side != null ? side.getName() : "null") + ":" +
                 (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName();
+        cache.clear();
         if (!cache.containsKey(cacheKey)) {
             boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);
             boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
 
             List<BakedQuad> quads = new ArrayList<>();
             if (positiveState != null && (MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, 0, direction, true, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_POSITIVE));
+                List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, 0, state, true, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_POSITIVE));
                 if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
                     positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                 quads.addAll(positiveQuads);
             }
             if (negativeState != null && (MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, TINT_OFFSET, direction, false, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_NEGATIVE));
+                List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, TINT_OFFSET, state, false, ((IExtendedBlockState) state).getValue(BlockVerticalSlab.ROTATE_NEGATIVE));
                 if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
                     negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                 quads.addAll(negativeQuads);

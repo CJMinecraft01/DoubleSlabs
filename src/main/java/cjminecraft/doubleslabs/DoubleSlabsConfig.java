@@ -3,7 +3,10 @@ package cjminecraft.doubleslabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,16 @@ public class DoubleSlabsConfig {
     @Config.LangKey("config.doubleslabs.alternate_vertical_slab_placement")
     public static boolean ALTERNATE_VERTICAL_SLAB_PLACEMENT = true;
 
+    @Config.Name("Lazy Vertical Slab Models")
+    @Config.Comment({"The list of slabs (or tags) which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs"})
+    @Config.LangKey("config.doubleslabs.lazy_vertical_slabs")
+    public static String[] LAZY_VERTICAL_SLABS_ARRAY = new String[]{
+            "minecraft:wooden_slab[variant=oak]"
+    };
+
+    @Config.Ignore
+    public static List<String> LAZY_VERTICAL_SLABS = new ArrayList<>();
+
 
     public static String slabToString(IBlockState state) {
         if (state == null)
@@ -55,6 +68,17 @@ public class DoubleSlabsConfig {
             }
         }
         return state.getBlock().getRegistryName().toString();
+    }
+
+    public static boolean useLazyModel(IBlockState state) {
+        String slabString = slabToString(state);
+        if (slabString.length() == 0)
+            return false;
+        for (String entry : LAZY_VERTICAL_SLABS_ARRAY)
+            if (entry.equals(slabString))
+                return true;
+        return false;
+//        return LAZY_VERTICAL_SLABS.stream().anyMatch(entry -> entry.equals(slabString));
     }
 
 }
