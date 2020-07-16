@@ -2,10 +2,12 @@ package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
+import cjminecraft.doubleslabs.addons.lottaterracotta.LottaTerracottaVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
 import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import cjminecraft.doubleslabs.addons.swampexpansion.SwampExpansionSupport;
+import cjminecraft.doubleslabs.addons.sweetconcrete.SweetConcreteVerticalSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,6 +42,12 @@ public class SlabSupport {
 
         if (ModList.get().isLoaded("stairway"))
             addSlabSupport(new StairwayToAetherSlabSupport());
+
+        if (ModList.get().isLoaded("lottaterracotta"))
+            addSlabSupport(new LottaTerracottaVerticalSlabSupport());
+
+        if (ModList.get().isLoaded("sweetconcrete"))
+            addSlabSupport(new SweetConcreteVerticalSlabSupport());
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
