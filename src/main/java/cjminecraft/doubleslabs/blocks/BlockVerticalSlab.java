@@ -200,7 +200,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
             max = 16;
         }
 
-        if (tileEntity != null) {
+        if (tileEntity instanceof TileEntityVerticalSlab) {
             TileEntityVerticalSlab tile = (TileEntityVerticalSlab) tileEntity;
 
             boolean positive = tile.getPositiveState() != null;
