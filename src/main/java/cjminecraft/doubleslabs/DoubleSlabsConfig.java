@@ -39,7 +39,7 @@ public class DoubleSlabsConfig {
     public static boolean ALTERNATE_VERTICAL_SLAB_PLACEMENT = true;
 
     @Config.Name("Lazy Vertical Slab Models")
-    @Config.Comment({"The list of slabs (or tags) which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs"})
+    @Config.Comment({"The list of slabs which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs"})
     @Config.LangKey("config.doubleslabs.lazy_vertical_slabs")
     public static String[] LAZY_VERTICAL_SLABS_ARRAY = new String[]{
             "minecraft:wooden_slab#variant=oak",
@@ -53,6 +53,10 @@ public class DoubleSlabsConfig {
     @Config.Ignore
     public static List<String> LAZY_VERTICAL_SLABS = new ArrayList<>();
 
+    @Config.Name("Slab Cull Blacklist")
+    @Config.Comment({"The list of slabs which should not be culled when combined"})
+    @Config.LangKey("config.doubleslabs.slab_cull_blacklist")
+    public static String[] SLAB_CULL_BLACKLIST = new String[]{};
 
     public static String slabToString(IBlockState state) {
         if (state == null)
@@ -84,6 +88,16 @@ public class DoubleSlabsConfig {
                 return true;
         return false;
 //        return LAZY_VERTICAL_SLABS.stream().anyMatch(entry -> entry.equals(slabString));
+    }
+
+    public static boolean shouldCull(IBlockState state) {
+        String slabString = slabToString(state);
+        if (slabString.length() == 0)
+            return false;
+        for (String entry : SLAB_CULL_BLACKLIST)
+            if (entry.equals(slabString))
+                return true;
+        return false;
     }
 
 }
