@@ -33,6 +33,7 @@ public class Config {
 
     // region Client Options
     public static ForgeConfigSpec.ConfigValue<ArrayList<String>> LAZY_VERTICAL_SLABS;
+    public static ForgeConfigSpec.ConfigValue<ArrayList<String>> SLAB_CULL_BLACKLIST;
     // endregion
 
     static {
@@ -55,6 +56,8 @@ public class Config {
 
         LAZY_VERTICAL_SLABS = CLIENT_BUILDER.comment("The list of slabs (or tags) which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs")
                 .define("lazy_vertical_slabs", Lists.newArrayList("#doubleslabs:plank_slabs"));
+        SLAB_CULL_BLACKLIST = CLIENT_BUILDER.comment("The list of slabs (or tags) which should not be culled when combined")
+                .define("slab_cull_blacklist", new ArrayList<>());
 
         CLIENT_BUILDER.pop();
 
@@ -65,6 +68,19 @@ public class Config {
         if (block.getRegistryName() == null)
             return false;
         return LAZY_VERTICAL_SLABS.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("#")) {
+                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
+                Tag<Block> tag = BlockTags.getCollection().get(tagLocation);
+                return tag != null && tag.contains(block);
+            }
+            return entry.equals(block.getRegistryName().toString());
+        });
+    }
+
+    public static boolean shouldCull(Block block) {
+        if (block.getRegistryName() == null)
+            return false;
+        return SLAB_CULL_BLACKLIST.get().stream().anyMatch(entry -> {
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 Tag<Block> tag = BlockTags.getCollection().get(tagLocation);

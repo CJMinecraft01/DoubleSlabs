@@ -349,6 +349,10 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         if (willHarvest)
             return true;
+        if (player.isCreative() && player.isSneaking()) {
+            harvestBlock(world, player, pos, state, world.getTileEntity(pos), ItemStack.EMPTY);
+            return true;
+        }
         return super.removedByPlayer(state, world, pos, player, false, fluid);
     }
 
@@ -763,5 +767,11 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public boolean shouldDisplayFluidOverlay(BlockState state, ILightReader world, BlockPos pos, IFluidState fluidState) {
         return state.get(DOUBLE);
+    }
+
+    @Override
+    public boolean canBeConnectedTo(BlockState state, IBlockReader world, BlockPos pos, Direction facing) {
+        boolean positive = getTile(world, pos).map(tile -> tile.getPositiveState() != null).orElse(true);
+        return state.get(DOUBLE) || facing != (positive ? state.get(FACING).getOpposite() : state.get(FACING));
     }
 }

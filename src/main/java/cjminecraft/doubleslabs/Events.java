@@ -399,7 +399,7 @@ public class Events {
 
         BlockState state = Minecraft.getInstance().world.getBlockState(event.getTarget().getPos());
 
-        if (!Minecraft.getInstance().player.abilities.isCreativeMode) {
+        if (!Minecraft.getInstance().player.abilities.isCreativeMode || (Minecraft.getInstance().player.abilities.isCreativeMode && Minecraft.getInstance().player.isSneaking())) {
             // We are trying to render the block highlight for the double slab
             if (state.getBlock() == Registrar.DOUBLE_SLAB) {
                 // Offset the position of the block for when we render

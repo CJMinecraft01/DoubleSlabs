@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.model;
 
+import cjminecraft.doubleslabs.Config;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.BlockState;
@@ -96,14 +97,16 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
                 List<BakedQuad> quads = new ArrayList<>();
                 if (RenderTypeLookup.canRenderInLayer(topState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0);
-                    if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
-                        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
+                    if (Config.shouldCull(topState.getBlock()))
+                        if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
+                            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                     quads.addAll(topQuads);
                 }
                 if (RenderTypeLookup.canRenderInLayer(bottomState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET);
-                    if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
-                        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+                    if (Config.shouldCull(bottomState.getBlock()))
+                        if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
+                            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
                     quads.addAll(bottomQuads);
                 }
 
