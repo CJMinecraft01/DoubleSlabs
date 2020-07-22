@@ -319,8 +319,7 @@ public class BlockVerticalSlab extends Block {
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        // TODO implement
-        return super.getBlockFaceShape(worldIn, state, pos, face);
+        return !state.getValue(DOUBLE) && state.getValue(FACING).getOpposite() == face ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
     }
 
     @Override
@@ -774,5 +773,11 @@ public class BlockVerticalSlab extends Block {
             return true;
         }).orElse(false))
             super.onEntityWalk(world, pos, entity);
+    }
+
+    @Override
+    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+        IBlockState state = world.getBlockState(pos);
+        return state.getValue(DOUBLE) || facing != state.getValue(FACING).getOpposite();
     }
 }
