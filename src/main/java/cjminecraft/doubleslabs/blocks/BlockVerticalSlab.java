@@ -318,8 +318,9 @@ public class BlockVerticalSlab extends Block {
 
 
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        return !state.getValue(DOUBLE) && state.getValue(FACING).getOpposite() == face ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
+    public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
+        boolean positive = getTile(world, pos).map(tile -> tile.getPositiveState() != null).orElse(true);
+        return !state.getValue(DOUBLE) && (face == (positive ? state.getValue(FACING).getOpposite() : state.getValue(FACING))) ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
     }
 
     @Override
@@ -393,6 +394,10 @@ public class BlockVerticalSlab extends Block {
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
         if (willHarvest)
             return true;
+        if (player.isCreative() && player.isSneaking()) {
+            harvestBlock(world, player, pos, state, world.getTileEntity(pos), ItemStack.EMPTY);
+            return true;
+        }
         return super.removedByPlayer(state, world, pos, player, false);
     }
 
@@ -778,6 +783,7 @@ public class BlockVerticalSlab extends Block {
     @Override
     public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
         IBlockState state = world.getBlockState(pos);
-        return state.getValue(DOUBLE) || facing != state.getValue(FACING).getOpposite();
+        boolean positive = getTile(world, pos).map(tile -> tile.getPositiveState() != null).orElse(true);
+        return state.getValue(DOUBLE) || facing != (positive ? state.getValue(FACING).getOpposite() : state.getValue(FACING));
     }
 }

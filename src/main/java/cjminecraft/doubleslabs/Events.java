@@ -413,7 +413,7 @@ public class Events {
 
         IBlockState state = Minecraft.getMinecraft().world.getBlockState(event.getTarget().getBlockPos());
 
-        if (!Minecraft.getMinecraft().player.isCreative()) {
+        if (!Minecraft.getMinecraft().player.isCreative() || (Minecraft.getMinecraft().player.isCreative() && Minecraft.getMinecraft().player.isSneaking())) {
 
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
