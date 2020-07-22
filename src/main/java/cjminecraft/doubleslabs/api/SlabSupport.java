@@ -2,6 +2,9 @@ package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.atum2.Atum2SlabSupport;
+import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedSlabSupport;
+import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedVerticalSlabSupport;
+import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedVerticalSlabWoodSupport;
 import cjminecraft.doubleslabs.addons.erebus.ErebusSlabSupport;
 import cjminecraft.doubleslabs.addons.libraryex.LibraryExSlabSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
@@ -49,6 +52,12 @@ public class SlabSupport {
 
         if (Loader.isModLoaded("stairway"))
             addSlabSupport(new StairwayToAetherSlabSupport());
+
+        if (Loader.isModLoaded("conquest")) {
+            addSlabSupport(new ConquestReforgedSlabSupport());
+            addSlabSupport(new ConquestReforgedVerticalSlabSupport());
+            addSlabSupport(new ConquestReforgedVerticalSlabWoodSupport());
+        }
     }
 
     public static void addSlabSupport(@Nonnull ISlabSupport support) {
