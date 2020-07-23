@@ -169,4 +169,8 @@ public final class Quaternion {
     public Quaternion copy() {
         return new Quaternion(this);
     }
+
+    public org.lwjgl.util.vector.Quaternion toLWJGLQuaternion() {
+        return new org.lwjgl.util.vector.Quaternion(this.x, this.y, this.z, this.w);
+    }
 }
