@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api;
 import cjminecraft.doubleslabs.DoubleSlabs;
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.lottaterracotta.LottaTerracottaVerticalSlabSupport;
+import cjminecraft.doubleslabs.addons.minecraft.MinecraftCampfireSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
 import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
@@ -30,6 +31,7 @@ public class SlabSupport {
 
     public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+        addSlabSupport(new MinecraftCampfireSupport());
 
         if (ModList.get().isLoaded("engineersdecor"))
             addSlabSupport(new EngineersDecorSlabSupport());

@@ -384,7 +384,7 @@ public class Events {
 
         BlockState state = Minecraft.getInstance().world.getBlockState(event.getTarget().getPos());
 
-        if (!Minecraft.getInstance().player.abilities.isCreativeMode) {
+        if (!Minecraft.getInstance().player.isCreative() || (Minecraft.getInstance().player.isCreative() && Minecraft.getInstance().player.isSneaking())) {
 
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);

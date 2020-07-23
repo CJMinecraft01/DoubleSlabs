@@ -362,6 +362,10 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         if (willHarvest)
             return true;
+        if (player.isCreative() && player.isSneaking()) {
+            harvestBlock(world, player, pos, state, world.getTileEntity(pos), ItemStack.EMPTY);
+            return true;
+        }
         return super.removedByPlayer(state, world, pos, player, false, fluid);
     }
 

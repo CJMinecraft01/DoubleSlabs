@@ -58,4 +58,8 @@ public interface ISlabSupport {
     default boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
         return ((BlockItem) stack.getItem()).getBlock() == state.getBlock();
     }
+
+    default float getOffsetY(boolean positive) {
+        return 0;
+    }
 }

@@ -51,7 +51,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         this.models.put(state, model);
     }
 
-    private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side, boolean positiveState) {
+    private static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side) {
         int[] data = new int[vertexData.length];
         int[] vertexOrder = new int[vertexData.length / 7];
         for (int i = 0; i < vertexData.length / 7; i++) {
@@ -171,7 +171,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         }
 
         return new ArrayList<>(quads.stream().map(quad -> {
-            int[] vertexData = rotateVertexData(quad.getVertexData(), direction, side, positiveState);
+            int[] vertexData = rotateVertexData(positiveState && extraData.getData(OFFSET_Y_POSITIVE) != 0 ? offsetY(quad.getVertexData(), extraData.getData(OFFSET_Y_POSITIVE)): !positiveState && extraData.getData(OFFSET_Y_NEGATIVE) != 0 ? offsetY(quad.getVertexData(), extraData.getData(OFFSET_Y_NEGATIVE)) : quad.getVertexData(), direction, side);
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat());
         }).collect(Collectors.toList()));
     }
@@ -193,14 +193,16 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 List<BakedQuad> quads = new ArrayList<>();
                 if (positiveState != null && (MinecraftForgeClient.getRenderLayer() == positiveState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, state, true);
-                    if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
-                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
+                    if (Config.shouldCull(positiveState.getBlock()))
+                        if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
+                            positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && (MinecraftForgeClient.getRenderLayer() == negativeState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, state, false);
-                    if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
-                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
+                    if (Config.shouldCull(negativeState.getBlock()))
+                        if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
+                            negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(negativeQuads);
                 }
 
@@ -230,14 +232,24 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
     public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         boolean rotatePositive = true;
         boolean rotateNegative = true;
+        float offsetYPositive = 0;
+        float offsetYNegative = 0;
         if (tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE) != null) {
             ISlabSupport positiveSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
             rotatePositive = positiveSlabSupport == null;
+            positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
+            if (positiveSlabSupport != null)
+                offsetYPositive = positiveSlabSupport.getOffsetY(false);
         }
         if (tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE) != null) {
             ISlabSupport negativeSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
             rotateNegative = negativeSlabSupport == null;
+            negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
+            if (negativeSlabSupport != null)
+                offsetYNegative = negativeSlabSupport.getOffsetY(true);
         }
+        tileData.setData(OFFSET_Y_POSITIVE, offsetYPositive);
+        tileData.setData(OFFSET_Y_NEGATIVE, offsetYNegative);
         tileData.setData(ROTATE_POSITIVE, rotatePositive);
         tileData.setData(ROTATE_NEGATIVE, rotateNegative);
         return tileData;

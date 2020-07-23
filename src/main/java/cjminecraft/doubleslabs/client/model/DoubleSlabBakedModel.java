@@ -2,6 +2,8 @@ package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.Config;
 import cjminecraft.doubleslabs.Utils;
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -10,6 +12,8 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -21,6 +25,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DoubleSlabBakedModel implements IDynamicBakedModel {
+
+    public static final ModelProperty<Float> OFFSET_Y_POSITIVE = new ModelProperty<>();
+    public static final ModelProperty<Float> OFFSET_Y_NEGATIVE = new ModelProperty<>();
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
     // Should be large enough so that tint offsets don't overlap
@@ -68,10 +75,24 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
         return getFallback().getOverrides();
     }
 
-    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset) {
+    protected static int[] offsetY(int[] vertexData, float amount) {
+        int[] data = new int[vertexData.length];
+        for (int i = 0; i < vertexData.length / 7; i++) {
+            data[i * 7] = vertexData[i * 7];
+            data[i * 7 + 1] = Float.floatToRawIntBits(Float.intBitsToFloat(vertexData[i * 7 + 1]) + amount);
+            data[i * 7 + 2] = vertexData[i * 7 + 2];
+            data[i * 7 + 3] = vertexData[i * 7 + 3]; // shade colour
+            data[i * 7 + 4] = vertexData[i * 7 + 4]; // texture U
+            data[i * 7 + 5] = vertexData[i * 7 + 5]; // texture V
+            data[i * 7 + 6] = vertexData[i * 7 + 6]; // baked lighting
+        }
+        return data;
+    }
+
+    private List<BakedQuad> getQuadsForState(@Nullable BlockState state, @Nullable Direction side, Random rand, @Nonnull IModelData extraData, int tintOffset, boolean positive) {
         if (state == null) return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, side, rand, extraData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat())).collect(Collectors.toList());
+        return model.getQuads(state, side, rand, extraData).stream().map(quad -> new BakedQuad(positive && extraData.getData(OFFSET_Y_POSITIVE) != 0 ? offsetY(quad.getVertexData(), extraData.getData(OFFSET_Y_POSITIVE)): !positive && extraData.getData(OFFSET_Y_NEGATIVE) != 0 ? offsetY(quad.getVertexData(), extraData.getData(OFFSET_Y_NEGATIVE)) : quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat())).collect(Collectors.toList());
     }
 
     @Nonnull
@@ -93,15 +114,17 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
-                    List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0);
-                    if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
-                        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
+                    List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0, true);
+                    if (Config.shouldCull(topState.getBlock()))
+                        if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
+                            topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                     quads.addAll(topQuads);
                 }
                 if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
-                    List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET);
-                    if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
-                        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+                    List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET, false);
+                    if (Config.shouldCull(bottomState.getBlock()))
+                        if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
+                            bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
                     quads.addAll(bottomQuads);
                 }
 
@@ -112,5 +135,25 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             }
         }
         return getFallback().getQuads(state, side, rand, extraData);
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+        float offsetYPositive = 0;
+        float offsetYNegative = 0;
+        if (tileData.getData(TileEntityDoubleSlab.TOP_STATE) != null) {
+            ISlabSupport positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.TOP_STATE));
+            if (positiveSlabSupport != null)
+                offsetYPositive = positiveSlabSupport.getOffsetY(true);
+        }
+        if (tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE) != null) {
+            ISlabSupport negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE));
+            if (negativeSlabSupport != null)
+                offsetYNegative = negativeSlabSupport.getOffsetY(false);
+        }
+        tileData.setData(OFFSET_Y_POSITIVE, offsetYPositive);
+        tileData.setData(OFFSET_Y_NEGATIVE, offsetYNegative);
+        return tileData;
     }
 }
