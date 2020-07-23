@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.addons.minecraft.MinecraftCampfireSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ public class SlabSupport {
 
     public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+        addSlabSupport(new MinecraftCampfireSupport());
 
         if (ModList.get().isLoaded("stairway"))
             addSlabSupport(new StairwayToAetherSlabSupport());

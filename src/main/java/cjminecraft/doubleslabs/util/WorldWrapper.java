@@ -678,12 +678,12 @@ public class WorldWrapper extends World {
 
     @Override
     public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
-        return null;
+        return this.world.func_230318_c_(p_230318_1_, p_230318_2_, p_230318_3_);
     }
 
     @Override
     public Stream<VoxelShape> func_234867_d_(@Nullable Entity p_234867_1_, AxisAlignedBB p_234867_2_, Predicate<Entity> p_234867_3_) {
-        return null;
+        return this.world.func_234867_d_(p_234867_1_, p_234867_2_, p_234867_3_);
     }
 
     @Override
@@ -703,7 +703,7 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean checkNoEntityCollision(Entity p_226668_1_) {
-        return this.checkNoEntityCollision(p_226668_1_);
+        return this.world.checkNoEntityCollision(p_226668_1_);
     }
 
     @Override
@@ -723,7 +723,7 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean func_234865_b_(@Nullable Entity p_234865_1_, AxisAlignedBB p_234865_2_, Predicate<Entity> p_234865_3_) {
-        return false;
+        return this.world.func_234865_b_(p_234865_1_, p_234865_2_, p_234865_3_);
     }
 
     @Override
@@ -733,7 +733,7 @@ public class WorldWrapper extends World {
 
     @Override
     public Stream<VoxelShape> func_241457_a_(@Nullable Entity p_241457_1_, AxisAlignedBB p_241457_2_, BiPredicate<BlockState, BlockPos> p_241457_3_) {
-        return null;
+        return this.world.func_241457_a_(p_241457_1_, p_241457_2_, p_241457_3_);
     }
 
     @Override
@@ -764,7 +764,7 @@ public class WorldWrapper extends World {
     @Nullable
     @Override
     public BlockRayTraceResult rayTraceBlocks(Vector3d p_217296_1_, Vector3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
-        return null;
+        return this.world.rayTraceBlocks(p_217296_1_, p_217296_2_, p_217296_3_, p_217296_4_, p_217296_5_);
     }
 
     @Override
@@ -779,7 +779,7 @@ public class WorldWrapper extends World {
 
     @Override
     public <T extends Entity> List<T> getLoadedEntitiesWithinAABB(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
-        return null;
+        return this.world.getLoadedEntitiesWithinAABB(p_225317_1_, p_225317_2_);
     }
 
     @Nullable
@@ -1001,7 +1001,7 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
-        return super.setBlockState(pos, newState, flags);
+        return this.func_241211_a_(pos, newState, flags, 512);
     }
 
     @Override

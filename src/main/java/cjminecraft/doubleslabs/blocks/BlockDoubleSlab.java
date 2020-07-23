@@ -242,6 +242,10 @@ public class BlockDoubleSlab extends Block {
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
         if (willHarvest)
             return true;
+        if (player.isCreative() && player.isSneaking()) {
+            harvestBlock(world, player, pos, state, world.getTileEntity(pos), ItemStack.EMPTY);
+            return true;
+        }
         return super.removedByPlayer(state, world, pos, player, false, fluid);
     }
 
@@ -488,11 +492,6 @@ public class BlockDoubleSlab extends Block {
     @Override
     public boolean getWeakChanges(BlockState state, IWorldReader world, BlockPos pos) {
         return true;
-    }
-
-    @Override
-    public boolean isBeaconBase(BlockState state, IWorldReader world, BlockPos pos, BlockPos beacon) {
-        return either(world, pos, s -> s.isBeaconBase(world, pos, beacon));
     }
 
     @Override
