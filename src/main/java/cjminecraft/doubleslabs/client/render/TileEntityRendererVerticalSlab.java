@@ -39,6 +39,7 @@ public class TileEntityRendererVerticalSlab extends TileEntityRenderer<TileEntit
             return;
 
         Direction facing = world.getBlockState(pos).get(BlockVerticalSlab.FACING);
+        matrixStack.push();
 
         switch (facing) {
             case NORTH:
@@ -59,9 +60,15 @@ public class TileEntityRendererVerticalSlab extends TileEntityRenderer<TileEntit
                 break;
         }
 
+        if (tile.getNegativeTile() != null) {
+            matrixStack.push();
+            matrixStack.translate(0, 0.5d, 0);
+            TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeTile(), partialTicks, matrixStack, renderer);
+            matrixStack.pop();
+        }
         if (tile.getPositiveTile() != null)
             TileEntityRendererDispatcher.instance.renderTileEntity(tile.getPositiveTile(), partialTicks, matrixStack, renderer);
-        if (tile.getNegativeTile() != null)
-            TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeTile(), partialTicks, matrixStack, renderer);
+
+        matrixStack.pop();
     }
 }

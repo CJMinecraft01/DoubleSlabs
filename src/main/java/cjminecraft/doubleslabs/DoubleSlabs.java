@@ -2,6 +2,8 @@ package cjminecraft.doubleslabs;
 
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.client.render.TileEntityRendererDoubleSlab;
+import cjminecraft.doubleslabs.client.render.TileEntityRendererVerticalSlab;
 import cjminecraft.doubleslabs.network.PacketHandler;
 import cjminecraft.doubleslabs.proxy.ClientProxy;
 import cjminecraft.doubleslabs.proxy.IProxy;
@@ -11,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -46,6 +49,8 @@ public class DoubleSlabs {
 
     public void clientSetup(FMLClientSetupEvent event) {
         Utils.checkOptiFineInstalled();
+        ClientRegistry.bindTileEntityRenderer(Registrar.TILE_VERTICAL_SLAB, TileEntityRendererVerticalSlab::new);
+        ClientRegistry.bindTileEntityRenderer(Registrar.TILE_DOUBLE_SLAB, TileEntityRendererDoubleSlab::new);
     }
 
 }

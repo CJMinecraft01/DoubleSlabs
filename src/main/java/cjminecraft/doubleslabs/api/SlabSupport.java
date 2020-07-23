@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.addons.abnormals_core.AbnormalsCoreVerticalSlabSu
 import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
 import cjminecraft.doubleslabs.addons.extendedmushrooms.ExtendedMushroomsVerticalSlabSupport;
 import cjminecraft.doubleslabs.addons.lottaterracotta.LottaTerracottaVerticalSlabSupport;
+import cjminecraft.doubleslabs.addons.minecraft.MinecraftCampfireSupport;
 import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.addons.mubble.MubbleSlabSupport;
 import cjminecraft.doubleslabs.addons.quark.QuarkSlabSupport;
@@ -35,6 +36,7 @@ public class SlabSupport {
 
     public static void init() {
         addSlabSupport(new MinecraftSlabSupport());
+        addSlabSupport(new MinecraftCampfireSupport());
 
         if (ModList.get().isLoaded("engineersdecor"))
             addSlabSupport(new EngineersDecorSlabSupport());
