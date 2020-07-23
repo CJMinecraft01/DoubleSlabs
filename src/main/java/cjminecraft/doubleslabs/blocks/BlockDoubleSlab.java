@@ -594,8 +594,8 @@ public class BlockDoubleSlab extends Block {
     public IBlockColor getBlockColor() {
         return (state, world, pos, tintIndex) -> getTile(world, pos).map(tile -> {
             if (tintIndex < DoubleSlabBakedModel.TINT_OFFSET)
-                return Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getTopState(), world, pos, tintIndex);
-            return Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getNegativeState(), world, pos, tintIndex - DoubleSlabBakedModel.TINT_OFFSET);
+                return tile.getTopState() != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getTopState(), world, pos, tintIndex) : -1;
+            return tile.getBottomState() != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getNegativeState(), world, pos, tintIndex - DoubleSlabBakedModel.TINT_OFFSET) : -1;
         }).orElse(-1);
     }
 
