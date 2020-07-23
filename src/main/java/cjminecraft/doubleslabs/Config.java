@@ -57,7 +57,7 @@ public class Config {
         LAZY_VERTICAL_SLABS = CLIENT_BUILDER.comment("The list of slabs (or tags) which should use the lazy model rendering technique", "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model", "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs")
                 .define("lazy_vertical_slabs", Lists.newArrayList("#doubleslabs:plank_slabs"));
         SLAB_CULL_BLACKLIST = CLIENT_BUILDER.comment("The list of slabs (or tags) which should not be culled when combined")
-                .define("slab_cull_blacklist", new ArrayList<>());
+                .define("slab_cull_blacklist", Lists.newArrayList("minecraft:campfire"));
 
         CLIENT_BUILDER.pop();
 
