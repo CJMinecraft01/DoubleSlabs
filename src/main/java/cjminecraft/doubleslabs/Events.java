@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
@@ -111,7 +112,7 @@ public class Events {
                                 // If we could set the block
                                 if (event.getWorld().setBlockState(pos, newState, 11)) {
                                     // Get the correct slab state for the vertical slab
-                                    BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? face.getOpposite() : face);
+                                    BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? face.getOpposite() : face);
 
                                     // Set the respective state within the tile entity
                                     if (tile.getPositiveState() != null)
@@ -156,7 +157,7 @@ public class Events {
 
                         if (face == direction.getOpposite()) {
                             // Get the state for the vertical slab item using the direction of the already placed vertical slab
-                            BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), direction.getOpposite());
+                            BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), direction.getOpposite());
                             // Create the state for the vertical slab
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
 
@@ -209,7 +210,7 @@ public class Events {
                         state = removeWaterloggedPropertyFromState(state);
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
                         if (face == direction) {
-                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), SlabType.BOTTOM);
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false).with(BlockVerticalSlab.FACING, direction);
 
                             if (event.getWorld().setBlockState(pos, newState, 11)) {
@@ -225,6 +226,9 @@ public class Events {
                             return;
                         }
                     }
+
+                    BlockState originalState = state;
+                    BlockPos originalPos = pos;
 
                     // Offset the position
                     pos = pos.offset(face);
@@ -250,7 +254,7 @@ public class Events {
                             state = removeWaterloggedPropertyFromState(state);
                             Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
-                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
+                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), SlabType.BOTTOM);
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.WATERLOGGED, false);
 
                             if (event.getWorld().setBlockState(pos, newState, 11)) {
@@ -266,10 +270,18 @@ public class Events {
                             return;
                         }
                         if (((event.getPlayer().isSneaking() && !Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get()) || (Config.ALTERNATE_VERTICAL_SLAB_PLACEMENT.get() && ((event.getPlayer().isSneaking() && face.getAxis() == Direction.Axis.Y) || (!event.getPlayer().isSneaking() && face.getAxis() != Direction.Axis.Y)))) && !Config.DISABLE_VERTICAL_SLAB_PLACEMENT.get()) {
-                            if (!state.isAir(event.getWorld(), pos))
-                                return;
+//                            if (!state.isAir(event.getWorld(), pos))
+//                                return;
                             // Try to place a horizontal slab as a vertical slab
                             BlockRayTraceResult result = Utils.rayTrace(event.getPlayer());
+
+                            BlockItemUseContext context;
+
+                            if (originalState.isReplaceable(context = new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), result))) {
+                                state = originalState;
+                                pos = originalPos;
+                            } else if (!state.isReplaceable(context = new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), result)))
+                                return;
 
                             if (face.getAxis() == Direction.Axis.Y) {
                                 Direction direction = event.getPlayer().getHorizontalFacing();
@@ -286,8 +298,9 @@ public class Events {
                                 else if (direction.getAxisDirection() == Direction.AxisDirection.NEGATIVE && distance > 0.5f)
                                     direction = direction.getOpposite();
 
-                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
-                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction);
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), context, SlabType.BOTTOM);
+                                BlockState newState = Registrar.VERTICAL_SLAB.getStateForPlacement(context).with(BlockVerticalSlab.FACING, direction);
+
 
                                 if (event.getWorld().setBlockState(pos, newState, 11)) {
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
@@ -298,8 +311,8 @@ public class Events {
                                     finishBlockPlacement(event, pos, slabState);
                                 }
                             } else {
-                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), SlabType.BOTTOM);
-                                BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, face.getOpposite());
+                                BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), context, SlabType.BOTTOM);
+                                BlockState newState = Registrar.VERTICAL_SLAB.getStateForPlacement(context).with(BlockVerticalSlab.FACING, face.getOpposite());
 
                                 if (event.getWorld().setBlockState(pos, newState, 11)) {
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
@@ -324,7 +337,7 @@ public class Events {
                     if (tile != null && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                         BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
                         if (event.getWorld().setBlockState(pos, newState, 11)) {
-                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
+                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
                             if (tile.getPositiveState() != null)
                                 tile.setNegativeState(slabState);
                             else
@@ -350,7 +363,7 @@ public class Events {
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
                     state = removeWaterloggedPropertyFromState(state);
-                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
+                    BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
                     if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))

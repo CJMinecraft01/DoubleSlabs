@@ -3,11 +3,14 @@ package cjminecraft.doubleslabs.api;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -38,8 +41,9 @@ public interface ISlabSupport {
         return false;
     }
 
-    default BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, Direction direction) {
-        return world.getBlockState(pos);
+    default BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, Direction direction) {
+        BlockItem slab = (BlockItem) stack.getItem();
+        return slab.getBlock().getStateForPlacement(context);
     }
 
     default Direction getDirection(World world, BlockPos pos, BlockState state) {
@@ -50,9 +54,9 @@ public interface ISlabSupport {
         return SlabType.BOTTOM;
     };
 
-    default BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
+    default BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, SlabType half) {
         BlockItem slab = (BlockItem) stack.getItem();
-        return slab.getBlock().getDefaultState();
+        return slab.getBlock().getStateForPlacement(context);
     }
 
     default boolean areSame(World world, BlockPos pos, BlockState state, ItemStack stack) {
@@ -61,5 +65,9 @@ public interface ISlabSupport {
 
     default float getOffsetY(boolean positive) {
         return 0;
+    }
+
+    default ActionResultType onActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        return state.onBlockActivated(world, player, hand, hit);
     }
 }

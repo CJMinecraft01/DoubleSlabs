@@ -70,7 +70,7 @@ public class Config {
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
-                return tag != null && tag.func_230235_a_(block);
+                return tag != null && tag.contains(block);
             }
             return entry.equals(block.getRegistryName().toString());
         });
@@ -83,7 +83,7 @@ public class Config {
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
-                return tag != null && tag.func_230235_a_(block);
+                return tag != null && tag.contains(block);
             }
             return entry.equals(block.getRegistryName().toString());
         });

@@ -5,6 +5,8 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
@@ -23,6 +25,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
@@ -528,8 +531,9 @@ public class BlockDoubleSlab extends Block {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 ActionResultType result;
+                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+                    result = slabSupport == null ? pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, hit);
                 } catch (Exception e) {
                     result = ActionResultType.PASS;
                 }
@@ -594,17 +598,27 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
-        getTile(world, pos).map(tile -> {
-            if (tile.getPositiveState() != null) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
                 tile.getPositiveState().getBlock().onEntityWalk(world, pos, entity);
-                return true;
-            }
-            return false;
-        }).orElse(null);
+        });
     }
 
     @Override
     public boolean shouldDisplayFluidOverlay(BlockState state, IBlockDisplayReader world, BlockPos pos, FluidState fluidState) {
         return true;
+    }
+
+    @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
+                tile.getPositiveState().onEntityCollision(world, pos, entity);
+        });
+    }
+
+    @Override
+    public void onProjectileCollision(World world, BlockState state, BlockRayTraceResult hit, ProjectileEntity projectile) {
+        getHalfState(world, hit.getPos(), hit.getHitVec().y).ifPresent(s -> s.onProjectileCollision(world, s, hit, projectile));
     }
 }
