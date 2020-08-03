@@ -64,29 +64,40 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 case NORTH:
                     if (side != null) {
                         if (side == Direction.NORTH)
-                            vertexOrder[i] = (i + 2) % 4;
+                            vertexOrder[i] = i % 4;
                         else if (side == Direction.SOUTH)
-                            vertexOrder[i] = i;
+                            vertexOrder[i] = (i + 2) % 4;
                         else if (side == Direction.WEST)
                             vertexOrder[i] = (i + 1) % 4;
-                        else
+                        else if (side == Direction.EAST)
                             vertexOrder[i] = (i + 3) % 4;
+                        else if (side == Direction.UP)
+                            vertexOrder[i] = (i + 2) % 4;
+                        else
+                            vertexOrder[i] = i % 4;
                     }
                     vec.transform(NORTH_ROTATION);
+                    if (side == direction)
+                        vec.transform(ROTATE_Z_180);
                     break;
                 case SOUTH:
                     if (side != null) {
                         if (side == Direction.NORTH)
-                            vertexOrder[i] = i;
-                        else if (side == Direction.SOUTH)
                             vertexOrder[i] = (i + 2) % 4;
+                        else if (side == Direction.SOUTH)
+                            vertexOrder[i] = i % 4;
                         else if (side == Direction.WEST)
                             vertexOrder[i] = (i + 3) % 4;
-                        else
+                        else if (side == Direction.EAST)
                             vertexOrder[i] = (i + 1) % 4;
+                        else if (side == Direction.UP)
+                            vertexOrder[i] = i % 4;
+                        else
+                            vertexOrder[i] = (i + 2) % 4;
                     }
                     vec.transform(SOUTH_ROTATION);
-                    vec.transform(ROTATE_Z_180);
+                    if (side != direction)
+                        vec.transform(ROTATE_Z_180);
                     break;
                 case WEST:
                     if (side != null) {
@@ -95,26 +106,32 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                         else if (side == Direction.SOUTH)
                             vertexOrder[i] = (i + 1) % 4;
                         else if (side == Direction.EAST)
-                            vertexOrder[i] = i % 4;
-                        else
                             vertexOrder[i] = (i + 2) % 4;
+                        else
+                            vertexOrder[i] = i % 4;
                     }
                     vec.transform(WEST_ROTATION);
-                    vec.transform(ROTATE_X_90);
+                    if (side != direction)
+                        vec.transform(ROTATE_X_90);
+                    else
+                        vec.transform(Vector3f.XP.rotationDegrees(270));
                     break;
                 case EAST:
                     if (side != null) {
                         if (side == Direction.NORTH)
                             vertexOrder[i] = (i + 1) % 4;
                         else if (side == Direction.SOUTH)
-                        vertexOrder[i] = (i + 3) % 4;
+                            vertexOrder[i] = (i + 3) % 4;
                         else if (side == Direction.EAST)
-                            vertexOrder[i] = (i + 2) % 4;
-                        else
                             vertexOrder[i] = i % 4;
+                        else
+                            vertexOrder[i] = (i + 2) % 4;
                     }
                     vec.transform(EAST_ROTATION);
-                    vec.transform(ROTATE_X_90);
+                    if (side != direction)
+                        vec.transform(ROTATE_X_90);
+                    else
+                        vec.transform(Vector3f.XP.rotationDegrees(270));
                     break;
                 default:
                     break;
@@ -140,6 +157,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         int[] finalData = new int[data.length];
         for (int i = 0; i < vertexOrder.length; i++) {
             int j = !Utils.isOptiFineInstalled() ? vertexOrder[i] * 8 : i * 8;
+//            int j = i * 8;
             finalData[i * 8] = data[j];
             finalData[i * 8 + 1] = data[j + 1];
             finalData[i * 8 + 2] = data[j + 2];
@@ -202,6 +220,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             String cacheKey = (negativeState != null ? negativeState.toString() : "null") + "," + (positiveState != null ? positiveState.toString() : "null") +
                     ":" + (side != null ? side.getName2() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName2();
+            cache.clear();
             if (!cache.containsKey(cacheKey)) {
                 boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);
                 boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
