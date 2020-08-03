@@ -304,7 +304,6 @@ public class Events {
 
 
                                 if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
-                                    event.getWorld().getLightManager().checkBlock(pos);
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                                     if (tile == null)
                                         return;
@@ -345,8 +344,6 @@ public class Events {
                             else
                                 tile.setPositiveState(slabState);
 
-                            event.getWorld().markBlockRangeForRenderUpdate(pos, state, newState);
-
                             finishBlockPlacement(event, pos, slabState);
                             return;
                         }
@@ -373,7 +370,6 @@ public class Events {
 
 //                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                     if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
-                        event.getWorld().getLightManager().checkBlock(pos);
                         TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);
                         if (tile == null)
                             return;

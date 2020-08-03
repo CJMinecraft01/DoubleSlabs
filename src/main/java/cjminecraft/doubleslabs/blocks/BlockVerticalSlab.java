@@ -232,8 +232,8 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         return !state.get(DOUBLE) && IWaterLoggable.super.canContainFluid(world, pos, state, fluid);
     }
 
-    @Nullable
     @Override
+    @Nonnull
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockPos blockpos = context.getPos();
         BlockState blockstate = context.getWorld().getBlockState(blockpos);

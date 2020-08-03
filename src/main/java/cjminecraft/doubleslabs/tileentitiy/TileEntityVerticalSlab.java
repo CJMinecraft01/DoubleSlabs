@@ -19,6 +19,7 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -214,7 +215,8 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         if (this.world != null) {
             BlockState state = this.world.getBlockState(getPos());
             requestModelDataUpdate();
-            this.world.notifyBlockUpdate(getPos(), state, state, 3);
+            this.world.getLightManager().checkBlock(this.pos);
+            this.world.notifyBlockUpdate(getPos(), state, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
         }
     }
 
