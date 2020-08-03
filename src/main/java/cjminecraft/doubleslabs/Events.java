@@ -7,7 +7,6 @@ import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -29,10 +28,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.DrawHighlightEvent;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -110,11 +107,12 @@ public class Events {
 //                                    return;
                                 // The new state for the vertical slab with the double property set
                                 BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
+                                // Get the correct slab state for the vertical slab
+                                BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? face.getOpposite() : face);
+                                if (Config.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                    return;
                                 // If we could set the block
                                 if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
-                                    // Get the correct slab state for the vertical slab
-                                    BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? face.getOpposite() : face);
-
                                     // Set the respective state within the tile entity
                                     if (tile.getPositiveState() != null)
                                         tile.setNegativeState(slabState);
@@ -151,6 +149,9 @@ public class Events {
                             face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
                         }
 
+                        if (Config.isBlacklistedVerticalSlab(state.getBlock()))
+                            return;
+
                         state = removeWaterloggedPropertyFromState(state);
 
                         // Get the direction that the vertical slab block is facing
@@ -159,6 +160,8 @@ public class Events {
                         if (face == direction.getOpposite()) {
                             // Get the state for the vertical slab item using the direction of the already placed vertical slab
                             BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), direction.getOpposite());
+                            if (Config.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                return;
                             // Create the state for the vertical slab
                             BlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
 
@@ -191,8 +194,8 @@ public class Events {
                 BlockState state = event.getWorld().getBlockState(pos);
 
                 // Don't allow blacklisted slabs to be joined to
-                if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
-                    return;
+//                if (Config.isBlacklistedHorizontalSlab(state.getBlock()))
+//                    return;
 
                 boolean verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE) && (((TileEntityVerticalSlab) event.getWorld().getTileEntity(pos)).getPositiveState() != null ? face == state.get(BlockVerticalSlab.FACING).getOpposite() : face == state.get(BlockVerticalSlab.FACING));
 
@@ -208,6 +211,8 @@ public class Events {
 //                        if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
 //                            return;
 
+                        if (Config.isBlacklistedVerticalSlab(state.getBlock()))
+                            return;
                         state = removeWaterloggedPropertyFromState(state);
                         Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
                         if (face == direction) {
@@ -237,8 +242,8 @@ public class Events {
                     if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
                         return;
                     state = event.getWorld().getBlockState(pos);
-                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(state)))
-                        return;
+//                    if (Config.isBlacklistedHorizontalSlab(state.getBlock()))
+//                        return;
                     if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
                         return;
 
@@ -252,6 +257,8 @@ public class Events {
                         if (blockSupport != null) {
                             // We are trying to combine a mod vertical slab with a regular slab
 
+                            if (Config.isBlacklistedVerticalSlab(state.getBlock()))
+                                return;
                             state = removeWaterloggedPropertyFromState(state);
                             Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
@@ -300,6 +307,8 @@ public class Events {
                                     direction = direction.getOpposite();
 
                                 BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), context, SlabType.BOTTOM);
+                                if (Config.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                    return;
                                 BlockState newState = Registrar.VERTICAL_SLAB.getStateForPlacement(context).with(BlockVerticalSlab.FACING, direction);
 
 
@@ -314,6 +323,9 @@ public class Events {
                             } else {
                                 BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), context, SlabType.BOTTOM);
                                 BlockState newState = Registrar.VERTICAL_SLAB.getStateForPlacement(context).with(BlockVerticalSlab.FACING, face.getOpposite());
+
+                                if (Config.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                    return;
 
                                 if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
@@ -337,8 +349,10 @@ public class Events {
                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                     if (tile != null && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                         BlockState newState = state.with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
+                        BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
+                        if (Config.isBlacklistedVerticalSlab(slabState.getBlock()))
+                            return;
                         if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
-                            BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), tile.getPositiveState() != null ? SlabType.TOP : SlabType.BOTTOM);
                             if (tile.getPositiveState() != null)
                                 tile.setNegativeState(slabState);
                             else
@@ -353,6 +367,9 @@ public class Events {
                 if (blockSupport == null)
                     return;
 
+                if (Config.isBlacklistedHorizontalSlab(state.getBlock()))
+                    return;
+
                 SlabType half = blockSupport.getHalf(event.getWorld(), pos, state);
                 if (half == SlabType.DOUBLE)
                     return;
@@ -363,9 +380,11 @@ public class Events {
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
                     state = removeWaterloggedPropertyFromState(state);
                     BlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM);
+                    if (Config.isBlacklistedHorizontalSlab(slabState.getBlock()))
+                        return;
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
-                    if (Config.SLAB_BLACKLIST.get().contains(Config.slabToString(slabState)))
+                    if (Config.isBlacklistedHorizontalSlab(slabState.getBlock()))
                         return;
 
 //                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
