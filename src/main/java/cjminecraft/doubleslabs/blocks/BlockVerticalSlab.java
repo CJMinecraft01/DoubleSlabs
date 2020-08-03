@@ -57,6 +57,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -435,7 +436,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                 else
                     tile.setNegativeState(null);
 
-                world.setBlockState(pos, state.with(DOUBLE, false), 11);
+                world.setBlockState(pos, state.with(DOUBLE, false), Constants.BlockFlags.DEFAULT);
             } else {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
                 BlockState remainingState = tile.getPositiveState() != null ? tile.getPositiveState() : tile.getNegativeState();
@@ -548,7 +549,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                 Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
-                    particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
+                    particle = particle.multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F);
                     manager.addEffect(particle);
                     return true;
                 }

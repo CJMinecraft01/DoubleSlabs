@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public class MinecraftCampfireSupport implements ISlabSupport {
 
@@ -58,11 +59,11 @@ public class MinecraftCampfireSupport implements ISlabSupport {
                 world.playEvent(null, 1009, pos, 0);
             }
 
-            CampfireBlock.func_235475_c_(world, pos, state);
+            CampfireBlock.extinguish(world, pos, state);
             BlockState newState = state.with(CampfireBlock.LIT, Boolean.valueOf(false));
 
             if (!world.isRemote) {
-                world.setBlockState(pos, newState, 11);
+                world.setBlockState(pos, newState, Constants.BlockFlags.DEFAULT);
                 player.getHeldItem(hand).damageItem(1, player, (p) -> {
                     p.sendBreakAnimation(hand);
                 });

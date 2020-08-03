@@ -44,6 +44,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -303,7 +304,7 @@ public class BlockDoubleSlab extends Block {
 
             stateToRemove.onReplaced(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
-            world.setBlockState(pos, remainingState, 11);
+            world.setBlockState(pos, remainingState, Constants.BlockFlags.DEFAULT);
             world.setTileEntity(pos, remainingTile);
         }
     }
@@ -375,7 +376,7 @@ public class BlockDoubleSlab extends Block {
                 Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
-                    particle = particle.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F);
+                    particle = particle.multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F);
                     manager.addEffect(particle);
                     return true;
                 }

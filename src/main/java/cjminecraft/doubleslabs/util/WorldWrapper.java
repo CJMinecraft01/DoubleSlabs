@@ -1001,11 +1001,11 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
-        return this.func_241211_a_(pos, newState, flags, 512);
+        return this.setBlockState(pos, newState, flags, 512);
     }
 
     @Override
-    public boolean func_241211_a_(BlockPos pos, BlockState state, int flags, int p_241211_4_) {
+    public boolean setBlockState(BlockPos pos, BlockState state, int flags, int p_241211_4_) {
         if (pos.equals(this.verticalSlab.getPos())) {
             if (this.positive)
                 this.verticalSlab.setPositiveState(state);
@@ -1013,18 +1013,18 @@ public class WorldWrapper extends World {
                 this.verticalSlab.setNegativeState(state);
             return true;
         } else {
-            return super.func_241211_a_(pos, state, flags, p_241211_4_);
+            return super.setBlockState(pos, state, flags, p_241211_4_);
         }
     }
 
     @Override
-    public boolean func_241212_a_(BlockPos p_241212_1_, boolean p_241212_2_, @Nullable Entity p_241212_3_, int p_241212_4_) {
-        return this.world.func_241212_a_(p_241212_1_, p_241212_2_, p_241212_3_, p_241212_4_);
+    public boolean destroyBlock(BlockPos p_241212_1_, boolean p_241212_2_, @Nullable Entity p_241212_3_, int p_241212_4_) {
+        return this.world.destroyBlock(p_241212_1_, p_241212_2_, p_241212_3_, p_241212_4_);
     }
 
     @Override
-    public Explosion func_230546_a_(@Nullable Entity p_230546_1_, @Nullable DamageSource p_230546_2_, @Nullable IExplosionContext p_230546_3_, double p_230546_4_, double p_230546_6_, double p_230546_8_, float p_230546_10_, boolean p_230546_11_, Explosion.Mode p_230546_12_) {
-        return this.world.func_230546_a_(p_230546_1_, p_230546_2_, p_230546_3_, p_230546_4_, p_230546_6_, p_230546_8_, p_230546_10_, p_230546_11_, p_230546_12_);
+    public Explosion createExplosion(@Nullable Entity p_230546_1_, @Nullable DamageSource p_230546_2_, @Nullable IExplosionContext p_230546_3_, double p_230546_4_, double p_230546_6_, double p_230546_8_, float p_230546_10_, boolean p_230546_11_, Explosion.Mode p_230546_12_) {
+        return this.world.createExplosion(p_230546_1_, p_230546_2_, p_230546_3_, p_230546_4_, p_230546_6_, p_230546_8_, p_230546_10_, p_230546_11_, p_230546_12_);
     }
 
     @Override
