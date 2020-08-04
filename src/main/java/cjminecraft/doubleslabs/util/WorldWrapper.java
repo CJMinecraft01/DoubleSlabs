@@ -246,6 +246,13 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state) {
+        if (pos.equals(this.verticalSlab.getPos())) {
+            if (this.positive)
+                this.verticalSlab.setPositiveState(state);
+            else
+                this.verticalSlab.setNegativeState(state);
+            return true;
+        }
         return this.world.setBlockState(pos, state);
     }
 

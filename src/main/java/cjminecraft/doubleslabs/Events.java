@@ -384,9 +384,6 @@ public class Events {
                         return;
                     BlockState newState = Registrar.DOUBLE_SLAB.getDefaultState();
 
-                    if (Config.isBlacklistedHorizontalSlab(slabState.getBlock()))
-                        return;
-
 //                    if (!event.getWorld().checkBlockCollision(event.getPlayer().getBoundingBox().offset(pos)) && event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                     if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                         TileEntityDoubleSlab tile = (TileEntityDoubleSlab) event.getWorld().getTileEntity(pos);

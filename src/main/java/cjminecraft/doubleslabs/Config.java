@@ -41,7 +41,7 @@ public class Config {
     static {
         SERVER_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
 
-        SLAB_BLACKLIST = SERVER_BUILDER.comment("he list of slabs (or tags) to ignore when creating double slabs", "Example: minecraft:purpur_slab")
+        SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slabs (or tags) to ignore when creating double slabs", "Example: minecraft:purpur_slab")
                 .define("slab_blacklist", new ArrayList<>());
         VERTICAL_SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slabs (or tags) to ignore when creating vertical slabs", "Example: minecraft:purpur_slab")
                 .define("vertical_slab_blacklist", new ArrayList<>());
