@@ -33,8 +33,8 @@ public class Utils {
         }
     }
 
-    public static boolean isTransparent(BlockState state, IBlockReader world, BlockPos pos) {
-        return !state.getMaterial().isOpaque() || state.isTransparent() || state.getRenderShape(world, pos) == VoxelShapes.fullCube();
+    public static boolean isTransparent(BlockState state) {
+        return !state.getMaterial().isOpaque() || !state.isSolid();
     }
 
     public static BlockRayTraceResult rayTrace(PlayerEntity player) {

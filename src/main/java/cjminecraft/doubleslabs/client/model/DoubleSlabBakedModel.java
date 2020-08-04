@@ -29,8 +29,6 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
 
     public static final ModelProperty<Float> OFFSET_Y_POSITIVE = new ModelProperty<>();
     public static final ModelProperty<Float> OFFSET_Y_NEGATIVE = new ModelProperty<>();
-    public static final ModelProperty<Boolean> POSITIVE_TRANSPARENT = new ModelProperty<>();
-    public static final ModelProperty<Boolean> NEGATIVE_TRANSPARENT = new ModelProperty<>();
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
     // Should be large enough so that tint offsets don't overlap
@@ -116,20 +114,21 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
                 if (topState == null || bottomState == null)
                     //                    cache.put(cacheKey, quads);
                     return getFallback().getQuads(null, side, rand);
-                boolean topTransparent = extraData.getData(POSITIVE_TRANSPARENT);
-                boolean bottomTransparent = extraData.getData(NEGATIVE_TRANSPARENT);
+                boolean shouldCull = Config.shouldCull(topState.getBlock()) && Config.shouldCull(bottomState.getBlock());
+                boolean topTransparent = Utils.isTransparent(topState);
+                boolean bottomTransparent = Utils.isTransparent(bottomState);
 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (RenderTypeLookup.canRenderInLayer(topState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0, true);
-                    if (Config.shouldCull(topState.getBlock()))
+                    if (shouldCull)
                         if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                             topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                     quads.addAll(topQuads);
                 }
                 if (RenderTypeLookup.canRenderInLayer(bottomState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET, false);
-                    if (Config.shouldCull(bottomState.getBlock()))
+                    if (shouldCull)
                         if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                             bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
                     quads.addAll(bottomQuads);
@@ -149,24 +148,18 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
     public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         float offsetYPositive = 0;
         float offsetYNegative = 0;
-        boolean positiveTransparent = false;
-        boolean negativeTransparent = false;
         if (tileData.getData(TileEntityDoubleSlab.TOP_STATE) != null) {
-            positiveTransparent = Utils.isTransparent(tileData.getData(TileEntityDoubleSlab.TOP_STATE), world, pos);
             ISlabSupport positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.TOP_STATE));
             if (positiveSlabSupport != null)
                 offsetYPositive = positiveSlabSupport.getOffsetY(true);
         }
         if (tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE) != null) {
-            negativeTransparent = Utils.isTransparent(tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE), world, pos);
             ISlabSupport negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE));
             if (negativeSlabSupport != null)
                 offsetYNegative = negativeSlabSupport.getOffsetY(false);
         }
         tileData.setData(OFFSET_Y_POSITIVE, offsetYPositive);
         tileData.setData(OFFSET_Y_NEGATIVE, offsetYNegative);
-        tileData.setData(POSITIVE_TRANSPARENT, positiveTransparent);
-        tileData.setData(NEGATIVE_TRANSPARENT, negativeTransparent);
         return tileData;
     }
 }

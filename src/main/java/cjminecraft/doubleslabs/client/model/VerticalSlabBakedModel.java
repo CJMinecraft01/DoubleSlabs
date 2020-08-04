@@ -40,6 +40,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
     private static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
     private static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
     private static final Quaternion ROTATE_X_90 = Vector3f.XP.rotationDegrees(90);
+    private static final Quaternion ROTATE_X_270 = Vector3f.XP.rotationDegrees(270);
     private static final Quaternion ROTATE_Z_180 = Vector3f.ZP.rotationDegrees(180);
 
     private final Map<String, List<BakedQuad>> cache = new HashMap<>();
@@ -115,7 +116,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                     if (side != direction)
                         vec.transform(ROTATE_X_90);
                     else
-                        vec.transform(Vector3f.XP.rotationDegrees(270));
+                        vec.transform(ROTATE_X_270);
                     break;
                 case EAST:
                     if (side != null) {
@@ -132,7 +133,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                     if (side != direction)
                         vec.transform(ROTATE_X_90);
                     else
-                        vec.transform(Vector3f.XP.rotationDegrees(270));
+                        vec.transform(ROTATE_X_270);
                     break;
                 default:
                     break;
@@ -222,21 +223,22 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                     ":" + (side != null ? side.getName2() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName2();
             if (!cache.containsKey(cacheKey)) {
-                boolean negativeTransparent = negativeState != null && extraData.getData(POSITIVE_TRANSPARENT);
-                boolean positiveTransparent = positiveState != null && extraData.getData(NEGATIVE_TRANSPARENT);
-                
+                boolean shouldCull = positiveState != null && negativeState != null && Config.shouldCull(positiveState.getBlock()) && Config.shouldCull(negativeState.getBlock());
+                boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);
+                boolean positiveTransparent = positiveState != null && Utils.isTransparent(positiveState);
+
                 List<BakedQuad> quads = new ArrayList<>();
                 if (positiveState != null && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> positiveQuads = getQuadsForState(positiveState, side, rand, extraData, 0, state, true);
-                    if (Config.shouldCull(positiveState.getBlock()))
-                        if (negativeState != null && ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent)))
+                    if (shouldCull)
+                        if ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent))
                             positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                     quads.addAll(positiveQuads);
                 }
                 if (negativeState != null && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                     List<BakedQuad> negativeQuads = getQuadsForState(negativeState, side, rand, extraData, TINT_OFFSET, state, false);
-                    if (Config.shouldCull(negativeState.getBlock()))
-                        if (positiveState != null && ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent)))
+                    if (shouldCull)
+                        if ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent))
                             negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
                     quads.addAll(negativeQuads);
                 }
@@ -269,10 +271,7 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         boolean rotateNegative = true;
         float offsetYPositive = 0;
         float offsetYNegative = 0;
-        boolean positiveTransparent = true;
-        boolean negativeTransparent = true;
         if (tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE) != null) {
-            positiveTransparent = Utils.isTransparent(tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE), world, pos);
             ISlabSupport positiveSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
             rotatePositive = positiveSlabSupport == null;
             positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
@@ -280,7 +279,6 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
                 offsetYPositive = positiveSlabSupport.getOffsetY(false);
         }
         if (tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE) != null) {
-            negativeTransparent = Utils.isTransparent(tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE), world, pos);
             ISlabSupport negativeSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
             rotateNegative = negativeSlabSupport == null;
             negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
@@ -291,8 +289,6 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         tileData.setData(OFFSET_Y_NEGATIVE, offsetYNegative);
         tileData.setData(ROTATE_POSITIVE, rotatePositive);
         tileData.setData(ROTATE_NEGATIVE, rotateNegative);
-        tileData.setData(POSITIVE_TRANSPARENT, positiveTransparent);
-        tileData.setData(NEGATIVE_TRANSPARENT, negativeTransparent);
         return tileData;
     }
 }
