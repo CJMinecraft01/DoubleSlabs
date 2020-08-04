@@ -1,12 +1,19 @@
 package cjminecraft.doubleslabs;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fml.DistExecutor;
 
 public class Utils {
 
@@ -26,8 +33,8 @@ public class Utils {
         }
     }
 
-    public static boolean isTransparent(BlockState state) {
-        return !state.getMaterial().isOpaque();
+    public static boolean isTransparent(BlockState state, IBlockReader world, BlockPos pos) {
+        return !state.getMaterial().isOpaque() || state.isTransparent() || state.getRenderShape(world, pos) == VoxelShapes.fullCube();
     }
 
     public static BlockRayTraceResult rayTrace(PlayerEntity player) {

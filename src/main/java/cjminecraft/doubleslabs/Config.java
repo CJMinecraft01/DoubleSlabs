@@ -94,7 +94,7 @@ public class Config {
     }
 
     public static boolean shouldCull(Block block) {
-        return isBlockPresent(SLAB_CULL_BLACKLIST, block);
+        return !isBlockPresent(SLAB_CULL_BLACKLIST, block);
     }
 
     public static String slabToString(BlockState state) {

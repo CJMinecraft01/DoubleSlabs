@@ -250,7 +250,7 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         }
         if (this.negativeTile != null) {
             this.negativeTile.setWorldAndPos(this.negativeWorld, this.pos);
-            this.positiveTile.onLoad();
+            this.negativeTile.onLoad();
         }
     }
 
