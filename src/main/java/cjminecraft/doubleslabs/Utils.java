@@ -3,9 +3,12 @@ package cjminecraft.doubleslabs;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 
 public class Utils {
 
@@ -26,7 +29,7 @@ public class Utils {
     }
 
     public static boolean isTransparent(BlockState state) {
-        return !state.getMaterial().isOpaque();
+        return !state.getMaterial().isOpaque() || !state.isSolid();
     }
 
     public static BlockRayTraceResult rayTrace(PlayerEntity player) {

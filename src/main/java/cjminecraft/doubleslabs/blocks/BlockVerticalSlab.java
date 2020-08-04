@@ -5,6 +5,8 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
@@ -23,8 +25,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -50,6 +54,7 @@ import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -222,6 +227,19 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     @Override
     public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
         return !state.get(DOUBLE) && IWaterLoggable.super.canContainFluid(world, pos, state, fluid);
+    }
+
+    @Override
+    @Nonnull
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        BlockPos blockpos = context.getPos();
+        BlockState blockstate = context.getWorld().getBlockState(blockpos);
+        if (blockstate.getBlock() == this) {
+            return blockstate.with(DOUBLE, true).with(WATERLOGGED, Boolean.valueOf(false));
+        } else {
+            IFluidState fluidstate = context.getWorld().getFluidState(blockpos);
+            return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidstate.getFluid() == Fluids.WATER)).with(FACING, context.getPlacementHorizontalFacing());
+        }
     }
 
     @Override
@@ -415,7 +433,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
                 else
                     tile.setNegativeState(null);
 
-                world.setBlockState(pos, state.with(DOUBLE, false), 11);
+                world.setBlockState(pos, state.with(DOUBLE, false), Constants.BlockFlags.DEFAULT);
             } else {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
                 BlockState remainingState = tile.getPositiveState() != null ? tile.getPositiveState() : tile.getNegativeState();
@@ -700,8 +718,11 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 ActionResultType result;
+                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
+                if (slabSupport == null)
+                    slabSupport = SlabSupport.getVerticalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+                    result = slabSupport == null ? pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, hit);
                 } catch (Exception e) {
                     result = ActionResultType.PASS;
                 }
@@ -773,5 +794,15 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
     public boolean canBeConnectedTo(BlockState state, IBlockReader world, BlockPos pos, Direction facing) {
         boolean positive = getTile(world, pos).map(tile -> tile.getPositiveState() != null).orElse(true);
         return state.get(DOUBLE) || facing != (positive ? state.get(FACING).getOpposite() : state.get(FACING));
+    }
+
+    @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).ifPresent(s -> s.onEntityCollision(world, pos, entity));
+    }
+
+    @Override
+    public void onProjectileCollision(World world, BlockState state, BlockRayTraceResult hit, Entity projectile) {
+        getHalfState(world, hit.getPos(), hit.getHitVec().x, hit.getHitVec().z).ifPresent(s -> s.onProjectileCollision(world, s, hit, projectile));
     }
 }

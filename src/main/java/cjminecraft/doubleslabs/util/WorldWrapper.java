@@ -98,8 +98,6 @@ public class WorldWrapper extends World {
         this.world.playMovingSound(playerIn, entityIn, eventIn, categoryIn, volume, pitch);
     }
 
-
-
     @Override
     public void notifyBlockUpdate(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
         this.world.notifyBlockUpdate(pos, oldState, newState, flags);
@@ -247,8 +245,21 @@ public class WorldWrapper extends World {
     }
 
     @Override
+    public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
+        if (pos.equals(this.verticalSlab.getPos())) {
+            if (this.positive)
+                this.verticalSlab.setPositiveState(newState);
+            else
+                this.verticalSlab.setNegativeState(newState);
+            return true;
+        } else {
+            return super.setBlockState(pos, newState, flags);
+        }
+    }
+
+    @Override
     public boolean setBlockState(BlockPos pos, BlockState state) {
-        return this.world.setBlockState(pos, state);
+        return this.setBlockState(pos, state, 3);
     }
 
     @Override

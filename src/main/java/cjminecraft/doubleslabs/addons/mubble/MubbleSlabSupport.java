@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.addons.mubble;
 
 import cjminecraft.doubleslabs.addons.VerticalSlabSupport;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
@@ -15,8 +16,8 @@ public class MubbleSlabSupport<T extends Enum<T> & IStringSerializable> extends 
     }
 
     @Override
-    public BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, Direction direction) {
-        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, Direction direction) {
+        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
         if (verticalSlab == null)
             return state;
         if (direction == Direction.SOUTH)

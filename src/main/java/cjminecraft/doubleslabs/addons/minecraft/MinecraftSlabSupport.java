@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
@@ -39,7 +40,7 @@ public class MinecraftSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
+    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, SlabType half) {
         BlockItem slab = (BlockItem) stack.getItem();
         return slab.getBlock().getDefaultState().with(BlockStateProperties.SLAB_TYPE, half);
     }

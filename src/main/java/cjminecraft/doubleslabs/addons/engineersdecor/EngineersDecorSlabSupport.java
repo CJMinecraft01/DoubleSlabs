@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.ISlabSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.properties.SlabType;
@@ -45,8 +46,8 @@ public class EngineersDecorSlabSupport implements ISlabSupport {
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
-        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, SlabType half) {
+        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
         return (slab == null) ? (state) : (state.with(parts, half == SlabType.BOTTOM ? 0 : 1));
     }
 

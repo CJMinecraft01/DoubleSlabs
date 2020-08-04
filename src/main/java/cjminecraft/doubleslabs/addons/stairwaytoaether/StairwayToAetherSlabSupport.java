@@ -1,9 +1,11 @@
 package cjminecraft.doubleslabs.addons.stairwaytoaether;
 
 import cjminecraft.doubleslabs.api.ISlabSupport;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.properties.SlabType;
@@ -60,8 +62,8 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, Direction direction) {
-        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public BlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, Direction direction) {
+        BlockState state = Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
         return slab == null ? state : state.with(typeProperty, slabTypes[direction.getIndex()]);
     }
 
@@ -92,8 +94,8 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, SlabType half) {
-        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public BlockState getStateForHalf(World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, SlabType half) {
+        BlockState state = Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
         return slab == null ? state : state.with(typeProperty, slabTypes[half == SlabType.TOP ? 0 : 1]);
     }
 }
