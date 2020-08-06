@@ -60,8 +60,7 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public IBlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, EnumFacing direction) {
-        IBlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public IBlockState getStateForDirection(World world, BlockPos pos, IBlockState state, EnumFacing direction) {
         return slab == null ? state : state.withProperty(typeProperty, slabTypes[direction.getIndex()]);
     }
 

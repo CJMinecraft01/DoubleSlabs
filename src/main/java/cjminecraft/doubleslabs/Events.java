@@ -30,6 +30,7 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -113,10 +114,13 @@ public class Events {
                             if (tile != null && !event.getEntityPlayer().isSneaking() && (face != state.getValue(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                                 // The new state for the vertical slab with the double property set
                                 IBlockState newState = state.withProperty(BlockVerticalSlab.DOUBLE, true);
+                                // Get the correct slab state for the vertical slab
+                                IBlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
+                                        event.getHitVec(), event.getEntityPlayer(), event.getHand()), tile.getPositiveState() != null ? face.getOpposite() : face);
+                                if (DoubleSlabsConfig.isBlacklistedVerticalSlab(slabState))
+                                    return;
                                 // If we could set the block
-                                if (event.getWorld().setBlockState(pos, newState, 11)) {
-                                    // Get the correct slab state for the vertical slab
-                                    IBlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), tile.getPositiveState() != null ? face.getOpposite() : face);
+                                if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
 
                                     // Set the respective state within the tile entity
                                     if (tile.getPositiveState() != null)
@@ -154,12 +158,18 @@ public class Events {
                             face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
                         }
 
+                        if (DoubleSlabsConfig.isBlacklistedVerticalSlab(state))
+                            return;
+
                         // Get the direction that the vertical slab block is facing
                         EnumFacing direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
                         if (face == direction.getOpposite()) {
                             // Get the state for the vertical slab item using the direction of the already placed vertical slab
-                            IBlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), direction.getOpposite());
+                            IBlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
+                                    event.getHitVec(), event.getEntityPlayer(), event.getHand()), direction.getOpposite());
+                            if (DoubleSlabsConfig.isBlacklistedVerticalSlab(slabState))
+                                return;
                             // Create the state for the vertical slab
                             IBlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().withProperty(BlockVerticalSlab.FACING, direction).withProperty(BlockVerticalSlab.DOUBLE, true);
 
@@ -199,6 +209,9 @@ public class Events {
                     if (blockSupport != null) {
                         // We are trying to combine a mod vertical slab with a regular slab
 
+                        if (DoubleSlabsConfig.isBlacklistedVerticalSlab(state))
+                            return;
+
                         EnumFacing direction = blockSupport.getDirection(event.getWorld(), pos, state);
                         if (face == direction) {
                             IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
@@ -208,7 +221,7 @@ public class Events {
                             IBlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().withProperty(BlockVerticalSlab.DOUBLE, true).withProperty(BlockVerticalSlab.FACING, direction);
                             DynamicSurroundings.patchBlockState(newState);
 
-                            if (event.getWorld().setBlockState(pos, newState, 11)) {
+                            if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                                 if (tile == null)
                                     return;
@@ -222,14 +235,17 @@ public class Events {
                         }
                     }
 
+                    originalState = state;
+                    BlockPos originalPos = pos;
+
                     pos = pos.offset(event.getFace());
 
                     if (MathHelper.floor(event.getEntityPlayer().posX) == pos.getX() && MathHelper.floor(event.getEntityPlayer().posY) == pos.getY() && MathHelper.floor(event.getEntityPlayer().posZ) == pos.getZ())
                         return;
 
                     state = event.getWorld().getBlockState(pos);
-                    if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)))
-                        return;
+//                    if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(state)))
+//                        return;
                     if (!canPlace(event.getWorld(), pos, face, event.getEntityPlayer(), event.getHand(), event.getItemStack(), event, false))
                         return;
 
@@ -243,6 +259,9 @@ public class Events {
                         if (blockSupport != null) {
                             // We are trying to combine a mod vertical slab with a regular slab
 
+                            if (DoubleSlabsConfig.isBlacklistedVerticalSlab(state))
+                                return;
+
                             EnumFacing direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
                             IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
@@ -252,7 +271,7 @@ public class Events {
                             IBlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().withProperty(BlockVerticalSlab.DOUBLE, true).withProperty(BlockVerticalSlab.FACING, direction);
                             DynamicSurroundings.patchBlockState(newState);
 
-                            if (event.getWorld().setBlockState(pos, newState, 11)) {
+                            if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                                 if (tile == null)
                                     return;
@@ -267,10 +286,16 @@ public class Events {
                         if (((event.getEntityPlayer().isSneaking() && !DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT) || (DoubleSlabsConfig.ALTERNATE_VERTICAL_SLAB_PLACEMENT && ((event.getEntityPlayer().isSneaking() && face.getAxis() == EnumFacing.Axis.Y) || (!event.getEntityPlayer().isSneaking() && face.getAxis() != EnumFacing.Axis.Y)))) && !DoubleSlabsConfig.DISABLE_VERTICAL_SLAB_PLACEMENT) {
                             if ((originalState.getBlock().hasTileEntity(originalState) && originalState.getBlock().onBlockActivated(event.getWorld(), event.getPos(), originalState, event.getEntityPlayer(), event.getHand(), face, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z)))
                                 return;
-                            if (!state.getBlock().isAir(state, event.getWorld(), pos))
-                                return;
+//                            if (!state.getBlock().isAir(state, event.getWorld(), pos))
+//                                return;
                             // Try to place a horizontal slab as a vertical slab
                             RayTraceResult result = Utils.rayTrace(event.getEntityPlayer());
+
+                            if (originalState.getBlock().isReplaceable(event.getWorld(), originalPos)) {
+                                state = originalState;
+                                pos = originalPos;
+                            } else if (!state.getBlock().isReplaceable(event.getWorld(), pos))
+                                return;
                             if (face.getAxis() == EnumFacing.Axis.Y) {
                                 EnumFacing direction = event.getEntityPlayer().getHorizontalFacing();
 
@@ -290,10 +315,12 @@ public class Events {
                                         itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
                                                 event.getHitVec(), event.getEntityPlayer(), event.getHand()),
                                         BlockSlab.EnumBlockHalf.BOTTOM);
+                                if (DoubleSlabsConfig.isBlacklistedVerticalSlab(slabState))
+                                    return;
                                 IBlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().withProperty(BlockVerticalSlab.FACING, direction);
                                 DynamicSurroundings.patchBlockState(newState);
 
-                                if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                                     if (tile == null)
                                         return;
@@ -306,10 +333,12 @@ public class Events {
                                         itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
                                                 event.getHitVec(), event.getEntityPlayer(), event.getHand()),
                                         BlockSlab.EnumBlockHalf.BOTTOM);
+                                if (DoubleSlabsConfig.isBlacklistedVerticalSlab(slabState))
+                                    return;
                                 IBlockState newState = Registrar.VERTICAL_SLAB.getDefaultState().withProperty(BlockVerticalSlab.FACING, face.getOpposite());
                                 DynamicSurroundings.patchBlockState(newState);
 
-                                if (event.getWorld().setBlockState(pos, newState, 11)) {
+                                if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                                     TileEntityVerticalSlab tile = (TileEntityVerticalSlab) event.getWorld().getTileEntity(pos);
                                     if (tile == null)
                                         return;
@@ -333,12 +362,13 @@ public class Events {
                     if (tile != null && !event.getEntityPlayer().isSneaking() && (face != state.getValue(BlockVerticalSlab.FACING) || tile.getPositiveState() == null)) {
                         IBlockState newState = state.withProperty(BlockVerticalSlab.DOUBLE, true);
                         DynamicSurroundings.patchBlockState(newState);
-                        if (event.getWorld().setBlockState(pos, newState, 11)) {
-                            IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
-                                    itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
-                                            event.getHitVec(), event.getEntityPlayer(), event.getHand()),
-                                    tile.getPositiveState() != null ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
-
+                        IBlockState slabState = itemSupport.getStateForHalf(event.getWorld(), pos,
+                                itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
+                                        event.getHitVec(), event.getEntityPlayer(), event.getHand()),
+                                tile.getPositiveState() != null ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
+                        if (DoubleSlabsConfig.isBlacklistedVerticalSlab(slabState))
+                            return;
+                        if (event.getWorld().setBlockState(pos, newState, Constants.BlockFlags.DEFAULT)) {
                             if (tile.getPositiveState() != null)
                                 tile.setNegativeState(slabState);
                             else
@@ -360,7 +390,7 @@ public class Events {
                                 itemSupport.getStateFromStack(event.getItemStack(), event.getWorld(), pos, face,
                                         event.getHitVec(), event.getEntityPlayer(), event.getHand()),
                                 half == BlockSlab.EnumBlockHalf.BOTTOM ? BlockSlab.EnumBlockHalf.TOP : BlockSlab.EnumBlockHalf.BOTTOM);
-                        if (DoubleSlabsConfig.SLAB_BLACKLIST.contains(DoubleSlabsConfig.slabToString(slabState)))
+                        if (DoubleSlabsConfig.isBlacklistedHorizontalSlab(state))
                             return;
 
                         IBlockState newState = ((IExtendedBlockState) Registrar.DOUBLE_SLAB.getDefaultState()).withProperty(BlockDoubleSlab.TOP, half == BlockSlab.EnumBlockHalf.TOP ? state : slabState).withProperty(BlockDoubleSlab.BOTTOM, half == BlockSlab.EnumBlockHalf.BOTTOM ? state : slabState);

@@ -58,6 +58,11 @@ public class DoubleSlabsConfig {
     @Config.LangKey("config.doubleslabs.slab_cull_blacklist")
     public static String[] SLAB_CULL_BLACKLIST = new String[]{};
 
+    @Config.Name("Vertical Slab Blacklist")
+    @Config.Comment({"The list of slabs which should not be able to be placed vertically"})
+    @Config.LangKey("config.doubleslabs.vertical_slab_blacklist")
+    public static String[] VERTICAL_SLAB_BLACKLIST = new String[]{};
+
     public static String slabToString(IBlockState state) {
         if (state == null)
             return "null";
@@ -79,25 +84,31 @@ public class DoubleSlabsConfig {
         return state.getBlock().getRegistryName().toString();
     }
 
-    public static boolean useLazyModel(IBlockState state) {
+    private static boolean isPresent(IBlockState state, String[] array) {
         String slabString = slabToString(state);
         if (slabString.length() == 0)
             return false;
-        for (String entry : LAZY_VERTICAL_SLABS_ARRAY)
+        for (String entry : array)
             if (entry.equals(slabString))
                 return true;
         return false;
+    }
+
+    public static boolean useLazyModel(IBlockState state) {
+        return isPresent(state, LAZY_VERTICAL_SLABS_ARRAY);
 //        return LAZY_VERTICAL_SLABS.stream().anyMatch(entry -> entry.equals(slabString));
     }
 
     public static boolean shouldCull(IBlockState state) {
-        String slabString = slabToString(state);
-        if (slabString.length() == 0)
-            return false;
-        for (String entry : SLAB_CULL_BLACKLIST)
-            if (entry.equals(slabString))
-                return true;
-        return false;
+        return !isPresent(state, SLAB_CULL_BLACKLIST);
+    }
+
+    public static boolean isBlacklistedHorizontalSlab(IBlockState state) {
+        return isPresent(state, SLAB_BLACKLIST_ARRAY);
+    }
+
+    public static boolean isBlacklistedVerticalSlab(IBlockState state) {
+        return isPresent(state, VERTICAL_SLAB_BLACKLIST);
     }
 
 }

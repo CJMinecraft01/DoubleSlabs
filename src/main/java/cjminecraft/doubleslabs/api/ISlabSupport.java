@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -41,8 +42,8 @@ public interface ISlabSupport {
         return false;
     }
 
-    default IBlockState getStateForDirection(World world, BlockPos pos, ItemStack stack, EnumFacing facing) {
-        return world.getBlockState(pos);
+    default IBlockState getStateForDirection(World world, BlockPos pos, IBlockState state, EnumFacing facing) {
+        return state;
     }
 
     default EnumFacing getDirection(World world, BlockPos pos, IBlockState state) {
@@ -63,5 +64,9 @@ public interface ISlabSupport {
 
     default boolean areSame(World world, BlockPos pos, IBlockState state, ItemStack stack) {
         return  Block.getBlockFromItem(stack.getItem()) == state.getBlock();
+    }
+
+    default boolean onActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        return state.getBlock().onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
     }
 }

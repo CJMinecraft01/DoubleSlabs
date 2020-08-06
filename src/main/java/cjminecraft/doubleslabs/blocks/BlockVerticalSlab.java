@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBlockState;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBoolean;
@@ -41,6 +42,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -451,7 +453,7 @@ public class BlockVerticalSlab extends Block {
                 else
                     tile.setNegativeState(null);
 
-                world.setBlockState(pos, getExtendedState(state.withProperty(DOUBLE, false), world, pos), 11);
+                world.setBlockState(pos, getExtendedState(state.withProperty(DOUBLE, false), world, pos), Constants.BlockFlags.DEFAULT);
                 return;
             } else {
                 TileEntityVerticalSlab tile = (TileEntityVerticalSlab) te;
@@ -708,8 +710,11 @@ public class BlockVerticalSlab extends Block {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 boolean result;
+                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
+                if (slabSupport == null)
+                    slabSupport = SlabSupport.getVerticalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ);
+                    result = slabSupport == null ? pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onActivated(state, world, pos, player, hand, facing, hitX, hitY, hitZ);
                 } catch (Exception e) {
                     result = false;
                 }
@@ -785,5 +790,10 @@ public class BlockVerticalSlab extends Block {
         IBlockState state = world.getBlockState(pos);
         boolean positive = getTile(world, pos).map(tile -> tile.getPositiveState() != null).orElse(true);
         return state.getValue(DOUBLE) || facing != (positive ? state.getValue(FACING).getOpposite() : state.getValue(FACING));
+    }
+
+    @Override
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+        getHalfState(world, pos, entity.posX - pos.getX(), entity.posZ - pos.getZ()).ifPresent(s -> s.getBlock().onEntityCollision(world, pos, s, entity));
     }
 }

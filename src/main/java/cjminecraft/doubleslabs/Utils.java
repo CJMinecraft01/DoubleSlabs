@@ -25,7 +25,7 @@ public class Utils {
     }
 
     public static boolean isTransparent(IBlockState state) {
-        return state == null || !state.getMaterial().isOpaque();
+        return state == null || !state.getMaterial().isOpaque() || !state.isFullCube();
     }
 
     public static RayTraceResult rayTrace(EntityPlayer player) {

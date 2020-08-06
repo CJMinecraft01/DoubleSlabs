@@ -239,7 +239,7 @@ public class WorldWrapper extends World {
 
     @Override
     public boolean setBlockState(BlockPos pos, IBlockState state) {
-        return this.world.setBlockState(pos, state);
+        return this.setBlockState(pos, state, 3);
     }
 
     @Override

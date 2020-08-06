@@ -58,21 +58,21 @@ public class DoubleSlabBakedModel implements IBakedModel {
                 cache.put(cacheKey, quads);
                 return quads;
             }
+            boolean shouldCull = DoubleSlabsConfig.shouldCull(topState) && DoubleSlabsConfig.shouldCull(bottomState);
             boolean topTransparent = Utils.isTransparent(topState);
             boolean bottomTransparent = Utils.isTransparent(bottomState);
-
 
             List<BakedQuad> quads = new ArrayList<>();
             if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                 List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
-                if (DoubleSlabsConfig.shouldCull(topState))
+                if (shouldCull)
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                         topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
                 quads.addAll(topQuads);
             }
             if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                 List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
-                if (DoubleSlabsConfig.shouldCull(bottomState))
+                if (shouldCull)
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                         bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
                 quads.addAll(bottomQuads);

@@ -203,6 +203,7 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickable {
         markDirty();
         if (this.world != null) {
             IBlockState state = this.world.getBlockState(getPos());
+            this.world.checkLight(this.pos);
             this.world.notifyBlockUpdate(getPos(), state, state, 3);
         }
     }

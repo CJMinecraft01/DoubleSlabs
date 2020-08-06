@@ -5,6 +5,8 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.blocks.properties.UnlistedPropertyBlockState;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.network.NetworkUtils;
@@ -37,6 +39,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,7 +61,7 @@ public class BlockDoubleSlab extends Block {
 
     public static Optional<TileEntityDoubleSlab> getTile(IBlockAccess world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return world.getBlockState(pos).getBlock() == Registrar.DOUBLE_SLAB && tile instanceof TileEntityDoubleSlab ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
+        return world.getBlockState(pos).getBlock() == Registrar.DOUBLE_SLAB && tile instanceof TileEntityDoubleSlab && ((TileEntityDoubleSlab) tile).getPositiveState() != null && ((TileEntityDoubleSlab) tile).getNegativeState() != null ? Optional.of((TileEntityDoubleSlab) tile) : Optional.empty();
     }
 
     public static Optional<IBlockState> getAvailableState(IBlockAccess world, BlockPos pos) {
@@ -474,7 +477,7 @@ public class BlockDoubleSlab extends Block {
 
 //            stateToRemove.getBlock().harvestBlock(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), player, pos, stateToRemove, y > 0.5 ? tile.getPositiveTile() : tile.getNegativeTile(), stack);
 
-            world.setBlockState(pos, remainingState, 11);
+            world.setBlockState(pos, remainingState, Constants.BlockFlags.DEFAULT);
             world.setTileEntity(pos, remainingTile);
         }
     }
@@ -712,8 +715,9 @@ public class BlockDoubleSlab extends Block {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 boolean result;
+                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ);
+                    result =  slabSupport == null ? pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, facing, hitX, hitY, hitZ);
                 } catch (Exception e) {
                     result = false;
                 }
@@ -776,12 +780,17 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
-        getTile(world, pos).map(tile -> {
-            if (tile.getPositiveState() != null) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
                 tile.getPositiveState().getBlock().onEntityWalk(world, pos, entity);
-                return true;
-            }
-            return false;
-        }).orElse(null);
+        });
+    }
+
+    @Override
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
+                tile.getPositiveState().getBlock().onEntityCollision(world, pos, tile.getPositiveState(), entity);
+        });
     }
 }
