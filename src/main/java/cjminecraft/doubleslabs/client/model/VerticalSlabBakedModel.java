@@ -224,7 +224,6 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
             String cacheKey = (negativeState != null ? negativeState.toString() : "null") + "," + (positiveState != null ? positiveState.toString() : "null") +
                     ":" + (side != null ? side.getName() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null") + "," + direction.getName();
-            cache.clear();
             if (!cache.containsKey(cacheKey)) {
                 boolean shouldCull = positiveState != null && negativeState != null && Config.shouldCull(positiveState.getBlock()) && Config.shouldCull(negativeState.getBlock());
                 boolean negativeTransparent = negativeState != null && Utils.isTransparent(negativeState);

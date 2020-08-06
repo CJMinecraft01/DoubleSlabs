@@ -121,8 +121,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "FMLAT": "double_slabs_at.cfg",
-			"Specification-Title"     : "Double Slabs",
+			"Specification-Title"     : "DoubleSlabs",
 			"Specification-Vendor"    : "CJMinecraft",
 			"Specification-Version"   : "1", // We are version 1 of ourselves
 			"Implementation-Title"    : project.name,
@@ -133,20 +132,20 @@ jar {
     }
 }
 
-/*
+
 // Example configuration to allow publishing using the maven-publish task
 // we define a custom artifact that is sourced from the reobfJar output task
 // and then declare that to be published
 // Note you'll need to add a repository here
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
+//def reobfFile = file("$buildDir/reobfJar/output.jar")
+//def reobfArtifact = artifacts.add('default', reobfFile) {
+//    type 'jar'
+//    builtBy 'reobfJar'
+//}
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact reobfArtifact
+            artifact jar
         }
     }
     repositories {
@@ -155,4 +154,3 @@ publishing {
         }
     }
 }
-*/

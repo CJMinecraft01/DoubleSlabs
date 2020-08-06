@@ -8,8 +8,6 @@ import cjminecraft.doubleslabs.network.PacketHandler;
 import cjminecraft.doubleslabs.proxy.ClientProxy;
 import cjminecraft.doubleslabs.proxy.IProxy;
 import cjminecraft.doubleslabs.proxy.ServerProxy;
-import com.electronwill.nightconfig.core.CommentedConfig;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -34,23 +32,15 @@ public class DoubleSlabs {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addListener(this::setup);
-        bus.addListener(this::clientSetup);
 //        bus.addListener(Config::onConfigLoad);
 //        bus.addListener(Config::onConfigReload);
-        proxy.setup(bus);
-    }
-
-    public void setup(FMLCommonSetupEvent event) {
-        SlabSupport.init();
-        ContainerSupport.init();
-        PacketHandler.registerPackets();
+        proxy.addListeners(bus);
+        bus.addListener(proxy::setup);
+        bus.addListener(proxy::clientSetup);
     }
 
     public void clientSetup(FMLClientSetupEvent event) {
-        Utils.checkOptiFineInstalled();
-        ClientRegistry.bindTileEntityRenderer(Registrar.TILE_VERTICAL_SLAB, TileEntityRendererVerticalSlab::new);
-        ClientRegistry.bindTileEntityRenderer(Registrar.TILE_DOUBLE_SLAB, TileEntityRendererDoubleSlab::new);
+
     }
 
 }

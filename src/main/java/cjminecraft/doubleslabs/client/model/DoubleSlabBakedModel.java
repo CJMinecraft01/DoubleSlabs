@@ -111,11 +111,10 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             String cacheKey = (bottomState != null ? bottomState.toString() : "null") + "," + (topState != null ? topState.toString() : "null") +
                     ":" + (side != null ? side.getName() : "null") + ":" +
                     (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
-            cache.clear();
             if (!cache.containsKey(cacheKey)) {
                 if (topState == null || bottomState == null)
                     //                    cache.put(cacheKey, quads);
-                    return getFallback().getQuads(null, side, rand);
+                    return getFallback().getQuads(null, side, rand, extraData);
                 boolean shouldCull = Config.shouldCull(topState.getBlock()) && Config.shouldCull(bottomState.getBlock());
                 boolean topTransparent = Utils.isTransparent(topState);
                 boolean bottomTransparent = Utils.isTransparent(bottomState);
