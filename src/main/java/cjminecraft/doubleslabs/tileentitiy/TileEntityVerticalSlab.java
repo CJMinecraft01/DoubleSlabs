@@ -14,11 +14,13 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -222,7 +224,8 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         if (this.world != null) {
             BlockState state = this.world.getBlockState(getPos());
             requestModelDataUpdate();
-            this.world.notifyBlockUpdate(getPos(), state, state, 3);
+            this.world.getChunkProvider().func_212863_j_().checkBlock(getPos());
+            this.world.notifyBlockUpdate(getPos(), state, state, Constants.BlockFlags.DEFAULT_AND_RERENDER);
         }
     }
 
@@ -262,7 +265,7 @@ public class TileEntityVerticalSlab extends TileEntity implements ITickableTileE
         if (this.negativeTile != null) {
             this.negativeTile.setWorld(this.negativeWorld);
             this.negativeTile.setPos(this.pos);
-            this.positiveTile.onLoad();
+            this.negativeTile.onLoad();
         }
     }
 

@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.ISlabSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.util.Direction;
@@ -52,8 +53,8 @@ public class VerticalSlabSupport<T extends Enum<T> & IStringSerializable> implem
     }
 
     @Override
-    public BlockState getStateForDirection(net.minecraft.world.World world, BlockPos pos, ItemStack stack, Direction direction) {
-        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getDefaultState();
+    public BlockState getStateForDirection(net.minecraft.world.World world, BlockPos pos, ItemStack stack, BlockItemUseContext context, Direction direction) {
+        BlockState state = net.minecraft.block.Block.getBlockFromItem(stack.getItem()).getStateForPlacement(context);
         return (verticalSlab == null) ? (state) : (state.with(verticalSlabTypeProperty, verticalSlabTypes[direction.getIndex() - 2]));
     }
 

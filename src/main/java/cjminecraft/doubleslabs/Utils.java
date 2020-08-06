@@ -26,7 +26,7 @@ public class Utils {
     }
 
     public static boolean isTransparent(BlockState state) {
-        return !state.getMaterial().isOpaque();
+        return !state.getMaterial().isOpaque() || !state.isSolid();
     }
 
     public static BlockRayTraceResult rayTrace(PlayerEntity player) {

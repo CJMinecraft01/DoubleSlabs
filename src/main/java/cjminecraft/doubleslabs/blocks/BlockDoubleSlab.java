@@ -5,6 +5,8 @@ import cjminecraft.doubleslabs.Registrar;
 import cjminecraft.doubleslabs.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ISlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.network.NetworkUtils;
 import cjminecraft.doubleslabs.tileentitiy.TileEntityDoubleSlab;
@@ -40,6 +42,7 @@ import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -314,7 +317,7 @@ public class BlockDoubleSlab extends Block {
 
             stateToRemove.onReplaced(y > 0.5 ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
-            world.setBlockState(pos, remainingState, 11);
+            world.setBlockState(pos, remainingState, Constants.BlockFlags.DEFAULT);
             world.setTileEntity(pos, remainingTile);
         }
     }
@@ -547,8 +550,9 @@ public class BlockDoubleSlab extends Block {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 boolean result;
+                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit);
+                    result = slabSupport == null ? pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, hit);
                 } catch (Exception e) {
                     result = false;
                 }
@@ -613,12 +617,22 @@ public class BlockDoubleSlab extends Block {
 
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
-        getTile(world, pos).map(tile -> {
-            if (tile.getPositiveState() != null) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
                 tile.getPositiveState().getBlock().onEntityWalk(world, pos, entity);
-                return true;
-            }
-            return false;
-        }).orElse(null);
+        });
+    }
+
+    @Override
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveState() != null)
+                tile.getPositiveState().onEntityCollision(world, pos, entity);
+        });
+    }
+
+    @Override
+    public void onProjectileCollision(World world, BlockState state, BlockRayTraceResult hit, Entity projectile) {
+        getHalfState(world, hit.getPos(), hit.getHitVec().y).ifPresent(s -> s.onProjectileCollision(world, s, hit, projectile));
     }
 }

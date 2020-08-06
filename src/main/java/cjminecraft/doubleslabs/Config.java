@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
 
@@ -21,22 +22,25 @@ public class Config {
     public static ForgeConfigSpec CLIENT_CONFIG;
 
     // region Server Options
-    public static ForgeConfigSpec.ConfigValue<ArrayList<String>> SLAB_BLACKLIST;
+    public static ForgeConfigSpec.ConfigValue<List<String>> SLAB_BLACKLIST;
+    public static ForgeConfigSpec.ConfigValue<List<String>> VERTICAL_SLAB_BLACKLIST;
     public static ForgeConfigSpec.BooleanValue REPLACE_SAME_SLAB;
     public static ForgeConfigSpec.BooleanValue DISABLE_VERTICAL_SLAB_PLACEMENT;
     public static ForgeConfigSpec.BooleanValue ALTERNATE_VERTICAL_SLAB_PLACEMENT;
     // endregion
 
     // region Client Options
-    public static ForgeConfigSpec.ConfigValue<ArrayList<String>> LAZY_VERTICAL_SLABS;
-    public static ForgeConfigSpec.ConfigValue<ArrayList<String>> SLAB_CULL_BLACKLIST;
+    public static ForgeConfigSpec.ConfigValue<List<String>> LAZY_VERTICAL_SLABS;
+    public static ForgeConfigSpec.ConfigValue<List<String>> SLAB_CULL_BLACKLIST;
     // endregion
 
     static {
         SERVER_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
 
-        SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slab types and variants to ignore when creating double slabs", "Example: minecraft:purpur_slab")
+        SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slabs (or tags) and variants to ignore when creating double slabs", "Example: minecraft:purpur_slab")
                 .define("slab_blacklist", new ArrayList<>());
+        VERTICAL_SLAB_BLACKLIST = SERVER_BUILDER.comment("The list of slabs (or tags) to ignore when creating vertical slabs", "Example: minecraft:purpur_slab")
+                .define("vertical_slab_blacklist", new ArrayList<>());
         REPLACE_SAME_SLAB = SERVER_BUILDER.comment("Whether to use the custom double slab when combining slabs of the same type")
                 .define("replace_same_slab", true);
         DISABLE_VERTICAL_SLAB_PLACEMENT = SERVER_BUILDER.comment("Whether to disable the placement of vertical slabs from regular horizontal slabs when holding shift")
@@ -60,10 +64,10 @@ public class Config {
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    public static boolean useLazyModel(Block block) {
+    private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
         if (block.getRegistryName() == null)
             return false;
-        return LAZY_VERTICAL_SLABS.get().stream().anyMatch(entry -> {
+        return option.get().stream().anyMatch(entry -> {
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 Tag<Block> tag = BlockTags.getCollection().get(tagLocation);
@@ -73,17 +77,20 @@ public class Config {
         });
     }
 
+    public static boolean isBlacklistedHorizontalSlab(Block block) {
+        return isBlockPresent(SLAB_BLACKLIST, block);
+    }
+
+    public static boolean isBlacklistedVerticalSlab(Block block) {
+        return isBlockPresent(VERTICAL_SLAB_BLACKLIST, block);
+    }
+
+    public static boolean useLazyModel(Block block) {
+        return isBlockPresent(LAZY_VERTICAL_SLABS, block);
+    }
+
     public static boolean shouldCull(Block block) {
-        if (block.getRegistryName() == null)
-            return false;
-        return SLAB_CULL_BLACKLIST.get().stream().anyMatch(entry -> {
-            if (entry.startsWith("#")) {
-                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                Tag<Block> tag = BlockTags.getCollection().get(tagLocation);
-                return tag != null && tag.contains(block);
-            }
-            return entry.equals(block.getRegistryName().toString());
-        });
+        return !isBlockPresent(SLAB_CULL_BLACKLIST, block);
     }
 
     public static String slabToString(BlockState state) {

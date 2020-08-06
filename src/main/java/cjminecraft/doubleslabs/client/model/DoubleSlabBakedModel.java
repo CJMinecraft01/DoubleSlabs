@@ -107,22 +107,23 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
             if (!cache.containsKey(cacheKey)) {
                 if (topState == null || bottomState == null) {
                     //                    cache.put(cacheKey, quads);
-                    return getFallback().getQuads(null, side, rand);
+                    return getFallback().getQuads(null, side, rand, extraData);
                 }
+                boolean shouldCull = Config.shouldCull(topState.getBlock()) && Config.shouldCull(bottomState.getBlock());
                 boolean topTransparent = Utils.isTransparent(topState);
                 boolean bottomTransparent = Utils.isTransparent(bottomState);
 
                 List<BakedQuad> quads = new ArrayList<>();
                 if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, extraData, 0, true);
-                    if (Config.shouldCull(topState.getBlock()))
+                    if (shouldCull)
                         if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                             topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                     quads.addAll(topQuads);
                 }
                 if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
                     List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, extraData, TINT_OFFSET, false);
-                    if (Config.shouldCull(bottomState.getBlock()))
+                    if (shouldCull)
                         if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                             bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
                     quads.addAll(bottomQuads);
