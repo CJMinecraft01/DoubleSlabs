@@ -714,7 +714,7 @@ public class BlockVerticalSlab extends Block {
                 if (slabSupport == null)
                     slabSupport = SlabSupport.getVerticalSlabSupport(world, pos, pair.getLeft());
                 try {
-                    result = slabSupport == null ? pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onActivated(state, world, pos, player, hand, facing, hitX, hitY, hitZ);
+                    result = slabSupport == null ? pair.getLeft().getBlock().onBlockActivated(pair.getRight(), pos, pair.getLeft(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, facing, hitX, hitY, hitZ);
                 } catch (Exception e) {
                     result = false;
                 }
