@@ -140,7 +140,12 @@ publishing {
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+//            url "file:///${project.projectDir}/mcmodsrepo"
+            credentials {
+                username "cj"
+                password "test"
+            }
+            url "http://localhost:5000/maven"
         }
     }
 }
