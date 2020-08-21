@@ -83,12 +83,8 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
             double y = hitVec.y - (double) pos.getY();
 
-            IBlockInfo remainingBlock = y > 0.5 ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo();
-            IBlockInfo blockToRemove = y > 0.5 ? tile.getNegativeBlockInfo() : tile.getPositiveBlockInfo();
-
-//            TileEntity remainingTile = y > 0.5 ? tile.getNegativeTile() : tile.getPositiveTile();
-//            BlockState remainingState = y > 0.5 ? tile.getBottomState() : tile.getTopState();
-//            BlockState stateToRemove = y > 0.5 ? tile.getTopState() : tile.getBottomState();
+            IBlockInfo remainingBlock = y > 0.5 ? tile.getNegativeBlockInfo() : tile.getPositiveBlockInfo();
+            IBlockInfo blockToRemove = y > 0.5 ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo();
 
             player.addStat(Stats.BLOCK_MINED.get(blockToRemove.getBlockState().getBlock()));
             world.playEvent(2001, pos, Block.getStateId(blockToRemove.getBlockState()));
