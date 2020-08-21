@@ -22,4 +22,6 @@ public interface IBlockInfo {
     @Nonnull
     World getWorld();
 
+    boolean isPositive();
+
 }
