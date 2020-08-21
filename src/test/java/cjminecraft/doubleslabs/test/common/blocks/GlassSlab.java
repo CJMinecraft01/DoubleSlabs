@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.test;
+package cjminecraft.doubleslabs.test.common.blocks;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;

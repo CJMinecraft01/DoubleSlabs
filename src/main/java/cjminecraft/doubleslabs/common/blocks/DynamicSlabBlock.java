@@ -58,7 +58,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     protected static Optional<SlabTileEntity> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return world.getBlockState(pos).getBlock() == Registrar.VERTICAL_SLAB && tile instanceof TileEntityVerticalSlab ? Optional.of((SlabTileEntity) tile) : Optional.empty();
+        return tile instanceof SlabTileEntity ? Optional.of((SlabTileEntity) tile) : Optional.empty();
     }
 
     protected static Optional<IBlockInfo> getAvailable(IBlockReader world, BlockPos pos) {

@@ -57,6 +57,9 @@ minecraft {
                     source sourceSets.main
                     source sourceSets.api
                 }
+                doubleslabstest {
+                    source sourceSets.test
+                }
             }
         }
 
@@ -73,6 +76,9 @@ minecraft {
                 doubleslabs {
                     source sourceSets.main
                     source sourceSets.api
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
@@ -92,6 +98,9 @@ minecraft {
                 doubleslabs {
                     source sourceSets.main
                     source sourceSets.api
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
