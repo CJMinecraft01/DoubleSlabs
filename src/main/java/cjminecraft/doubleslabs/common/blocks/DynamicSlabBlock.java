@@ -164,8 +164,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         return maxFloat(world, pos, i -> i.getBlockState().getExplosionResistance(i.getWorld(), pos, explosion));
     }
 
-    // TODO propagatesSkylightDown
-
     @Override
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return 1.0F;
@@ -186,10 +184,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
         return both(world, pos, i -> i.getBlockState().canHarvestBlock(i.getWorld(), pos, player));
     }
-
-    // TODO getPlayerRelativeBlockHardness
-
-    // TODO getPickBlock
 
 
     @Override
@@ -229,16 +223,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
             super.onBlockHarvested(world, pos, state, player);
         }
     }
-
-    // TODO harvestBlock
-
-    // TODO addLandingEffects
-
-    // TODO addRunningEffects
-
-    // TODO addHitEffects
-
-    // TODO addDestroyEffects
 
     @OnlyIn(Dist.CLIENT)
     public IBlockColor getBlockColor() {
@@ -284,8 +268,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
         return max(world, pos, i -> i.getBlockState().getStrongPower(i.getWorld(), pos, side));
     }
-
-    // TODO canCreatureSpawn
 
 
     @Override
@@ -339,10 +321,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         runIfAvailable(world, pos, i -> i.getBlockState().neighborChanged(i.getWorld(), pos, i.getBlockState().getBlock(), fromPos, isMoving));
     }
 
-    // TODO onBlockActivated
-
-    // TODO onBlockClicked
-
 
     @Override
     public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
@@ -353,19 +331,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         runIfAvailable(world, pos, i -> i.getBlockState().tick(world, pos, rand));
     }
-
-    // TODO onFallenUpon
-
-    // TODO onLanded
-
-    // TODO onEntityWalk
-
-    // TODO shouldDisplayFluidOverlay
-
-    // TODO onEntityCollision
-
-    // TODO onProjectileCollision
-
 
     @Override
     public void onExplosionDestroy(World world, BlockPos pos, Explosion explosion) {
@@ -442,8 +407,6 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
         return true;
     }
-
-    // TODO override getSoundType
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
