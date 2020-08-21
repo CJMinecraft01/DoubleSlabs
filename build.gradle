@@ -19,6 +19,16 @@ archivesBaseName = modFileName
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+sourceSets {
+    api
+    main
+    test
+}
+
+configurations {
+    apiCompile.extendsFrom(compile)
+}
+
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   Snapshot are built nightly.
@@ -43,8 +53,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
                 }
             }
         }
@@ -59,8 +70,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
                 }
             }
         }
@@ -77,8 +89,9 @@ minecraft {
             args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                examplemod {
+                doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
                 }
             }
         }
@@ -90,6 +103,8 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:' + modMinecraftVersion + '-' + modForgeVersion
+
+    implementation sourceSets.api.output
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -113,6 +128,11 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
+    from sourceSets.main.output.classesDirs
+    from sourceSets.api.output.classesDirs
+    from sourceSets.main.output.resourcesDir
+    from sourceSets.api.output.resourcesDir
+
     manifest {
         attributes([
             "Specification-Title": modId,
@@ -124,6 +144,33 @@ jar {
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = "sources"
+    from sourceSets.main.allJava
+    from sourceSets.api.allJava
+}
+
+task apiJar(type: Jar) {
+    classifier = "api"
+    from sourceSets.api.output
+
+    // TODO: when FG bug is fixed, remove allJava from the api jar.
+    // https://github.com/MinecraftForge/ForgeGradle/issues/369
+    // Gradle should be able to pull them from the -sources jar.
+    from sourceSets.api.allJava
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+    archives apiJar
 }
 
 // Example configuration to allow publishing using the maven-publish task
@@ -141,11 +188,6 @@ publishing {
     repositories {
         maven {
 //            url "file:///${project.projectDir}/mcmodsrepo"
-            credentials {
-                username "cj"
-                password "test"
-            }
-            url "http://localhost:5000/maven"
         }
     }
 }

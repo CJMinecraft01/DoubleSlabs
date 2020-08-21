@@ -1,9 +1,9 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.addons.minecraft.MinecraftCampfireSupport;
-import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
-import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
+import cjminecraft.doubleslabs.old.DoubleSlabs;
+import cjminecraft.doubleslabs.old.addons.minecraft.MinecraftCampfireSupport;
+import cjminecraft.doubleslabs.old.addons.minecraft.MinecraftSlabSupport;
+import cjminecraft.doubleslabs.old.addons.stairwaytoaether.StairwayToAetherSlabSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

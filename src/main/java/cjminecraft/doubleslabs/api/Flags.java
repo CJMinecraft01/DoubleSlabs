@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.tileentitiy.TileEntityVerticalSlab;
+import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
+import cjminecraft.doubleslabs.old.DoubleSlabs;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
