@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
