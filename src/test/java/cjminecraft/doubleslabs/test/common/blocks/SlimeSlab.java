@@ -1,15 +1,19 @@
 package cjminecraft.doubleslabs.test.common.blocks;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class SlimeSlab extends SlabBlock {
     public SlimeSlab() {
@@ -52,5 +56,11 @@ public class SlimeSlab extends SlabBlock {
         }
 
         super.onEntityWalk(worldIn, pos, entityIn);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
+        return adjacentBlockState.isIn(this) ? true : super.isSideInvisible(state, adjacentBlockState, side);
     }
 }

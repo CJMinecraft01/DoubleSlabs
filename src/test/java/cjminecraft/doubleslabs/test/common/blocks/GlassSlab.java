@@ -30,11 +30,6 @@ public class GlassSlab extends SlabBlock {
         return adjacentBlockState.getBlock() == this || super.isSideInvisible(state, adjacentBlockState, side);
     }
 
-    @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        return ActionResultType.CONSUME;
-    }
-
     @OnlyIn(Dist.CLIENT)
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return 1.0F;

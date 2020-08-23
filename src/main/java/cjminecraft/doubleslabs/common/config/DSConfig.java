@@ -2,6 +2,10 @@ package cjminecraft.doubleslabs.common.config;
 
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import com.google.common.collect.Lists;
+import net.minecraft.block.Block;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,6 +38,14 @@ public class DSConfig {
         public final BooleanValue replaceSameSlab;
         public final BooleanValue disableVerticalSlabPlacement;
         public final BooleanValue disableVerticalSlabItems;
+
+        public boolean isBlacklistedHorizontalSlab(Block block) {
+            return isBlockPresent(slabBlacklist, block);
+        }
+
+        public boolean isBlacklistedVerticalSlab(Block block) {
+            return isBlockPresent(verticalSlabBlacklist, block);
+        }
 
         Server(Builder builder) {
             builder.comment("General Configuration")
@@ -77,6 +89,14 @@ public class DSConfig {
         public final ConfigValue<List<String>> lazyVerticalSlabModels;
         public final ConfigValue<List<String>> slabCullBlacklist;
 
+        public boolean shouldCull(Block block) {
+            return !isBlockPresent(slabCullBlacklist, block);
+        }
+
+        public boolean useLazyModel(Block block) {
+            return isBlockPresent(lazyVerticalSlabModels, block);
+        }
+
         public final EnumValue<VerticalSlabPlacementMethod> verticalSlabPlacementMethod;
 
         Client(Builder builder) {
@@ -110,6 +130,19 @@ public class DSConfig {
 
             builder.pop();
         }
+    }
+
+    private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
+        if (block.getRegistryName() == null)
+            return false;
+        return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("#")) {
+                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
+                ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
+                return tag != null && tag.contains(block);
+            }
+            return entry.equals(block.getRegistryName().toString());
+        });
     }
 
 }

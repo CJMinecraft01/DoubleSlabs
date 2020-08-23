@@ -3,7 +3,6 @@ package cjminecraft.doubleslabs.common.placement;
 public enum VerticalSlabPlacementMethod {
     PLACE_WHEN_SNEAKING(0),
     DYNAMIC(1);
-    // TODO keybinding too
 
     private final int index;
 

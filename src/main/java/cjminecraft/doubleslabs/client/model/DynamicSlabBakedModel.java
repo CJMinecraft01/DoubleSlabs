@@ -1,31 +1,42 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.client.util.SlabCache;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.blocks.DynamicSlabBlock;
+import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
@@ -77,7 +88,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
-            SlabCache key = new SlabCache(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand);
+            SlabCache key = new SlabCache(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS));
             try {
                 return cache.get(key, () -> getQuads(key));
             } catch (ExecutionException e) {
@@ -88,5 +99,30 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         return getFallbackModel().getQuads(state, side, rand, extraData);
     }
 
+    protected abstract Block getBlock();
+
     protected abstract List<BakedQuad> getQuads(SlabCache cache);
+
+    protected abstract List<Direction> getCullDirections();
+
+    private static final ModelProperty<List<CullInfo>> CULL_DIRECTIONS = new ModelProperty<>();
+
+    @Nonnull
+    @Override
+    public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+        List<CullInfo> cullDirections = new ArrayList<>();
+        for (Direction direction : getCullDirections()) {
+            BlockPos otherPos = pos.offset(direction);
+            BlockState otherState = world.getBlockState(otherPos);
+            if (otherState.getBlock() instanceof DynamicSlabBlock && otherState.getBlock() == getBlock()) {
+                TileEntity tileEntity = world.getTileEntity(otherPos);
+                if (tileEntity instanceof SlabTileEntity) {
+                    SlabTileEntity tile = (SlabTileEntity) tileEntity;
+                    cullDirections.add(new CullInfo(tile.getPositiveBlockInfo(), tile.getNegativeBlockInfo(), state, otherState, direction));
+                }
+            }
+        }
+        tileData.setData(CULL_DIRECTIONS, cullDirections);
+        return tileData;
+    }
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -16,13 +17,15 @@ public class SlabCache implements IStateContainer {
     private final Direction side;
     private final RenderType renderLayer;
     private final Random random;
+    private final List<CullInfo> cullInfo;
 
-    public SlabCache(IBlockInfo positiveBlock, IBlockInfo negativeBlock, Direction side, Random random) {
+    public SlabCache(IBlockInfo positiveBlock, IBlockInfo negativeBlock, Direction side, Random random, List<CullInfo> cullInfo) {
         this.positiveBlock = positiveBlock;
         this.negativeBlock = negativeBlock;
         this.side = side;
         this.random = random;
         this.renderLayer = MinecraftForgeClient.getRenderLayer();
+        this.cullInfo = cullInfo;
     }
 
     @Override
@@ -47,6 +50,10 @@ public class SlabCache implements IStateContainer {
         return this.random;
     }
 
+    public List<CullInfo> getCullInfo() {
+        return this.cullInfo;
+    }
+
     @Override
     public String toString() {
         return "SlabCache{" +
@@ -63,11 +70,12 @@ public class SlabCache implements IStateContainer {
         return positiveBlock.equals(slabCache.positiveBlock) &&
                 negativeBlock.equals(slabCache.negativeBlock) &&
                 side == slabCache.side &&
-                Objects.equals(renderLayer, slabCache.renderLayer);
+                Objects.equals(renderLayer, slabCache.renderLayer) &&
+                cullInfo.equals(slabCache.cullInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positiveBlock, negativeBlock, side, renderLayer);
+        return Objects.hash(positiveBlock, negativeBlock, side, renderLayer, cullInfo);
     }
 }
