@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.common.init.DSKeyBindings;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -42,6 +43,7 @@ public class ClientProxy implements IProxy {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
+        DSKeyBindings.register();
         DeferredWorkQueue.runLater(() -> {
             RenderTypeLookup.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
             RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);

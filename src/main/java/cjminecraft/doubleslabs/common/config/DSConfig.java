@@ -43,31 +43,31 @@ public class DSConfig {
                     .comment("The list of slabs (or tags) to ignore when creating double slabs",
                             "Example: minecraft:purpur_slab")
                     .translation("doubleslabs.configgui.slabBlacklist")
-                    .define("slab_blacklist", new ArrayList<>());
+                    .define("slabBlacklist", new ArrayList<>());
 
             verticalSlabBlacklist = builder
                     .comment("The list of slabs (or tags) to ignore when creating vertical slabs",
                             "Example: minecraft:purpur_slab",
                             "Example: #minecraft:slabs")
                     .translation("doubleslabs.configgui.verticalSlabBlacklist")
-                    .define("vertical_slab_blacklist", new ArrayList<>());
+                    .define("verticalSlabBlacklist", new ArrayList<>());
 
             replaceSameSlab = builder
                     .comment("Whether to use the custom double slab when combining slabs of the same type")
                     .translation("doubleslabs.configgui.replaceSameSlab")
-                    .define("replace_same_slab", true);
+                    .define("replaceSameSlab", true);
 
             disableVerticalSlabPlacement = builder
                     .comment("Whether to disable the placement of vertical slabs from regular horizontal slabs")
                     .translation("doubleslabs.configgui.disableVerticalSlabPlacement")
-                    .define("disable_vertical_slab_placement", false);
+                    .define("disableVerticalSlabPlacement", false);
 
             // TODO implement vertical slab items
             disableVerticalSlabItems = builder
                     .comment("Whether to disable the vertical slab items")
                     .translation("doubleslabs.configgui.disableVerticalSlabItems")
                     .worldRestart()
-                    .define("disable_vertical_slab_items", true);
+                    .define("disableVerticalSlabItems", true);
 
             builder.pop();
         }
@@ -77,7 +77,6 @@ public class DSConfig {
         public final ConfigValue<List<String>> lazyVerticalSlabModels;
         public final ConfigValue<List<String>> slabCullBlacklist;
 
-        @SyncConfigValue
         public final EnumValue<VerticalSlabPlacementMethod> verticalSlabPlacementMethod;
 
         Client(Builder builder) {
@@ -88,12 +87,12 @@ public class DSConfig {
                             "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model",
                             "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs")
                     .translation("doubleslabs.configgui.lazyVerticalSlabModels")
-                    .define("lazy_vertical_slabs", Lists.newArrayList("#doubleslabs:plank_slabs"));
+                    .define("lazyVerticalSlabModels", Lists.newArrayList("#doubleslabs:plank_slabs"));
 
             slabCullBlacklist = builder
                     .comment("The list of slabs (or tags) which should not be culled when combined")
                     .translation("doubleslabs.configgui.slabCullBlacklist")
-                    .define("slab_cull_blacklist", Lists.newArrayList("#minecraft:campfires"));
+                    .define("slabCullBlacklist", Lists.newArrayList("#minecraft:campfires"));
 
             // TODO placement options
 
@@ -107,7 +106,7 @@ public class DSConfig {
                             "PLACE_WHEN_SNEAKING - Only place vertical slabs when you are sneaking",
                             "DYNAMIC - Place vertical slabs when clicking on the side of a block unless you are sneaking and place vertical slabs when sneaking when looking at the top or bottom face of a block but place regular slabs by default")
                     .translation("doubleslabs.configgui.verticalSlabPlacementMethod")
-                    .defineEnum("vertical_slab_placement_method", VerticalSlabPlacementMethod.DYNAMIC);
+                    .defineEnum("verticalSlabPlacementMethod", VerticalSlabPlacementMethod.DYNAMIC);
 
             builder.pop();
         }

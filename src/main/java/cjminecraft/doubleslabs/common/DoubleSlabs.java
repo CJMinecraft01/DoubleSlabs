@@ -3,16 +3,12 @@ package cjminecraft.doubleslabs.common;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
-import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.config.DSConfig;
-import cjminecraft.doubleslabs.common.config.SyncConfigValue;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
-import cjminecraft.doubleslabs.common.util.AnnotationUtil;
 import cjminecraft.doubleslabs.server.proxy.ServerProxy;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DeferredWorkQueue;
@@ -24,8 +20,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
 
 @Mod(DoubleSlabs.MODID)
 public class DoubleSlabs {
