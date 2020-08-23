@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.common.config;
 
+import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
@@ -9,6 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DSConfig {
+
+    public static final Client CLIENT;
+    public static final Server SERVER;
+    public static final ForgeConfigSpec CLIENT_SPEC;
+    public static final ForgeConfigSpec SERVER_SPEC;
+
+    static {
+        final Pair<Client, ForgeConfigSpec> specPair = new Builder().configure(Client::new);
+        CLIENT_SPEC = specPair.getRight();
+        CLIENT = specPair.getLeft();
+    }
+
+    static {
+        final Pair<Server, ForgeConfigSpec> specPair = new Builder().configure(Server::new);
+        SERVER_SPEC = specPair.getRight();
+        SERVER = specPair.getLeft();
+    }
 
     public static class Server {
         public final ConfigValue<List<String>> slabBlacklist;
@@ -59,6 +77,9 @@ public class DSConfig {
         public final ConfigValue<List<String>> lazyVerticalSlabModels;
         public final ConfigValue<List<String>> slabCullBlacklist;
 
+        @SyncConfigValue
+        public final EnumValue<VerticalSlabPlacementMethod> verticalSlabPlacementMethod;
+
         Client(Builder builder) {
             builder.push("Client Only Settings");
 
@@ -77,23 +98,19 @@ public class DSConfig {
             // TODO placement options
 
             builder.pop();
+
+            builder.push("Player Settings (synced with servers)");
+
+            verticalSlabPlacementMethod = builder
+                    .comment("Which placement method to use to place vertical slabs",
+                            "This is a per user option and can be any of the following values:",
+                            "PLACE_WHEN_SNEAKING - Only place vertical slabs when you are sneaking",
+                            "DYNAMIC - Place vertical slabs when clicking on the side of a block unless you are sneaking and place vertical slabs when sneaking when looking at the top or bottom face of a block but place regular slabs by default")
+                    .translation("doubleslabs.configgui.verticalSlabPlacementMethod")
+                    .defineEnum("vertical_slab_placement_method", VerticalSlabPlacementMethod.DYNAMIC);
+
+            builder.pop();
         }
-    }
-
-    static final ForgeConfigSpec clientSpec;
-    public static final Client CLIENT;
-    static {
-        final Pair<Client, ForgeConfigSpec> specPair = new Builder().configure(Client::new);
-        clientSpec = specPair.getRight();
-        CLIENT = specPair.getLeft();
-    }
-
-    static final ForgeConfigSpec serverSpec;
-    public static final Server SERVER;
-    static {
-        final Pair<Server, ForgeConfigSpec> specPair = new Builder().configure(Server::new);
-        serverSpec = specPair.getRight();
-        SERVER = specPair.getLeft();
     }
 
 }

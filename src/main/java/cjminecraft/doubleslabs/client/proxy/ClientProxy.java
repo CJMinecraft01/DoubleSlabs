@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.client.proxy;
 
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.BlockState;
@@ -22,6 +23,7 @@ public class ClientProxy implements IProxy {
         mod.addListener(this::clientSetup);
         mod.addListener(this::registerBlockColours);
         mod.addListener(this::bakeModels);
+        mod.addListener(ConfigEventsHandler::onFileChange);
     }
 
     private void bakeModels(ModelBakeEvent event) {
