@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.common;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
@@ -48,7 +49,8 @@ public class DoubleSlabs {
     private void commonSetup(final FMLCommonSetupEvent event) {
 //        LOGGER.info(Arrays.toString(AnnotationUtil.getFieldInstances(SyncConfigValue.class, ForgeConfigSpec.ConfigValue.class).toArray()));
         DeferredWorkQueue.runLater(() -> {
-            SlabSupport.init(); // TODO remove
+//            SlabSupportOld.init(); // TODO remove
+            SlabSupport.load();
             PacketHandler.registerPackets();
             PlayerConfigCapability.register();
         });

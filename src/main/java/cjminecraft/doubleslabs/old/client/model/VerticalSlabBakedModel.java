@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.old.client.model;
 import cjminecraft.doubleslabs.old.Config;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
-import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
 import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.BlockState;
@@ -271,16 +271,16 @@ public class VerticalSlabBakedModel extends DoubleSlabBakedModel {
         float offsetYPositive = 0;
         float offsetYNegative = 0;
         if (tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE) != null) {
-            ISlabSupport positiveSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
+            ISlabSupport positiveSlabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
             rotatePositive = positiveSlabSupport == null;
-            positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
+            positiveSlabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.POSITIVE_STATE));
             if (positiveSlabSupport != null)
                 offsetYPositive = positiveSlabSupport.getOffsetY(false);
         }
         if (tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE) != null) {
-            ISlabSupport negativeSlabSupport = SlabSupport.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
+            ISlabSupport negativeSlabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
             rotateNegative = negativeSlabSupport == null;
-            negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
+            negativeSlabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityVerticalSlab.NEGATIVE_STATE));
             if (negativeSlabSupport != null)
                 offsetYNegative = negativeSlabSupport.getOffsetY(true);
         }

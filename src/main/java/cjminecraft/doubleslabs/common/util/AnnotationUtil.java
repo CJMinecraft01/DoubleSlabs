@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.common.util;
 
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,6 +33,28 @@ public class AnnotationUtil {
                     field.setAccessible(true);
                 return (T)field.get(null);
             } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {
+                return (T)null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public static <T> List<T> getClassInstances(Class<?> annotation, Class<T> instance) {
+        Type type = Type.getType(annotation);
+        List<ModFileScanData> scanData = ModList.get().getAllScanData();
+        List<String> classNames = new ArrayList<>();
+        scanData.stream().map(datum -> datum.getAnnotations().stream()
+                .filter(a -> Objects.equals(a.getAnnotationType(), type))
+                .map(ModFileScanData.AnnotationData::getMemberName)
+                .collect(Collectors.toList()))
+                .forEach(classNames::addAll);
+        return classNames.stream().map(className -> {
+            try {
+                Class<?> clazz = Class.forName(className);
+                if (!instance.isAssignableFrom(clazz))
+                    return null;
+                Class<? extends T> instanceClass = clazz.asSubclass(instance);
+                return instanceClass.newInstance();
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ignored) {
                 return (T)null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toList());

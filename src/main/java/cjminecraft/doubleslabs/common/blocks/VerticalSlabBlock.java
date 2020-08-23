@@ -254,9 +254,9 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
             IContainerSupport support = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             if (support == null) {
                 ActionResultType result;
-                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, i.getBlockState());
+                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, i.getBlockState());
                 if (slabSupport == null)
-                    slabSupport = SlabSupport.getVerticalSlabSupport(world, pos, i.getBlockState());
+                    slabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, i.getBlockState());
                 try {
                     result = slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
                 } catch (Exception e) {

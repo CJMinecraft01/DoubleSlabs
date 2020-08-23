@@ -6,7 +6,7 @@ import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IContainerSupport;
 import cjminecraft.doubleslabs.api.ISlabSupport;
-import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.old.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.old.network.NetworkUtils;
 import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
@@ -711,9 +711,9 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
             IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 ActionResultType result;
-                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, pair.getLeft());
+                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, pair.getLeft());
                 if (slabSupport == null)
-                    slabSupport = SlabSupport.getVerticalSlabSupport(world, pos, pair.getLeft());
+                    slabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, pair.getLeft());
                 try {
                     result = slabSupport == null ? pair.getLeft().onBlockActivated(pair.getRight(), player, hand, hit) : slabSupport.onActivated(pair.getLeft(), pair.getRight(), pos, player, hand, hit);
                 } catch (Exception e) {

@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.old.client.model;
 import cjminecraft.doubleslabs.old.Config;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.api.ISlabSupport;
-import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.old.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -149,12 +149,12 @@ public class DoubleSlabBakedModel implements IDynamicBakedModel {
         float offsetYPositive = 0;
         float offsetYNegative = 0;
         if (tileData.getData(TileEntityDoubleSlab.TOP_STATE) != null) {
-            ISlabSupport positiveSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.TOP_STATE));
+            ISlabSupport positiveSlabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.TOP_STATE));
             if (positiveSlabSupport != null)
                 offsetYPositive = positiveSlabSupport.getOffsetY(true);
         }
         if (tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE) != null) {
-            ISlabSupport negativeSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE));
+            ISlabSupport negativeSlabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, tileData.getData(TileEntityDoubleSlab.BOTTOM_STATE));
             if (negativeSlabSupport != null)
                 offsetYNegative = negativeSlabSupport.getOffsetY(false);
         }

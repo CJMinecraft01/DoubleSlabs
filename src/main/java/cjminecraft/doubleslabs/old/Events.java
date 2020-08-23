@@ -1,11 +1,10 @@
 package cjminecraft.doubleslabs.old;
 
 import cjminecraft.doubleslabs.api.ISlabSupport;
-import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityDoubleSlab;
 import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
@@ -79,10 +78,10 @@ public class Events {
         // Check we are holding an item
         if (!event.getItemStack().isEmpty()) {
             // Check that the item is a horizontal slab that is supported
-            ISlabSupport itemSupport = SlabSupport.getHorizontalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
+            ISlabSupport itemSupport = SlabSupportOld.getHorizontalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
             if (itemSupport == null) {
                 // If not, check to see if the item is a vertical slab which is supported
-                itemSupport = SlabSupport.getVerticalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
+                itemSupport = SlabSupportOld.getVerticalSlabSupport(event.getItemStack(), event.getPlayer(), event.getHand());
 
                 // If not, don't do anything special
                 if (itemSupport == null)
@@ -141,7 +140,7 @@ public class Events {
                         // Otherwise check if we are trying to mix two vertical slabs from different mods
 
                         // Check that the block is a vertical slab
-                        ISlabSupport blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                        ISlabSupport blockSupport = SlabSupportOld.getVerticalSlabSupport(event.getWorld(), pos, state);
 
                         // If not, try offsetting by the face
                         if (blockSupport == null) {
@@ -155,7 +154,7 @@ public class Events {
                             if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
                                 return;
 
-                            blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                            blockSupport = SlabSupportOld.getVerticalSlabSupport(event.getWorld(), pos, state);
                             if (blockSupport == null)
                                 return;
 
@@ -213,12 +212,12 @@ public class Events {
                 boolean verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE) && (((TileEntityVerticalSlab) event.getWorld().getTileEntity(pos)).getPositiveState() != null ? face == state.get(BlockVerticalSlab.FACING).getOpposite() : face == state.get(BlockVerticalSlab.FACING));
 
                 // Check if the block is a horizontal slab
-                ISlabSupport blockSupport = SlabSupport.getHorizontalSlabSupport(event.getWorld(), pos, state);
+                ISlabSupport blockSupport = SlabSupportOld.getHorizontalSlabSupport(event.getWorld(), pos, state);
                 if (blockSupport == null && !verticalSlab) {
                     // If not, then the block is either a vertical slab or we should trying offsetting the pos by the face
 
                     // Check if the block is a vertical slab from another mod
-                    blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                    blockSupport = SlabSupportOld.getVerticalSlabSupport(event.getWorld(), pos, state);
                     if (blockSupport != null) {
                         // We are trying to combine a mod vertical slab with a regular slab
 //                        if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
@@ -263,10 +262,10 @@ public class Events {
                     verticalSlab = state.getBlock() == Registrar.VERTICAL_SLAB && !state.get(BlockVerticalSlab.DOUBLE);
 
                     // Check if the offset state is a horizontal slab
-                    blockSupport = SlabSupport.getHorizontalSlabSupport(event.getWorld(), pos, state);
+                    blockSupport = SlabSupportOld.getHorizontalSlabSupport(event.getWorld(), pos, state);
                     if (blockSupport == null && !verticalSlab) {
                         // If not, check if it is a vertical slab
-                        blockSupport = SlabSupport.getVerticalSlabSupport(event.getWorld(), pos, state);
+                        blockSupport = SlabSupportOld.getVerticalSlabSupport(event.getWorld(), pos, state);
                         if (blockSupport != null) {
                             // We are trying to combine a mod vertical slab with a regular slab
 

@@ -4,7 +4,6 @@ import cjminecraft.doubleslabs.api.*;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.old.network.NetworkUtils;
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityDoubleSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -210,7 +209,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
             IContainerSupport support = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             if (support == null) {
                 ActionResultType result;
-                ISlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, i.getBlockState());
+                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, i.getBlockState());
                 try {
                     result = slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
                 } catch (Exception e) {
