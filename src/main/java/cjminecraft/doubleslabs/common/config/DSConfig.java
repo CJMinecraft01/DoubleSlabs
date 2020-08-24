@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.common.config;
 
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
+
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.tags.BlockTags;
@@ -37,7 +38,7 @@ public class DSConfig {
         public final ConfigValue<List<String>> verticalSlabBlacklist;
         public final BooleanValue replaceSameSlab;
         public final BooleanValue disableVerticalSlabPlacement;
-        public final BooleanValue disableVerticalSlabItems;
+//        public final BooleanValue disableVerticalSlabItems;
 
         public boolean isBlacklistedHorizontalSlab(Block block) {
             return isBlockPresent(slabBlacklist, block);
@@ -75,11 +76,11 @@ public class DSConfig {
                     .define("disableVerticalSlabPlacement", false);
 
             // TODO implement vertical slab items
-            disableVerticalSlabItems = builder
-                    .comment("Whether to disable the vertical slab items")
-                    .translation("doubleslabs.configgui.disableVerticalSlabItems")
-                    .worldRestart()
-                    .define("disableVerticalSlabItems", true);
+//            disableVerticalSlabItems = builder
+//                    .comment("Whether to disable the vertical slab items")
+//                    .translation("doubleslabs.configgui.disableVerticalSlabItems")
+//                    .worldRestart()
+//                    .define("disableVerticalSlabItems", true);
 
             builder.pop();
         }

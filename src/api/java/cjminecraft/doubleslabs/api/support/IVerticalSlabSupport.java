@@ -18,6 +18,6 @@ public interface IVerticalSlabSupport extends ISlabSupport {
 
     Direction getDirection(World world, BlockPos pos, BlockState state);
 
-    BlockState getStateForDirection(World world, BlockPos pos, BlockState state, SlabType half);
+    BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction);
 
 }

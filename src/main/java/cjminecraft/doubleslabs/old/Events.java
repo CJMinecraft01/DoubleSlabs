@@ -46,7 +46,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-@Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
+//@Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class Events {
 
     private static BlockState removeWaterloggedPropertyFromState(BlockState state) {

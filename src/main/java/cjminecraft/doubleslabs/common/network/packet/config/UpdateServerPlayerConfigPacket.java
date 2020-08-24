@@ -27,7 +27,7 @@ public class UpdateServerPlayerConfigPacket {
         NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(() -> {
             ctx.getSender().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> config.setVerticalSlabPlacementMethod(message.config.getVerticalSlabPlacementMethod()));
-            DoubleSlabs.LOGGER.info("Received config update message: %s %s", message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
+            DoubleSlabs.LOGGER.debug("Received config update message: %s %s", message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
         });
         ctx.setPacketHandled(true);
     }
