@@ -26,8 +26,11 @@ public class UpdateServerPlayerConfigPacket {
     public static void handle(UpdateServerPlayerConfigPacket message, Supplier<NetworkEvent.Context> ctxSupplier) {
         NetworkEvent.Context ctx = ctxSupplier.get();
         ctx.enqueueWork(() -> {
-            ctx.getSender().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> config.setVerticalSlabPlacementMethod(message.config.getVerticalSlabPlacementMethod()));
-            DoubleSlabs.LOGGER.debug("Received config update message: %s %s", message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
+            ctx.getSender().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> {
+                config.setVerticalSlabPlacementMethod(message.config.getVerticalSlabPlacementMethod());
+                config.setPlaceVerticalSlabs(message.config.placeVerticalSlabs());
+            });
+            DoubleSlabs.LOGGER.debug("Received config update message: Placement Method - %s, Place Vertical Slab Keybinding Down - %s", message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
         });
         ctx.setPacketHandled(true);
     }

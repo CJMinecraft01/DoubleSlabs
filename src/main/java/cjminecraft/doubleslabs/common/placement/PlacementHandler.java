@@ -192,7 +192,7 @@ public class PlacementHandler {
                             Direction direction = verticalSlabSupport.getDirection(world, newPos, newState);
 
                             BlockState slabState = getStateFromSupport(world, newPos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
-                            BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context);
+                            BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
                             if (placeSlab(world, newPos, verticalSlabState, newState, slabState))
                                 finishBlockPlacement(world, pos, slabState, player, stack, cancel);
