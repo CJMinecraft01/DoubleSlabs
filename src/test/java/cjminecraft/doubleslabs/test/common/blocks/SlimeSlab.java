@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -61,6 +62,6 @@ public class SlimeSlab extends SlabBlock {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return adjacentBlockState.isIn(this) ? true : super.isSideInvisible(state, adjacentBlockState, side);
+        return adjacentBlockState.isIn(this) && state.get(TYPE) != SlabType.DOUBLE ? true : super.isSideInvisible(state, adjacentBlockState, side);
     }
 }

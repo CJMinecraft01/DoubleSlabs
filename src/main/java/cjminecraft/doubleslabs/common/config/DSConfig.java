@@ -89,6 +89,7 @@ public class DSConfig {
     public static class Client {
         public final ConfigValue<List<String>> lazyVerticalSlabModels;
         public final ConfigValue<List<String>> slabCullBlacklist;
+        public final ConfigValue<List<String>> useDoubleSlabModelBlacklist;
 
         public boolean shouldCull(Block block) {
             return !isBlockPresent(slabCullBlacklist, block);
@@ -96,6 +97,10 @@ public class DSConfig {
 
         public boolean useLazyModel(Block block) {
             return isBlockPresent(lazyVerticalSlabModels, block);
+        }
+
+        public boolean useDoubleSlabModel(Block block) {
+            return !isBlockPresent(useDoubleSlabModelBlacklist, block);
         }
 
         public final EnumValue<VerticalSlabPlacementMethod> verticalSlabPlacementMethod;
@@ -114,6 +119,11 @@ public class DSConfig {
                     .comment("The list of slabs (or tags) which should not be culled when combined")
                     .translation("doubleslabs.configgui.slabCullBlacklist")
                     .define("slabCullBlacklist", Lists.newArrayList("#minecraft:campfires"));
+
+            useDoubleSlabModelBlacklist = builder
+                    .comment("The list of slabs (or tags) which should not use the double variant model when two of the same slab are combined together")
+                    .translation("doubleslabs.configgui.useDoubleSlabModelBlacklist")
+                    .define("useDoubleSlabModelBlacklist", new ArrayList<>());
 
             // TODO placement options
 

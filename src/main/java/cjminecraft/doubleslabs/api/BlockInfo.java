@@ -55,6 +55,11 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     }
 
     @Override
+    public BlockPos getPos() {
+        return this.slab.getPos();
+    }
+
+    @Override
     public void setBlockState(@Nullable BlockState state) {
         if (this.state != null && this.state.hasTileEntity() && this.tile != null)
             this.tile.updateContainingBlockInfo();

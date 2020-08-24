@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.*;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.old.network.NetworkUtils;
+import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -32,6 +33,9 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
@@ -77,6 +81,41 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         return super.getStateForPlacement(context).with(FACING, context.getPlacementHorizontalFacing());
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        if (state.get(DOUBLE))
+            return VoxelShapes.fullCube();
+
+        double min = 0;
+        double max = 8;
+        if (state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE) {
+            min = 8;
+            max = 16;
+        }
+
+        TileEntity tileEntity = world.getTileEntity(pos);
+
+        if (tileEntity instanceof SlabTileEntity) {
+            SlabTileEntity tile = (SlabTileEntity) tileEntity;
+
+            boolean positive = tile.getPositiveBlockInfo().getBlockState() != null;
+            boolean negative = tile.getNegativeBlockInfo().getBlockState() != null;
+
+            if ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE && positive) || (state.get(FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE && negative)) {
+                min = 8;
+                max = 16;
+            } else {
+                min = 0;
+                max = 8;
+            }
+        }
+
+        if (state.get(FACING).getAxis() == Direction.Axis.X)
+            return Block.makeCuboidShape(min, 0, 0, max, 16, 16);
+        else
+            return Block.makeCuboidShape(0, 0, min, 16, 16, max);
     }
 
     @Override

@@ -89,6 +89,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
             SlabCache key = new SlabCache(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS));
+            cache.invalidateAll();
             try {
                 return cache.get(key, () -> getQuads(key));
             } catch (ExecutionException e) {
@@ -103,15 +104,13 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
 
     protected abstract List<BakedQuad> getQuads(SlabCache cache);
 
-    protected abstract List<Direction> getCullDirections();
-
     private static final ModelProperty<List<CullInfo>> CULL_DIRECTIONS = new ModelProperty<>();
 
     @Nonnull
     @Override
     public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         List<CullInfo> cullDirections = new ArrayList<>();
-        for (Direction direction : getCullDirections()) {
+        for (Direction direction : Direction.values()) {
             BlockPos otherPos = pos.offset(direction);
             BlockState otherState = world.getBlockState(otherPos);
             if (otherState.getBlock() instanceof DynamicSlabBlock && otherState.getBlock() == getBlock()) {

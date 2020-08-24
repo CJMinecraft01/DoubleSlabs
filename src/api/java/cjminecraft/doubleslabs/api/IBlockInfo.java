@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -23,5 +24,7 @@ public interface IBlockInfo {
     World getWorld();
 
     boolean isPositive();
+
+    BlockPos getPos();
 
 }
