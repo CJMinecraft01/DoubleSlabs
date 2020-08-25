@@ -44,7 +44,6 @@ public class ClientUtils {
         DIRECTION_TO_ANGLE.put(Direction.EAST, Vector3f.YP.rotationDegrees(270));
 
         Arrays.stream(Direction.values()).filter(direction -> !direction.getAxis().isVertical()).forEach(direction -> {
-//            DIRECTION_TO_TRANSFORMATION.put(Pair.of(direction, null), angleRotation);
             Quaternion angle = DIRECTION_TO_ANGLE.get(direction);
             DIRECTION_TO_TRANSFORMATION.put(Pair.of(direction, null), vector -> {
                 vector.transform(ROTATE_X_90);
@@ -53,7 +52,7 @@ public class ClientUtils {
             Arrays.stream(Direction.values()).forEach(side -> {
                 DIRECTION_TO_TRANSFORMATION.put(Pair.of(direction, side), vector -> {
                     vector.transform(ROTATE_X_90);
-                    if (side == Direction.DOWN)
+                    if (side == direction)
                         vector.transform(ROTATE_Z_180);
                     vector.transform(angle);
                 });
@@ -190,8 +189,8 @@ public class ClientUtils {
 
     }
 
-    private static int[] getPositions(Vector3i pos1, Vector3i pos2) {
-        int[] positions = new int[Direction.values().length];
+    private static float[] getPositions(Vector3f pos1, Vector3f pos2) {
+        float[] positions = new float[Direction.values().length];
         positions[FaceDirection.Constants.WEST_INDEX] = pos1.getX();
         positions[FaceDirection.Constants.DOWN_INDEX] = pos1.getY();
         positions[FaceDirection.Constants.NORTH_INDEX] = pos1.getZ();
@@ -201,18 +200,18 @@ public class ClientUtils {
         return positions;
     }
 
-    private static boolean approximatelyEqual(int a, int b) {
+    private static boolean approximatelyEqual(float a, float b) {
         // to account for annoying floating point precision
-
-        int diff = Math.abs(a - b);
-        return diff < 10000;
+        if (a == b)
+            return true;
+        float diff = Math.abs(a - b);
+        return diff < 1e-2;
     }
 
     public static int[] rotateVertexData(int[] vertexData, Direction direction, @Nullable Direction side) {
         int[] data = new int[vertexData.length];
         
         float minX = 1.0f, minY = 1.0f, minZ = 1.0f, maxX = 0.0f, maxY = 0.0f, maxZ = 0.0f;
-//        float minU = 1, maxU = 0, minV = 1, maxV = 0;
 
         for (int i = 0; i < vertexData.length / 8; i++) {
             // The x y z position relative to the center of the model
@@ -222,40 +221,6 @@ public class ClientUtils {
 
             Vector4f vertex = new Vector4f(x, y, z, 0.0f);
             getVertexTransformation(direction, side).accept(vertex);
-//            switch (direction) {
-//                case NORTH:
-//                    vertex.transform(NORTH_ROTATION);
-//                    if (side == direction)
-//                        vertex.transform(ROTATE_Z_180);
-//                    break;
-//                case SOUTH:
-//                    vertex.transform(SOUTH_ROTATION);
-//                    if (side != direction)
-//                        vertex.transform(ROTATE_Z_180);
-//                    break;
-//                case WEST:
-//                    vertex.transform(WEST_ROTATION);
-//                    if (side != direction)
-//                        vertex.transform(ROTATE_X_90);
-//                    else
-//                        vertex.transform(ROTATE_X_270);
-//                    break;
-//                case EAST:
-//                    vertex.transform(EAST_ROTATION);
-//                    if (side != direction)
-//                        vertex.transform(ROTATE_X_90);
-//                    else
-//                        vertex.transform(ROTATE_X_270);
-//                    break;
-//                default:
-//                    throw new NotImplementedException("Invalid direction for vertical slab");
-//            }
-
-//            int[] perVertexData = new int[8];
-//            System.arraycopy(vertexData, i * 8, perVertexData, 0, 8);
-//            DoubleSlabs.LOGGER.info(transformedVertex);
-//            DoubleSlabs.LOGGER.info(Arrays.toString(perVertexData));
-//            mappedVertexData.put(transformedVertex, perVertexData);
 
             float transformedX = vertex.getX() + 0.5f;
             float transformedY = vertex.getY() + 0.5f;
@@ -274,58 +239,39 @@ public class ClientUtils {
             else if (transformedZ > maxZ)
                 maxZ = transformedZ;
 
-//            float u = Float.intBitsToFloat(vertexData[i * 8 + 4]);
-//            float v = Float.intBitsToFloat(vertexData[i * 8 + 5]);
-//            if (u < minU)
-//                minU = u;
-//            else if (u > maxU)
-//                maxU = u;
-//            if (v < minV)
-//                minV = v;
-//            else if (v > maxV)
-//                maxV = v;
-
             data[i * 8] = Float.floatToIntBits(transformedX);
             data[i * 8 + 1] = Float.floatToIntBits(transformedY);
             data[i * 8 + 2] = Float.floatToIntBits(transformedZ);
-
-//            DoubleSlabs.LOGGER.info("%s %s %s", data[i * 8], data[i * 8 + 1], data[i * 8 + 2]);
-
             data[i * 8 + 3] = vertexData[i * 8 + 3]; // shade colour
             data[i * 8 + 4] = vertexData[i * 8 + 4]; // texture U
             data[i * 8 + 5] = vertexData[i * 8 + 5]; // texture V
             data[i * 8 + 6] = vertexData[i * 8 + 6]; // baked lighting
             data[i * 8 + 7] = vertexData[i * 8 + 7]; // normal
-//            data[i * 8 + 7] = side != null ? normal : vertexData[i * 8 + 7]; // normal
         }
-
-//        DoubleSlabs.LOGGER.info("=======");
 
         if (side != null) {
             int[] finalData = new int[data.length];
-            Vector3i from = new Vector3i(Float.floatToIntBits(minX), Float.floatToIntBits(minY), Float.floatToIntBits(minZ));
-            Vector3i to = new Vector3i(Float.floatToIntBits(maxX), Float.floatToIntBits(maxY), Float.floatToIntBits(maxZ));
-            int[] positions = getPositions(from, to);
+            Vector3f from = new Vector3f(minX, minY, minZ);
+            Vector3f to = new Vector3f(maxX, maxY, maxZ);
+            float[] positions = getPositions(from, to);
 
             for (int i = 0; i < 4; i++) {
                 FaceDirection faceDirection = FaceDirection.getFacing(side);
                 FaceDirection.VertexInformation vertexInformation = faceDirection.getVertexInformation(i);
-                finalData[i * 8] = positions[vertexInformation.xIndex];
-                finalData[i * 8 + 1] = positions[vertexInformation.yIndex];
-                finalData[i * 8 + 2] = positions[vertexInformation.zIndex];
+                finalData[i * 8] = Float.floatToRawIntBits(positions[vertexInformation.xIndex]);
+                finalData[i * 8 + 1] = Float.floatToRawIntBits(positions[vertexInformation.yIndex]);
+                finalData[i * 8 + 2] = Float.floatToRawIntBits(positions[vertexInformation.zIndex]);
                 int newIndex = -1;
                 for (int j = 0; j < 4; j++)
-                    if (approximatelyEqual(data[j * 8], finalData[i * 8]) && approximatelyEqual(data[j * 8 + 1], finalData[i * 8 + 1]) && approximatelyEqual(data[j * 8 + 2], finalData[i * 8 + 2]))
+                    if (approximatelyEqual(Float.intBitsToFloat(data[j * 8]), positions[vertexInformation.xIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 8 + 1]), positions[vertexInformation.yIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 8 + 2]), positions[vertexInformation.zIndex]))
                         newIndex = j;
                 if (newIndex < 0) {
-//                    DoubleSlabs.LOGGER.info("Problematic position: %s %s %s", positions[vertexInformation.xIndex], positions[vertexInformation.yIndex], positions[vertexInformation.zIndex]);
                     finalData[i * 8 + 3] = data[i * 8 + 3];
                     finalData[i * 8 + 4] = data[i * 8 + 4];
                     finalData[i * 8 + 5] = data[i * 8 + 5];
                     finalData[i * 8 + 6] = data[i * 8 + 6];
                     finalData[i * 8 + 7] = data[i * 8 + 7];
                 } else {
-//                    usedIndices.add(newIndex);
                     finalData[i * 8 + 3] = data[newIndex * 8 + 3];
                     finalData[i * 8 + 4] = data[newIndex * 8 + 4];
                     finalData[i * 8 + 5] = data[newIndex * 8 + 5];
@@ -333,12 +279,9 @@ public class ClientUtils {
                     finalData[i * 8 + 7] = data[newIndex * 8 + 7];
                 }
             }
-//            DoubleSlabs.LOGGER.info("____________");
             ForgeHooksClient.fillNormal(finalData, FaceBakery.getFacingFromVertexData(finalData));
             return finalData;
         }
-
-//        DoubleSlabs.LOGGER.info("____________");
 
         ForgeHooksClient.fillNormal(data, FaceBakery.getFacingFromVertexData(data));
 
