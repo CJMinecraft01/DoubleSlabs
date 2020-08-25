@@ -88,7 +88,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         // If the top and bottom states are the same, use the combined block model where possible
         if (cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
             IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
-            if (horizontalSlabSupport != null) {
+            if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
                 BlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                 if (RenderTypeLookup.canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
                     IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);

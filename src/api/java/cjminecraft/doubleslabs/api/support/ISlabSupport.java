@@ -27,4 +27,8 @@ public interface ISlabSupport {
         return stack.getItem() instanceof BlockItem ? ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(context) : Blocks.AIR.getDefaultState();
     }
 
+    default boolean useDoubleSlabModel(BlockState state) {
+        return true;
+    }
+
 }

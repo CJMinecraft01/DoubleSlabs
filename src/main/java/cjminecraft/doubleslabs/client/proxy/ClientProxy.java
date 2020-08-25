@@ -2,15 +2,20 @@ package cjminecraft.doubleslabs.client.proxy;
 
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.RaisedCampfireBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
+import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSKeyBindings;
+import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -18,12 +23,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DeferredWorkQueue;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ClientProxy implements IProxy {
     @Override
@@ -53,6 +57,12 @@ public class ClientProxy implements IProxy {
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
         VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
         replaceModel(verticalSlabBakedModel, DSBlocks.VERTICAL_SLAB.get(), verticalSlabBakedModel::addModel, event.getModelRegistry());
+
+        RaisedCampfireBakedModel campfireBakedModel = new RaisedCampfireBakedModel();
+        replaceModel(campfireBakedModel, DSBlocks.RAISED_CAMPFIRE.get(), campfireBakedModel::addModel, event.getModelRegistry());
+        RaisedCampfireBakedModel soulCampfireBakedModel = new RaisedCampfireBakedModel();
+        replaceModel(soulCampfireBakedModel, DSBlocks.RAISED_SOUL_CAMPFIRE.get(), soulCampfireBakedModel::addModel, event.getModelRegistry());
+
 //        DoubleSlabBakedModel doubleSlabBakedModel = new DoubleSlabBakedModel();
 //        for (BlockState state : DSBlocks.DOUBLE_SLAB.get().getStateContainer().getValidStates()) {
 //            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
@@ -69,10 +79,11 @@ public class ClientProxy implements IProxy {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         DSKeyBindings.register();
-        DeferredWorkQueue.runLater(() -> {
-            RenderTypeLookup.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
-            RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
-        });
+        RenderTypeLookup.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
+        RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
+        RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
+        ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {

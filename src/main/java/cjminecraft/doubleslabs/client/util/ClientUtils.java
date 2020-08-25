@@ -62,131 +62,6 @@ public class ClientUtils {
 
     private static Consumer<Vector4f> getVertexTransformation(Direction direction, @Nullable Direction side) {
         return DIRECTION_TO_TRANSFORMATION.getOrDefault(Pair.of(direction, side), vector -> {});
-//        int angle = 0;
-//        switch (direction) {
-//            case NORTH:
-//                angle = 0;
-//                break;
-//            case SOUTH:
-//                angle = 180;
-//                break;
-//            case WEST:
-//                angle = 90;
-//                break;
-//            case EAST:
-//                angle = 270;
-//                break;
-//        }
-//        int finalAngle = angle;
-//        return vertex -> {
-//            vertex.transform(ROTATE_X_90);
-//            if (side == Direction.DOWN)
-//                vertex.transform(ROTATE_Z_180);
-//            vertex.transform(Vector3f.YP.rotationDegrees(finalAngle));
-//        };
-
-//        switch (direction) {
-//            case NORTH:
-//                return vertex -> {
-//                    vertex.transform(NORTH_ROTATION);
-//                    if (side == direction)
-//                        vertex.transform(ROTATE_Z_180);
-//                };
-//            case SOUTH:
-//                return vertex -> {
-//                    vertex.transform(SOUTH_ROTATION);
-//                    if (side != direction)
-//                        vertex.transform(ROTATE_Z_180);
-//                };
-//            case WEST:
-//                return vertex -> {
-////                    vertex.transform(WEST_ROTATION);
-////                    if (side != direction)
-//                    vertex.transform(ROTATE_X_90);
-//                    if (side == Direction.DOWN)
-//                        vertex.transform(ROTATE_Z_180);
-//                    vertex.transform(Vector3f.YP.rotationDegrees(90));
-////                    else
-////                        vertex.transform(ROTATE_X_270);
-//                };
-//            case EAST:
-//                return vertex -> {
-//                    vertex.transform(EAST_ROTATION);
-//                    if (side != direction)
-//                        vertex.transform(ROTATE_X_90);
-//                    else
-//                        vertex.transform(ROTATE_X_270);
-//                };
-//            default:
-//                throw new NotImplementedException("Invalid direction for vertical slab");
-//        }
-    }
-
-    public static void applyFacing(int[] vertexData, Direction directionIn) {
-        int[] aint = new int[vertexData.length];
-        System.arraycopy(vertexData, 0, aint, 0, vertexData.length);
-        float[] afloat = new float[Direction.values().length];
-        afloat[FaceDirection.Constants.WEST_INDEX] = 999.0F;
-        afloat[FaceDirection.Constants.DOWN_INDEX] = 999.0F;
-        afloat[FaceDirection.Constants.NORTH_INDEX] = 999.0F;
-        afloat[FaceDirection.Constants.EAST_INDEX] = -999.0F;
-        afloat[FaceDirection.Constants.UP_INDEX] = -999.0F;
-        afloat[FaceDirection.Constants.SOUTH_INDEX] = -999.0F;
-
-        for(int i = 0; i < 4; ++i) {
-            int j = 8 * i;
-            float f = Float.intBitsToFloat(aint[j]);
-            float f1 = Float.intBitsToFloat(aint[j + 1]);
-            float f2 = Float.intBitsToFloat(aint[j + 2]);
-            if (f < afloat[FaceDirection.Constants.WEST_INDEX]) {
-                afloat[FaceDirection.Constants.WEST_INDEX] = f;
-            }
-
-            if (f1 < afloat[FaceDirection.Constants.DOWN_INDEX]) {
-                afloat[FaceDirection.Constants.DOWN_INDEX] = f1;
-            }
-
-            if (f2 < afloat[FaceDirection.Constants.NORTH_INDEX]) {
-                afloat[FaceDirection.Constants.NORTH_INDEX] = f2;
-            }
-
-            if (f > afloat[FaceDirection.Constants.EAST_INDEX]) {
-                afloat[FaceDirection.Constants.EAST_INDEX] = f;
-            }
-
-            if (f1 > afloat[FaceDirection.Constants.UP_INDEX]) {
-                afloat[FaceDirection.Constants.UP_INDEX] = f1;
-            }
-
-            if (f2 > afloat[FaceDirection.Constants.SOUTH_INDEX]) {
-                afloat[FaceDirection.Constants.SOUTH_INDEX] = f2;
-            }
-        }
-
-        FaceDirection facedirection = FaceDirection.getFacing(directionIn);
-
-        for(int i1 = 0; i1 < 4; ++i1) {
-            int j1 = 8 * i1;
-            FaceDirection.VertexInformation facedirection$vertexinformation = facedirection.getVertexInformation(i1);
-            float f8 = afloat[facedirection$vertexinformation.xIndex];
-            float f3 = afloat[facedirection$vertexinformation.yIndex];
-            float f4 = afloat[facedirection$vertexinformation.zIndex];
-            vertexData[j1] = Float.floatToIntBits(f8);
-            vertexData[j1 + 1] = Float.floatToIntBits(f3);
-            vertexData[j1 + 2] = Float.floatToIntBits(f4);
-
-            for(int k = 0; k < 4; ++k) {
-                int l = 8 * k;
-                float f5 = Float.intBitsToFloat(aint[l]);
-                float f6 = Float.intBitsToFloat(aint[l + 1]);
-                float f7 = Float.intBitsToFloat(aint[l + 2]);
-                if (MathHelper.epsilonEquals(f8, f5) && MathHelper.epsilonEquals(f3, f6) && MathHelper.epsilonEquals(f4, f7)) {
-                    vertexData[j1 + 4] = aint[l + 4];
-                    vertexData[j1 + 4 + 1] = aint[l + 4 + 1];
-                }
-            }
-        }
-
     }
 
     private static float[] getPositions(Vector3f pos1, Vector3f pos2) {
@@ -313,21 +188,6 @@ public class ClientUtils {
     public static Direction rotateFace(Direction face, Direction verticalSlabDirection) {
         if (face == null)
             return null;
-//        return face;
-//        Vector3i vector3i = face.getDirectionVec();
-//        Vector4f vector4f = new Vector4f((float) vector3i.getX(), (float) vector3i.getY(), (float) vector3i.getZ(), 0.0F);
-//        applyTransformationDirection(verticalSlabDirection, face).accept(vector4f);
-        //        switch (verticalSlabDirection) {
-//            case NORTH:
-//                return newDirection;
-//            case SOUTH:
-//                break;
-//            case WEST:
-//                break;
-//            case EAST:
-//                break;
-//        }
-//        return Direction.getFacingFromVector(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         Quaternion rotation = DIRECTION_TO_ANGLE.get(verticalSlabDirection);
         boolean negativeDirection = verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE;
         boolean zAxis = verticalSlabDirection.getAxis() == Direction.Axis.Z;
@@ -344,30 +204,21 @@ public class ClientUtils {
         else if (face.getAxis() == Direction.Axis.Z && !zAxis)
             return rotateFace(rotation, face).getOpposite();
         return face;
-//        if (verticalSlabDirection.getAxis() == Direction.Axis.X) {
-//            // The remaining faces are up and down
-//            if (face == Direction.UP)
-//                return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
-//            else
-//                return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
-//        } else {
-////            return face;
-//            // Z axis so the remaining faces are east and west
-//            if (face == Direction.UP)
-//                return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.SOUTH : Direction.NORTH;
-//            else
-//                return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.NORTH : Direction.SOUTH;
-//        }
+    }
 
-//        if (face == Direction.NORTH)
-//            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
-//        if (face == Direction.SOUTH)
-//            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
-//        if (face == Direction.EAST)
-//            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.EAST : Direction.WEST;
-//        if (face == Direction.WEST)
-//            return verticalSlabDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE ? Direction.WEST : Direction.EAST;
-//        return face;
+    public static int[] offsetY(int[] vertexData, float amount) {
+        int[] data = new int[vertexData.length];
+        for (int i = 0; i < vertexData.length / 8; i++) {
+            data[i * 8] = vertexData[i * 8];
+            data[i * 8 + 1] = Float.floatToRawIntBits(Float.intBitsToFloat(vertexData[i * 8 + 1]) + amount);
+            data[i * 8 + 2] = vertexData[i * 8 + 2];
+            data[i * 8 + 3] = vertexData[i * 8 + 3]; // shade colour
+            data[i * 8 + 4] = vertexData[i * 8 + 4]; // texture U
+            data[i * 8 + 5] = vertexData[i * 8 + 5]; // texture V
+            data[i * 8 + 6] = vertexData[i * 8 + 6]; // baked lighting
+            data[i * 8 + 7] = vertexData[i * 8 + 7]; // normal
+        }
+        return data;
     }
 
 }
