@@ -62,6 +62,6 @@ public class SlimeSlab extends SlabBlock {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return adjacentBlockState.isIn(this) && state.get(TYPE) != SlabType.DOUBLE ? true : super.isSideInvisible(state, adjacentBlockState, side);
+        return adjacentBlockState.isIn(this) ? true : super.isSideInvisible(state, adjacentBlockState, side);
     }
 }

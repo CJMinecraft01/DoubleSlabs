@@ -7,6 +7,7 @@ import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -19,5 +20,9 @@ public interface IVerticalSlabSupport extends ISlabSupport {
     Direction getDirection(World world, BlockPos pos, BlockState state);
 
     BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction);
+
+    default boolean rotateModel(IBlockDisplayReader world, BlockPos pos, BlockState state) {
+        return true;
+    }
 
 }
