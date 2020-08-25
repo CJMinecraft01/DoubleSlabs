@@ -1,10 +1,12 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.client.util.SlabCache;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.DynamicSlabBlock;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -76,6 +78,14 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         if (data.hasProperty(POSITIVE_BLOCK) && data.getData(POSITIVE_BLOCK) != null && data.getData(POSITIVE_BLOCK).getBlockState() != null)
             return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(data.getData(POSITIVE_BLOCK).getBlockState()).getParticleTexture(EmptyModelData.INSTANCE);
         return getFallbackModel().getParticleTexture(EmptyModelData.INSTANCE);
+    }
+
+    protected boolean shouldCull(BlockState state, BlockState neighbour, Direction direction) {
+        return state.isSideInvisible(neighbour, direction) || (!ClientUtils.isTransparent(state) && !ClientUtils.isTransparent(neighbour));
+    }
+
+    protected boolean useDoubleSlabModel(BlockState state1, BlockState state2) {
+        return state1.getBlock() == state2.getBlock() && state2.getBlockState().isIn(state2.getBlock()) && DSConfig.CLIENT.useDoubleSlabModel(state1.getBlock());
     }
 
     @Nonnull

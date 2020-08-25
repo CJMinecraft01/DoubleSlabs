@@ -45,14 +45,6 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
         return DSBlocks.DOUBLE_SLAB.get();
     }
 
-    private boolean shouldCull(BlockState state, BlockState neighbour, Direction direction) {
-        return state.isSideInvisible(neighbour, direction) || (!ClientUtils.isTransparent(state) && !ClientUtils.isTransparent(neighbour));
-    }
-
-    private boolean useDoubleSlabModel(BlockState state1, BlockState state2) {
-        return state1.getBlock() == state2.getBlock() && state2.getBlockState().isIn(state2.getBlock()) && DSConfig.CLIENT.useDoubleSlabModel(state1.getBlock());
-    }
-
     @Override
     protected List<BakedQuad> getQuads(SlabCache cache) {
         List<BakedQuad> quads = new ArrayList<>();
@@ -72,7 +64,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                     if (cache.getSide() != null) {
                         // Only cull the non general sides
                         for (CullInfo cullInfo : cache.getCullInfo()) {
-                            if (useDoubleSlabModel(cullInfo.getPositiveBlock().getBlockState(), cullInfo.getNegativeBlock().getBlockState())) {
+                            if (cullInfo.getPositiveBlock().getBlockState() != null && cullInfo.getNegativeBlock().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlock().getBlockState(), cullInfo.getNegativeBlock().getBlockState())) {
                                 IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(cullInfo.getPositiveBlock().getWorld(), cullInfo.getPositiveBlock().getPos(), cullInfo.getPositiveBlock().getBlockState());
                                 if (support != null) {
                                     BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlock().getWorld(), cullInfo.getPositiveBlock().getPos(), cullInfo.getPositiveBlock().getBlockState(), SlabType.DOUBLE);
