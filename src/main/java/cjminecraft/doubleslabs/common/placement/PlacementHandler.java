@@ -132,6 +132,7 @@ public class PlacementHandler {
 
             if (horizontalSlabItemSupport == null) {
                 // The item we are holding is not a horizontal slab
+                // TODO implement
             } else if (canPlace(world, pos, face, player, hand, stack, cancel, true)) {
                 BlockState state = world.getBlockState(pos);
 

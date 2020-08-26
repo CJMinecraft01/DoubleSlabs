@@ -1,10 +1,13 @@
 package cjminecraft.doubleslabs.common.blocks;
 
-import cjminecraft.doubleslabs.api.*;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.old.network.NetworkUtils;
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -301,11 +304,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
             IContainerSupport support = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             if (support == null) {
                 ActionResultType result;
-                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, i.getBlockState());
-                if (slabSupport == null)
-                    slabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, i.getBlockState());
+                ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
+//                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, i.getBlockState());
+//                if (slabSupport == null)
+//                    slabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, i.getBlockState());
                 try {
-                    result = slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
+                    result = slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
                 } catch (Exception e) {
                     result = ActionResultType.PASS;
                 }

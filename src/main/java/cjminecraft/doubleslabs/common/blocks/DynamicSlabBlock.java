@@ -126,6 +126,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidState) {
+        runIfAvailable(world, pos, i -> {
+            if (i.getBlockState().getBlock() instanceof IWaterLoggable)
+                ((IWaterLoggable) i.getBlockState().getBlock()).receiveFluid(i.getWorld(), pos, i.getBlockState(), fluidState);
+        });
         return IWaterLoggable.super.receiveFluid(world, pos, state, fluidState);
     }
 
