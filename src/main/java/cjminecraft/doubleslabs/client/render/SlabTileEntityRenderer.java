@@ -33,12 +33,16 @@ public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
         BlockState state = world.getBlockState(pos);
         if (tile.getPositiveBlockInfo().getTileEntity() == null && tile.getNegativeBlockInfo().getTileEntity() == null)
             return;
+        if (tile.getPositiveBlockInfo().getTileEntity() != null)
+            tile.getPositiveBlockInfo().getTileEntity().setWorldAndPos(tile.getPositiveBlockInfo().getWorld(), tile.getPositiveBlockInfo().getPos());
+        if (tile.getNegativeBlockInfo().getTileEntity() != null)
+            tile.getNegativeBlockInfo().getTileEntity().setWorldAndPos(tile.getNegativeBlockInfo().getWorld(), tile.getNegativeBlockInfo().getPos());
         if (state.getBlock() == DSBlocks.DOUBLE_SLAB.get()) {
             if (tile.getPositiveBlockInfo().getTileEntity() != null) {
-                matrixStack.push();
-                matrixStack.translate(0, 0.5d, 0);
+//                matrixStack.push();
+//                matrixStack.translate(0, 0.5d, 0);
                 TileEntityRendererDispatcher.instance.renderTileEntity(tile.getPositiveBlockInfo().getTileEntity(), partialTicks, matrixStack, buffer);
-                matrixStack.pop();
+//                matrixStack.pop();
             }
             if (tile.getNegativeBlockInfo().getTileEntity() != null)
                 TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, matrixStack, buffer);
@@ -66,10 +70,10 @@ public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
             }
 
             if (tile.getNegativeBlockInfo().getTileEntity() != null) {
-                matrixStack.push();
-                matrixStack.translate(0, 0.5d, 0);
+//                matrixStack.push();
+//                matrixStack.translate(0, 0.5d, 0);
                 TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, matrixStack, buffer);
-                matrixStack.pop();
+//                matrixStack.pop();
             }
             if (tile.getPositiveBlockInfo().getTileEntity() != null)
                 TileEntityRendererDispatcher.instance.renderTileEntity(tile.getPositiveBlockInfo().getTileEntity(), partialTicks, matrixStack, buffer);

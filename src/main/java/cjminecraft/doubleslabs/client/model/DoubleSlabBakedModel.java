@@ -5,12 +5,10 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.CullInfo;
-import cjminecraft.doubleslabs.client.util.SlabCache;
+import cjminecraft.doubleslabs.client.util.SlabCacheKey;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
-import cjminecraft.doubleslabs.old.Utils;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -19,18 +17,16 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
-    private List<BakedQuad> getQuadsForState(SlabCache cache, boolean positive) {
+    private List<BakedQuad> getQuadsForState(SlabCacheKey cache, boolean positive) {
         BlockState state = positive ? cache.getPositiveBlockInfo().getBlockState() : cache.getNegativeBlockInfo().getBlockState();
         if (state == null)
             return ImmutableList.of();
@@ -46,7 +42,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
     }
 
     @Override
-    protected List<BakedQuad> getQuads(SlabCache cache) {
+    protected List<BakedQuad> getQuads(SlabCacheKey cache) {
         List<BakedQuad> quads = new ArrayList<>();
         if (cache.getPositiveBlockInfo().getBlockState() == null || cache.getNegativeBlockInfo().getBlockState() == null)
             return ClientConstants.getFallbackModel().getQuads(null, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE);
@@ -64,14 +60,14 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                     if (cache.getSide() != null) {
                         // Only cull the non general sides
                         for (CullInfo cullInfo : cache.getCullInfo()) {
-                            if (cullInfo.getPositiveBlock().getBlockState() != null && cullInfo.getNegativeBlock().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlock().getBlockState(), cullInfo.getNegativeBlock().getBlockState())) {
-                                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(cullInfo.getPositiveBlock().getWorld(), cullInfo.getPositiveBlock().getPos(), cullInfo.getPositiveBlock().getBlockState());
+                            if (cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
+                                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
                                 if (support != null) {
-                                    BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlock().getWorld(), cullInfo.getPositiveBlock().getPos(), cullInfo.getPositiveBlock().getBlockState(), SlabType.DOUBLE);
+                                    BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                                     if (shouldCull(state, s, cullInfo.getDirection()))
                                         quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                                 }
-                            } else if (shouldCull(state, cullInfo.getPositiveBlock().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlock().getBlockState(), cullInfo.getDirection())) {
+                            } else if (shouldCull(state, cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection())) {
                                 quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                             }
                         }
@@ -89,7 +85,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                     topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
             if (cache.getSide() != null) {
                 for (CullInfo cullInfo : cache.getCullInfo()) {
-                    if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), cullInfo.getPositiveBlock().getBlockState(), cullInfo.getDirection()))
+                    if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
                         topQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
             }
@@ -102,7 +98,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                     bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
             if (cache.getSide() != null) {
                 for (CullInfo cullInfo : cache.getCullInfo()) {
-                    if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), cullInfo.getNegativeBlock().getBlockState(), cullInfo.getDirection()))
+                    if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection()))
                         bottomQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
             }

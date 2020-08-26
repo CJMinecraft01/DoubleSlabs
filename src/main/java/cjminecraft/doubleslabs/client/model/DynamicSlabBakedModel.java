@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.client.model;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.CullInfo;
-import cjminecraft.doubleslabs.client.util.SlabCache;
+import cjminecraft.doubleslabs.client.util.SlabCacheKey;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.DynamicSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
@@ -41,7 +41,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     public static final ModelProperty<IBlockInfo> NEGATIVE_BLOCK = new ModelProperty<>();
     public static final ModelProperty<IBlockInfo> POSITIVE_BLOCK = new ModelProperty<>();
     private static final ModelProperty<List<CullInfo>> CULL_DIRECTIONS = new ModelProperty<>();
-    private final Cache<SlabCache, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    private final Cache<SlabCacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(1000).build();
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -92,7 +92,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
-            SlabCache key = new SlabCache(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS), extraData, state);
+            SlabCacheKey key = new SlabCacheKey(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS), extraData, state);
             try {
                 return cache.get(key, () -> getQuads(key));
             } catch (ExecutionException e) {
@@ -105,7 +105,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
 
     protected abstract Block getBlock();
 
-    protected abstract List<BakedQuad> getQuads(SlabCache cache);
+    protected abstract List<BakedQuad> getQuads(SlabCacheKey cache);
 
     @Nonnull
     @Override

@@ -1,12 +1,13 @@
 package cjminecraft.doubleslabs.client.util;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.IStateContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 
 import java.util.Objects;
 
-public class CullInfo {
+public class CullInfo implements IStateContainer {
 
     private final IBlockInfo positiveBlock;
     private final IBlockInfo negativeBlock;
@@ -22,11 +23,13 @@ public class CullInfo {
         this.direction = direction;
     }
 
-    public IBlockInfo getPositiveBlock() {
+    @Override
+    public IBlockInfo getPositiveBlockInfo() {
         return this.positiveBlock;
     }
 
-    public IBlockInfo getNegativeBlock() {
+    @Override
+    public IBlockInfo getNegativeBlockInfo() {
         return this.negativeBlock;
     }
 

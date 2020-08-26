@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.model;
 
+import cjminecraft.doubleslabs.client.util.CacheKey;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import com.google.common.cache.Cache;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 public class RaisedCampfireBakedModel implements IDynamicBakedModel {
 
-    private final Cache<BlockState, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(8).build();
+    private final Cache<CacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(8).build();
 
     private IBakedModel baseModel;
     private final Map<BlockState, IBakedModel> models = new HashMap<>();
@@ -42,9 +43,10 @@ public class RaisedCampfireBakedModel implements IDynamicBakedModel {
         if (state == null)
             return this.baseModel.getQuads(null, side, rand, extraData);
         try {
-            if (RenderTypeLookup.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)
-                return cache.get(state, () ->
-                    models.get(state).getQuads(state, side, rand, extraData)
+            CacheKey cacheKey = new CacheKey(state, side, rand, extraData);
+            if (RenderTypeLookup.canRenderInLayer(state, cacheKey.getRenderLayer()) || cacheKey.getRenderLayer() == null)
+                return cache.get(cacheKey, () ->
+                    models.get(cacheKey.getState()).getQuads(cacheKey.getState(), cacheKey.getSide(), cacheKey.getRandom(), cacheKey.getModelData())
                     .stream().map(quad ->
                             new BakedQuad(ClientUtils.offsetY(quad.getVertexData(), 0.5f),
                                     quad.hasTintIndex() ? quad.getTintIndex() : -1, quad.getFace(),

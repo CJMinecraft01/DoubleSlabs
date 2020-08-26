@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.DistExecutor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SlabTileEntity extends TileEntity implements IStateContainer {
+public class SlabTileEntity extends TileEntity implements IStateContainer, ITickableTileEntity {
 
     protected final BlockInfo negativeBlockInfo = new BlockInfo(this, false);
     protected final BlockInfo positiveBlockInfo = new BlockInfo(this, true);
@@ -168,5 +169,21 @@ public class SlabTileEntity extends TileEntity implements IStateContainer {
     @Override
     public IModelData getModelData() {
         return new ModelDataMap.Builder().withInitial(DynamicSlabBakedModel.NEGATIVE_BLOCK, this.negativeBlockInfo).withInitial(DynamicSlabBakedModel.POSITIVE_BLOCK, this.positiveBlockInfo).build();
+    }
+
+    @Override
+    public void tick() {
+        if (this.world != null) {
+            if (this.positiveBlockInfo.getTileEntity() != null && this.positiveBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
+                if (this.positiveBlockInfo.getTileEntity().getWorld() == null)
+                    this.positiveBlockInfo.getTileEntity().setWorldAndPos(this.positiveBlockInfo.getWorld(), this.positiveBlockInfo.getPos());
+                ((ITickableTileEntity) this.positiveBlockInfo.getTileEntity()).tick();
+            }
+            if (this.negativeBlockInfo.getTileEntity() != null && this.negativeBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
+                if (this.negativeBlockInfo.getTileEntity().getWorld() == null)
+                    this.negativeBlockInfo.getTileEntity().setWorldAndPos(this.negativeBlockInfo.getWorld(), this.negativeBlockInfo.getPos());
+                ((ITickableTileEntity) this.negativeBlockInfo.getTileEntity()).tick();
+            }
+        }
     }
 }

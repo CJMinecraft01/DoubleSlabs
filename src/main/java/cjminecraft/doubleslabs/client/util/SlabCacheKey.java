@@ -12,25 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class SlabCache implements IStateContainer {
+public class SlabCacheKey extends CacheKey implements IStateContainer {
 
     private final IBlockInfo positiveBlock;
     private final IBlockInfo negativeBlock;
-    private final Direction side;
-    private final RenderType renderLayer;
-    private final Random random;
     private final List<CullInfo> cullInfo;
-    private final IModelData modelData;
-    private final BlockState originalState;
 
-    public SlabCache(IBlockInfo positiveBlock, IBlockInfo negativeBlock, Direction side, Random random, List<CullInfo> cullInfo, IModelData modelData, BlockState originalState) {
+    public SlabCacheKey(IBlockInfo positiveBlock, IBlockInfo negativeBlock, Direction side, Random random, List<CullInfo> cullInfo, IModelData modelData, BlockState state) {
+        super(state, side, random, modelData);
         this.positiveBlock = positiveBlock;
         this.negativeBlock = negativeBlock;
-        this.side = side;
-        this.random = random;
-        this.modelData = modelData;
-        this.originalState = originalState;
-        this.renderLayer = MinecraftForgeClient.getRenderLayer();
         this.cullInfo = cullInfo;
     }
 
@@ -64,21 +55,17 @@ public class SlabCache implements IStateContainer {
         return this.modelData;
     }
 
-    public BlockState getOriginalState() {
-        return this.originalState;
-    }
-
     @Override
     public String toString() {
-        return "SlabCache{" +
+        return "SlabCacheKey{" +
                 "positiveBlock=" + positiveBlock +
                 ", negativeBlock=" + negativeBlock +
-                ", side=" + side +
-                ", renderLayer=" + renderLayer +
-                ", random=" + random +
                 ", cullInfo=" + cullInfo +
+                ", state=" + state +
+                ", side=" + side +
+                ", random=" + random +
                 ", modelData=" + modelData +
-                ", originalState=" + originalState +
+                ", renderLayer=" + renderLayer +
                 '}';
     }
 
@@ -86,17 +73,15 @@ public class SlabCache implements IStateContainer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SlabCache slabCache = (SlabCache) o;
-        return positiveBlock.equals(slabCache.positiveBlock) &&
-                negativeBlock.equals(slabCache.negativeBlock) &&
-                side == slabCache.side &&
-                Objects.equals(renderLayer, slabCache.renderLayer) &&
-                cullInfo.equals(slabCache.cullInfo) &&
-                originalState.equals(slabCache.originalState);
+        if (!super.equals(o)) return false;
+        SlabCacheKey that = (SlabCacheKey) o;
+        return positiveBlock.equals(that.positiveBlock) &&
+                negativeBlock.equals(that.negativeBlock) &&
+                cullInfo.equals(that.cullInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positiveBlock, negativeBlock, side, renderLayer, cullInfo, originalState);
+        return Objects.hash(super.hashCode(), positiveBlock, negativeBlock, cullInfo);
     }
 }

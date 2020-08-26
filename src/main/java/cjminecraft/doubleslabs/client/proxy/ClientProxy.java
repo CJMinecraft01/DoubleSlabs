@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import cjminecraft.doubleslabs.client.model.RaisedCampfireBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
+import cjminecraft.doubleslabs.client.render.RaisedCampfireTileEntityRenderer;
 import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
@@ -13,7 +14,6 @@ import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -84,6 +84,7 @@ public class ClientProxy implements IProxy {
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {
