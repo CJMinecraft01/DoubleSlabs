@@ -9,6 +9,7 @@ import cjminecraft.doubleslabs.common.util.AnnotationUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -66,6 +67,16 @@ public class SlabSupport {
             return (IHorizontalSlabSupport) ((BlockItem) stack.getItem()).getBlock();
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
             if (support.isHorizontalSlab(stack, player, hand))
+                return support;
+        return null;
+    }
+
+    @Nullable
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(Item item) {
+        if (item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) ((BlockItem) item).getBlock()).isHorizontalSlab(item))
+            return (IHorizontalSlabSupport) ((BlockItem) item).getBlock();
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(item))
                 return support;
         return null;
     }

@@ -65,11 +65,11 @@ public class PlacementHandler {
         return state;
     }
 
-    private static BlockItemUseContext getUseContext(PlayerEntity player, Hand hand, ItemStack stack) {
+    public static BlockItemUseContext getUseContext(PlayerEntity player, Hand hand, ItemStack stack) {
         return new BlockItemUseContext(player, hand, stack, RayTraceUtil.rayTrace(player));
     }
 
-    private static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, SlabType half, IHorizontalSlabSupport support) {
+    public static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, SlabType half, IHorizontalSlabSupport support) {
         return support.getStateForHalf(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack)), half);
     }
 

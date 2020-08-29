@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -93,6 +94,15 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
             SlabCacheKey key = new SlabCacheKey(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS), extraData, state);
+            try {
+                return cache.get(key, () -> getQuads(key));
+            } catch (ExecutionException e) {
+                DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
+                DoubleSlabs.LOGGER.catching(Level.DEBUG, e);
+            }
+        } else if (MinecraftForgeClient.getRenderLayer() == null) {
+            // Rendering the break block animation
+            SlabCacheKey key = new SlabCacheKey(null, null, side, rand, null, extraData, state);
             try {
                 return cache.get(key, () -> getQuads(key));
             } catch (ExecutionException e) {

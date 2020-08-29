@@ -33,7 +33,12 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof CampfireBlock;
+        return isHorizontalSlab(stack.getItem());
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Item item) {
+        return item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof CampfireBlock;
     }
 
     @Override

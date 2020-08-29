@@ -121,7 +121,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public FluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(true) : super.getFluidState(state);
     }
 
     @Override

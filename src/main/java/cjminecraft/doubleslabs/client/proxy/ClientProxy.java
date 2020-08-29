@@ -9,8 +9,10 @@ import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.init.DSKeyBindings;
 import cjminecraft.doubleslabs.common.init.DSTiles;
+import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -55,8 +58,8 @@ public class ClientProxy implements IProxy {
 
     private void bakeModels(ModelBakeEvent event) {
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
-        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
-        replaceModel(verticalSlabBakedModel, DSBlocks.VERTICAL_SLAB.get(), verticalSlabBakedModel::addModel, event.getModelRegistry());
+//        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
+        replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModelRegistry());
 
         RaisedCampfireBakedModel campfireBakedModel = new RaisedCampfireBakedModel();
         replaceModel(campfireBakedModel, DSBlocks.RAISED_CAMPFIRE.get(), campfireBakedModel::addModel, event.getModelRegistry());

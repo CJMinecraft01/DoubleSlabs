@@ -29,7 +29,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
     private List<BakedQuad> getQuadsForState(SlabCacheKey cache, boolean positive) {
         BlockState state = positive ? cache.getPositiveBlockInfo().getBlockState() : cache.getNegativeBlockInfo().getBlockState();
         if (state == null)
-            return ImmutableList.of();
+            return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         IModelData tileData = positive ? cache.getPositiveBlockInfo().getTileEntity() != null ? cache.getPositiveBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE : cache.getNegativeBlockInfo().getTileEntity() != null ? cache.getNegativeBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE;
         IModelData modelData = model.getModelData(positive ? cache.getPositiveBlockInfo().getWorld() : cache.getNegativeBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), state, tileData);

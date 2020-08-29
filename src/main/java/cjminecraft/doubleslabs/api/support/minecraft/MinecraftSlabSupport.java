@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
@@ -32,7 +33,12 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return stack.getItem() instanceof BlockItem && isValid(((BlockItem) stack.getItem()).getBlock().getDefaultState());
+        return isHorizontalSlab(stack.getItem());
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Item item) {
+        return item instanceof BlockItem && isValid(((BlockItem) item).getBlock().getDefaultState());
     }
 
     @Override

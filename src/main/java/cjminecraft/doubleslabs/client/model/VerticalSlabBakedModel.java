@@ -19,11 +19,14 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -32,7 +35,11 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
+
 public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
+
+    public static final VerticalSlabBakedModel INSTANCE = new VerticalSlabBakedModel();
 
     public static final ModelProperty<Boolean> ROTATE_POSITIVE = new ModelProperty<>();
     public static final ModelProperty<Boolean> ROTATE_NEGATIVE = new ModelProperty<>();
@@ -43,6 +50,10 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         this.models.put(state, model);
     }
 
+    public IBakedModel getModel(BlockState state) {
+        return this.models.get(state);
+    }
+
     @Override
     protected Block getBlock() {
         return DSBlocks.VERTICAL_SLAB.get();
@@ -51,7 +62,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
     private List<BakedQuad> getQuadsForState(SlabCacheKey cache, boolean positive) {
         BlockState state = positive ? cache.getPositiveBlockInfo().getBlockState() : cache.getNegativeBlockInfo().getBlockState();
         if (state == null)
-            return ImmutableList.of();
+            return new ArrayList<>();
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         IModelData tileData = positive ? cache.getPositiveBlockInfo().getTileEntity() != null ? cache.getPositiveBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE : cache.getNegativeBlockInfo().getTileEntity() != null ? cache.getNegativeBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE;
         IModelData modelData = model.getModelData(positive ? cache.getPositiveBlockInfo().getWorld() : cache.getNegativeBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), state, tileData);
@@ -64,7 +75,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         List<BakedQuad> quads = model.getQuads(state, side, cache.getRandom(), modelData);
         if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
             if (quads.size() == 0)
-                return ImmutableList.of();
+                return new ArrayList<>();
             BlockState baseState = positive ? cache.getState() : cache.getState().with(VerticalSlabBlock.FACING, direction.getOpposite()).with(VerticalSlabBlock.DOUBLE, false);
             TextureAtlasSprite sprite = quads.get(0).func_187508_a();
             return this.models.get(baseState).getQuads(baseState, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(ClientUtils.changeQuadUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), sprite, quad.func_239287_f_())).collect(Collectors.toList());
@@ -77,6 +88,12 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
     @Override
     protected List<BakedQuad> getQuads(SlabCacheKey cache) {
+        if (!cache.isValid()) {
+            IBakedModel model = this.models.getOrDefault(cache.getState(), null);
+            if (model != null)
+                return model.getQuads(cache.getState(), cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE);
+            return getFallbackModel().getQuads(cache.getState(), cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE);
+        }
         List<BakedQuad> quads = new ArrayList<>();
         boolean positiveTransparent = cache.getPositiveBlockInfo().getBlockState() == null || ClientUtils.isTransparent(cache.getPositiveBlockInfo().getBlockState());
         boolean negativeTransparent = cache.getNegativeBlockInfo().getBlockState() == null || ClientUtils.isTransparent(cache.getNegativeBlockInfo().getBlockState());

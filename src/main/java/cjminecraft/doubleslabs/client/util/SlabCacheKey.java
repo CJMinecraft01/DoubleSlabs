@@ -35,6 +35,10 @@ public class SlabCacheKey extends CacheKey implements IStateContainer {
         return this.negativeBlock;
     }
 
+    public boolean isValid() {
+        return this.positiveBlock != null && this.negativeBlock != null && this.cullInfo != null;
+    }
+
     public Direction getSide() {
         return this.side;
     }
