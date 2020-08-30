@@ -104,6 +104,8 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         if (value > 0.25d && value < 0.75d)
             return newState.with(FACING, context.getPlacementHorizontalFacing());
         boolean positive = context.getPlacementHorizontalFacing().getAxisDirection() == Direction.AxisDirection.POSITIVE ? value > 0.5d : value < 0.5d;
+        if (context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.Z)
+            positive = !positive;
         return newState.with(FACING, positive ? context.getPlacementHorizontalFacing().rotateY() : context.getPlacementHorizontalFacing().rotateYCCW());
     }
 
