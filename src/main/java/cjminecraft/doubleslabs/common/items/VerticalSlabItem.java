@@ -8,6 +8,7 @@ import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -20,6 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -92,6 +94,6 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
         // TODO add vertical slab prefix
-        return super.getDisplayName(stack);
+        return new TranslationTextComponent("item.vertical_slab.prefix", I18n.format(this.getTranslationKey(stack)));
     }
 }

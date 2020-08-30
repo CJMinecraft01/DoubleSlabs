@@ -19,6 +19,7 @@ import net.minecraft.particles.IParticleData;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.ITagCollectionSupplier;
 import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -29,6 +30,7 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.registry.DynamicRegistries;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
@@ -49,10 +51,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -67,7 +66,7 @@ public class WorldWrapper extends World {
     private boolean positive;
 
     public WorldWrapper(World world) {
-        super((ISpawnWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_234922_V_(), world.func_230315_m_(), world.func_234924_Y_(), world.isRemote, world.func_234925_Z_(), 0L);
+        super((ISpawnWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_230315_m_(), world.func_234924_Y_(), world.isRemote, world.func_234925_Z_(), 0L);
         this.world = world;
     }
 
@@ -164,8 +163,28 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public NetworkTagManager getTags() {
+    public ITagCollectionSupplier getTags() {
         return this.world.getTags();
+    }
+
+    @Override
+    public long func_241851_ab() {
+        return 0;
+    }
+
+    @Override
+    public float func_242413_ae() {
+        return 0;
+    }
+
+    @Override
+    public float func_242415_f(float p_242415_1_) {
+        return 0;
+    }
+
+    @Override
+    public int func_242414_af() {
+        return 0;
     }
 
     @Override
@@ -449,11 +468,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public World getWorld() {
-        return this.world.getWorld();
-    }
-
-    @Override
     public int getStrongPower(BlockPos pos) {
         return this.world.getStrongPower(pos);
     }
@@ -654,21 +668,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public float getCurrentMoonPhaseFactor() {
-        return this.world.getCurrentMoonPhaseFactor();
-    }
-
-    @Override
-    public float getCelestialAngle(float partialTicks) {
-        return this.world.getCelestialAngle(partialTicks);
-    }
-
-    @Override
-    public int getMoonPhase() {
-        return this.world.getMoonPhase();
-    }
-
-    @Override
     public Difficulty getDifficulty() {
         return this.world.getDifficulty();
     }
@@ -701,6 +700,16 @@ public class WorldWrapper extends World {
     @Override
     public BlockPos getHeight(Heightmap.Type heightmapType, BlockPos pos) {
         return this.getHeight(heightmapType, pos);
+    }
+
+    @Override
+    public DynamicRegistries func_241828_r() {
+        return this.world.func_241828_r();
+    }
+
+    @Override
+    public Optional<RegistryKey<Biome>> func_242406_i(BlockPos p_242406_1_) {
+        return this.world.func_242406_i(p_242406_1_);
     }
 
     @Override
@@ -739,6 +748,11 @@ public class WorldWrapper extends World {
     }
 
     @Override
+    public boolean func_242405_a(@Nullable Entity p_242405_1_, AxisAlignedBB p_242405_2_, BiPredicate<BlockState, BlockPos> p_242405_3_) {
+        return false;
+    }
+
+    @Override
     public Stream<VoxelShape> func_241457_a_(@Nullable Entity p_241457_1_, AxisAlignedBB p_241457_2_, BiPredicate<BlockState, BlockPos> p_241457_3_) {
         return this.world.func_241457_a_(p_241457_1_, p_241457_2_, p_241457_3_);
     }
@@ -772,6 +786,16 @@ public class WorldWrapper extends World {
     @Override
     public BlockRayTraceResult rayTraceBlocks(Vector3d p_217296_1_, Vector3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
         return this.world.rayTraceBlocks(p_217296_1_, p_217296_2_, p_217296_3_, p_217296_4_, p_217296_5_);
+    }
+
+    @Override
+    public double func_242402_a(VoxelShape p_242402_1_, Supplier<VoxelShape> p_242402_2_) {
+        return 0;
+    }
+
+    @Override
+    public double func_242403_h(BlockPos p_242403_1_) {
+        return 0;
     }
 
     @Override
@@ -992,21 +1016,6 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public double func_234936_m_(BlockPos p_234936_1_) {
-        return this.world.func_234936_m_(p_234936_1_);
-    }
-
-    @Override
-    public double func_234932_c_(BlockPos p_234932_1_, Predicate<BlockState> p_234932_2_) {
-        return this.world.func_234932_c_(p_234932_1_, p_234932_2_);
-    }
-
-    @Override
-    public double func_234928_a_(BlockPos p_234928_1_, double p_234928_2_) {
-        return this.world.func_234928_a_(p_234928_1_, p_234928_2_);
-    }
-
-    @Override
     public boolean setBlockState(BlockPos pos, BlockState newState, int flags) {
         return this.setBlockState(pos, newState, flags, 512);
     }
@@ -1030,7 +1039,7 @@ public class WorldWrapper extends World {
     }
 
     @Override
-    public Explosion createExplosion(@Nullable Entity p_230546_1_, @Nullable DamageSource p_230546_2_, @Nullable IExplosionContext p_230546_3_, double p_230546_4_, double p_230546_6_, double p_230546_8_, float p_230546_10_, boolean p_230546_11_, Explosion.Mode p_230546_12_) {
+    public Explosion createExplosion(@Nullable Entity p_230546_1_, @Nullable DamageSource p_230546_2_, @Nullable ExplosionContext p_230546_3_, double p_230546_4_, double p_230546_6_, double p_230546_8_, float p_230546_10_, boolean p_230546_11_, Explosion.Mode p_230546_12_) {
         return this.world.createExplosion(p_230546_1_, p_230546_2_, p_230546_3_, p_230546_4_, p_230546_6_, p_230546_8_, p_230546_10_, p_230546_11_, p_230546_12_);
     }
 
@@ -1046,21 +1055,16 @@ public class WorldWrapper extends World {
 
     @Override
     public DimensionType func_230315_m_() {
-        return super.func_230315_m_();
-    }
-
-    @Override
-    public RegistryKey<DimensionType> func_234922_V_() {
-        return super.func_234922_V_();
+        return this.world.func_230315_m_();
     }
 
     @Override
     public RegistryKey<World> func_234923_W_() {
-        return super.func_234923_W_();
+        return this.world.func_234923_W_();
     }
 
     @Override
     public Supplier<IProfiler> func_234924_Y_() {
-        return super.func_234924_Y_();
+        return this.world.func_234924_Y_();
     }
 }

@@ -398,7 +398,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public boolean isPortalFrame(BlockState state, IWorldReader world, BlockPos pos) {
+    public boolean isPortalFrame(BlockState state, IBlockReader world, BlockPos pos) {
         return either(world, pos, i -> i.getBlockState().isPortalFrame(i.getWorld(), pos));
     }
 

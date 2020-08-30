@@ -35,7 +35,7 @@ public class DoubleSlabs {
 
     private static final IProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
-    public static final ItemGroup TAB = new ItemGroup(MODID) {
+    public static final ItemGroup TAB = new ItemGroup("verticalslabs") {
         @Override
         public ItemStack createIcon() {
 //            return new ItemStack(BloqueImposibleBlock.block);
