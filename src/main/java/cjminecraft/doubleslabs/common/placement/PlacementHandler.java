@@ -232,7 +232,7 @@ public class PlacementHandler {
                                 if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
                                     return;
 
-                                BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.FACING, face.getOpposite());
+                                BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context);
 
                                 if (placeSlab(world, newPos, verticalSlabState, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
                                     finishBlockPlacement(world, newPos, slabState, player, stack, cancel);

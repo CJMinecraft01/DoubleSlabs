@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.IContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.Utils;
 import cjminecraft.doubleslabs.old.network.NetworkUtils;
@@ -23,6 +24,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -83,7 +85,49 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Nonnull
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return super.getStateForPlacement(context).with(FACING, context.getPlacementHorizontalFacing());
+        BlockPos pos = context.getPos();
+        BlockState state = context.getWorld().getBlockState(pos);
+        if (state.isIn(this)) {
+            // same block as this meaning we are trying to combine slabs
+            if (isReplaceable(state, context)) {
+                return state.with(DOUBLE, true);
+            }
+            return state;
+        }
+        BlockState newState = super.getStateForPlacement(context);
+        if (context.getFace().getAxis().isVertical()) {
+            boolean positive = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.X ? context.getHitVec().x - (double)context.getPos().getX() > 0.5d : context.getHitVec().z - (double)context.getPos().getZ() > 0.5d;
+            return newState.with(FACING, positive ? context.getPlacementHorizontalFacing() : context.getPlacementHorizontalFacing().getOpposite());
+        }
+        double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.Z ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
+        if (value > 0.25d && value < 0.75d)
+            return newState.with(FACING, context.getPlacementHorizontalFacing());
+        boolean positive = context.getPlacementHorizontalFacing().getAxisDirection() == Direction.AxisDirection.POSITIVE ? value > 0.5d : value < 0.5d;
+        return newState.with(FACING, positive ? context.getPlacementHorizontalFacing().rotateY() : context.getPlacementHorizontalFacing().rotateYCCW());
+    }
+
+    @Override
+    public Item asItem() {
+        return DSItems.VERTICAL_SLAB.get();
+    }
+
+    @Override
+    public boolean isReplaceable(BlockState state, BlockItemUseContext useContext) {
+        ItemStack stack = useContext.getItem();
+        if (!state.get(DOUBLE) && stack.getItem() == this.asItem()) {
+            if (useContext.replacingClickedOnBlock()) {
+                Direction direction = state.get(FACING);
+                return getTile(useContext.getWorld(), useContext.getPos()).map(tile -> {
+//                    boolean positiveX = useContext.getHitVec().x - (double) useContext.getPos().getX() > 0.5d;
+//                    boolean positiveZ = useContext.getHitVec().z - (double) useContext.getPos().getZ() > 0.5d;
+                    boolean positive = tile.getPositiveBlockInfo().getBlockState() != null;
+                    return (useContext.getFace() == direction.getOpposite() && positive) || (useContext.getFace() == direction && !positive);
+                }).orElse(false);
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

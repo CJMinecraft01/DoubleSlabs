@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.render.VerticalSlabItemStackTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
@@ -74,14 +75,19 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     protected boolean onBlockPlaced(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
         boolean result = super.onBlockPlaced(pos, world, player, stack, state);
-        TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity instanceof SlabTileEntity && player != null) {
-            ItemStack slabStack = getStack(stack);
-            IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(slabStack, player, Hand.MAIN_HAND);
-            if (support != null)
-                ((SlabTileEntity) tileEntity).getPositiveBlockInfo().setBlockState(PlacementHandler.getStateFromSupport(world, pos, player, Hand.MAIN_HAND, slabStack, SlabType.BOTTOM, support));
-            //            if (slabState.getBlock() != Blocks.AIR)
-//                ((SlabTileEntity) tileEntity).getPositiveBlockInfo().setBlockState(slabState);
+        if (player != null) {
+            VerticalSlabBlock.getTile(world, pos).ifPresent(tile -> {
+                ItemStack slabStack = getStack(stack);
+                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(slabStack, player, Hand.MAIN_HAND);
+                if (support != null) {
+                    boolean positive = tile.getPositiveBlockInfo().getBlockState() == null;
+                    BlockState slabState = PlacementHandler.getStateFromSupport(world, pos, player, Hand.MAIN_HAND, slabStack, positive ? SlabType.BOTTOM : SlabType.TOP, support);
+                    if (positive)
+                        tile.getPositiveBlockInfo().setBlockState(slabState);
+                    else
+                        tile.getNegativeBlockInfo().setBlockState(slabState);
+                }
+            });
         }
         return result;
     }

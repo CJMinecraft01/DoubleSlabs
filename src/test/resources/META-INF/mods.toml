@@ -50,6 +50,6 @@ Testing 123
 [[dependencies.doubleslabstest]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16,1.16.1]"
+    versionRange="[1.16,1.16.2]"
     ordering="NONE"
     side="BOTH"

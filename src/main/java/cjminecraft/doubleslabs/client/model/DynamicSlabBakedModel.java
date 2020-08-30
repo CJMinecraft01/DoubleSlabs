@@ -82,6 +82,8 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     }
 
     protected boolean shouldCull(BlockState state, BlockState neighbour, Direction direction) {
+        if (state == null || neighbour == null)
+            return false;
         return state.isSideInvisible(neighbour, direction) || (!ClientUtils.isTransparent(state) && !ClientUtils.isTransparent(neighbour));
     }
 
@@ -95,7 +97,10 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
             SlabCacheKey key = new SlabCacheKey(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS), extraData, state);
             try {
-                return cache.get(key, () -> getQuads(key));
+                if (false)
+                    throw new ExecutionException("", new Throwable());
+                return getQuads(key);
+//                return cache.get(key, () -> getQuads(key));
             } catch (ExecutionException e) {
                 DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
                 DoubleSlabs.LOGGER.catching(Level.DEBUG, e);

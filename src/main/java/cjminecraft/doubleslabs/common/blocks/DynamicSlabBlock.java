@@ -56,7 +56,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         setDefaultState(this.getStateContainer().getBaseState().with(WATERLOGGED, false));
     }
 
-    protected static Optional<SlabTileEntity> getTile(IBlockReader world, BlockPos pos) {
+    public static Optional<SlabTileEntity> getTile(IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
         return tile instanceof SlabTileEntity ? Optional.of((SlabTileEntity) tile) : Optional.empty();
     }
