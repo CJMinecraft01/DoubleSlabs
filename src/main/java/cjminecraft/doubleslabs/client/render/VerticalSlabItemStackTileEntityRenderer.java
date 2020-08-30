@@ -50,7 +50,8 @@ public class VerticalSlabItemStackTileEntityRenderer extends ItemStackTileEntity
     private List<BakedQuad> getQuadsForStack(VerticalSlabItemCacheKey key) {
         if (key.getModel().isGui3d()) {
 //        IBakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(key.getStack(), null, null);
-            List<BakedQuad> quads = key.getModel().getQuads(key.getState(), key.getSide() != null ? key.getSide().getOpposite() : null, key.getRandom(), key.getModelData());
+            Direction rotatedSide = ClientUtils.rotateFace(key.getSide(), Direction.SOUTH);
+            List<BakedQuad> quads = key.getModel().getQuads(key.getState(), rotatedSide, key.getRandom(), key.getModelData());
             if (key.getStack().getItem() instanceof BlockItem) {
                 Block block = ((BlockItem) key.getStack().getItem()).getBlock();
                 if (DSConfig.CLIENT.useLazyModel(block)) {
@@ -90,7 +91,9 @@ public class VerticalSlabItemStackTileEntityRenderer extends ItemStackTileEntity
         try {
             if (false)
                 throw new ExecutionException("", new Throwable());
-;            quads = getQuadsForStack(key);
+//            if (key.getSide() != Direction.UP)
+            quads = getQuadsForStack(key);
+//            else quads = new ArrayList<>();
 //            quads = cache.get(key, () -> getQuadsForStack(key));
         } catch (ExecutionException e) {
             quads = new ArrayList<>();
@@ -108,9 +111,8 @@ public class VerticalSlabItemStackTileEntityRenderer extends ItemStackTileEntity
             IBakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack, null, null);
 //            if (stack.getItem() instanceof BlockItem && model.isGui3d())
 //                model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(((BlockItem) stack.getItem()).getBlock().getDefaultState());
+//            matrixStack.translate(0.5D, 0.5D, 0.5D);
             model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, model, transformType, leftHand);
-            if (model.isGui3d())
-                matrixStack.translate(-0.5D, 0, 0);
             if (!model.isBuiltInRenderer() && (stack.getItem() != Items.TRIDENT || flag)) {
                 boolean flag1;
                 if (transformType != ItemCameraTransforms.TransformType.GUI && !transformType.func_241716_a_() && stack.getItem() instanceof BlockItem) {
@@ -146,7 +148,25 @@ public class VerticalSlabItemStackTileEntityRenderer extends ItemStackTileEntity
                         ivertexbuilder = ItemRenderer.getBuffer(buffer, rendertype, true, stack.hasEffect());
                     }
 
+                    matrixStack.push();
+
+                    if (!model.isGui3d()) {
+                        if (transformType == ItemCameraTransforms.TransformType.GUI) {
+                            matrixStack.rotate(Vector3f.ZP.rotationDegrees(90));
+                            matrixStack.translate(0, -1, 0);
+                        }
+                    } else {
+                        if (transformType == ItemCameraTransforms.TransformType.GUI) {
+                            matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
+                            matrixStack.translate(1.5, 1.5, 0);
+                            matrixStack.scale(1.05f, 1.05f, 1.05f);
+                        } else if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND) {
+//                            matrixStack.rotate(Vector3f.YP.rotationDegrees(-90));
+//                            matrixStack.scale(2, 2, 2);
+                        }
+                    }
                     this.renderModel(model, stack, combinedLight, combinedOverlay, matrixStack, ivertexbuilder);
+                    matrixStack.pop();
                 }
             } else {
                 stack.getItem().getItemStackTileEntityRenderer().func_239207_a_(stack, transformType, matrixStack, buffer, combinedLight, combinedOverlay);
