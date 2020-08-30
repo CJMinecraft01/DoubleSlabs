@@ -96,7 +96,8 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         }
         BlockState newState = super.getStateForPlacement(context);
         if (context.getFace().getAxis().isVertical()) {
-            boolean positive = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.X ? context.getHitVec().x - (double)context.getPos().getX() > 0.5d : context.getHitVec().z - (double)context.getPos().getZ() > 0.5d;
+            double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.X ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
+            boolean positive = context.getPlacementHorizontalFacing().getAxisDirection() == Direction.AxisDirection.POSITIVE ?  value > 0.5d : value < 0.5d;
             return newState.with(FACING, positive ? context.getPlacementHorizontalFacing() : context.getPlacementHorizontalFacing().getOpposite());
         }
         double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.Z ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
