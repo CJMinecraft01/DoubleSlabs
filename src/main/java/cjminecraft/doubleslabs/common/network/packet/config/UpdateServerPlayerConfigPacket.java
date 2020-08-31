@@ -30,7 +30,7 @@ public class UpdateServerPlayerConfigPacket {
                 config.setVerticalSlabPlacementMethod(message.config.getVerticalSlabPlacementMethod());
                 config.setPlaceVerticalSlabs(message.config.placeVerticalSlabs());
             });
-            DoubleSlabs.LOGGER.debug("Received config update message: Placement Method - %s, Place Vertical Slab Keybinding Down - %s", message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
+            DoubleSlabs.LOGGER.debug("Received config update message from player %s: Placement Method - %s, Place Vertical Slab Keybinding Down - %s", ctx.getSender().getScoreboardName(), message.config.getVerticalSlabPlacementMethod(), message.config.placeVerticalSlabs());
         });
         ctx.setPacketHandled(true);
     }
