@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.common.crafting;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.init.DSRecipes;
 import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
@@ -21,9 +22,11 @@ public class VerticalSlabRecipe extends SpecialRecipe {
         int matches = 0;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            // TODO blacklist items
-            if (!stack.isEmpty() && (SlabSupport.addVerticalSlabItem(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get()))
+            if (!stack.isEmpty() && !DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.addVerticalSlabItem(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get())) {
+                if (stack.getItem() == DSItems.VERTICAL_SLAB.get() && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
+                    continue;
                 matches++;
+            }
         }
         return matches == 1;
     }
@@ -33,7 +36,7 @@ public class VerticalSlabRecipe extends SpecialRecipe {
         ItemStack stack = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack itemStack = inv.getStackInSlot(i);
-            if (!itemStack.isEmpty() && (SlabSupport.addVerticalSlabItem(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB.get())) {
+            if (!itemStack.isEmpty() && (SlabSupport.addVerticalSlabItem(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB.get()) && !DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem())) {
                 stack = itemStack;
                 break;
             }

@@ -4,8 +4,10 @@ import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
@@ -38,6 +40,7 @@ public class DSConfig {
         public final ConfigValue<List<String>> verticalSlabBlacklist;
         public final BooleanValue replaceSameSlab;
         public final BooleanValue disableVerticalSlabPlacement;
+        public final ConfigValue<List<String>> verticalSlabCraftingBlacklist;
 //        public final BooleanValue disableVerticalSlabItems;
 
         public boolean isBlacklistedHorizontalSlab(Block block) {
@@ -46,6 +49,10 @@ public class DSConfig {
 
         public boolean isBlacklistedVerticalSlab(Block block) {
             return isBlockPresent(verticalSlabBlacklist, block);
+        }
+
+        public boolean isBlacklistedCraftingItem(Item item) {
+            return isItemPresent(verticalSlabCraftingBlacklist, item);
         }
 
         Server(Builder builder) {
@@ -75,7 +82,11 @@ public class DSConfig {
                     .translation("doubleslabs.configgui.disableVerticalSlabPlacement")
                     .define("disableVerticalSlabPlacement", false);
 
-            // TODO implement vertical slab items
+            verticalSlabCraftingBlacklist = builder
+                    .comment("The list of slabs (or tags) to ignore when trying to convert between a regular slab and a vertical slab item")
+                    .translation("doubleslabs.configgui.verticalSlabCraftingBlacklist")
+                    .define("verticalSlabCraftingBlacklist", new ArrayList<>());
+
 //            disableVerticalSlabItems = builder
 //                    .comment("Whether to disable the vertical slab items")
 //                    .translation("doubleslabs.configgui.disableVerticalSlabItems")
@@ -141,6 +152,19 @@ public class DSConfig {
 
             builder.pop();
         }
+    }
+
+    private static boolean isItemPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Item item) {
+        if (item.getRegistryName() == null)
+            return false;
+        return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("#")) {
+                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
+                ITag<Item> tag = ItemTags.getCollection().get(tagLocation);
+                return tag != null && tag.contains(item);
+            }
+            return entry.equals(item.getRegistryName().toString());
+        });
     }
 
     private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
