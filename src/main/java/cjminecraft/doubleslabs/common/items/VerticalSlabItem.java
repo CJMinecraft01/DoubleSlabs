@@ -7,7 +7,6 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
-import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +16,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.SlabType;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -41,6 +39,11 @@ public class VerticalSlabItem extends BlockItem {
 //        return NBTUtil.readBlockState(nbt);
 //    }
 
+    public static ItemStack setStack(ItemStack stack, ItemStack toSet) {
+        stack.setTagInfo("item", toSet.write(new CompoundNBT()));
+        return stack;
+    }
+
     public static ItemStack getStack(ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateChildTag("item");
         return ItemStack.read(nbt);
@@ -51,12 +54,11 @@ public class VerticalSlabItem extends BlockItem {
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if (this.isInGroup(group)) {
             ForgeRegistries.ITEMS.forEach(item -> {
-                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(item);
-                if (support != null) {
+                if (SlabSupport.addVerticalSlabItem(item)) {
                     ItemStack stack = new ItemStack(this);
-                    stack.setTagInfo("item", item.getDefaultInstance().write(new CompoundNBT()));
+//                    stack.setTagInfo("item", item.getDefaultInstance().write(new CompoundNBT()));
 //                    stack.setTagInfo("state", NBTUtil.writeBlockState(PlacementHandler.getStateFromSupport(Minecraft.getInstance().world, BlockPos.ZERO, Minecraft.getInstance().player, Hand.MAIN_HAND, stack, SlabType.BOTTOM, support)));
-                    items.add(stack);
+                    items.add(setStack(stack, item.getDefaultInstance()));
                 }
             });
 //            ForgeRegistries.BLOCKS.forEach(block -> {
@@ -78,7 +80,7 @@ public class VerticalSlabItem extends BlockItem {
         if (player != null) {
             VerticalSlabBlock.getTile(world, pos).ifPresent(tile -> {
                 ItemStack slabStack = getStack(stack);
-                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(slabStack, player, Hand.MAIN_HAND);
+                IHorizontalSlabSupport support = SlabSupport.addVerticalSlabItem(slabStack, player, Hand.MAIN_HAND);
                 if (support != null) {
                     boolean positive = tile.getPositiveBlockInfo().getBlockState() == null;
                     BlockState slabState = PlacementHandler.getStateFromSupport(world, pos, player, Hand.MAIN_HAND, slabStack, positive ? SlabType.BOTTOM : SlabType.TOP, support);

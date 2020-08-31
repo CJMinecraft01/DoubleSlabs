@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
@@ -27,17 +26,17 @@ import java.util.Random;
 @SlabSupportProvider
 public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     @Override
-    public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
+    public boolean addVerticalSlabItem(IBlockReader world, BlockPos pos, BlockState state) {
         return state.getBlock() instanceof CampfireBlock;
     }
 
     @Override
-    public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return isHorizontalSlab(stack.getItem());
+    public boolean addVerticalSlabItem(ItemStack stack, PlayerEntity player, Hand hand) {
+        return addVerticalSlabItem(stack.getItem());
     }
 
     @Override
-    public boolean isHorizontalSlab(Item item) {
+    public boolean addVerticalSlabItem(Item item) {
         return item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof CampfireBlock;
     }
 

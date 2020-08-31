@@ -27,17 +27,17 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
+    public boolean addVerticalSlabItem(IBlockReader world, BlockPos pos, BlockState state) {
         return isValid(state);
     }
 
     @Override
-    public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return isHorizontalSlab(stack.getItem());
+    public boolean addVerticalSlabItem(ItemStack stack, PlayerEntity player, Hand hand) {
+        return addVerticalSlabItem(stack.getItem());
     }
 
     @Override
-    public boolean isHorizontalSlab(Item item) {
+    public boolean addVerticalSlabItem(Item item) {
         return item instanceof BlockItem && isValid(((BlockItem) item).getBlock().getDefaultState());
     }
 

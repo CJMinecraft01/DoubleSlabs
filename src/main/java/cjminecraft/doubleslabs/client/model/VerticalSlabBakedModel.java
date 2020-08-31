@@ -102,7 +102,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
         // If the top and bottom states are the same, use the combined block model where possible
         if (cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
-            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
+            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.addVerticalSlabItem(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
             if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
                 BlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                 if (RenderTypeLookup.canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
@@ -120,7 +120,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                         // Only cull the non general sides
                         for (CullInfo cullInfo : cache.getCullInfo()) {
                             if (cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
-                                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
+                                IHorizontalSlabSupport support = SlabSupport.addVerticalSlabItem(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
                                 // try with vertical slabs
                                 if (support != null) {
                                     BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);

@@ -124,7 +124,7 @@ public class PlacementHandler {
             Direction face = event.getFace();
             BlockPos pos = event.getPos();
 
-            IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.getHorizontalSlabSupport(stack, player, hand);
+            IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.addVerticalSlabItem(stack, player, hand);
             Consumer<ActionResultType> cancel = resultType -> {
                 event.setCanceled(true);
                 event.setCancellationResult(resultType);
@@ -138,7 +138,7 @@ public class PlacementHandler {
 
                 BlockItemUseContext context = getUseContext(player, hand, stack);
 
-                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, state);
+                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.addVerticalSlabItem(world, pos, state);
 
                 boolean verticalSlab = state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && !state.get(VerticalSlabBlock.DOUBLE) && (((SlabTileEntity) world.getTileEntity(pos)).getPositiveBlockInfo().getBlockState() != null ? face == state.get(VerticalSlabBlock.FACING).getOpposite() : face == state.get(VerticalSlabBlock.FACING));
 
@@ -178,7 +178,7 @@ public class PlacementHandler {
 
                     verticalSlab = newState.getBlock() == DSBlocks.VERTICAL_SLAB.get() && !newState.get(VerticalSlabBlock.DOUBLE);
 
-                    horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(world, newPos, newState);
+                    horizontalSlabSupport = SlabSupport.addVerticalSlabItem(world, newPos, newState);
                     if (horizontalSlabSupport == null && !verticalSlab) {
                         // If the offset block is not a horizontal slab and is not a dynamic vertical slab
                         verticalSlabSupport = SlabSupport.getVerticalSlabSupport(world, newPos, newState);

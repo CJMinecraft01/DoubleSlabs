@@ -5,8 +5,10 @@ import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
+import cjminecraft.doubleslabs.common.crafting.VerticalSlabRecipe;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.init.DSRecipes;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
@@ -14,6 +16,8 @@ import cjminecraft.doubleslabs.server.proxy.ServerProxy;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -59,6 +63,7 @@ public class DoubleSlabs {
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
         DSTiles.TILES.register(mod);
+        DSRecipes.RECIPE_SERIALIZERS.register(mod);
 
         PROXY.addListeners(mod, forge);
     }

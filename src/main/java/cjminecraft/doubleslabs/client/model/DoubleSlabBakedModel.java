@@ -8,7 +8,6 @@ import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.client.util.SlabCacheKey;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -51,7 +50,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
         boolean shouldCull = DSConfig.CLIENT.shouldCull(cache.getPositiveBlockInfo().getBlockState().getBlock()) && DSConfig.CLIENT.shouldCull(cache.getNegativeBlockInfo().getBlockState().getBlock()) && (!(topTransparent && bottomTransparent) || (cache.getPositiveBlockInfo().getBlockState().getBlock() == cache.getNegativeBlockInfo().getBlockState().getBlock() && cache.getPositiveBlockInfo().getBlockState().isIn(cache.getNegativeBlockInfo().getBlockState().getBlock())));
         // If the top and bottom states are the same, use the combined block model where possible
         if (useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
-            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
+            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.addVerticalSlabItem(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
             if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
                 BlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                 if (RenderTypeLookup.canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
@@ -61,7 +60,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                         // Only cull the non general sides
                         for (CullInfo cullInfo : cache.getCullInfo()) {
                             if (cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
-                                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
+                                IHorizontalSlabSupport support = SlabSupport.addVerticalSlabItem(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
                                 if (support != null) {
                                     BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                                     if (shouldCull(state, s, cullInfo.getDirection()))

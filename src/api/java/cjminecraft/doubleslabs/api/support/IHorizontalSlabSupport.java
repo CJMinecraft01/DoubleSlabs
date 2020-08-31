@@ -12,11 +12,11 @@ import net.minecraft.world.World;
 
 public interface IHorizontalSlabSupport extends ISlabSupport {
 
-    boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state);
+    boolean addVerticalSlabItem(IBlockReader world, BlockPos pos, BlockState state);
 
-    boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand);
+    boolean addVerticalSlabItem(ItemStack stack, PlayerEntity player, Hand hand);
 
-    boolean isHorizontalSlab(Item item);
+    boolean addVerticalSlabItem(Item item);
 
     SlabType getHalf(World world, BlockPos pos, BlockState state);
 
