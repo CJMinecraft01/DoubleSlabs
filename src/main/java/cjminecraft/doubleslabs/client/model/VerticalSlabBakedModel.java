@@ -100,9 +100,11 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
         Direction direction = cache.getState().get(VerticalSlabBlock.FACING);
 
+        // TODO improve culling
+
         // If the top and bottom states are the same, use the combined block model where possible
         if (cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
-            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.addVerticalSlabItem(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
+            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
             if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
                 BlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                 if (RenderTypeLookup.canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
@@ -119,15 +121,15 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     if (cache.getSide() != null) {
                         // Only cull the non general sides
                         for (CullInfo cullInfo : cache.getCullInfo()) {
-                            if (cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
-                                IHorizontalSlabSupport support = SlabSupport.addVerticalSlabItem(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
+                            if (cullInfo.getOtherState().get(VerticalSlabBlock.DOUBLE) && cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
+                                IHorizontalSlabSupport support = SlabSupport.isHorizontalSlab(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
                                 // try with vertical slabs
                                 if (support != null) {
                                     BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                                     if (shouldCull(state, s, cullInfo.getDirection()))
                                         quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                                 }
-                            } else if (shouldCull(state, cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection())) {
+                            } else if (cullInfo.getOtherState().get(VerticalSlabBlock.FACING) == cullInfo.getDirection() && shouldCull(state, cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection())) {
                                 quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                             }
                         }
@@ -151,7 +153,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
                     if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
                         continue;
-                    boolean positive = otherDirection == direction || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
+                    boolean positive = otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
                     if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), positive ? cullInfo.getPositiveBlockInfo().getBlockState() : cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection()))
                         positiveQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
@@ -168,8 +170,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
                     if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
                         continue;
-                    boolean negative = otherDirection == direction || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
-                    if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), negative ? cullInfo.getNegativeBlockInfo().getBlockState() : cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
+                    boolean negative = otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
+                    if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), negative ? cullInfo.getNegativeBlockInfo().getBlockState() : cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
                         negativeQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
             }
