@@ -75,7 +75,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
             if (quads.size() == 0)
                 return new ArrayList<>();
-            BlockState baseState = positive ? cache.getState() : cache.getState().with(VerticalSlabBlock.FACING, direction.getOpposite()).with(VerticalSlabBlock.DOUBLE, false);
+            BlockState baseState = positive ? cache.getState() : cache.getState().with(VerticalSlabBlock.FACING, direction.getOpposite());
+            baseState = baseState.with(VerticalSlabBlock.DOUBLE, false);
             TextureAtlasSprite sprite = quads.get(0).func_187508_a();
             return this.models.get(baseState).getQuads(baseState, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(ClientUtils.changeQuadUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), sprite, quad.func_239287_f_())).collect(Collectors.toList());
         }

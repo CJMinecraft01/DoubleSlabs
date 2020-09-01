@@ -97,6 +97,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
             SlabCacheKey key = new SlabCacheKey(extraData.getData(POSITIVE_BLOCK), extraData.getData(NEGATIVE_BLOCK), side, rand, extraData.getData(CULL_DIRECTIONS), extraData, state);
             try {
+                // TODO switch to cache
                 if (false)
                     throw new ExecutionException("", new Throwable());
                 return getQuads(key);
