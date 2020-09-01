@@ -307,6 +307,9 @@ public class PlacementHandler {
                         }
                     }
 
+                    if (activateBlock(world, pos, player, hand, cancel))
+                        return;
+
                     BlockPos newPos = pos.offset(face);
                     BlockState newState = world.getBlockState(newPos);
 
@@ -347,6 +350,9 @@ public class PlacementHandler {
 
                             BlockState slabState = getStateFromSupport(world, newPos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
                             if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                return;
+
+                            if (activateBlock(world, pos, player, hand, cancel))
                                 return;
 
                             BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context);
