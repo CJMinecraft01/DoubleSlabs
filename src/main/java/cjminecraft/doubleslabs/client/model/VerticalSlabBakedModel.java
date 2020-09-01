@@ -154,7 +154,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
                     if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
                         continue;
-                    boolean positive = otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
+                    boolean positive = (direction == otherDirection && cullInfo.getDirection().getAxis() != direction.getAxis()) || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
                     if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), positive ? cullInfo.getPositiveBlockInfo().getBlockState() : cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection()))
                         positiveQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
@@ -171,7 +171,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
                     if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
                         continue;
-                    boolean negative = otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
+                    boolean negative = (direction == otherDirection && cullInfo.getDirection().getAxis() != direction.getAxis()) || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
                     if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), negative ? cullInfo.getNegativeBlockInfo().getBlockState() : cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
                         negativeQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                 }
