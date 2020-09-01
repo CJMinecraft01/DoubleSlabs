@@ -96,9 +96,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         }
         BlockState newState = super.getStateForPlacement(context);
         if (context.getFace().getAxis().isVertical()) {
-            double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.X ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
-            boolean positive = context.getPlacementHorizontalFacing().getAxisDirection() == Direction.AxisDirection.POSITIVE ?  value > 0.5d : value < 0.5d;
-            return newState.with(FACING, positive ? context.getPlacementHorizontalFacing() : context.getPlacementHorizontalFacing().getOpposite());
+//            double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.X ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
+//            boolean positive = context.getPlacementHorizontalFacing().getAxisDirection() == Direction.AxisDirection.POSITIVE ?  value > 0.5d : value < 0.5d;
+            Vector3d vec = context.getHitVec().subtract(Vector3d.copy(context.getPos())).subtract(0.5, 0, 0.5);
+            double angle = Math.atan2(vec.x, vec.z) * -180.0 / Math.PI;
+            Direction direction = Direction.fromAngle(angle);
+            return newState.with(FACING, direction);
         }
         double value = context.getPlacementHorizontalFacing().getAxis() == Direction.Axis.Z ? context.getHitVec().x - (double)context.getPos().getX() : context.getHitVec().z - (double)context.getPos().getZ();
         if (value > 0.25d && value < 0.75d)
