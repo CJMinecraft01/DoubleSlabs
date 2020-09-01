@@ -1,6 +1,8 @@
 package cjminecraft.doubleslabs.common.placement;
 
+import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
@@ -10,14 +12,21 @@ import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
+import cjminecraft.doubleslabs.old.Config;
+import cjminecraft.doubleslabs.old.Registrar;
 import cjminecraft.doubleslabs.old.Utils;
+import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
+import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -30,6 +39,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -57,6 +67,18 @@ public class PlacementHandler {
             return !result.isSuccessOrConsume();
         }
         return true;
+    }
+
+    private static boolean activateBlock(World world, BlockPos pos, PlayerEntity player, Hand hand, Consumer<ActionResultType> cancelEventConsumer) {
+        boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
+        boolean flag = player.isSecondaryUseActive() && useItem;
+        if (!flag) {
+            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, Utils.rayTrace(player).func_237485_a_(pos));
+            if (result.isSuccessOrConsume())
+                cancelEventConsumer.accept(result);
+            return result.isSuccessOrConsume();
+        }
+        return false;
     }
 
     private static BlockState prepareState(BlockState state) {
@@ -87,7 +109,14 @@ public class PlacementHandler {
             CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity) player, pos, stack);
     }
 
-    private static boolean placeSlab(World world, BlockPos pos, BlockState state, Consumer<SlabTileEntity> setStates) {
+    private static boolean canPlace(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        ISelectionContext context = player == null ? ISelectionContext.dummy() : ISelectionContext.forEntity(player);
+        return (state.isValidPosition(world, pos)) && world.func_226663_a_(state, pos, context);
+    }
+
+    private static boolean placeSlab(World world, BlockPos pos, BlockState state, PlayerEntity player, Consumer<SlabTileEntity> setStates) {
+        if (!canPlace(world, pos, state, player))
+            return false;
         if (world.setBlockState(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER)) {
             TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof SlabTileEntity) {
@@ -99,8 +128,8 @@ public class PlacementHandler {
         return false;
     }
 
-    private static boolean placeSlab(World world, BlockPos pos, BlockState state, BlockState negativeState, BlockState positiveState) {
-        return placeSlab(world, pos, state, tile -> {
+    private static boolean placeSlab(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockState negativeState, BlockState positiveState) {
+        return placeSlab(world, pos, state, player, tile -> {
             tile.getNegativeBlockInfo().setBlockState(negativeState);
             tile.getPositiveBlockInfo().setBlockState(positiveState);
         });
@@ -124,20 +153,125 @@ public class PlacementHandler {
             Direction face = event.getFace();
             BlockPos pos = event.getPos();
 
+            if (stack.getItem() == DSItems.VERTICAL_SLAB.get())
+                stack = VerticalSlabItem.getStack(stack);
             IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.isHorizontalSlab(stack, player, hand);
             Consumer<ActionResultType> cancel = resultType -> {
                 event.setCanceled(true);
                 event.setCancellationResult(resultType);
             };
 
+            BlockState state = world.getBlockState(pos);
+
+            BlockItemUseContext context = getUseContext(player, hand, stack);
+
             if (horizontalSlabItemSupport == null) {
                 // The item we are holding is not a horizontal slab
-                // TODO implement
-            } else if (canPlace(world, pos, face, player, hand, stack, cancel, true)) {
-                BlockState state = world.getBlockState(pos);
 
-                BlockItemUseContext context = getUseContext(player, hand, stack);
+                // Check if the item is a supported vertical slab
+                IVerticalSlabSupport verticalSlabItemSupport = SlabSupport.getVerticalSlabSupport(stack, player, hand);
 
+                // If not then don't do anything special
+                if (verticalSlabItemSupport == null)
+                    return;
+
+                boolean offset = false;
+
+                if (state.getBlock() != DSBlocks.VERTICAL_SLAB.get() && world.getBlockState(pos.offset(face)).getBlock() == DSBlocks.VERTICAL_SLAB.get()) {
+                    pos = pos.offset(face);
+                    state = world.getBlockState(pos);
+                    TileEntity tileEntity = world.getTileEntity(pos);
+                    offset = true;
+                    if (tileEntity instanceof SlabTileEntity)
+                        face = ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() != null ? state.get(VerticalSlabBlock.FACING).getOpposite() : state.get(VerticalSlabBlock.FACING);
+                }
+
+                // Check if the block that they clicked on is a vertical slab
+                if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get()) {
+                    // If we are trying to mix to one of our vertical slabs
+                    if (!state.get(VerticalSlabBlock.DOUBLE) && face == state.get(VerticalSlabBlock.FACING).getOpposite()) {
+                        TileEntity tileEntity = world.getTileEntity(pos);
+                        // Check that the tile has been created and that the shift key isn't pressed and that we are clicking on the face that is inside of the block
+                        if (tileEntity instanceof SlabTileEntity && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
+//                                if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
+//                                    return;
+                            // The new state for the vertical slab with the double property set
+                            BlockState newState = state.with(VerticalSlabBlock.DOUBLE, true);
+                            // Get the correct slab state for the vertical slab
+                            BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() != null ? face.getOpposite() : face, verticalSlabItemSupport);
+//                            BlockState slabState = verticalSlabItemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() != null ? face.getOpposite() : face);
+                            if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
+                                return;
+
+                            if (!offset && activateBlock(world, pos, player, hand, cancel))
+                                return;
+
+                            if (placeSlab(world, pos, newState, player, tile -> {
+                                if (tile.getPositiveBlockInfo().getBlockState() != null)
+                                    tile.getNegativeBlockInfo().setBlockState(slabState);
+                                else
+                                    tile.getPositiveBlockInfo().setBlockState(slabState);
+                            })) {
+                                finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                            }
+                        }
+                    }
+                } else {
+                    // Otherwise check if we are trying to mix two vertical slabs from different mods
+
+                    // Check that the block is a vertical slab
+                    IVerticalSlabSupport blockSupport = SlabSupport.getVerticalSlabSupport(world, pos, state);
+
+                    // If not, try offsetting by the face
+                    if (blockSupport == null) {
+                        offset = true;
+                        // Offset the position
+                        pos = pos.offset(face);
+                        // Check the player isn't standing there
+//                        if (MathHelper.floor(event.getPlayer().getPosX()) == pos.getX() && MathHelper.floor(event.getPlayer().getPosY()) == pos.getY() && MathHelper.floor(event.getPlayer().getPosZ()) == pos.getZ())
+//                            return;
+                        state = world.getBlockState(pos);
+
+//                        if (!canPlace(event.getWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event, false))
+//                            return;
+
+                        blockSupport = SlabSupport.getVerticalSlabSupport(world, pos, state);
+                        if (blockSupport == null)
+                            return;
+
+                        face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
+                    }
+
+                    if (DSConfig.SERVER.isBlacklistedVerticalSlab(state.getBlock()))
+                        return;
+
+                    if (!offset && activateBlock(world, pos, player, hand, cancel))
+                        return;
+
+                    state = prepareState(state);
+
+                    // Get the direction that the vertical slab block is facing
+                    Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
+
+                    if (face == direction.getOpposite()) {
+                        // Get the state for the vertical slab item using the direction of the already placed vertical slab
+                        BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, direction.getOpposite(), verticalSlabItemSupport);
+//                        BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), direction.getOpposite());
+                        if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
+                            return;
+                        // Create the state for the vertical slab
+                        BlockState newState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
+
+                        // Try to set the block state
+                        BlockState finalState = state;
+                        if (placeSlab(world, pos, newState, player, tile -> {
+                            tile.getPositiveBlockInfo().setBlockState(slabState);
+                            tile.getNegativeBlockInfo().setBlockState(finalState);
+                        }))
+                            finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                    }
+                }
+            } else {
                 IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(world, pos, state);
 
                 boolean verticalSlab = state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && !state.get(VerticalSlabBlock.DOUBLE) && (((SlabTileEntity) world.getTileEntity(pos)).getPositiveBlockInfo().getBlockState() != null ? face == state.get(VerticalSlabBlock.FACING).getOpposite() : face == state.get(VerticalSlabBlock.FACING));
@@ -160,11 +294,14 @@ public class PlacementHandler {
                         if (face == direction) {
                             state = prepareState(state);
 
+                            if (activateBlock(world, pos, player, hand, cancel))
+                                return;
+
                             BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
                             // TODO check waterlogging with campfire
                             BlockState newState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
-                            if (placeSlab(world, pos, newState, state, slabState))
+                            if (placeSlab(world, pos, newState, player, state, slabState))
                                 finishBlockPlacement(world, pos, slabState, player, stack, cancel);
                             return;
                         }
@@ -173,8 +310,8 @@ public class PlacementHandler {
                     BlockPos newPos = pos.offset(face);
                     BlockState newState = world.getBlockState(newPos);
 
-                    if (!canPlace(world, newPos, face, player, hand, stack, cancel, false))
-                        return;
+//                    if (!canPlace(world, newPos, face, player, hand, stack, cancel, false))
+//                        return;
 
                     verticalSlab = newState.getBlock() == DSBlocks.VERTICAL_SLAB.get() && !newState.get(VerticalSlabBlock.DOUBLE);
 
@@ -195,7 +332,7 @@ public class PlacementHandler {
                             BlockState slabState = getStateFromSupport(world, newPos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
                             BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
-                            if (placeSlab(world, newPos, verticalSlabState, newState, slabState))
+                            if (placeSlab(world, newPos, verticalSlabState, player, newState, slabState))
                                 finishBlockPlacement(world, pos, slabState, player, stack, cancel);
                         } else if (shouldPlaceVerticalSlab(player, face)) {
                             // We should place the horizontal slab as a vertical slab
@@ -203,6 +340,8 @@ public class PlacementHandler {
                             if (state.isReplaceable(context)) {
                                 newState = state;
                                 newPos = pos;
+                                if (activateBlock(world, pos, player, hand, cancel))
+                                    return;
                             } else if (!newState.isReplaceable(context))
                                 return;
 
@@ -225,7 +364,7 @@ public class PlacementHandler {
 
                                 BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.FACING, direction);
 
-                                if (placeSlab(world, newPos, verticalSlabState, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
+                                if (placeSlab(world, newPos, verticalSlabState, player, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
                                     finishBlockPlacement(world, newPos, slabState, player, stack, cancel);
                             } else {
                                 BlockState slabState = getStateFromSupport(world, newPos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
@@ -234,7 +373,7 @@ public class PlacementHandler {
 
                                 BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context);
 
-                                if (placeSlab(world, newPos, verticalSlabState, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
+                                if (placeSlab(world, newPos, verticalSlabState, player, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
                                     finishBlockPlacement(world, newPos, slabState, player, stack, cancel);
                             }
                         }
@@ -256,7 +395,7 @@ public class PlacementHandler {
                         if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
 
-                        if (placeSlab(world, pos, newState, t -> {
+                        if (placeSlab(world, pos, newState, player, t -> {
                             if (t.getPositiveBlockInfo().getBlockState() != null)
                                 t.getNegativeBlockInfo().setBlockState(slabState);
                             else
@@ -282,13 +421,15 @@ public class PlacementHandler {
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
                     state = prepareState(state);
+                    if (activateBlock(world, pos, player, hand, cancel))
+                        return;
                     BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
                     if (DSConfig.SERVER.isBlacklistedHorizontalSlab(slabState.getBlock()))
                         return;
 
                     BlockState newState = DSBlocks.DOUBLE_SLAB.get().getStateForPlacement(context);
 
-                    if (placeSlab(world, pos, newState, half == SlabType.BOTTOM ? state : slabState, half == SlabType.TOP ? state : slabState))
+                    if (placeSlab(world, pos, newState, player, half == SlabType.BOTTOM ? state : slabState, half == SlabType.TOP ? state : slabState))
                         finishBlockPlacement(world, pos, slabState, player, stack, cancel);
                 }
             }

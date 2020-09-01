@@ -196,6 +196,7 @@ public class Events {
                 return;
             }
 
+
             // If the slab is a horizontal slab and we can edit the face that was clicked
             if (canPlace(event.getWorld(), event.getPos(), event.getFace(), event.getPlayer(), event.getHand(), event.getItemStack(), event, true)) {
                 BlockPos pos = event.getPos();

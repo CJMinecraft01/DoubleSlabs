@@ -22,7 +22,7 @@ public interface IVerticalSlabSupport extends ISlabSupport {
     BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction);
 
     default boolean rotateModel(IBlockDisplayReader world, BlockPos pos, BlockState state) {
-        return true;
+        return false;
     }
 
 }

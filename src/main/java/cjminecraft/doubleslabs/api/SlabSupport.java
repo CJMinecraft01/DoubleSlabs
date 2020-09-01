@@ -43,6 +43,8 @@ public class SlabSupport {
 
     @Nullable
     public static IVerticalSlabSupport getVerticalSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
+        if (stack.getItem() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) stack.getItem()).isVerticalSlab(stack, player, hand))
+            return (IVerticalSlabSupport) stack.getItem();
         if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) ((BlockItem) stack.getItem()).getBlock()).isVerticalSlab(stack, player, hand))
             return (IVerticalSlabSupport) ((BlockItem) stack.getItem()).getBlock();
         for (IVerticalSlabSupport support : verticalSlabSupports)
@@ -52,7 +54,6 @@ public class SlabSupport {
     }
 
     @Nullable
-    // TODO rename
     public static IHorizontalSlabSupport isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) state.getBlock()).isHorizontalSlab(world, pos, state))
             return (IHorizontalSlabSupport) state.getBlock();
@@ -63,8 +64,9 @@ public class SlabSupport {
     }
 
     @Nullable
-    // TODO rename
     public static IHorizontalSlabSupport isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
+        if (stack.getItem() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) stack.getItem()).isHorizontalSlab(stack, player, hand))
+            return (IHorizontalSlabSupport) stack.getItem();
         if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) ((BlockItem) stack.getItem()).getBlock()).isHorizontalSlab(stack, player, hand))
             return (IHorizontalSlabSupport) ((BlockItem) stack.getItem()).getBlock();
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
