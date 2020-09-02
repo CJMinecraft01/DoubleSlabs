@@ -140,8 +140,6 @@ public class DSConfig {
                     .translation("doubleslabs.configgui.useDoubleSlabModelBlacklist")
                     .define("useDoubleSlabModelBlacklist", new ArrayList<>());
 
-            // TODO placement options
-
             builder.pop();
 
             builder.push("Player Settings (synced with servers)");

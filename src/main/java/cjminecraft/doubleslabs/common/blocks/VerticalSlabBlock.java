@@ -1,13 +1,14 @@
 package cjminecraft.doubleslabs.common.blocks;
 
-import cjminecraft.doubleslabs.api.*;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.Utils;
-import cjminecraft.doubleslabs.old.network.NetworkUtils;
+import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -182,7 +183,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
-        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null)
             return minFloat(world, pos, i -> i.getBlockState().getPlayerRelativeBlockHardness(player, i.getWorld(), pos));
@@ -198,7 +199,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
@@ -392,7 +393,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public void onBlockClicked(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        BlockRayTraceResult result = Utils.rayTrace(player);
+        BlockRayTraceResult result = RayTraceUtil.rayTrace(player);
         if (result.getHitVec() != null)
             getHalfState(world, pos, result.getHitVec().x - pos.getX(), result.getHitVec().z - pos.getZ())
                     .ifPresent(i -> i.getBlockState().onBlockClicked(i.getWorld(), pos, player));

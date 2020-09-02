@@ -1,13 +1,13 @@
 package cjminecraft.doubleslabs.common.blocks;
 
-import cjminecraft.doubleslabs.api.*;
+import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.DoubleSlabs;
-import cjminecraft.doubleslabs.old.Utils;
-import io.netty.buffer.ByteBuf;
+import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,7 +26,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
@@ -36,7 +35,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
@@ -47,7 +45,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -67,7 +64,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
     @Override
     public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
-        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null)
             return minFloat(world, pos, i -> i.getBlockState().getPlayerRelativeBlockHardness(player, i.getWorld(), pos));
@@ -83,7 +80,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
     @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        RayTraceResult rayTraceResult = Utils.rayTrace(player);
+        RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null || te == null) {
             super.harvestBlock(world, player, pos, state, te, stack);
@@ -255,7 +252,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
     @Override
     public void onBlockClicked(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        BlockRayTraceResult result = Utils.rayTrace(player);
+        BlockRayTraceResult result = RayTraceUtil.rayTrace(player);
         if (result.getHitVec() != null)
             getHalfState(world, pos, result.getHitVec().y - pos.getY())
                     .ifPresent(pair -> pair.getBlockState().onBlockClicked(pair.getWorld(), pos, player));

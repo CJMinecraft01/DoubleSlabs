@@ -101,8 +101,6 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
         Direction direction = cache.getState().get(VerticalSlabBlock.FACING);
 
-        // TODO improve culling
-
         // If the top and bottom states are the same, use the combined block model where possible
         if (cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
             IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());

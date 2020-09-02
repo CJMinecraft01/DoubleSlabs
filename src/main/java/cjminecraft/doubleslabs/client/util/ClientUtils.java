@@ -1,33 +1,24 @@
 package cjminecraft.doubleslabs.client.util;
 
-import cjminecraft.doubleslabs.old.DoubleSlabs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.FaceDirection;
 import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.*;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ClientUtils {
-
-    private static final FaceBakery FACE_BAKERY = new FaceBakery();
-
-    private static final Quaternion NORTH_ROTATION = Vector3f.XP.rotationDegrees(90);
-    private static final Quaternion SOUTH_ROTATION = Vector3f.XN.rotationDegrees(90);
-    private static final Quaternion WEST_ROTATION = Vector3f.ZN.rotationDegrees(90);
-    private static final Quaternion EAST_ROTATION = Vector3f.ZP.rotationDegrees(90);
     private static final Quaternion ROTATE_X_90 = Vector3f.XP.rotationDegrees(90);
-    private static final Quaternion ROTATE_X_270 = Vector3f.XP.rotationDegrees(270);
     private static final Quaternion ROTATE_Z_180 = Vector3f.ZP.rotationDegrees(180);
 
     public static boolean isTransparent(BlockState state) {

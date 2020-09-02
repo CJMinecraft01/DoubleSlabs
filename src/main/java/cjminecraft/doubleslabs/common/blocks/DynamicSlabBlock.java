@@ -3,8 +3,6 @@ package cjminecraft.doubleslabs.common.blocks;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.Registrar;
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;

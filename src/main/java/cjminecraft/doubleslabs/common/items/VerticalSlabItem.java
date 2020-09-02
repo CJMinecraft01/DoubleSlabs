@@ -99,7 +99,6 @@ public class VerticalSlabItem extends BlockItem {
 
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
-        // TODO rename
         return new TranslationTextComponent("item.vertical_slab.prefix", new TranslationTextComponent(this.getTranslationKey(stack)));
     }
 }

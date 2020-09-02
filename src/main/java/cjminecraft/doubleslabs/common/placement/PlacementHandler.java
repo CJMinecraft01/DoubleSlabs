@@ -1,8 +1,6 @@
 package cjminecraft.doubleslabs.common.placement;
 
-import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
-import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
@@ -16,17 +14,11 @@ import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
-import cjminecraft.doubleslabs.old.Config;
-import cjminecraft.doubleslabs.old.Registrar;
-import cjminecraft.doubleslabs.old.Utils;
-import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -37,7 +29,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.world.World;
@@ -61,7 +52,7 @@ public class PlacementHandler {
         boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
-            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, Utils.rayTrace(player).func_237485_a_(pos));
+            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
             if (result.isSuccessOrConsume())
                 cancelEventConsumer.accept(result);
             return !result.isSuccessOrConsume();
@@ -73,7 +64,7 @@ public class PlacementHandler {
         boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
-            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, Utils.rayTrace(player).func_237485_a_(pos));
+            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
             if (result.isSuccessOrConsume())
                 cancelEventConsumer.accept(result);
             return result.isSuccessOrConsume();
@@ -192,7 +183,7 @@ public class PlacementHandler {
                     if (!state.get(VerticalSlabBlock.DOUBLE) && face == state.get(VerticalSlabBlock.FACING).getOpposite()) {
                         TileEntity tileEntity = world.getTileEntity(pos);
                         // Check that the tile has been created and that the shift key isn't pressed and that we are clicking on the face that is inside of the block
-                        if (tileEntity instanceof SlabTileEntity && !event.getPlayer().isSneaking() && (face != state.get(BlockVerticalSlab.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
+                        if (tileEntity instanceof SlabTileEntity && !event.getPlayer().isSneaking() && (face != state.get(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
 //                                if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
 //                                    return;
                             // The new state for the vertical slab with the double property set
@@ -260,7 +251,7 @@ public class PlacementHandler {
                         if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
                         // Create the state for the vertical slab
-                        BlockState newState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(BlockVerticalSlab.FACING, direction).with(BlockVerticalSlab.DOUBLE, true).with(BlockVerticalSlab.WATERLOGGED, false);
+                        BlockState newState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(VerticalSlabBlock.FACING, direction).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.WATERLOGGED, false);
 
                         // Try to set the block state
                         BlockState finalState = state;

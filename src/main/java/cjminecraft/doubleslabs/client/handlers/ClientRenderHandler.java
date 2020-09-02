@@ -1,10 +1,9 @@
 package cjminecraft.doubleslabs.client.handlers;
 
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.Registrar;
-import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -57,13 +56,13 @@ public class ClientRenderHandler {
                 event.setCanceled(true);
             }
 
-            if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.get(BlockVerticalSlab.DOUBLE)) {
+            if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.get(VerticalSlabBlock.DOUBLE)) {
                 // Offset the position of the block for when we render
                 double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
                 double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
                 double z = (double) event.getTarget().getPos().getZ() - event.getInfo().getProjectedView().z;
 
-                switch (state.get(BlockVerticalSlab.FACING).getAxis()) {
+                switch (state.get(VerticalSlabBlock.FACING).getAxis()) {
                     case X:
                         // Check if we are looking at the top slab or bottom slab
                         if (event.getTarget().getHitVec().x - event.getTarget().getPos().getX() > 0.5) {
