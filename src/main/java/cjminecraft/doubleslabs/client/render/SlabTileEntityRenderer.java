@@ -1,8 +1,8 @@
 package cjminecraft.doubleslabs.client.render;
 
+import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -47,7 +47,7 @@ public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
             if (tile.getNegativeBlockInfo().getTileEntity() != null)
                 TileEntityRendererDispatcher.instance.renderTileEntity(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, matrixStack, buffer);
         } else if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get()) {
-            Direction facing = world.getBlockState(pos).get(BlockVerticalSlab.FACING);
+            Direction facing = world.getBlockState(pos).get(VerticalSlabBlock.FACING);
             matrixStack.push();
 
             switch (facing) {

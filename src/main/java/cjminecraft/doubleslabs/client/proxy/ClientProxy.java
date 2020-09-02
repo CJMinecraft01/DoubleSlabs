@@ -1,18 +1,12 @@
 package cjminecraft.doubleslabs.client.proxy;
 
 import cjminecraft.doubleslabs.client.gui.WrappedScreen;
-import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
-import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
-import cjminecraft.doubleslabs.client.model.RaisedCampfireBakedModel;
-import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.*;
 import cjminecraft.doubleslabs.client.render.RaisedCampfireTileEntityRenderer;
 import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
-import cjminecraft.doubleslabs.common.init.DSContainers;
-import cjminecraft.doubleslabs.common.init.DSKeyBindings;
-import cjminecraft.doubleslabs.common.init.DSTiles;
+import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -65,6 +59,10 @@ public class ClientProxy implements IProxy {
         replaceModel(campfireBakedModel, DSBlocks.RAISED_CAMPFIRE.get(), campfireBakedModel::addModel, event.getModelRegistry());
         RaisedCampfireBakedModel soulCampfireBakedModel = new RaisedCampfireBakedModel();
         replaceModel(soulCampfireBakedModel, DSBlocks.RAISED_SOUL_CAMPFIRE.get(), soulCampfireBakedModel::addModel, event.getModelRegistry());
+
+        ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
+        VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
+        event.getModelRegistry().put(verticalSlabItemResourceLocation, VerticalSlabItemBakedModel.INSTANCE);
 
 //        DoubleSlabBakedModel doubleSlabBakedModel = new DoubleSlabBakedModel();
 //        for (BlockState state : DSBlocks.DOUBLE_SLAB.get().getStateContainer().getValidStates()) {

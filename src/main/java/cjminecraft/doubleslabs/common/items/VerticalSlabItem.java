@@ -2,12 +2,9 @@ package cjminecraft.doubleslabs.common.items;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.client.render.VerticalSlabItemStackTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
-import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,13 +14,11 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.SlabType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,7 +28,8 @@ import javax.annotation.Nullable;
 
 public class VerticalSlabItem extends BlockItem {
     public VerticalSlabItem() {
-        super(DSBlocks.VERTICAL_SLAB.get(), new Item.Properties().setISTER(() -> VerticalSlabItemStackTileEntityRenderer::new).group(DoubleSlabs.TAB));
+//        super(DSBlocks.VERTICAL_SLAB.get(), new Item.Properties().setISTER(() -> VerticalSlabItemStackTileEntityRenderer::new).group(DoubleSlabs.TAB));
+        super(DSBlocks.VERTICAL_SLAB.get(), new Item.Properties().group(DoubleSlabs.TAB));
     }
     
 //    public static BlockState getState(ItemStack stack) {
