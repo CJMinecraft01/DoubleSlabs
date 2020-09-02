@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.old;
 
-import cjminecraft.doubleslabs.api.ContainerSupport;
+import cjminecraft.doubleslabs.api.ContainerSupportOld;
 import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.old.client.render.TileEntityRendererDoubleSlab;
 import cjminecraft.doubleslabs.old.client.render.TileEntityRendererVerticalSlab;
@@ -34,7 +34,7 @@ public class DoubleSlabs {
 
     public void setup(FMLCommonSetupEvent event) {
         SlabSupportOld.init();
-        ContainerSupport.init();
+        ContainerSupportOld.init();
         PacketHandler.registerPackets();
     }
 

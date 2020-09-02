@@ -1,10 +1,9 @@
 package cjminecraft.doubleslabs.common.blocks;
 
-import cjminecraft.doubleslabs.api.ContainerSupport;
-import cjminecraft.doubleslabs.api.IBlockInfo;
-import cjminecraft.doubleslabs.api.IContainerSupport;
-import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.*;
+import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.old.Utils;
@@ -20,9 +19,12 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +44,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
@@ -50,6 +53,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -351,25 +355,37 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         if (state.getBlock() != this)
             return ActionResultType.PASS;
         return getHalfState(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(i -> {
-            IContainerSupport support = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
-            if (support == null) {
-                ActionResultType result;
-                ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
-//                ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, i.getBlockState());
-//                if (slabSupport == null)
-//                    slabSupport = SlabSupportOld.getVerticalSlabSupport(world, pos, i.getBlockState());
-                try {
-                    result = slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
-                } catch (Exception e) {
-                    result = ActionResultType.PASS;
-                }
-                return result;
-            } else {
+            IContainerSupport containerSupport = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
+            ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
+            if (containerSupport != null) {
                 if (!world.isRemote) {
-                    NetworkUtils.openGui((ServerPlayerEntity) player, support.getNamedContainerProvider(i.getWorld(), pos, i.getBlockState(), player, hand, hit), pos, i.isPositive());
-                    support.onClicked(i.getWorld(), pos, i.getBlockState(), player, hand, hit);
+                    INamedContainerProvider provider = containerSupport.getNamedContainerProvider(i.getWorld(), pos, state, player, hand, hit);
+                    NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+                        @Override
+                        public ITextComponent getDisplayName() {
+                            return provider.getDisplayName();
+                        }
+
+                        @Override
+                        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+                            return new WrappedContainer(windowId, playerInventory, player, provider, i);
+                        }
+                    }, buffer -> {
+                        buffer.writeBlockPos(i.getPos());
+                        buffer.writeBoolean(i.isPositive());
+                        buffer.writeResourceLocation(containerSupport.getContainer(i.getWorld(), pos, state).getRegistryName());
+                        containerSupport.writeExtraData(world, pos, state).accept(buffer);
+                    });
                 }
                 return ActionResultType.SUCCESS;
+            } else {
+//            if (containerSupport != null && !world.isRemote)
+//                    NetworkUtils.openGui((ServerPlayerEntity) player, containerSupport.getNamedContainerProvider(i.getWorld(), pos, state, player, hand, hit), pos, i.isPositive());
+                try {
+                    return slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
+                } catch (Exception e) {
+                    return ActionResultType.PASS;
+                }
             }
         }).orElse(ActionResultType.PASS);
     }

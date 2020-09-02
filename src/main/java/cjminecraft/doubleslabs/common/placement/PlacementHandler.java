@@ -276,6 +276,8 @@ public class PlacementHandler {
 
                 boolean verticalSlab = state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && !state.get(VerticalSlabBlock.DOUBLE) && (((SlabTileEntity) world.getTileEntity(pos)).getPositiveBlockInfo().getBlockState() != null ? face == state.get(VerticalSlabBlock.FACING).getOpposite() : face == state.get(VerticalSlabBlock.FACING));
 
+                boolean offset = false;
+
                 if (horizontalSlabSupport == null && !verticalSlab) {
                     // The block at the position which was clicked is not a horizontal slab
 
@@ -312,6 +314,8 @@ public class PlacementHandler {
 
                     BlockPos newPos = pos.offset(face);
                     BlockState newState = world.getBlockState(newPos);
+
+                    offset = true;
 
 //                    if (!canPlace(world, newPos, face, player, hand, stack, cancel, false))
 //                        return;
@@ -370,6 +374,8 @@ public class PlacementHandler {
 
                 // Check if the block is a dynamic vertical slab and try to join the two slabs together
                 if (verticalSlab) {
+                    if (!offset && activateBlock(world, pos, player, hand, cancel))
+                        return;
                     TileEntity tileEntity = world.getTileEntity(pos);
                     if (tileEntity instanceof SlabTileEntity && !player.isSneaking() && (face != state.get(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
                         SlabTileEntity tile = (SlabTileEntity) tileEntity;

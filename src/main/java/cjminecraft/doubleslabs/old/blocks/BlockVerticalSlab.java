@@ -3,8 +3,8 @@ package cjminecraft.doubleslabs.old.blocks;
 import cjminecraft.doubleslabs.old.DoubleSlabs;
 import cjminecraft.doubleslabs.old.Registrar;
 import cjminecraft.doubleslabs.old.Utils;
-import cjminecraft.doubleslabs.api.ContainerSupport;
-import cjminecraft.doubleslabs.api.IContainerSupport;
+import cjminecraft.doubleslabs.api.ContainerSupportOld;
+import cjminecraft.doubleslabs.api.IContainerSupportOld;
 import cjminecraft.doubleslabs.api.ISlabSupport;
 import cjminecraft.doubleslabs.api.SlabSupportOld;
 import cjminecraft.doubleslabs.old.client.model.DoubleSlabBakedModel;
@@ -708,7 +708,7 @@ public class BlockVerticalSlab extends Block implements IWaterLoggable {
         if (state.getBlock() != this)
             return ActionResultType.PASS;
         return getHalfStateWithWorld(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(pair -> {
-            IContainerSupport support = ContainerSupport.getSupport(pair.getRight(), pos, pair.getLeft());
+            IContainerSupportOld support = ContainerSupportOld.getSupport(pair.getRight(), pos, pair.getLeft());
             if (support == null) {
                 ActionResultType result;
                 ISlabSupport slabSupport = SlabSupportOld.getHorizontalSlabSupport(world, pos, pair.getLeft());

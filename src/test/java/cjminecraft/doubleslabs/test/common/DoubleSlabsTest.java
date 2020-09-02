@@ -2,6 +2,8 @@ package cjminecraft.doubleslabs.test.common;
 
 import cjminecraft.doubleslabs.test.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
+import cjminecraft.doubleslabs.test.common.init.DSTContainers;
+import cjminecraft.doubleslabs.test.common.init.DSTTiles;
 import cjminecraft.doubleslabs.test.server.proxy.ServerProxy;
 import cjminecraft.doubleslabs.test.common.init.DSTBlocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,6 +24,8 @@ public class DoubleSlabsTest {
 
         DSTBlocks.BLOCKS.register(mod);
         DSTBlocks.ITEMS.register(mod);
+        DSTTiles.TILES.register(mod);
+        DSTContainers.CONTAINER_TYPES.register(mod);
 
         PROXY.addListeners(mod, forge);
     }

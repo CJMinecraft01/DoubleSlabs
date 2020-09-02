@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.old.tileentitiy.TileEntityVerticalSlab;
+import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -18,15 +18,15 @@ public class Flags {
 
     public static TileEntity getTileEntityAtPos(BlockPos pos, IBlockReader world) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileEntityVerticalSlab)
-            return isPositive(pos) ? ((TileEntityVerticalSlab) tile).getPositiveTile() : ((TileEntityVerticalSlab) tile).getNegativeTile();
+        if (tile instanceof SlabTileEntity)
+            return isPositive(pos) ? ((SlabTileEntity) tile).getPositiveBlockInfo().getTileEntity() : ((SlabTileEntity) tile).getNegativeBlockInfo().getTileEntity();
         return tile;
     }
 
     public static BlockState getBlockStateAtPos(BlockPos pos, IBlockReader world) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileEntityVerticalSlab)
-            return isPositive(pos) ? ((TileEntityVerticalSlab) tile).getPositiveState() : ((TileEntityVerticalSlab) tile).getNegativeState();
+        if (tile instanceof SlabTileEntity)
+            return isPositive(pos) ? ((SlabTileEntity) tile).getPositiveBlockInfo().getBlockState() : ((SlabTileEntity) tile).getNegativeBlockInfo().getBlockState();
         return world.getBlockState(pos);
     }
 

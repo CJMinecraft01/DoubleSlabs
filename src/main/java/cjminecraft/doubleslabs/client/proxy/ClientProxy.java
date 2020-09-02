@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.proxy;
 
+import cjminecraft.doubleslabs.client.gui.WrappedScreen;
 import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import cjminecraft.doubleslabs.client.model.RaisedCampfireBakedModel;
@@ -9,19 +10,18 @@ import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
-import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.init.DSContainers;
 import cjminecraft.doubleslabs.common.init.DSKeyBindings;
 import cjminecraft.doubleslabs.common.init.DSTiles;
-import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -88,6 +88,7 @@ public class ClientProxy implements IProxy {
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
+        ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {
