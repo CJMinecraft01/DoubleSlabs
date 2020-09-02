@@ -15,7 +15,7 @@ public class ContainerSupport {
     private static List<IContainerSupport> containerSupports;
 
     public static void load() {
-        containerSupports = AnnotationUtil.getClassInstances(ContainerSupportProvider.class, IContainerSupport.class);
+        containerSupports = AnnotationUtil.getClassInstances(ContainerSupportProvider.class, IContainerSupport.class, AnnotationUtil.MODID_PREDICATE);
 
         DoubleSlabs.LOGGER.info("Loaded %s container support classes", containerSupports.size());
     }

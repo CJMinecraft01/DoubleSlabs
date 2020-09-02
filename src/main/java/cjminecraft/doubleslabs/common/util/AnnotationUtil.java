@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.common.util;
 
-import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.commons.lang3.tuple.Pair;
@@ -9,10 +8,17 @@ import org.objectweb.asm.Type;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AnnotationUtil {
+
+    public static final Predicate<Map<String, Object>> MODID_PREDICATE = data -> {
+        String modid = (String) data.getOrDefault("modid", "");
+        return modid.length() == 0 || ModList.get().isLoaded(modid);
+    };
 
     public static <T> List<T> getFieldInstances(Class<?> annotation, Class<T> instance) {
         Type type = Type.getType(annotation);
@@ -39,11 +45,15 @@ public class AnnotationUtil {
     }
 
     public static <T> List<T> getClassInstances(Class<?> annotation, Class<T> instance) {
+        return getClassInstances(annotation, instance, data -> true);
+    }
+
+    public static <T> List<T> getClassInstances(Class<?> annotation, Class<T> instance, Predicate<Map<String, Object>> filter) {
         Type type = Type.getType(annotation);
         List<ModFileScanData> scanData = ModList.get().getAllScanData();
         List<String> classNames = new ArrayList<>();
         scanData.stream().map(datum -> datum.getAnnotations().stream()
-                .filter(a -> Objects.equals(a.getAnnotationType(), type))
+                .filter(a -> Objects.equals(a.getAnnotationType(), type) && filter.test(a.getAnnotationData()))
                 .map(ModFileScanData.AnnotationData::getMemberName)
                 .collect(Collectors.toList()))
                 .forEach(classNames::addAll);

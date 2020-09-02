@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.test.common.compat;
 
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import cjminecraft.doubleslabs.test.common.DoubleSlabsTest;
 import cjminecraft.doubleslabs.test.common.blocks.VerticalSlab;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-@SlabSupportProvider
+@SlabSupportProvider(modid = DoubleSlabsTest.MODID)
 public class DSTVerticalSlabSupport implements IVerticalSlabSupport {
     @Override
     public boolean isVerticalSlab(IBlockReader world, BlockPos pos, BlockState state) {
