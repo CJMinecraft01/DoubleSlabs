@@ -83,7 +83,8 @@ public class DSConfig {
                     .define("disableVerticalSlabPlacement", false);
 
             verticalSlabCraftingBlacklist = builder
-                    .comment("The list of slabs (or tags) to ignore when trying to convert between a regular slab and a vertical slab item")
+                    .comment("The list of slabs (or tags) to ignore when trying to convert between a regular slab and a vertical slab item",
+                            "Use the wildcard value * to disable this feature for all slabs")
                     .translation("doubleslabs.configgui.verticalSlabCraftingBlacklist")
                     .define("verticalSlabCraftingBlacklist", new ArrayList<>());
 
@@ -122,17 +123,20 @@ public class DSConfig {
             lazyVerticalSlabModels = builder
                     .comment("The list of slabs (or tags) which should use the lazy model rendering technique",
                             "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model",
-                            "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs")
+                            "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs",
+                            "Use the wildcard value * to enable this feature for all slabs")
                     .translation("doubleslabs.configgui.lazyVerticalSlabModels")
                     .define("lazyVerticalSlabModels", Lists.newArrayList("#doubleslabs:plank_slabs"));
 
             slabCullBlacklist = builder
-                    .comment("The list of slabs (or tags) which should not be culled when combined")
+                    .comment("The list of slabs (or tags) which should not be culled when combined",
+                            "Use the wildcard value * to disable this feature for all slabs")
                     .translation("doubleslabs.configgui.slabCullBlacklist")
                     .define("slabCullBlacklist", Lists.newArrayList("#minecraft:campfires"));
 
             useDoubleSlabModelBlacklist = builder
-                    .comment("The list of slabs (or tags) which should not use the double variant model when two of the same slab are combined together")
+                    .comment("The list of slabs (or tags) which should not use the double variant model when two of the same slab are combined together",
+                            "Use the wildcard value * to disable this feature for all slabs")
                     .translation("doubleslabs.configgui.useDoubleSlabModelBlacklist")
                     .define("useDoubleSlabModelBlacklist", new ArrayList<>());
 
@@ -158,6 +162,8 @@ public class DSConfig {
         if (item.getRegistryName() == null)
             return false;
         return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("*"))
+                return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 ITag<Item> tag = ItemTags.getCollection().get(tagLocation);
@@ -171,6 +177,8 @@ public class DSConfig {
         if (block.getRegistryName() == null)
             return false;
         return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("*"))
+                return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
