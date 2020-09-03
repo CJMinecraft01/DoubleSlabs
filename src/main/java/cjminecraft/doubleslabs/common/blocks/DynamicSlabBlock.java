@@ -341,7 +341,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public void fillWithRain(World world, BlockPos pos) {
-        // TODO complete
+        getTile(world, pos).ifPresent(tile -> {
+            if (tile.getPositiveBlockInfo().getBlockState() != null)
+                tile.getPositiveBlockInfo().getBlockState().getBlock().fillWithRain(tile.getPositiveBlockInfo().getWorld(), pos);
+        });
     }
 
     @Override
@@ -351,8 +354,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction facing, IPlantable plantable) {
-        // TODO complete
-        return super.canSustainPlant(state, world, pos, facing, plantable);
+        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() != null && tile.getPositiveBlockInfo().getBlockState().canSustainPlant(tile.getPositiveBlockInfo().getWorld(), pos, facing, plantable)).orElse(false);
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -32,12 +33,7 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return addVerticalSlabItem(stack.getItem());
-    }
-
-    @Override
-    public boolean addVerticalSlabItem(Item item) {
+    public boolean isHorizontalSlab(Item item) {
         return item instanceof BlockItem && isValid(((BlockItem) item).getBlock().getDefaultState());
     }
 
@@ -49,5 +45,10 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     @Override
     public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
         return state.with(BlockStateProperties.SLAB_TYPE, half);
+    }
+
+    @Override
+    public boolean useDoubleSlabModel(BlockState state) {
+        return !state.getProperties().stream().anyMatch(property -> property.getValueClass() == Direction.class);
     }
 }

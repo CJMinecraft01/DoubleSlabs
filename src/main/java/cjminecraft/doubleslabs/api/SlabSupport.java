@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -76,11 +75,11 @@ public class SlabSupport {
         return null;
     }
 
-    public static boolean addVerticalSlabItem(Item item) {
+    public static boolean isHorizontalSlab(Item item) {
         if (item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof IHorizontalSlabSupport)
-            return ((IHorizontalSlabSupport) ((BlockItem) item).getBlock()).addVerticalSlabItem(item);
+            return ((IHorizontalSlabSupport) ((BlockItem) item).getBlock()).isHorizontalSlab(item);
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
-            if (support.addVerticalSlabItem(item))
+            if (support.isHorizontalSlab(item))
                 return true;
         return false;
     }

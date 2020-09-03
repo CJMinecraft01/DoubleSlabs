@@ -14,10 +14,11 @@ public interface IHorizontalSlabSupport extends ISlabSupport {
 
     boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state);
 
-    boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand);
+    default boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
+        return isHorizontalSlab(stack.getItem());
+    }
 
-    // TODO rename
-    boolean addVerticalSlabItem(Item item);
+    boolean isHorizontalSlab(Item item);
 
     SlabType getHalf(World world, BlockPos pos, BlockState state);
 

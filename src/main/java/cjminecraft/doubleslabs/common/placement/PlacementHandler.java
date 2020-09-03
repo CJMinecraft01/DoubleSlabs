@@ -47,8 +47,6 @@ import java.util.function.Consumer;
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class PlacementHandler {
 
-    // TODO slab support for waterlogging when using campfires
-
     private static boolean canPlace(World world, BlockPos pos, Direction face, PlayerEntity player, Hand hand, ItemStack stack, Consumer<ActionResultType> cancelEventConsumer, boolean activateBlock) {
         if (!player.canPlayerEdit(pos, face, stack))
             return false;
@@ -97,8 +95,7 @@ public class PlacementHandler {
         return support.getStateForHalf(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack, pos)), half);
     }
 
-    // todo change to public
-    private static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, Direction direction, IVerticalSlabSupport support) {
+    public static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, Direction direction, IVerticalSlabSupport support) {
         return support.getStateForDirection(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack, pos)), direction);
     }
 
@@ -303,7 +300,6 @@ public class PlacementHandler {
                                 return;
 
                             BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
-                            // TODO check waterlogging with campfire
                             BlockState newState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
                             if (placeSlab(world, pos, newState, player, state, slabState))

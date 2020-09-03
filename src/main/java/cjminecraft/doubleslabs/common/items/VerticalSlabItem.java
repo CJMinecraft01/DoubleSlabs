@@ -52,23 +52,11 @@ public class VerticalSlabItem extends BlockItem {
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if (this.isInGroup(group)) {
             ForgeRegistries.ITEMS.forEach(item -> {
-                if (SlabSupport.addVerticalSlabItem(item)) {
+                if (SlabSupport.isHorizontalSlab(item)) {
                     ItemStack stack = new ItemStack(this);
-//                    stack.setTagInfo("item", item.getDefaultInstance().write(new CompoundNBT()));
-//                    stack.setTagInfo("state", NBTUtil.writeBlockState(PlacementHandler.getStateFromSupport(Minecraft.getInstance().world, BlockPos.ZERO, Minecraft.getInstance().player, Hand.MAIN_HAND, stack, SlabType.BOTTOM, support)));
                     items.add(setStack(stack, item.getDefaultInstance()));
                 }
             });
-//            ForgeRegistries.BLOCKS.forEach(block -> {
-//                BlockState state = block.getDefaultState();
-//                IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(Minecraft.getInstance().world, BlockPos.ZERO, state);
-//                if (support != null) {
-//                    state = support.getStateForHalf(Minecraft.getInstance().world, BlockPos.ZERO, state, SlabType.BOTTOM);
-//                    ItemStack stack = new ItemStack(this);
-//                    stack.setTagInfo("state", NBTUtil.writeBlockState(state));
-//                    items.add(stack);
-//                }
-//            });
         }
     }
 

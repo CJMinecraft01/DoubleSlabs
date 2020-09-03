@@ -55,6 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -455,6 +456,16 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
         if (entity != null)
             return getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElse(super.getSoundType(state, world, pos, entity));
-        return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElse(super.getSoundType(state, world, pos, null));
+        return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, null)).orElse(super.getSoundType(state, world, pos, null));
+    }
+
+    @Override
+    public void fillWithRain(World world, BlockPos pos) {
+        runIfAvailable(world, pos, i -> i.getBlockState().getBlock().fillWithRain(i.getWorld(), i.getPos()));
+    }
+
+    @Override
+    public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction facing, IPlantable plantable) {
+        return both(world, pos, i -> i.getBlockState().canSustainPlant(i.getWorld(), pos, facing, plantable));
     }
 }

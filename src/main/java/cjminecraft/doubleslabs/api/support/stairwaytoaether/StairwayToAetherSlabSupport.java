@@ -50,11 +50,11 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
 
     @Override
     public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return addVerticalSlabItem(stack.getItem());
+        return isHorizontalSlab(stack.getItem());
     }
 
     @Override
-    public boolean addVerticalSlabItem(Item item) {
+    public boolean isHorizontalSlab(Item item) {
         return slab != null && (item instanceof BlockItem) && slab.isAssignableFrom(((BlockItem)item).getBlock().getClass());
     }
 
