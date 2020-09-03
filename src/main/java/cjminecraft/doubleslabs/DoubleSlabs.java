@@ -36,7 +36,7 @@ public class DoubleSlabs {
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
-        bus.addListener(this::clientSetup);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.addListener(Client::clientSetup));
 //        bus.addListener(this::onFingerprintViolation);
         proxy.setup(bus);
     }
@@ -47,12 +47,13 @@ public class DoubleSlabs {
         PacketHandler.registerPackets();
     }
 
-    public void clientSetup(FMLClientSetupEvent event) {
-        Utils.checkOptiFineInstalled();
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVerticalSlab.class, new TileEntityRendererVerticalSlab());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDoubleSlab.class, new TileEntityRendererDoubleSlab());
+    static class Client {
+        public static void clientSetup(FMLClientSetupEvent event) {
+            Utils.checkOptiFineInstalled();
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVerticalSlab.class, new TileEntityRendererVerticalSlab());
+            ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDoubleSlab.class, new TileEntityRendererDoubleSlab());
+        }
     }
-
 //    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
 //        LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() + " may have been tampered with. This version will NOT be supported by the author!");
 //    }
