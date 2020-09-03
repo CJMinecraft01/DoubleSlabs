@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -26,5 +27,8 @@ public interface IBlockInfo {
     boolean isPositive();
 
     BlockPos getPos();
+
+    @Nullable
+    ISlabSupport getSupport();
 
 }

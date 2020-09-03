@@ -59,31 +59,31 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         return tile instanceof SlabTileEntity ? Optional.of((SlabTileEntity) tile) : Optional.empty();
     }
 
-    protected static Optional<IBlockInfo> getAvailable(IBlockReader world, BlockPos pos) {
+    public static Optional<IBlockInfo> getAvailable(IBlockReader world, BlockPos pos) {
         return getTile(world, pos).flatMap(tile -> Optional.of(tile.getPositiveBlockInfo().getBlockState() != null ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo()));
     }
 
-    protected static int min(IBlockReader world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
+    public static int min(IBlockReader world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> Math.min(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getPositiveBlockInfo()) : Integer.MAX_VALUE, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0);
     }
 
-    protected static float minFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+    public static float minFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> Math.min(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : Integer.MAX_VALUE, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0D).floatValue();
     }
 
-    protected static int max(IBlockReader world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
+    public static int max(IBlockReader world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getPositiveBlockInfo()) : 0, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getNegativeBlockInfo()) : 0)).orElse(0);
     }
 
-    protected static float maxFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+    public static float maxFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
 
-    protected static float addFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+    public static float addFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0) + (tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
 
-    protected static void runIfAvailable(IBlockReader world, BlockPos pos, Consumer<IBlockInfo> consumer) {
+    public static void runIfAvailable(IBlockReader world, BlockPos pos, Consumer<IBlockInfo> consumer) {
         getTile(world, pos).map(tile -> {
             if (tile.getPositiveBlockInfo().getBlockState() != null)
                 consumer.accept(tile.getPositiveBlockInfo());
@@ -93,11 +93,11 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         });
     }
 
-    protected static boolean both(IBlockReader world, BlockPos pos, Predicate<IBlockInfo> predicate) {
+    public static boolean both(IBlockReader world, BlockPos pos, Predicate<IBlockInfo> predicate) {
         return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() != null && tile.getNegativeBlockInfo().getBlockState() != null && predicate.test(tile.getPositiveBlockInfo()) && predicate.test(tile.getNegativeBlockInfo())).orElse(false);
     }
 
-    protected static boolean either(IBlockReader world, BlockPos pos, Predicate<IBlockInfo> predicate) {
+    public static boolean either(IBlockReader world, BlockPos pos, Predicate<IBlockInfo> predicate) {
         return getTile(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null && predicate.test(tile.getPositiveBlockInfo())) || (tile.getNegativeBlockInfo().getBlockState() != null && predicate.test(tile.getNegativeBlockInfo()))).orElse(false);
     }
 
@@ -133,7 +133,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
-        return IWaterLoggable.super.canContainFluid(world, pos, state, fluid);
+        return IWaterLoggable.super.canContainFluid(world, pos, state, fluid) && either(world, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState()));
     }
 
     @Override
@@ -141,11 +141,11 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         BlockPos blockpos = context.getPos();
         BlockState blockstate = context.getWorld().getBlockState(blockpos);
+        FluidState fluidstate = context.getWorld().getFluidState(blockpos);
         if (blockstate.isIn(this)) {
-            return blockstate.with(WATERLOGGED, Boolean.valueOf(false));
+            return blockstate.with(WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && either(context.getWorld(), blockpos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState())));
         } else {
-            FluidState fluidstate = context.getWorld().getFluidState(blockpos);
-            return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidstate.getFluid() == Fluids.WATER));
+            return this.getDefaultState().with(WATERLOGGED, fluidstate.getFluid() == Fluids.WATER);
         }
     }
 

@@ -23,7 +23,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
@@ -87,6 +89,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         builder.add(FACING, DOUBLE);
     }
 
+    @Override
+    public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
+        return !state.get(DOUBLE) || super.canContainFluid(world, pos, state, fluid);
+    }
+
     @Nonnull
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
@@ -95,7 +102,8 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         if (state.isIn(this)) {
             // same block as this meaning we are trying to combine slabs
             if (isReplaceable(state, context)) {
-                return state.with(DOUBLE, true);
+                FluidState fluidstate = context.getWorld().getFluidState(pos);
+                return state.with(DOUBLE, true).with(WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && either(context.getWorld(), pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState())));
             }
             return state;
         }

@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICapabilityProvider {
 
+    private ISlabSupport support;
     private BlockState state;
     private TileEntity tile;
     private WorldWrapper world;
@@ -59,6 +61,12 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
         return this.slab.getPos();
     }
 
+    @Nullable
+    @Override
+    public ISlabSupport getSupport() {
+        return this.support;
+    }
+
     @Override
     public void setBlockState(@Nullable BlockState state) {
         if (this.state != null && this.state.hasTileEntity() && this.tile != null)
@@ -74,6 +82,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
             else
                 this.tile.updateContainingBlockInfo();
         this.slab.markDirtyClient();
+        this.support = state == null ? null : SlabSupport.getSlabSupport(this.world, this.getPos(), this.state);
     }
 
     @Override

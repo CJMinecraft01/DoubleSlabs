@@ -103,4 +103,9 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     public boolean useDoubleSlabModel(BlockState state) {
         return false;
     }
+
+    @Override
+    public boolean waterloggableWhenDouble(World world, BlockPos pos, BlockState state) {
+        return true;
+    }
 }

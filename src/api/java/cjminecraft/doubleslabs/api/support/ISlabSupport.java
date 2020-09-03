@@ -31,4 +31,8 @@ public interface ISlabSupport {
         return true;
     }
 
+    default boolean waterloggableWhenDouble(World world, BlockPos pos, BlockState state) {
+        return false;
+    }
+
 }

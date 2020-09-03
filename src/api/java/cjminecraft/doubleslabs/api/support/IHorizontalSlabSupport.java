@@ -16,6 +16,7 @@ public interface IHorizontalSlabSupport extends ISlabSupport {
 
     boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand);
 
+    // TODO rename
     boolean addVerticalSlabItem(Item item);
 
     SlabType getHalf(World world, BlockPos pos, BlockState state);

@@ -3,7 +3,9 @@ package cjminecraft.doubleslabs.common.placement;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
+import cjminecraft.doubleslabs.client.util.DoubleSlabBlockItemUseContext;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.blocks.DoubleSlabBlock;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.capability.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
@@ -19,6 +21,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -29,6 +33,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.world.World;
@@ -41,6 +46,8 @@ import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
 public class PlacementHandler {
+
+    // TODO slab support for waterlogging when using campfires
 
     private static boolean canPlace(World world, BlockPos pos, Direction face, PlayerEntity player, Hand hand, ItemStack stack, Consumer<ActionResultType> cancelEventConsumer, boolean activateBlock) {
         if (!player.canPlayerEdit(pos, face, stack))
@@ -82,12 +89,17 @@ public class PlacementHandler {
         return new BlockItemUseContext(player, hand, stack, RayTraceUtil.rayTrace(player));
     }
 
-    public static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, SlabType half, IHorizontalSlabSupport support) {
-        return support.getStateForHalf(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack)), half);
+    public static BlockItemUseContext getUseContext(PlayerEntity player, Hand hand, ItemStack stack, BlockPos pos) {
+        return new DoubleSlabBlockItemUseContext(player, hand, stack, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
     }
 
+    public static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, SlabType half, IHorizontalSlabSupport support) {
+        return support.getStateForHalf(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack, pos)), half);
+    }
+
+    // todo change to public
     private static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, Direction direction, IVerticalSlabSupport support) {
-        return support.getStateForDirection(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack)), direction);
+        return support.getStateForDirection(world, pos, support.getStateFromStack(stack, getUseContext(player, hand, stack, pos)), direction);
     }
 
     private static void finishBlockPlacement(World world, BlockPos pos, BlockState state, PlayerEntity player, ItemStack stack, Consumer<ActionResultType> cancel) {
@@ -251,7 +263,7 @@ public class PlacementHandler {
                         if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
                         // Create the state for the vertical slab
-                        BlockState newState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(VerticalSlabBlock.FACING, direction).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.WATERLOGGED, false);
+                        BlockState newState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(VerticalSlabBlock.FACING, direction).with(VerticalSlabBlock.DOUBLE, true);
 
                         // Try to set the block state
                         BlockState finalState = state;
@@ -370,7 +382,8 @@ public class PlacementHandler {
                     TileEntity tileEntity = world.getTileEntity(pos);
                     if (tileEntity instanceof SlabTileEntity && !player.isSneaking() && (face != state.get(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
                         SlabTileEntity tile = (SlabTileEntity) tileEntity;
-                        BlockState newState = state.with(VerticalSlabBlock.DOUBLE, true);
+                        FluidState fluidstate = world.getFluidState(pos);
+                        BlockState newState = state.with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && VerticalSlabBlock.either(world, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState())));
                         BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, tile.getPositiveBlockInfo().getBlockState() != null ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
                         if (DSConfig.SERVER.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
@@ -407,7 +420,12 @@ public class PlacementHandler {
                     if (DSConfig.SERVER.isBlacklistedHorizontalSlab(slabState.getBlock()))
                         return;
 
-                    BlockState newState = DSBlocks.DOUBLE_SLAB.get().getStateForPlacement(context);
+                    FluidState fluidstate = world.getFluidState(pos);
+//                    if (slabState.hasProperty(BlockStateProperties.WATERLOGGED) && fluidstate.getFluid() == Fluids.WATER) {
+//                        slabState = slabState.with(BlockStateProperties.WATERLOGGED, true);
+//                        slabState = slabState.updatePostPlacement(Direction.DOWN, state, world, pos, pos.down());
+//                    }
+                    BlockState newState = DSBlocks.DOUBLE_SLAB.get().getStateForPlacement(context).with(DoubleSlabBlock.WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && (horizontalSlabItemSupport.waterloggableWhenDouble(world, pos, slabState) || horizontalSlabSupport.waterloggableWhenDouble(world, pos, state)));
 
                     if (placeSlab(world, pos, newState, player, half == SlabType.BOTTOM ? state : slabState, half == SlabType.TOP ? state : slabState))
                         finishBlockPlacement(world, pos, slabState, player, stack, cancel);
