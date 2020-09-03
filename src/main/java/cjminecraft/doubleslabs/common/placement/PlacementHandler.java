@@ -312,8 +312,8 @@ public class PlacementHandler {
                         }
                     }
 
-                    if (activateBlock(world, pos, player, hand, cancel))
-                        return;
+//                    if (activateBlock(world, pos, player, hand, cancel))
+//                        return;
 
                     BlockPos newPos = pos.offset(face);
                     BlockState newState = world.getBlockState(newPos);
@@ -414,7 +414,7 @@ public class PlacementHandler {
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
                     state = prepareState(state);
-                    if (activateBlock(world, pos, player, hand, cancel))
+                    if (!offset && activateBlock(world, pos, player, hand, cancel))
                         return;
                     BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
                     if (DSConfig.SERVER.isBlacklistedHorizontalSlab(slabState.getBlock()))
