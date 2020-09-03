@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.client.model;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.SlabCacheKey;
+import cjminecraft.doubleslabs.client.util.VerticalSlabItemCacheKey;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
@@ -36,7 +37,7 @@ import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
 public class VerticalSlabItemBakedModel implements IBakedModel {
 
-    private static final Cache<IBakedModel, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(100).build();
+    private static final Cache<VerticalSlabItemCacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
     private static final QuadTransformer TRANSFORMER_2D = new QuadTransformer(new TransformationMatrix(new Vector3f(0, 1, 0), Vector3f.ZN.rotationDegrees(90), null, null));
     public static VerticalSlabItemBakedModel INSTANCE;
@@ -83,13 +84,14 @@ public class VerticalSlabItemBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
+        VerticalSlabItemCacheKey key = new VerticalSlabItemCacheKey(side, rand, this.stack, this.baseModel);
         try {
-                if (false)
-                    throw new ExecutionException("", new Throwable());
-                return getQuads(side, rand);
-//            return cache.get(this.baseModel, () -> getQuads(side, rand));
+//                if (false)
+//                    throw new ExecutionException("", new Throwable());
+//                return getQuads(side, rand);
+            return cache.get(key, () -> getQuads(side, rand));
         } catch (ExecutionException e) {
-            DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", this.baseModel);
+            DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
             DoubleSlabs.LOGGER.catching(Level.DEBUG, e);
         }
         return getFallbackModel().getQuads(state, side, rand);
