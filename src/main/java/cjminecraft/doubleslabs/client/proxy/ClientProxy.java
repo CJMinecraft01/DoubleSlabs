@@ -4,6 +4,8 @@ import cjminecraft.doubleslabs.client.gui.WrappedScreen;
 import cjminecraft.doubleslabs.client.model.*;
 import cjminecraft.doubleslabs.client.render.RaisedCampfireTileEntityRenderer;
 import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
+import cjminecraft.doubleslabs.client.util.ClientUtils;
+import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.*;
@@ -51,6 +53,8 @@ public class ClientProxy implements IProxy {
     }
 
     private void bakeModels(ModelBakeEvent event) {
+        VerticalSlabTransformer.reload();
+
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
 //        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
         replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModelRegistry());
@@ -87,6 +91,8 @@ public class ClientProxy implements IProxy {
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
         ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
+
+        ClientUtils.checkOptiFineInstalled();
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {

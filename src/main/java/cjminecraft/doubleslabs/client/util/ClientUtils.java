@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.util;
 
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.FaceDirection;
 import net.minecraft.client.renderer.model.FaceBakery;
@@ -13,6 +14,8 @@ import net.minecraftforge.client.ForgeHooksClient;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -23,6 +26,32 @@ public class ClientUtils {
 
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque() || !state.isSolid();
+    }
+
+    private static Class<?> OPTIFINE_CONFIG;
+    private static Method OPTIFINE_IS_SHADERS_METHOD;
+
+    public static void checkOptiFineInstalled() {
+        try {
+            OPTIFINE_CONFIG = Class.forName("net.optifine.Config");
+            OPTIFINE_IS_SHADERS_METHOD = OPTIFINE_CONFIG.getMethod("isShaders");
+            DoubleSlabs.LOGGER.info("Detected OptiFine is installed. Applying fixes");
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            OPTIFINE_CONFIG = null;
+            OPTIFINE_IS_SHADERS_METHOD = null;
+        }
+    }
+
+    public static boolean isOptiFineInstalled() {
+        return OPTIFINE_CONFIG != null;
+    }
+
+    public static boolean areShadersEnabled() {
+        try {
+            return isOptiFineInstalled() && (boolean) OPTIFINE_IS_SHADERS_METHOD.invoke(null);
+        } catch (IllegalAccessException | InvocationTargetException ignored) {
+            return false;
+        }
     }
 
     private static final HashMap<Pair<Direction, Direction>, Consumer<Vector4f>> DIRECTION_TO_TRANSFORMATION = new HashMap<>();
@@ -51,7 +80,7 @@ public class ClientUtils {
         });
     }
 
-    private static Consumer<Vector4f> getVertexTransformation(Direction direction, @Nullable Direction side) {
+    public static Consumer<Vector4f> getVertexTransformation(Direction direction, @Nullable Direction side) {
         return DIRECTION_TO_TRANSFORMATION.getOrDefault(Pair.of(direction, side), vector -> {});
     }
 
@@ -79,6 +108,7 @@ public class ClientUtils {
         
         float minX = 1.0f, minY = 1.0f, minZ = 1.0f, maxX = 0.0f, maxY = 0.0f, maxZ = 0.0f;
 
+        // TODO replace 8 with the vertex format size
         for (int i = 0; i < vertexData.length / 8; i++) {
             // The x y z position relative to the center of the model
             float x = Float.intBitsToFloat(vertexData[i * 8]) - 0.5f;

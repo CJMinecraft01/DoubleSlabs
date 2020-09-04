@@ -42,7 +42,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     public static final ModelProperty<IBlockInfo> NEGATIVE_BLOCK = new ModelProperty<>();
     public static final ModelProperty<IBlockInfo> POSITIVE_BLOCK = new ModelProperty<>();
     private static final ModelProperty<List<CullInfo>> CULL_DIRECTIONS = new ModelProperty<>();
-    private final Cache<SlabCacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    private final Cache<SlabCacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().build();
 
     @Override
     public boolean isAmbientOcclusion() {

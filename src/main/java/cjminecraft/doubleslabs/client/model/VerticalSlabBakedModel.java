@@ -8,6 +8,7 @@ import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.client.util.SlabCacheKey;
+import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
@@ -80,6 +81,16 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             TextureAtlasSprite sprite = quads.get(0).func_187508_a();
             return this.models.get(baseState).getQuads(baseState, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(ClientUtils.changeQuadUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), sprite, quad.func_239287_f_())).collect(Collectors.toList());
         }
+//        return quads.stream().map(quad -> {
+//            BakedQuadBuilder builder = new BakedQuadBuilder();
+//            VerticalSlabTransformer transformer = new VerticalSlabTransformer(builder, direction, cache.getSide(), positive);
+//            quad.pipe(transformer);
+//            return builder.build();
+//        }).collect(Collectors.toList());
+        if (ClientUtils.areShadersEnabled()) {
+            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), positive);
+            return transformer.processMany(quads);
+        }
         return quads.stream().map(quad -> {
             int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
             return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
@@ -112,10 +123,15 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
                         quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE));
                     } else {
-                        quads = model.getQuads(state, side, cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> {
-                            int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
-                            return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
-                        }).collect(Collectors.toList());
+                        if (ClientUtils.areShadersEnabled()) {
+                            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), false);
+                            quads = transformer.processMany(quads);
+                        } else {
+                            quads = model.getQuads(state, side, cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> {
+                                int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
+                                return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
+                            }).collect(Collectors.toList());
+                        }
                     }
                     if (cache.getSide() != null) {
                         // Only cull the non general sides

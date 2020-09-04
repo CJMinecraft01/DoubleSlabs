@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.client.util.SlabCacheKey;
+import cjminecraft.doubleslabs.client.util.vertex.TintOffsetTransformer;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.block.Block;
@@ -18,6 +19,7 @@ import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,13 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         IModelData tileData = positive ? cache.getPositiveBlockInfo().getTileEntity() != null ? cache.getPositiveBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE : cache.getNegativeBlockInfo().getTileEntity() != null ? cache.getNegativeBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE;
         IModelData modelData = model.getModelData(positive ? cache.getPositiveBlockInfo().getWorld() : cache.getNegativeBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), state, tileData);
-        return model.getQuads(state, cache.getSide(), cache.getRandom(), modelData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), quad.func_187508_a(), quad.func_239287_f_())).collect(Collectors.toList());
+        return model.getQuads(state, cache.getSide(), cache.getRandom(), modelData).stream().map(quad -> {
+            BakedQuadBuilder builder = new BakedQuadBuilder();
+            TintOffsetTransformer transformer = new TintOffsetTransformer(builder, positive);
+            quad.pipe(transformer);
+            return builder.build();
+        }).collect(Collectors.toList());
+//        return model.getQuads(state, cache.getSide(), cache.getRandom(), modelData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), quad.func_187508_a(), quad.func_239287_f_())).collect(Collectors.toList());
     }
 
     @Override
