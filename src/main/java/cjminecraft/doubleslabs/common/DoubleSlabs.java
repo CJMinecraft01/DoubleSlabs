@@ -35,7 +35,6 @@ public class DoubleSlabs {
     public static final ItemGroup TAB = new ItemGroup("verticalslabs") {
         @Override
         public ItemStack createIcon() {
-//            return new ItemStack(BloqueImposibleBlock.block);
             ItemStack stack = new ItemStack(DSItems.VERTICAL_SLAB.get());
             stack.setTagInfo("item", Items.STONE_BRICK_SLAB.getDefaultInstance().write(new CompoundNBT()));
             return stack;
