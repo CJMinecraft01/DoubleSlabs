@@ -10,6 +10,7 @@ import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -101,7 +102,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
 //                    throw new ExecutionException("", new Throwable());
 //                return getQuads(key);
                 return cache.get(key, () -> getQuads(key));
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | UncheckedExecutionException e) {
                 DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
                 DoubleSlabs.LOGGER.catching(Level.DEBUG, e);
             }
@@ -110,7 +111,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
             SlabCacheKey key = new SlabCacheKey(null, null, side, rand, null, extraData, state);
             try {
                 return cache.get(key, () -> getQuads(key));
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | UncheckedExecutionException e) {
                 DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
                 DoubleSlabs.LOGGER.catching(Level.DEBUG, e);
             }

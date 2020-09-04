@@ -207,6 +207,17 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
+        if (willHarvest)
+            return true;
+        if (player.isCreative() && player.isSneaking() && state.get(DOUBLE)) {
+            harvestBlock(world, player, pos, state, world.getTileEntity(pos), ItemStack.EMPTY);
+            return true;
+        }
+        return super.removedByPlayer(state, world, pos, player, false, fluid);
+    }
+
+    @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;

@@ -123,14 +123,13 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                     if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
                         quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE));
                     } else {
-                        if (ClientUtils.areShadersEnabled()) {
-                            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), false);
-                            quads = transformer.processMany(quads);
-                        } else {
+                        if (!ClientUtils.isOptiFineInstalled()) {
                             quads = model.getQuads(state, side, cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> {
                                 int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
                                 return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
                             }).collect(Collectors.toList());
+                        } else {
+                            quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE));
                         }
                     }
                     if (cache.getSide() != null) {
