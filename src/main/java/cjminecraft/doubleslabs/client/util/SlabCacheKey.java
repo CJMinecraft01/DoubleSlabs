@@ -79,9 +79,9 @@ public class SlabCacheKey extends CacheKey implements IStateContainer {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         SlabCacheKey that = (SlabCacheKey) o;
-        return positiveBlock.equals(that.positiveBlock) &&
-                negativeBlock.equals(that.negativeBlock) &&
-                cullInfo.equals(that.cullInfo);
+        return Objects.equals(positiveBlock, that.positiveBlock) &&
+                Objects.equals(negativeBlock, that.negativeBlock) &&
+                Objects.equals(cullInfo, that.cullInfo);
     }
 
     @Override
