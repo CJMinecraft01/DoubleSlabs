@@ -13,11 +13,21 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${project.MAJOR}.${project.MINOR}.${project.PATCH}"
-group = 'cjminecraft.doubleslabs' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'DoubleSlabs-1.15'
+version = modVersion
+group = modGroup // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = modFileName
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+sourceSets {
+    api
+    main
+    test
+}
+
+configurations {
+    apiCompile.extendsFrom(compile)
+}
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -25,9 +35,9 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20200715-1.15.1'
+    mappings channel: modMCPChannel, version: modMCPVersion
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
+
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
@@ -45,6 +55,7 @@ minecraft {
             mods {
                 doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
                 }
                 doubleslabstest {
                     source sourceSets.test
@@ -64,6 +75,7 @@ minecraft {
             mods {
                 doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
                 }
                 doubleslabstest {
                     source sourceSets.test
@@ -80,11 +92,15 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'doubleslabs', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 doubleslabs {
                     source sourceSets.main
+                    source sourceSets.api
+                }
+                doubleslabstest {
+                    source sourceSets.test
                 }
             }
         }
@@ -95,7 +111,9 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.15.2-31.2.31'
+    minecraft 'net.minecraftforge:forge:' + modMinecraftVersion + '-' + modForgeVersion
+
+    implementation sourceSets.api.output
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -119,29 +137,57 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
+    from sourceSets.main.output.classesDirs
+    from sourceSets.api.output.classesDirs
+    from sourceSets.main.output.resourcesDir
+    from sourceSets.api.output.resourcesDir
+
     manifest {
         attributes([
-			"Specification-Title"     : "DoubleSlabs",
-			"Specification-Vendor"    : "CJMinecraft",
-			"Specification-Version"   : "1", // We are version 1 of ourselves
-			"Implementation-Title"    : project.name,
-			"Implementation-Version"  : "${version}",
-			"Implementation-Vendor"   : "CJMinecraft",
-			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title": modId,
+                "Specification-Vendor": "CJMinecraft",
+                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor" :"CJMinecraft",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = "sources"
+    from sourceSets.main.allJava
+    from sourceSets.api.allJava
+}
+
+task apiJar(type: Jar) {
+    classifier = "api"
+    from sourceSets.api.output
+
+    // TODO: when FG bug is fixed, remove allJava from the api jar.
+    // https://github.com/MinecraftForge/ForgeGradle/issues/369
+    // Gradle should be able to pull them from the -sources jar.
+    from sourceSets.api.allJava
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+    archives apiJar
+}
 
 // Example configuration to allow publishing using the maven-publish task
-// we define a custom artifact that is sourced from the reobfJar output task
-// and then declare that to be published
-// Note you'll need to add a repository here
-//def reobfFile = file("$buildDir/reobfJar/output.jar")
-//def reobfArtifact = artifacts.add('default', reobfFile) {
-//    type 'jar'
-//    builtBy 'reobfJar'
-//}
+// This is the preferred method to reobfuscate your jar file
+jar.finalizedBy('reobfJar')
+// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
+//publish.dependsOn('reobfJar')
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -150,7 +196,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+//            url "file:///${project.projectDir}/mcmodsrepo"
         }
     }
 }

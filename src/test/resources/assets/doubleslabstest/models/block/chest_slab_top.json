@@ -1,0 +1,10 @@
+{
+  "parent": "doubleslabstest:block/directional_slab_top",
+  "textures": {
+    "particle": "block/oak_planks",
+    "bottom": "doubleslabstest:block/chest_slab_top",
+    "top": "doubleslabstest:block/chest_slab_top",
+    "side": "doubleslabstest:block/chest_slab_side",
+    "front": "doubleslabstest:block/chest_slab_front"
+  }
+}
