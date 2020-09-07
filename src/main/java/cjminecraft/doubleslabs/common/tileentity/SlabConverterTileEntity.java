@@ -22,7 +22,7 @@ public class SlabConverterTileEntity extends SlabTileEntity {
         if (nbt.contains("negative_tile"))
             this.negativeBlockInfo.setTileEntity(TileEntity.readTileEntity(this.negativeBlockInfo.getBlockState(), nbt.getCompound("negative_tile")));
         if (nbt.contains("positive"))
-            this.positiveBlockInfo.setBlockState(NBTUtil.readBlockState(nbt.getCompound("negative")));
+            this.positiveBlockInfo.setBlockState(NBTUtil.readBlockState(nbt.getCompound("positive")));
         if (nbt.contains("positive_tile"))
             this.positiveBlockInfo.setTileEntity(TileEntity.readTileEntity(this.positiveBlockInfo.getBlockState(), nbt.getCompound("positive_tile")));
     }
