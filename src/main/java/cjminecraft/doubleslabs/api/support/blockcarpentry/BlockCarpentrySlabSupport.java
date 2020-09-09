@@ -26,7 +26,7 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
     public BlockCarpentrySlabSupport() {
         Class<?> slab;
         try {
-            slab = Class.forName("mod.pianomanu.blockcarpentry.block.SixWaySlabFrameBlock ");
+            slab = Class.forName("mod.pianomanu.blockcarpentry.block.SixWaySlabFrameBlock");
         } catch (ClassNotFoundException ignored) {
             slab = null;
         }
@@ -45,12 +45,12 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
 
     @Override
     public SlabType getHalf(World world, BlockPos pos, BlockState state) {
-        return state.get(FACING) == Direction.DOWN ? SlabType.BOTTOM : SlabType.TOP;
+        return state.get(FACING) == Direction.DOWN ? SlabType.TOP : SlabType.BOTTOM;
     }
 
     @Override
     public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
-        return state.with(FACING, half == SlabType.BOTTOM ? Direction.DOWN : Direction.UP);
+        return state.with(FACING, half == SlabType.BOTTOM ? Direction.UP : Direction.DOWN);
     }
 
     @Override
@@ -65,11 +65,16 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
 
     @Override
     public Direction getDirection(World world, BlockPos pos, BlockState state) {
-        return state.get(FACING);
+        return state.get(FACING).getOpposite();
     }
 
     @Override
     public BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction) {
-        return state.with(FACING, direction);
+        return state.with(FACING, direction.getOpposite());
+    }
+
+    @Override
+    public boolean useDoubleSlabModel(BlockState state) {
+        return false;
     }
 }
