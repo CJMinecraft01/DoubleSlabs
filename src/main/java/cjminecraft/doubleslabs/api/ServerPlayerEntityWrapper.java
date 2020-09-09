@@ -1,8 +1,8 @@
 package cjminecraft.doubleslabs.api;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Either;
+import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.command.CommandSource;
@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.entity.player.ChatVisibility;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -24,33 +25,36 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MerchantOffers;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ServerRecipeBook;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.client.CClientSettingsPacket;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.stats.ServerStatisticsManager;
 import net.minecraft.stats.Stat;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.common.util.LazyOptional;
@@ -60,19 +64,19 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<PlayerEntity> {
+public class ServerPlayerEntityWrapper extends ServerPlayerEntity implements IPlayerWrapper<ServerPlayerEntity> {
+    private final ServerPlayerEntity player;
 
-    private final PlayerEntity player;
-
-    public PlayerEntityWrapper(PlayerEntity player, World world) {
-        super(world, player.getGameProfile());
-//        super(player.server, player.getServerWorld(), player.getGameProfile(), player.interactionManager);
+    public ServerPlayerEntityWrapper(ServerPlayerEntity player, ServerWorld world) {
+        super(player.server, world, player.getGameProfile(), player.interactionManager);
+        player.interactionManager.player = player;
+        this.connection = player.connection;
         this.player = player;
         this.world = world;
     }
 
     @Override
-    public PlayerEntity getOriginalPlayer() {
+    public ServerPlayerEntity getOriginalPlayer() {
         return this.player;
     }
 
@@ -578,11 +582,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     }
 
     @Override
-    public ItemStack getItemStackFromSlot(EquipmentSlotType slotIn) {
-        return this.player.getItemStackFromSlot(slotIn);
-    }
-
-    @Override
     public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {
         this.player.setItemStackToSlot(slotIn, stack);
     }
@@ -984,11 +983,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     @Override
     public CreatureAttribute getCreatureAttribute() {
         return this.player.getCreatureAttribute();
-    }
-
-    @Override
-    public ItemStack getHeldItemMainhand() {
-        return this.player.getHeldItemMainhand();
     }
 
     @Override
@@ -1410,11 +1404,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     }
 
     @Override
-    public void moveToBlockPosAndAngles(BlockPos pos, float rotationYawIn, float rotationPitchIn) {
-        this.player.moveToBlockPosAndAngles(pos, rotationYawIn, rotationPitchIn);
-    }
-
-    @Override
     public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
         if (this.player == null)
             super.setLocationAndAngles(x, y, z, yaw, pitch);
@@ -1589,11 +1578,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     }
 
     @Override
-    public boolean isSneaking() {
-        return this.player.isSneaking();
-    }
-
-    @Override
     public void setSneaking(boolean keyDownIn) {
         this.player.setSneaking(keyDownIn);
     }
@@ -1611,11 +1595,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     @Override
     public boolean isDiscrete() {
         return this.player.isDiscrete();
-    }
-
-    @Override
-    public boolean isDescending() {
-        return this.player.isDescending();
     }
 
     @Override
@@ -1832,12 +1811,6 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     @Override
     public Direction getAdjustedHorizontalFacing() {
         return this.player.getAdjustedHorizontalFacing();
-    }
-
-
-    @Override
-    public AxisAlignedBB getBoundingBox() {
-        return this.player.getBoundingBox();
     }
 
 
@@ -2402,5 +2375,4 @@ public class PlayerEntityWrapper extends PlayerEntity implements IPlayerWrapper<
     public void setMotion(Vec3d motionIn) {
         this.player.setMotion(motionIn);
     }
-
 }

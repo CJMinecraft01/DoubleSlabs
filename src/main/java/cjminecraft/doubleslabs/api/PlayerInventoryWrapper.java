@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ import net.minecraft.tags.Tag;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -21,7 +23,7 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     private final PlayerInventory inv;
     
     public PlayerInventoryWrapper(PlayerInventory inv, World world) {
-        super(new PlayerEntityWrapper(inv.player, world));
+        super(inv.player instanceof ServerPlayerEntity ? new ServerPlayerEntityWrapper((ServerPlayerEntity) inv.player, (ServerWorld) world) : new PlayerEntityWrapper(inv.player, world));
         this.inv = inv;
     }
 

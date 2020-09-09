@@ -1,7 +1,9 @@
 package cjminecraft.doubleslabs.common.container;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.PlayerEntityWrapper;
 import cjminecraft.doubleslabs.api.PlayerInventoryWrapper;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.init.DSContainers;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,8 +15,10 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class WrappedContainer extends Container {
@@ -27,7 +31,8 @@ public class WrappedContainer extends Container {
         super(DSContainers.WRAPPED_CONTAINER.get(), id);
         this.positive = blockInfo.isPositive();
         this.world = blockInfo.getWorld();
-        this.wrapped = provider.createMenu(id, new PlayerInventoryWrapper(playerInventory, blockInfo.getWorld()), player);
+        PlayerInventoryWrapper playerInventoryWrapper = new PlayerInventoryWrapper(playerInventory,  blockInfo.getWorld());
+        this.wrapped = provider.createMenu(id, playerInventoryWrapper, playerInventoryWrapper.player);
     }
 
     public WrappedContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -36,7 +41,8 @@ public class WrappedContainer extends Container {
         this.positive = buffer.readBoolean();
         SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(pos));
         this.world = this.positive ? tile.getPositiveBlockInfo().getWorld() : tile.getNegativeBlockInfo().getWorld();
-        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
+        PlayerInventoryWrapper playerInventoryWrapper = new PlayerInventoryWrapper(playerInventory, this.world);
+        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, playerInventoryWrapper, buffer);
 //        this.wrapped = Registry.MENU.getByValue(buffer.readInt()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
     }
 

@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -10,6 +11,7 @@ import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.crafting.RecipeManager;
@@ -17,7 +19,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.profiler.IProfiler;
-import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.tileentity.TileEntity;
@@ -31,15 +33,15 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
-import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.lighting.WorldLightManager;
+import net.minecraft.world.server.ServerTickList;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.capabilities.Capability;
@@ -53,30 +55,40 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class WorldWrapper extends World implements IWorldWrapper<World> {
-
-    private World world;
+public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<ServerWorld> {
+    private ServerWorld world;
     private boolean positive;
     private BlockPos pos;
     private IStateContainer container;
 
-    public WorldWrapper(World world) {
-        super(world.getWorldInfo(), world.dimension.getType(), (world1, dimension) -> world.getChunkProvider(), world.getProfiler(), world.isRemote);
-        this.world = world;
-    }
+    public ServerWorldWrapper(ServerWorld world) {
+        super(world.getServer(), world.getServer().getBackgroundExecutor(), world.getSaveHandler(), world.getWorldInfo(), world.dimension.getType(), world.getProfiler(), new IChunkStatusListener() {
+            @Override
+            public void start(ChunkPos center) {
 
-    public void setWorld(World world) {
-        this.world = world;
-    }
+            }
 
-    @Override
-    public void setPositive(boolean positive) {
-        this.positive = positive;
+            @Override
+            public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+
+            }
+
+            @Override
+            public void stop() {
+
+            }
+        });
+        this.world = world;
     }
 
     @Override
     public boolean isPositive() {
         return this.positive;
+    }
+
+    @Override
+    public void setPositive(boolean positive) {
+        this.positive = positive;
     }
 
     @Override
@@ -97,6 +109,11 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public void setStateContainer(IStateContainer container) {
         this.container = container;
+    }
+
+    @Override
+    public void setWorld(World world) {
+        this.world = (ServerWorld) world;
     }
 
     @Override
@@ -165,7 +182,7 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public Scoreboard getScoreboard() {
+    public ServerScoreboard getScoreboard() {
         return this.world.getScoreboard();
     }
 
@@ -180,12 +197,12 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public ITickList<Block> getPendingBlockTicks() {
+    public ServerTickList<Block> getPendingBlockTicks() {
         return this.world.getPendingBlockTicks();
     }
 
     @Override
-    public ITickList<Fluid> getPendingFluidTicks() {
+    public ServerTickList<Fluid> getPendingFluidTicks() {
         return this.world.getPendingFluidTicks();
     }
 
@@ -195,7 +212,7 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public List<? extends PlayerEntity> getPlayers() {
+    public List<ServerPlayerEntity> getPlayers() {
         return this.world.getPlayers();
     }
 
@@ -207,12 +224,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public boolean isRemote() {
         return this.world.isRemote();
-    }
-
-    @Nullable
-    @Override
-    public MinecraftServer getServer() {
-        return this.world.getServer();
     }
 
     @Override
@@ -338,11 +349,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public float getCelestialAngleRadians(float partialTicks) {
-        return this.world.getCelestialAngleRadians(partialTicks);
-    }
-
-    @Override
     public boolean addTileEntity(TileEntity tile) {
         return this.world.addTileEntity(tile);
     }
@@ -399,18 +405,13 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public void calculateInitialSkylight() {
-        this.world.calculateInitialSkylight();
-    }
-
-    @Override
     public void setAllowedSpawnTypes(boolean hostile, boolean peaceful) {
         this.world.setAllowedSpawnTypes(hostile, peaceful);
     }
 
     @Override
     public void close() throws IOException {
-        super.close();
+        this.world.close();
     }
 
     @Nullable
@@ -485,11 +486,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public long getDayTime() {
-        return this.world.getDayTime();
-    }
-
-    @Override
     public boolean isBlockModifiable(PlayerEntity player, BlockPos pos) {
         return this.world.isBlockModifiable(player, pos);
     }
@@ -497,11 +493,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public void setEntityState(Entity entityIn, byte state) {
         this.world.setEntityState(entityIn, state);
-    }
-
-    @Override
-    public AbstractChunkProvider getChunkProvider() {
-        return this.world.getChunkProvider();
     }
 
     @Override
@@ -520,18 +511,8 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public float getThunderStrength(float delta) {
-        return this.world.getThunderStrength(delta);
-    }
-
-    @Override
     public void setThunderStrength(float strength) {
         this.world.setThunderStrength(strength);
-    }
-
-    @Override
-    public float getRainStrength(float delta) {
-        return this.world.getRainStrength(delta);
     }
 
     @Override
@@ -592,11 +573,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public void setTimeLightningFlash(int timeFlashIn) {
         this.world.setTimeLightningFlash(timeFlashIn);
-    }
-
-    @Override
-    public WorldBorder getWorldBorder() {
-        return this.world.getWorldBorder();
     }
 
     @Override
@@ -951,11 +927,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    protected void calculateInitialWeather() {
-        super.calculateInitialWeather();
-    }
-
-    @Override
     public void setInitialSpawnLocation() {
         this.world.setInitialSpawnLocation();
     }
@@ -1002,28 +973,13 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public void calculateInitialWeatherBody() {
-        this.world.calculateInitialWeatherBody();
-    }
-
-    @Override
     public World getWorld() {
-        return this.world;
-    }
-
-    @Override
-    public WorldType getWorldType() {
-        return this.world.getWorldType();
+        return this.world != null ? this.world : this;
     }
 
     @Override
     public void setGameTime(long worldTime) {
         this.world.setGameTime(worldTime);
-    }
-
-    @Override
-    public long getSeed() {
-        return this.world.getSeed();
     }
 
     @Override
@@ -1052,18 +1008,8 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public Dimension getDimension() {
-        return this.world.getDimension();
-    }
-
-    @Override
     public float getCurrentMoonPhaseFactor() {
         return this.world.getCurrentMoonPhaseFactor();
-    }
-
-    @Override
-    public float getCelestialAngle(float partialTicks) {
-        return this.world.getCelestialAngle(partialTicks);
     }
 
     @Override

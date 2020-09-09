@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -23,7 +25,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     private ISlabSupport support;
     private BlockState state;
     private TileEntity tile;
-    private WorldWrapper world;
+    private IWorldWrapper<?> world;
 
     private final SlabTileEntity slab;
     private final boolean positive;
@@ -48,7 +50,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Nonnull
     @Override
     public World getWorld() {
-        return this.world;
+        return (World) this.world;
     }
 
     @Override
@@ -78,11 +80,11 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
         this.state = state;
         if (state != null && state.hasTileEntity())
             if (this.tile == null)
-                setTileEntity(state.createTileEntity(this.world));
+                setTileEntity(state.createTileEntity(this.getWorld()));
             else
                 this.tile.updateContainingBlockInfo();
         this.slab.markDirtyClient();
-        this.support = state == null ? null : SlabSupport.getSlabSupport(this.world, this.getPos(), this.state);
+        this.support = state == null ? null : SlabSupport.getSlabSupport(this.getWorld(), this.getPos(), this.state);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
             if (this.tile != null)
                 this.tile.remove();
             tile.onLoad();
-            tile.setWorldAndPos(this.world, this.slab.getPos());
+            tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
         }
         this.tile = tile;
     }
@@ -101,11 +103,13 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
         if (this.world != null)
             this.world.setWorld(world);
         else
-            this.world = new WorldWrapper(world);
-        this.world.setTile(this.slab, this.positive);
+            this.world = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
+        this.world.setPositive(this.positive);
+        this.world.setBlockPos(this.slab.getPos());
+        this.world.setStateContainer(this.slab);
 
         if (this.tile != null)
-            this.tile.setWorldAndPos(this.world, this.slab.getPos());
+            this.tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
     }
 
     @Override
@@ -128,7 +132,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
 
     public void onLoad() {
         if (this.tile != null) {
-            this.tile.setWorldAndPos(this.world, this.slab.getPos());
+            this.tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
             this.tile.onLoad();
         }
     }
