@@ -129,7 +129,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                                 return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
                             }).collect(Collectors.toList());
                         } else {
-                            quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE));
+                            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), false);
+                            quads = transformer.processMany(model.getQuads(state, ClientUtils.rotateFace(cache.getSide(), direction), cache.getRandom(), EmptyModelData.INSTANCE));
                         }
                     }
                     if (cache.getSide() != null) {
