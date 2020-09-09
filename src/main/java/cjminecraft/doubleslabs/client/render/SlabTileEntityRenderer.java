@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.Vector3f;
@@ -13,6 +14,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
@@ -29,7 +31,9 @@ public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
     @Override
     public void render(SlabTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockPos pos = tile.getPos();
-        ChunkRenderCache world = MinecraftForgeClient.getRegionRenderCache(tile.getWorld(), pos);
+        World world = tile.getWorld();
+        if (world == null)
+            return;
         BlockState state = world.getBlockState(pos);
         if (tile.getPositiveBlockInfo().getTileEntity() == null && tile.getNegativeBlockInfo().getTileEntity() == null)
             return;

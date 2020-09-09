@@ -186,4 +186,11 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
             }
         }
     }
+
+    @Nullable
+    @Override
+    public World getWorld() {
+        // fixes an issue with create
+        return this.world != null ? this.world.getWorld() : null;
+    }
 }
