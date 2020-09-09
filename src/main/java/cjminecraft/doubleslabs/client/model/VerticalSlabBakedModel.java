@@ -141,7 +141,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                                 IHorizontalSlabSupport support = SlabSupport.isHorizontalSlab(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
                                 // try with vertical slabs
                                 if (support != null) {
-                                    BlockState s = horizontalSlabSupport.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
+                                    BlockState s = support.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
                                     if (shouldCull(state, s, cullInfo.getDirection()))
                                         quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
                                 }
