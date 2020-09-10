@@ -54,7 +54,7 @@ public class VerticalSlabItem extends BlockItem {
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if (this.isInGroup(group)) {
             ForgeRegistries.ITEMS.forEach(item -> {
-                if (SlabSupport.isHorizontalSlab(item)) {
+                if (item != null && SlabSupport.isHorizontalSlab(item)) {
                     ItemStack stack = new ItemStack(this);
                     items.add(setStack(stack, item.getDefaultInstance()));
                 }
