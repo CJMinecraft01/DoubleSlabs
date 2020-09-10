@@ -1,3 +1,7 @@
 {
-  "block.doubleslabstest.glass_slab": "Glass Slab"
+  "block.doubleslabstest.glass_slab": "Glass Slab",
+  "block.doubleslabstest.slime_slab": "Slime Slab",
+  "block.doubleslabstest.vertical_stone_slab": "Vertical Stone Slab",
+  "block.doubleslabstest.chest_slab": "Chest Slab",
+  "gui.doubleslabstest.chest_slab": "Chest Slab"
 }
