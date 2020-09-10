@@ -222,11 +222,6 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
     }
 
     @Override
-    public boolean isRemote() {
-        return this.world.isRemote();
-    }
-
-    @Override
     public Chunk getChunkAt(BlockPos pos) {
         return this.world.getChunkAt(pos);
     }
