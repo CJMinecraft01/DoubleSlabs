@@ -423,7 +423,21 @@ public class PlacementHandler {
 //                    }
                     BlockState newState = DSBlocks.DOUBLE_SLAB.get().getStateForPlacement(context).with(DoubleSlabBlock.WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && (horizontalSlabItemSupport.waterloggableWhenDouble(world, pos, slabState) || horizontalSlabSupport.waterloggableWhenDouble(world, pos, state)));
 
-                    if (placeSlab(world, pos, newState, player, half == SlabType.BOTTOM ? state : slabState, half == SlabType.TOP ? state : slabState))
+                    TileEntity tileEntity = world.getTileEntity(pos);
+
+                    BlockState finalState1 = state;
+                    if (placeSlab(world, pos, newState, player, tile -> {
+//                        half == SlabType.BOTTOM ? state : slabState, half == SlabType.TOP ? state : slabState
+                        if (half == SlabType.BOTTOM) {
+                            tile.getNegativeBlockInfo().setBlockState(finalState1);
+                            tile.getNegativeBlockInfo().setTileEntity(tileEntity);
+                            tile.getPositiveBlockInfo().setBlockState(slabState);
+                        } else {
+                            tile.getNegativeBlockInfo().setBlockState(slabState);
+                            tile.getPositiveBlockInfo().setBlockState(finalState1);
+                            tile.getPositiveBlockInfo().setTileEntity(tileEntity);
+                        }
+                    }))
                         finishBlockPlacement(world, pos, slabState, player, stack, cancel);
                 }
             }
