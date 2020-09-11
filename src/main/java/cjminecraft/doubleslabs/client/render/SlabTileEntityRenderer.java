@@ -44,38 +44,44 @@ public class SlabTileEntityRenderer extends TileEntityRenderer<SlabTileEntity> {
             if (tile.getNegativeBlockInfo().getTileEntity() != null)
                 TileEntityRendererDispatcher.instance.render(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, destroyStage);
         } else if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get()) {
-            Direction facing = world.getBlockState(pos).get(VerticalSlabBlock.FACING);
-            GlStateManager.pushMatrix();
-
-            switch (facing) {
-                case NORTH:
-                    GlStateManager.rotatef(NORTH_ROTATION.getX(), NORTH_ROTATION.getY(), NORTH_ROTATION.getZ(), NORTH_ROTATION.getW());
-                    GlStateManager.translatef(0.0f, 0.0f, -1.0f);
-                    break;
-                case SOUTH:
-                    GlStateManager.rotatef(SOUTH_ROTATION.getX(), SOUTH_ROTATION.getY(), SOUTH_ROTATION.getZ(), SOUTH_ROTATION.getW());
-                    GlStateManager.translatef(0.0f, -1.0f, 0.0f);
-                    break;
-                case WEST:
-                    GlStateManager.rotatef(WEST_ROTATION.getX(), WEST_ROTATION.getY(), WEST_ROTATION.getZ(), WEST_ROTATION.getW());
-                    GlStateManager.translatef(-1.0f, 0.0f, 0.0f);
-                    break;
-                case EAST:
-                    GlStateManager.rotatef(EAST_ROTATION.getX(), EAST_ROTATION.getY(), EAST_ROTATION.getZ(), EAST_ROTATION.getW());
-                    GlStateManager.translatef(0.0f, -1.0f, 0.0f);
-                    break;
-            }
-
-            if (tile.getNegativeBlockInfo().getTileEntity() != null) {
-//                matrixStack.push();
-//                GlStateManager.translatef(0, 0.5d, 0);
-                TileEntityRendererDispatcher.instance.render(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, destroyStage);
-//                matrixStack.pop();
-            }
-            if (tile.getPositiveBlockInfo().getTileEntity() != null)
-                TileEntityRendererDispatcher.instance.render(tile.getPositiveBlockInfo().getTileEntity(), partialTicks, destroyStage);
-
-            GlStateManager.popMatrix();
+            // TODO fix
+            return;
+//            Direction facing = world.getBlockState(pos).get(VerticalSlabBlock.FACING);
+//            GlStateManager.pushMatrix();
+//
+//            switch (facing) {
+//                case NORTH:
+////                    GlStateManager.translatef(pos.getX(), pos.getY(), pos.getZ());
+//                    GlStateManager.rotatef(90, 1, 0, 0);
+//                    GlStateManager.translatef(0.0f, 0.0f, -1.0f);
+//                    break;
+//                case SOUTH:
+////                    GlStateManager.translatef(pos.getX(), pos.getY(), pos.getZ());
+//                    GlStateManager.rotatef(90, -1, 0, 0);
+//                    GlStateManager.translatef(0.0f, -1.0f, 0.0f);
+//                    break;
+//                case WEST:
+////                    GlStateManager.translatef(pos.getX(), pos.getY(), pos.getZ());
+//                    GlStateManager.rotatef(90, 0, 0, -1);
+//                    GlStateManager.translatef(-1.0f, 0.0f, 0.0f);
+//                    break;
+//                case EAST:
+////                    GlStateManager.translatef(pos.getX(), pos.getY(), pos.getZ());
+//                    GlStateManager.rotatef(90, 0, 0, 1);
+//                    GlStateManager.translatef(0.0f, -1.0f, 0.0f);
+//                    break;
+//            }
+//
+//            if (tile.getNegativeBlockInfo().getTileEntity() != null) {
+////                matrixStack.push();
+////                GlStateManager.translatef(0, 0.5d, 0);
+//                TileEntityRendererDispatcher.instance.render(tile.getNegativeBlockInfo().getTileEntity(), partialTicks, destroyStage);
+////                matrixStack.pop();
+//            }
+//            if (tile.getPositiveBlockInfo().getTileEntity() != null)
+//                TileEntityRendererDispatcher.instance.render(tile.getPositiveBlockInfo().getTileEntity(), partialTicks, destroyStage);
+//
+//            GlStateManager.popMatrix();
         }
     }
 }
