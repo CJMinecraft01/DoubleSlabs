@@ -45,6 +45,7 @@ minecraft {
         }
 
         server {
+            workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -54,6 +55,8 @@ minecraft {
         }
     }
 }
+
+sourceSets { main { output.resourcesDir = output.classesDir } }
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
