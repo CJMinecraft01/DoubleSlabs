@@ -4,14 +4,11 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -34,7 +31,7 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(Item item) {
-        return item instanceof BlockItem && isValid(((BlockItem) item).getBlock().getDefaultState());
+        return item instanceof BlockItem && ((BlockItem) item).getBlock() != null && isValid(((BlockItem) item).getBlock().getDefaultState());
     }
 
     @Override
