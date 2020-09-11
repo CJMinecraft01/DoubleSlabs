@@ -90,10 +90,11 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Override
     public void setTileEntity(@Nullable TileEntity tile) {
         if (tile != null) {
-            this.tile.setWorld(this.slab.getWorld());
-            this.tile.setPos(this.slab.getPos());
-            if (this.tile != null)
+            if (this.tile != null) {
+                this.tile.setWorld(this.slab.getWorld());
+                this.tile.setPos(this.slab.getPos());
                 this.tile.remove();
+            }
             tile.setWorld(this.slab.getWorld());
             tile.setPos(this.slab.getPos());
             tile.onLoad();
