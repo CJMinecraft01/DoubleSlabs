@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +24,7 @@ import java.util.function.Consumer;
 
 public class ClientUtils {
     private static final Quaternion ROTATE_X_90 = new Quaternion(new Vector3f(1, 0, 0), 90, true);
-    private static final Quaternion ROTATE_Z_170 = new Quaternion(new Vector3f(0, 0, 1), 170, true);
+    private static final Quaternion ROTATE_Z_180 = new Quaternion(new Vector3f(0, 0, 1), 180, true);
 
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque() || !state.isSolid();
@@ -59,33 +60,33 @@ public class ClientUtils {
         return new Quat4f(quaternion.getX(), quaternion.getY(), quaternion.getZ(), quaternion.getW());
     }
 
-    private static final HashMap<Pair<Direction, Direction>, Consumer<Vector4f>> DIRECTION_TO_TRANSFORMATION = new HashMap<>();
+    private static final HashMap<Pair<Direction, Direction>, Consumer<Vector3f>> DIRECTION_TO_TRANSFORMATION = new HashMap<>();
     private static final HashMap<Direction, Quaternion> DIRECTION_TO_ANGLE = new HashMap<>();
 
     static {
         DIRECTION_TO_ANGLE.put(Direction.NORTH, new Quaternion(new Vector3f(0, 1, 0), 0, true));
-        DIRECTION_TO_ANGLE.put(Direction.SOUTH, new Quaternion(new Vector3f(0, 1, 0), 170, true));
+        DIRECTION_TO_ANGLE.put(Direction.SOUTH, new Quaternion(new Vector3f(0, 1, 0), 180, true));
         DIRECTION_TO_ANGLE.put(Direction.WEST, new Quaternion(new Vector3f(0, 1, 0), 90, true));
         DIRECTION_TO_ANGLE.put(Direction.EAST, new Quaternion(new Vector3f(0, 1, 0), 270, true));
 
         Arrays.stream(Direction.values()).filter(direction -> !direction.getAxis().isVertical()).forEach(direction -> {
             Quaternion angle = DIRECTION_TO_ANGLE.get(direction);
             DIRECTION_TO_TRANSFORMATION.put(Pair.of(direction, null), vector -> {
-                vector.func_195912_a(ROTATE_X_90);
-                vector.func_195912_a(angle);
+                vector.func_214905_a(ROTATE_X_90);
+                vector.func_214905_a(angle);
             });
             Arrays.stream(Direction.values()).forEach(side -> {
                 DIRECTION_TO_TRANSFORMATION.put(Pair.of(direction, side), vector -> {
-                    vector.func_195912_a(ROTATE_X_90);
+                    vector.func_214905_a(ROTATE_X_90);
                     if (side == direction)
-                        vector.func_195912_a(ROTATE_Z_170);
-                    vector.func_195912_a(angle);
+                        vector.func_214905_a(ROTATE_Z_180);
+                    vector.func_214905_a(angle);
                 });
             });
         });
     }
 
-    public static Consumer<Vector4f> getVertexTransformation(Direction direction, @Nullable Direction side) {
+    public static Consumer<Vector3f> getVertexTransformation(Direction direction, @Nullable Direction side) {
         return DIRECTION_TO_TRANSFORMATION.getOrDefault(Pair.of(direction, side), vector -> {});
     }
 
@@ -120,7 +121,7 @@ public class ClientUtils {
             float y = Float.intBitsToFloat(vertexData[i * 7 + 1]) - 0.5f;
             float z = Float.intBitsToFloat(vertexData[i * 7 + 2]) - 0.5f;
 
-            Vector4f vertex = new Vector4f(x, y, z, 0.0f);
+            Vector3f vertex = new Vector3f(x, y, z);
             getVertexTransformation(direction, side).accept(vertex);
 
             float transformedX = vertex.getX() + 0.5f;
@@ -162,9 +163,12 @@ public class ClientUtils {
                 finalData[i * 7 + 1] = Float.floatToRawIntBits(positions[vertexInformation.yIndex]);
                 finalData[i * 7 + 2] = Float.floatToRawIntBits(positions[vertexInformation.zIndex]);
                 int newIndex = -1;
-                for (int j = 0; j < 4; j++)
-                    if (approximatelyEqual(Float.intBitsToFloat(data[j * 7]), positions[vertexInformation.xIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 7 + 1]), positions[vertexInformation.yIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 7 + 2]), positions[vertexInformation.zIndex]))
+                for (int j = 0; j < 4; j++) {
+                    if (approximatelyEqual(Float.intBitsToFloat(data[j * 7]), positions[vertexInformation.xIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 7 + 1]), positions[vertexInformation.yIndex]) && approximatelyEqual(Float.intBitsToFloat(data[j * 7 + 2]), positions[vertexInformation.zIndex])) {
                         newIndex = j;
+                        break;
+                    }
+                }
                 if (newIndex < 0) {
                     finalData[i * 7 + 3] = data[i * 7 + 3];
                     finalData[i * 7 + 4] = data[i * 7 + 4];

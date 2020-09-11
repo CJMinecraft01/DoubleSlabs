@@ -2,9 +2,8 @@ package cjminecraft.doubleslabs.client.util.vertex;
 
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.ExtendedVector4f;
 import com.google.common.collect.Lists;
-import net.minecraft.client.renderer.Vector4f;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -27,7 +26,7 @@ public class VerticalSlabTransformer {
     @Nullable
     private final Direction side;
     private final boolean positive;
-    private final Consumer<Vector4f> transformation;
+    private final Consumer<Vector3f> transformation;
 
     public VerticalSlabTransformer(Direction verticalSlabDirection, @Nullable Direction side, boolean positive) {
         this.verticalSlabDirection = verticalSlabDirection;
@@ -117,7 +116,7 @@ public class VerticalSlabTransformer {
             float y = Float.intBitsToFloat(getAtByteOffset(inData, offset + 4)) - 0.5f;
             float z = Float.intBitsToFloat(getAtByteOffset(inData, offset + 8)) - 0.5f;
 
-            Vector4f pos = new Vector4f(x, y, z, 0);
+            Vector3f pos = new Vector3f(x, y, z);
             this.transformation.accept(pos);
 //            if (this.side == this.verticalSlabDirection)
 //                pos.transform(new Vector3f(Vector3d.copyCentered(this.verticalSlabDirection.getDirectionVec())).rotationDegrees(180));
@@ -137,10 +136,10 @@ public class VerticalSlabTransformer {
                 float y = ((byte) ((normalIn << 8) >> 24)) / 127.0f - 0.5f;
                 float z = ((byte) ((normalIn << 16) >> 24)) / 127.0f - 0.5f;
 
-                ExtendedVector4f pos = new ExtendedVector4f(x, y, z, 0);
+                Vector3f pos = new Vector3f(x, y, z);
                 ClientUtils.getVertexTransformation(verticalSlabDirection, null).accept(pos);
 //                this.transformation.accept(pos);
-                pos.set(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0);
+                pos.set(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
                 pos.normalize();
 
                 int normalOut = ((((byte) (x / 127.0f)) & 0xFF) << 24) |

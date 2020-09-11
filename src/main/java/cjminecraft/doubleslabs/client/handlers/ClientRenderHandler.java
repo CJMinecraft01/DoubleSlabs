@@ -1,9 +1,9 @@
 package cjminecraft.doubleslabs.client.handlers;
 
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.old.Registrar;
-import cjminecraft.doubleslabs.old.blocks.BlockVerticalSlab;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -49,7 +49,7 @@ public class ClientRenderHandler {
             GlStateManager.scalef(1.0F, 1.0F, 0.999F);
 
             // We are trying to render the block highlight for the double slab
-            if (state.getBlock() == Registrar.DOUBLE_SLAB) {
+            if (state.getBlock() == DSBlocks.DOUBLE_SLAB.get()) {
                 // Offset the position of the block for when we render
                 double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
                 double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
@@ -66,13 +66,13 @@ public class ClientRenderHandler {
                 event.setCanceled(true);
             }
 
-            if (state.getBlock() == Registrar.VERTICAL_SLAB && state.get(BlockVerticalSlab.DOUBLE)) {
+            if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.get(VerticalSlabBlock.DOUBLE)) {
                 // Offset the position of the block for when we render
                 double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
                 double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
                 double z = (double) event.getTarget().getPos().getZ() - event.getInfo().getProjectedView().z;
 
-                switch (state.get(BlockVerticalSlab.FACING).getAxis()) {
+                switch (state.get(VerticalSlabBlock.FACING).getAxis()) {
                     case X:
                         // Check if we are looking at the top slab or bottom slab
                         if (event.getTarget().getHitVec().x - event.getTarget().getPos().getX() > 0.5) {

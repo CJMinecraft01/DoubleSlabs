@@ -918,16 +918,6 @@ public class ServerPlayerEntityWrapper extends ServerPlayerEntity implements IPl
     }
 
     @Override
-    public ItemStack getHeldItemOffhand() {
-        return this.player.getHeldItemOffhand();
-    }
-
-    @Override
-    public ItemStack getHeldItem(Hand hand) {
-        return this.player.getHeldItem(hand);
-    }
-
-    @Override
     public void setHeldItem(Hand hand, ItemStack stack) {
         this.player.setHeldItem(hand, stack);
     }
@@ -2442,18 +2432,8 @@ public class ServerPlayerEntityWrapper extends ServerPlayerEntity implements IPl
     }
 
     @Override
-    public ItemStack getItemStackFromSlot(EquipmentSlotType slotIn) {
-        return this.player.getItemStackFromSlot(slotIn);
-    }
-
-    @Override
     public boolean func_213365_e(ItemStack itemstackIn) {
         return this.player.func_213365_e(itemstackIn);
-    }
-
-    @Override
-    public ItemStack getHeldItemMainhand() {
-        return this.player.getHeldItemMainhand();
     }
 
     @Override
@@ -2472,18 +2452,8 @@ public class ServerPlayerEntityWrapper extends ServerPlayerEntity implements IPl
     }
 
     @Override
-    public void moveToBlockPosAndAngles(BlockPos pos, float rotationYawIn, float rotationPitchIn) {
-        this.player.moveToBlockPosAndAngles(pos, rotationYawIn, rotationPitchIn);
-    }
-
-    @Override
     public Vec3d getEyePosition(float partialTicks) {
         return this.player.getEyePosition(partialTicks);
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return this.player.isSneaking();
     }
 
     @Override
@@ -2491,8 +2461,4 @@ public class ServerPlayerEntityWrapper extends ServerPlayerEntity implements IPl
         return this.player.shouldRenderSneaking();
     }
 
-    @Override
-    public AxisAlignedBB getBoundingBox() {
-        return this.player.getBoundingBox();
-    }
 }
