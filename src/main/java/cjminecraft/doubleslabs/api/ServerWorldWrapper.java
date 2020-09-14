@@ -78,7 +78,13 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
 
             }
         });
+        super.initCapabilities();
         this.world = world;
+    }
+
+    @Override
+    protected void initCapabilities() {
+
     }
 
     @Override
