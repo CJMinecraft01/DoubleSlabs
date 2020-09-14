@@ -212,7 +212,7 @@ public class PlacementHandler {
                                 else
                                     tile.getPositiveBlockInfo().setBlockState(slabState);
                             })) {
-                                finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                                finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                             }
                         }
                     }
@@ -268,7 +268,7 @@ public class PlacementHandler {
                             tile.getPositiveBlockInfo().setBlockState(slabState);
                             tile.getNegativeBlockInfo().setBlockState(finalState);
                         }))
-                            finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                            finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                     }
                 }
             } else {
@@ -303,7 +303,7 @@ public class PlacementHandler {
                             BlockState newState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
                             if (placeSlab(world, pos, newState, player, state, slabState))
-                                finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                                finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                             return;
                         }
                     }
@@ -339,7 +339,7 @@ public class PlacementHandler {
                             BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context).with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.FACING, direction);
 
                             if (placeSlab(world, newPos, verticalSlabState, player, newState, slabState))
-                                finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                                finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                         } else if (shouldPlaceVerticalSlab(player, face)) {
                             // We should place the horizontal slab as a vertical slab
 //                            BlockRayTraceResult result = RayTraceUtil.rayTrace(player);
@@ -361,7 +361,7 @@ public class PlacementHandler {
                             BlockState verticalSlabState = DSBlocks.VERTICAL_SLAB.get().getStateForPlacement(context);
 
                             if (placeSlab(world, newPos, verticalSlabState, player, tile -> tile.getPositiveBlockInfo().setBlockState(slabState)))
-                                finishBlockPlacement(world, newPos, slabState, player, stack, cancel);
+                                finishBlockPlacement(world, newPos, slabState, player, event.getItemStack(), cancel);
                         }
                         return;
                     }
@@ -390,7 +390,7 @@ public class PlacementHandler {
                             else
                                 t.getPositiveBlockInfo().setBlockState(slabState);
                         }))
-                            finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                            finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                         return;
                     }
                 }
@@ -438,7 +438,7 @@ public class PlacementHandler {
                             tile.getPositiveBlockInfo().setTileEntity(tileEntity);
                         }
                     }))
-                        finishBlockPlacement(world, pos, slabState, player, stack, cancel);
+                        finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
                 }
             }
         }
