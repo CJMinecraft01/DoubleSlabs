@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.crash.CrashReport;
@@ -8,7 +9,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.merchant.IReputationTracking;
+import net.minecraft.entity.merchant.IReputationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.crafting.RecipeManager;
@@ -16,31 +21,37 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.profiler.IProfiler;
-import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ITagCollectionSupplier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.DynamicRegistries;
+import net.minecraft.village.PointOfInterestManager;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
-import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.chunk.listener.IChunkStatusListener;
+import net.minecraft.world.end.DragonFightManager;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.world.gen.feature.structure.StructureManager;
+import net.minecraft.world.gen.feature.structure.StructureStart;
+import net.minecraft.world.gen.feature.template.TemplateManager;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.lighting.WorldLightManager;
-import net.minecraft.world.storage.ISpawnWorldInfo;
+import net.minecraft.world.raid.Raid;
+import net.minecraft.world.raid.RaidManager;
+import net.minecraft.world.server.ServerTickList;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.common.capabilities.Capability;
@@ -49,24 +60,41 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Stream;
 
-public class WorldWrapper extends World implements IWorldWrapper<World> {
-
-    private World world;
-    
+public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<ServerWorld> {
+    private ServerWorld world;
+    private boolean positive;
     private BlockPos pos;
     private IStateContainer container;
-    private boolean positive;
 
-    public WorldWrapper(World world) {
-        super((ISpawnWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_230315_m_(), world.func_234924_Y_(), world.isRemote, world.func_234925_Z_(), 0L);
+    public ServerWorldWrapper(ServerWorld world) {
+        super(world.getServer(), Util.getServerExecutor(), world.getServer().anvilConverterForAnvilFile, (IServerWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_230315_m_(), new IChunkStatusListener() {
+            @Override
+            public void start(ChunkPos center) {
+
+            }
+
+            @Override
+            public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+
+            }
+
+            @Override
+            public void stop() {
+
+            }
+        }, world.getChunkProvider().generator, world.func_234925_Z_(), world.getSeed(), new ArrayList<>(), false);
         this.world = world;
+        super.initCapabilities();
+    }
+
+    @Override
+    protected void initCapabilities() {
+
     }
 
     @Override
@@ -101,12 +129,7 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
 
     @Override
     public void setWorld(World world) {
-        this.world = world;
-    }
-
-    @Override
-    public World getWorld() {
-        return this.world;
+        this.world = (ServerWorld) world;
     }
 
     @Override
@@ -175,11 +198,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public Scoreboard getScoreboard() {
-        return this.world.getScoreboard();
-    }
-
-    @Override
     public RecipeManager getRecipeManager() {
         return this.world.getRecipeManager();
     }
@@ -190,16 +208,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public ITickList<Block> getPendingBlockTicks() {
-        return this.world.getPendingBlockTicks();
-    }
-
-    @Override
-    public ITickList<Fluid> getPendingFluidTicks() {
-        return this.world.getPendingFluidTicks();
-    }
-
-    @Override
     public void playEvent(@Nullable PlayerEntity player, int type, BlockPos pos, int data) {
         this.world.playEvent(player, type, pos, data);
     }
@@ -207,11 +215,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public int func_234938_ad_() {
         return 0;
-    }
-
-    @Override
-    public List<? extends PlayerEntity> getPlayers() {
-        return this.world.getPlayers();
     }
 
     @Override
@@ -419,11 +422,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public void calculateInitialSkylight() {
-        this.world.calculateInitialSkylight();
-    }
-
-    @Override
     public void setAllowedSpawnTypes(boolean hostile, boolean peaceful) {
         this.world.setAllowedSpawnTypes(hostile, peaceful);
     }
@@ -520,11 +518,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public AbstractChunkProvider getChunkProvider() {
-        return this.world.getChunkProvider();
-    }
-
-    @Override
     public void addBlockEvent(BlockPos pos, Block blockIn, int eventID, int eventParam) {
         this.world.addBlockEvent(pos, blockIn, eventID, eventParam);
     }
@@ -540,18 +533,8 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public float getThunderStrength(float delta) {
-        return this.world.getThunderStrength(delta);
-    }
-
-    @Override
     public void setThunderStrength(float strength) {
         this.world.setThunderStrength(strength);
-    }
-
-    @Override
-    public float getRainStrength(float delta) {
-        return this.world.getRainStrength(delta);
     }
 
     @Override
@@ -612,11 +595,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public void setTimeLightningFlash(int timeFlashIn) {
         this.world.setTimeLightningFlash(timeFlashIn);
-    }
-
-    @Override
-    public WorldBorder getWorldBorder() {
-        return this.world.getWorldBorder();
     }
 
     @Override
@@ -1018,18 +996,8 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public float func_242415_f(float p_242415_1_) {
-        return this.world.func_242415_f(p_242415_1_);
-    }
-
-    @Override
     public int func_242414_af() {
         return this.world.func_242414_af();
-    }
-
-    @Override
-    public long func_241851_ab() {
-        return this.world.func_241851_ab();
     }
 
     @Override
@@ -1071,16 +1039,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    protected void calculateInitialWeather() {
-        super.calculateInitialWeather();
-    }
-
-    @Override
-    public DimensionType func_230315_m_() {
-        return super.func_230315_m_();
-    }
-
-    @Override
     public RegistryKey<World> func_234923_W_() {
         return super.func_234923_W_();
     }
@@ -1088,5 +1046,351 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public Supplier<IProfiler> func_234924_Y_() {
         return super.func_234924_Y_();
+    }
+
+    @Override
+    public void func_241113_a_(int p_241113_1_, int p_241113_2_, boolean p_241113_3_, boolean p_241113_4_) {
+        this.world.func_241113_a_(p_241113_1_, p_241113_2_, p_241113_3_, p_241113_4_);
+    }
+
+    @Override
+    public StructureManager func_241112_a_() {
+        return this.world.func_241112_a_();
+    }
+
+    @Override
+    public void tick(BooleanSupplier hasTimeLeft) {
+        this.world.tick(hasTimeLeft);
+    }
+
+    @Override
+    public void func_241114_a_(long p_241114_1_) {
+        this.world.func_241114_a_(p_241114_1_);
+    }
+
+    @Override
+    public void func_241123_a_(boolean p_241123_1_, boolean p_241123_2_) {
+        this.world.func_241123_a_(p_241123_1_, p_241123_2_);
+    }
+
+    @Override
+    public void tickEnvironment(Chunk chunkIn, int randomTickSpeed) {
+        this.world.tickEnvironment(chunkIn, randomTickSpeed);
+    }
+
+    @Override
+    public boolean isInsideTick() {
+        return this.world.isInsideTick();
+    }
+
+    @Override
+    public void updateAllPlayersSleepingFlag() {
+        this.world.updateAllPlayersSleepingFlag();
+    }
+
+    @Override
+    public void resetUpdateEntityTick() {
+        this.world.resetUpdateEntityTick();
+    }
+
+    @Override
+    public void updateEntity(Entity entityIn) {
+        this.world.updateEntity(entityIn);
+    }
+
+    @Override
+    public void tickPassenger(Entity ridingEntity, Entity passengerEntity) {
+        this.world.tickPassenger(ridingEntity, passengerEntity);
+    }
+
+    @Override
+    public void chunkCheck(Entity entityIn) {
+        this.world.chunkCheck(entityIn);
+    }
+
+    @Override
+    public void save(@Nullable IProgressUpdate progress, boolean flush, boolean skipSave) {
+        this.world.save(progress, flush, skipSave);
+    }
+
+    @Override
+    public List<Entity> getEntities(@Nullable EntityType<?> entityTypeIn, Predicate<? super Entity> predicateIn) {
+        return this.world.getEntities(entityTypeIn, predicateIn);
+    }
+
+    @Override
+    public List<EnderDragonEntity> getDragons() {
+        return this.world.getDragons();
+    }
+
+    @Override
+    public List<ServerPlayerEntity> getPlayers(Predicate<? super ServerPlayerEntity> predicateIn) {
+        return this.world.getPlayers(predicateIn);
+    }
+
+    @Nullable
+    @Override
+    public ServerPlayerEntity getRandomPlayer() {
+        return this.world.getRandomPlayer();
+    }
+
+    @Override
+    public boolean summonEntity(Entity entityIn) {
+        return this.world.summonEntity(entityIn);
+    }
+
+    @Override
+    public void addFromAnotherDimension(Entity entityIn) {
+        this.world.addFromAnotherDimension(entityIn);
+    }
+
+    @Override
+    public void addDuringCommandTeleport(ServerPlayerEntity playerIn) {
+        this.world.addDuringCommandTeleport(playerIn);
+    }
+
+    @Override
+    public void addDuringPortalTeleport(ServerPlayerEntity playerIn) {
+        this.world.addDuringPortalTeleport(playerIn);
+    }
+
+    @Override
+    public void addNewPlayer(ServerPlayerEntity player) {
+        this.world.addNewPlayer(player);
+    }
+
+    @Override
+    public void addRespawnedPlayer(ServerPlayerEntity player) {
+        this.world.addRespawnedPlayer(player);
+    }
+
+    @Override
+    public boolean addEntityIfNotDuplicate(Entity entityIn) {
+        return this.world.addEntityIfNotDuplicate(entityIn);
+    }
+
+    @Override
+    public boolean func_242106_g(Entity p_242106_1_) {
+        return this.world.func_242106_g(p_242106_1_);
+    }
+
+    @Override
+    public void onChunkUnloading(Chunk chunkIn) {
+        this.world.onChunkUnloading(chunkIn);
+    }
+
+    @Override
+    public void onEntityRemoved(Entity entityIn) {
+        this.world.onEntityRemoved(entityIn);
+    }
+
+    @Override
+    public void removeEntityComplete(Entity entityIn, boolean keepData) {
+        this.world.removeEntityComplete(entityIn, keepData);
+    }
+
+    @Override
+    public void removeEntity(Entity entityIn) {
+        this.world.removeEntity(entityIn);
+    }
+
+    @Override
+    public void removeEntity(Entity entityIn, boolean keepData) {
+        this.world.removeEntity(entityIn, keepData);
+    }
+
+    @Override
+    public void removePlayer(ServerPlayerEntity player) {
+        this.world.removePlayer(player);
+    }
+
+    @Override
+    public void removePlayer(ServerPlayerEntity player, boolean keepData) {
+        this.world.removePlayer(player, keepData);
+    }
+
+    @Override
+    public Teleporter getDefaultTeleporter() {
+        return this.world.getDefaultTeleporter();
+    }
+
+    @Override
+    public TemplateManager getStructureTemplateManager() {
+        return this.world.getStructureTemplateManager();
+    }
+
+    @Override
+    public <T extends IParticleData> int spawnParticle(T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
+        return this.world.spawnParticle(type, posX, posY, posZ, particleCount, xOffset, yOffset, zOffset, speed);
+    }
+
+    @Override
+    public <T extends IParticleData> boolean spawnParticle(ServerPlayerEntity player, T type, boolean longDistance, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
+        return this.world.spawnParticle(player, type, longDistance, posX, posY, posZ, particleCount, xOffset, yOffset, zOffset, speed);
+    }
+
+    @Nullable
+    @Override
+    public Entity getEntityByUuid(UUID uniqueId) {
+        return this.world.getEntityByUuid(uniqueId);
+    }
+
+    @Nullable
+    @Override
+    public BlockPos func_241117_a_(Structure<?> p_241117_1_, BlockPos p_241117_2_, int p_241117_3_, boolean p_241117_4_) {
+        return this.world.func_241117_a_(p_241117_1_, p_241117_2_, p_241117_3_, p_241117_4_);
+    }
+
+    @Nullable
+    @Override
+    public BlockPos func_241116_a_(Biome p_241116_1_, BlockPos p_241116_2_, int p_241116_3_, int p_241116_4_) {
+        return this.world.func_241116_a_(p_241116_1_, p_241116_2_, p_241116_3_, p_241116_4_);
+    }
+
+    @Override
+    public void func_241124_a__(BlockPos p_241124_1_, float p_241124_2_) {
+        this.world.func_241124_a__(p_241124_1_, p_241124_2_);
+    }
+
+    @Override
+    public BlockPos func_241135_u_() {
+        return this.world.func_241135_u_();
+    }
+
+    @Override
+    public float func_242107_v() {
+        return this.world.func_242107_v();
+    }
+
+    @Override
+    public LongSet getForcedChunks() {
+        return this.world.getForcedChunks();
+    }
+
+    @Override
+    public boolean forceChunk(int chunkX, int chunkZ, boolean add) {
+        return this.world.forceChunk(chunkX, chunkZ, add);
+    }
+
+    @Override
+    public PointOfInterestManager getPointOfInterestManager() {
+        return this.world.getPointOfInterestManager();
+    }
+
+    @Override
+    public boolean isVillage(BlockPos pos) {
+        return this.world.isVillage(pos);
+    }
+
+    @Override
+    public boolean isVillage(SectionPos pos) {
+        return this.world.isVillage(pos);
+    }
+
+    @Override
+    public boolean func_241119_a_(BlockPos p_241119_1_, int p_241119_2_) {
+        return this.world.func_241119_a_(p_241119_1_, p_241119_2_);
+    }
+
+    @Override
+    public int sectionsToVillage(SectionPos pos) {
+        return this.world.sectionsToVillage(pos);
+    }
+
+    @Override
+    public RaidManager getRaids() {
+        return this.world.getRaids();
+    }
+
+    @Nullable
+    @Override
+    public Raid findRaid(BlockPos pos) {
+        return this.world.findRaid(pos);
+    }
+
+    @Override
+    public boolean hasRaid(BlockPos pos) {
+        return this.world.hasRaid(pos);
+    }
+
+    @Override
+    public void updateReputation(IReputationType type, Entity target, IReputationTracking host) {
+        this.world.updateReputation(type, target, host);
+    }
+
+    @Override
+    public void writeDebugInfo(Path pathIn) throws IOException {
+        this.world.writeDebugInfo(pathIn);
+    }
+
+    @Override
+    public void clearBlockEvents(MutableBoundingBox boundingBox) {
+        this.world.clearBlockEvents(boundingBox);
+    }
+
+    @Override
+    public Iterable<Entity> func_241136_z_() {
+        return this.world.func_241136_z_();
+    }
+
+    @Override
+    public boolean func_241109_A_() {
+        return this.world.func_241109_A_();
+    }
+
+    @Override
+    public long getSeed() {
+        return this.world.getSeed();
+    }
+
+    @Nullable
+    @Override
+    public DragonFightManager func_241110_C_() {
+        return this.world.func_241110_C_();
+    }
+
+    @Override
+    public Stream<? extends StructureStart<?>> func_241827_a(SectionPos p_241827_1_, Structure<?> p_241827_2_) {
+        return this.world.func_241827_a(p_241827_1_, p_241827_2_);
+    }
+
+    @Override
+    public ServerWorld getWorld() {
+        return this.world.getWorld();
+    }
+
+    @Override
+    public Stream<Entity> getEntities() {
+        return this.world.getEntities();
+    }
+
+    @Override
+    public void func_242417_l(Entity p_242417_1_) {
+        this.world.func_242417_l(p_242417_1_);
+    }
+
+    @Override
+    public ServerWorld getWorldServer() {
+        return this.world;
+    }
+
+    @Override
+    public ServerScoreboard getScoreboard() {
+        return this.world.getScoreboard();
+    }
+
+    @Override
+    public ServerTickList<Block> getPendingBlockTicks() {
+        return this.world.getPendingBlockTicks();
+    }
+
+    @Override
+    public ServerTickList<Fluid> getPendingFluidTicks() {
+        return this.world.getPendingFluidTicks();
+    }
+
+    @Override
+    public List<ServerPlayerEntity> getPlayers() {
+        return this.world.getPlayers();
     }
 }

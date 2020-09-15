@@ -47,6 +47,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
@@ -218,6 +219,13 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
+    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
+        BlockRayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
+        Vector3d hitVec = rayTraceResult.getHitVec();
+        return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ()).map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), i.getPos(), player)).orElse(false);
+    }
+
+    @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
@@ -262,7 +270,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                 player.addExhaustion(0.005F);
 
                 if (!player.abilities.isCreativeMode)
-                    spawnDrops(blockToRemove.getBlockState(), world, pos, null, player, stack);
+                    spawnDrops(blockToRemove.getBlockState(), world, pos, blockToRemove.getTileEntity(), player, stack);
 
                 blockToRemove.getBlockState().onReplaced(blockToRemove.getWorld(), pos, Blocks.AIR.getDefaultState(), false);
 

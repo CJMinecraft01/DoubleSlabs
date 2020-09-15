@@ -79,6 +79,13 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
+    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
+        BlockRayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
+        Vector3d hitVec = rayTraceResult.getHitVec();
+        return getHalfState(world, pos, hitVec.y - pos.getY()).map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), i.getPos(), player)).orElse(false);
+    }
+
+    @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
         RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
