@@ -194,10 +194,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         return null;
     }
 
-    @Override
-    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return both(world, pos, i -> i.getBlockState().canHarvestBlock(i.getWorld(), pos, player));
-    }
+//    @Override
+//    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
+//        return both(world, pos, i -> i.getBlockState().canHarvestBlock(i.getWorld(), pos, player));
+//    }
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
