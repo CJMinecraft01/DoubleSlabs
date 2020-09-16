@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -20,7 +19,6 @@ import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.scoreboard.ServerScoreboard;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
@@ -78,8 +76,8 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
 
             }
         });
-        super.initCapabilities();
         this.world = world;
+        super.initCapabilities();
     }
 
     @Override
