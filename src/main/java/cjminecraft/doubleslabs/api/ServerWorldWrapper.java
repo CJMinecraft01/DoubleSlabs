@@ -72,7 +72,7 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
     private IStateContainer container;
 
     public ServerWorldWrapper(ServerWorld world) {
-        super(world.getServer(), Util.getServerExecutor(), world.getServer().anvilConverterForAnvilFile, (IServerWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_230315_m_(), new IChunkStatusListener() {
+        super(world.getServer(), Util.getServerExecutor(), world.getServer().anvilConverterForAnvilFile, (IServerWorldInfo) world.getWorldInfo(), world.getDimensionKey(), world.func_230315_m_(), new IChunkStatusListener() {
             @Override
             public void start(ChunkPos center) {
 
@@ -87,7 +87,7 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
             public void stop() {
 
             }
-        }, world.getChunkProvider().generator, world.func_234925_Z_(), world.getSeed(), new ArrayList<>(), false);
+        }, world.getChunkProvider().generator, world.isDebug(), world.getSeed(), new ArrayList<>(), false);
         this.world = world;
         super.initCapabilities();
     }
@@ -1034,18 +1034,8 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
     }
 
     @Override
-    public boolean func_234929_a_(BlockPos p_234929_1_, Entity p_234929_2_, Direction p_234929_3_) {
-        return this.world.func_234929_a_(p_234929_1_, p_234929_2_, p_234929_3_);
-    }
-
-    @Override
-    public RegistryKey<World> func_234923_W_() {
-        return super.func_234923_W_();
-    }
-
-    @Override
-    public Supplier<IProfiler> func_234924_Y_() {
-        return super.func_234924_Y_();
+    public RegistryKey<World> getDimensionKey() {
+        return super.getDimensionKey();
     }
 
     @Override
@@ -1253,11 +1243,6 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
     }
 
     @Override
-    public BlockPos func_241135_u_() {
-        return this.world.func_241135_u_();
-    }
-
-    @Override
     public float func_242107_v() {
         return this.world.func_242107_v();
     }
@@ -1393,4 +1378,5 @@ public class ServerWorldWrapper extends ServerWorld implements IWorldWrapper<Ser
     public List<ServerPlayerEntity> getPlayers() {
         return this.world.getPlayers();
     }
+
 }

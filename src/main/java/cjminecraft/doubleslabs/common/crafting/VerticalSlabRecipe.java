@@ -22,10 +22,13 @@ public class VerticalSlabRecipe extends SpecialRecipe {
         int matches = 0;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (!stack.isEmpty() && !DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get())) {
-                if (stack.getItem() == DSItems.VERTICAL_SLAB.get() && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
-                    continue;
-                matches++;
+            if (!stack.isEmpty()) {
+                if (!DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get())) {
+                    if (stack.getItem() == DSItems.VERTICAL_SLAB.get() && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
+                        continue;
+                    matches++;
+                } else
+                    return false;
             }
         }
         return matches == 1;

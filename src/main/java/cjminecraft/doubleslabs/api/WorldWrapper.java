@@ -65,7 +65,7 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     private boolean positive;
 
     public WorldWrapper(World world) {
-        super((ISpawnWorldInfo) world.getWorldInfo(), world.func_234923_W_(), world.func_230315_m_(), world.func_234924_Y_(), world.isRemote, world.func_234925_Z_(), 0L);
+        super((ISpawnWorldInfo) world.getWorldInfo(), world.getDimensionKey(), world.func_230315_m_(), world.getWorldProfiler(), world.isRemote, world.isDebug(), 0L);
         this.world = world;
     }
 
@@ -1066,11 +1066,6 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     }
 
     @Override
-    public boolean func_234929_a_(BlockPos p_234929_1_, Entity p_234929_2_, Direction p_234929_3_) {
-        return this.world.func_234929_a_(p_234929_1_, p_234929_2_, p_234929_3_);
-    }
-
-    @Override
     protected void calculateInitialWeather() {
         super.calculateInitialWeather();
     }
@@ -1078,15 +1073,5 @@ public class WorldWrapper extends World implements IWorldWrapper<World> {
     @Override
     public DimensionType func_230315_m_() {
         return super.func_230315_m_();
-    }
-
-    @Override
-    public RegistryKey<World> func_234923_W_() {
-        return super.func_234923_W_();
-    }
-
-    @Override
-    public Supplier<IProfiler> func_234924_Y_() {
-        return super.func_234924_Y_();
     }
 }

@@ -114,11 +114,6 @@ public class ClientPlayerEntityWrapper extends ClientPlayerEntity {
     }
 
     @Override
-    public float func_239206_w_() {
-        return this.player.func_239206_w_();
-    }
-
-    @Override
     public boolean drop(boolean p_225609_1_) {
         return this.player.drop(p_225609_1_);
     }
@@ -350,11 +345,6 @@ public class ClientPlayerEntityWrapper extends ClientPlayerEntity {
     @Override
     public boolean isCrouching() {
         return this.player.isCrouching();
-    }
-
-    @Override
-    public boolean func_228354_I_() {
-        return this.player.func_228354_I_();
     }
 
     @Override
@@ -2681,5 +2671,15 @@ public class ClientPlayerEntityWrapper extends ClientPlayerEntity {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
         return this.player.getCapability(cap);
+    }
+
+    @Override
+    public float getDarknessAmbience() {
+        return this.player.getDarknessAmbience();
+    }
+
+    @Override
+    public boolean isForcedDown() {
+        return this.player.isForcedDown();
     }
 }

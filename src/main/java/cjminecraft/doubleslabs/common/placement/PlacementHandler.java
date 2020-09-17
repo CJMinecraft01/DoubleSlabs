@@ -57,7 +57,7 @@ public class PlacementHandler {
         boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
-            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
+            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).withPosition(pos));
             if (result.isSuccessOrConsume())
                 cancelEventConsumer.accept(result);
             return !result.isSuccessOrConsume();
@@ -69,7 +69,7 @@ public class PlacementHandler {
         boolean useItem = !player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) || !player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player);
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
-            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
+            ActionResultType result = world.getBlockState(pos).onBlockActivated(world, player, hand, RayTraceUtil.rayTrace(player).withPosition(pos));
             if (result.isSuccessOrConsume())
                 cancelEventConsumer.accept(result);
             return result.isSuccessOrConsume();
@@ -88,7 +88,7 @@ public class PlacementHandler {
     }
 
     public static BlockItemUseContext getUseContext(PlayerEntity player, Hand hand, ItemStack stack, BlockPos pos) {
-        return new DoubleSlabBlockItemUseContext(player, hand, stack, RayTraceUtil.rayTrace(player).func_237485_a_(pos));
+        return new DoubleSlabBlockItemUseContext(player, hand, stack, RayTraceUtil.rayTrace(player).withPosition(pos));
     }
 
     public static BlockState getStateFromSupport(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, SlabType half, IHorizontalSlabSupport support) {
