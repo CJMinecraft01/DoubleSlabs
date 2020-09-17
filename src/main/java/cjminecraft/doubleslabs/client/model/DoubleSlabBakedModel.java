@@ -1,112 +1,110 @@
 package cjminecraft.doubleslabs.client.model;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.DoubleSlabsConfig;
-import cjminecraft.doubleslabs.Utils;
-import cjminecraft.doubleslabs.blocks.BlockDoubleSlab;
+import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
+import cjminecraft.doubleslabs.client.ClientConstants;
+import cjminecraft.doubleslabs.client.util.ClientUtils;
+import cjminecraft.doubleslabs.client.util.CullInfo;
+import cjminecraft.doubleslabs.client.util.SlabCacheKey;
+import cjminecraft.doubleslabs.client.util.vertex.TintOffsetTransformer;
+import cjminecraft.doubleslabs.common.config.DSConfig;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class DoubleSlabBakedModel implements IBakedModel {
+public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
-    // Should be large enough so that tint offsets don't overlap
-    public static final int TINT_OFFSET = 1000;
-    public static final ModelResourceLocation variantTag
-            = new ModelResourceLocation(new ResourceLocation(DoubleSlabs.MODID, "double_slab"), "normal");
-    private static IBakedModel fallback;
-    private final Map<String, List<BakedQuad>> cache = new HashMap<>();
-
-    static IBakedModel getFallback() {
-        if (fallback != null)
-            return fallback;
-        fallback = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
-        return fallback;
-    }
-
-    private List<BakedQuad> getQuadsForState(@Nullable IBlockState state, @Nullable EnumFacing side, long rand, int tintOffset) {
-        if (state == null) return new ArrayList<>();
-        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, side, rand).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + tintOffset : -1, quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat())).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    private List<BakedQuad> getQuadsForState(SlabCacheKey cache, boolean positive) {
+        IBlockState state = positive ? cache.getPositiveBlockInfo().getBlockState() : cache.getNegativeBlockInfo().getBlockState();
         if (state == null)
-            return getFallback().getQuads(null, side, rand);
-        IBlockState topState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.TOP);
-        IBlockState bottomState = ((IExtendedBlockState) state).getValue(BlockDoubleSlab.BOTTOM);
-        String cacheKey = (bottomState != null ? bottomState.toString() : "null") + "," + (topState != null ? topState.toString() : "null")
-                + ":" + (side != null ? side.getName() : "null") + ":" +
-                (MinecraftForgeClient.getRenderLayer() != null ? MinecraftForgeClient.getRenderLayer().toString() : "null");
-        if (!cache.containsKey(cacheKey)) {
-            if (topState == null || bottomState == null) {
-                List<BakedQuad> quads = getFallback().getQuads(null, side, rand);
-                cache.put(cacheKey, quads);
-                return quads;
-            }
-            boolean shouldCull = DoubleSlabsConfig.shouldCull(topState) && DoubleSlabsConfig.shouldCull(bottomState);
-            boolean topTransparent = Utils.isTransparent(topState);
-            boolean bottomTransparent = Utils.isTransparent(bottomState);
+            return new ArrayList<>();
+        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
+        return model.getQuads(state, cache.getSide(), cache.getRandom()).stream().map(quad -> {
+            UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(quad.getFormat());
+            TintOffsetTransformer transformer = new TintOffsetTransformer(builder, positive);
+            quad.pipe(transformer);
+            return builder.build();
+        }).collect(Collectors.toList());
+//        return model.getQuads(state, cache.getSide(), cache.getRandom(), modelData).stream().map(quad -> new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), quad.func_187508_a(), quad.func_239287_f_())).collect(Collectors.toList());
+    }
 
-            List<BakedQuad> quads = new ArrayList<>();
-            if (MinecraftForgeClient.getRenderLayer() == topState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
-                List<BakedQuad> topQuads = getQuadsForState(topState, side, rand, 0);
-                if (shouldCull)
-                    if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
-                        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
-                quads.addAll(topQuads);
-            }
-            if (MinecraftForgeClient.getRenderLayer() == bottomState.getBlock().getRenderLayer() || MinecraftForgeClient.getRenderLayer() == null) {
-                List<BakedQuad> bottomQuads = getQuadsForState(bottomState, side, rand, TINT_OFFSET);
-                if (shouldCull)
-                    if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
-                        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
-                quads.addAll(bottomQuads);
-            }
+    @Override
+    protected Block getBlock() {
+        return DSBlocks.DOUBLE_SLAB;
+    }
 
-            cache.put(cacheKey, quads);
-            return quads;
-        } else {
-            return cache.get(cacheKey);
+    @Override
+    protected List<BakedQuad> getQuads(SlabCacheKey cache) {
+        List<BakedQuad> quads = new ArrayList<>();
+        if (cache.getPositiveBlockInfo().getBlockState() == null || cache.getNegativeBlockInfo().getBlockState() == null)
+            return ClientConstants.getFallbackModel().getQuads(null, cache.getSide(), cache.getRandom());
+        boolean topTransparent = ClientUtils.isTransparent(cache.getPositiveBlockInfo().getBlockState());
+        boolean bottomTransparent = ClientUtils.isTransparent(cache.getNegativeBlockInfo().getBlockState());
+        boolean shouldCull = DSConfig.CLIENT.shouldCull(cache.getPositiveBlockInfo().getBlockState()) && DSConfig.CLIENT.shouldCull(cache.getNegativeBlockInfo().getBlockState()) && (!(topTransparent && bottomTransparent) || (cache.getPositiveBlockInfo().getBlockState().getBlock() == cache.getNegativeBlockInfo().getBlockState().getBlock() && cache.getPositiveBlockInfo().getBlockState().getBlock() == cache.getNegativeBlockInfo().getBlockState().getBlock()));
+        // If the top and bottom states are the same, use the combined block model where possible
+        if (useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
+            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
+            if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
+                IBlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), null);
+                if (state.getBlock().canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
+                    IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
+                    quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom()));
+                    if (cache.getSide() != null) {
+                        // Only cull the non general sides
+                        for (CullInfo cullInfo : cache.getCullInfo()) {
+                            if (cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
+                                IHorizontalSlabSupport support = SlabSupport.isHorizontalSlab(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
+                                if (support != null) {
+                                    IBlockState s = support.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), null);
+                                    if (shouldCull(state, s, cullInfo.getDirection()))
+                                        quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
+                                }
+                            } else if (shouldCull(state, cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection())) {
+                                quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
+                            }
+                        }
+                    }
+                    return quads;
+                }
+                return new ArrayList<>();
+            }
         }
-    }
 
-    @Override
-    public boolean isAmbientOcclusion() {
-        return getFallback().isAmbientOcclusion();
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return getFallback().isGui3d();
-    }
-
-    @Override
-    public boolean isBuiltInRenderer() {
-        return getFallback().isBuiltInRenderer();
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return getFallback().getParticleTexture();
-    }
-
-    @Override
-    public ItemOverrideList getOverrides() {
-        return getFallback().getOverrides();
+        if (cache.getPositiveBlockInfo().getBlockState().getBlock().canRenderInLayer(cache.getPositiveBlockInfo().getBlockState(), cache.getRenderLayer()) || cache.getRenderLayer() == null) {
+            List<BakedQuad> topQuads = getQuadsForState(cache, true);
+            if (shouldCull)
+                if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
+                    topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.DOWN);
+            if (cache.getSide() != null) {
+                for (CullInfo cullInfo : cache.getCullInfo()) {
+                    if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
+                        topQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
+                }
+            }
+            quads.addAll(topQuads);
+        }
+        if (cache.getNegativeBlockInfo().getBlockState().getBlock().canRenderInLayer(cache.getNegativeBlockInfo().getBlockState(), cache.getRenderLayer()) || cache.getRenderLayer() == null) {
+            List<BakedQuad> bottomQuads = getQuadsForState(cache, false);
+            if (shouldCull)
+                if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
+                    bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == EnumFacing.UP);
+            if (cache.getSide() != null) {
+                for (CullInfo cullInfo : cache.getCullInfo()) {
+                    if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection()))
+                        bottomQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
+                }
+            }
+            quads.addAll(bottomQuads);
+        }
+        return quads;
     }
 }

@@ -1,38 +1,30 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.addons.slabmachines.SlabMachinesContainerSupport;
+import cjminecraft.doubleslabs.api.containers.ContainerSupportProvider;
+import cjminecraft.doubleslabs.api.containers.IContainerSupport;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.util.AnnotationUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerSupport {
 
-    private static final List<IContainerSupport> supportedContainers = new ArrayList<>();
+    private static List<IContainerSupport> containerSupports;
 
-    public static void init() {
-        if (Loader.isModLoaded("slabmachines"))
-            addContainerSupport(new SlabMachinesContainerSupport());
+    public static void load() {
+        containerSupports = AnnotationUtil.getClassInstances(ContainerSupportProvider.class, IContainerSupport.class, AnnotationUtil.MODID_PREDICATE);
+
+        DoubleSlabs.LOGGER.info("Loaded %s container support classes", containerSupports.size());
     }
 
-    public static void addContainerSupport(@Nonnull IContainerSupport support) {
-        if (supportedContainers.contains(support)) {
-            DoubleSlabs.LOGGER.warn("A container support of type %s has already been registered - SKIPPING", support.getClass().getSimpleName());
-        } else {
-            supportedContainers.add(support);
-            DoubleSlabs.LOGGER.info("Successfully added container support for type %s", support.getClass().getSimpleName());
-        }
-    }
-
-    public static @Nullable IContainerSupport getSupport(World world, BlockPos pos, IBlockState state) {
-        for (IContainerSupport support : supportedContainers)
-            if (support.isValid(world, pos, state))
+    public static IContainerSupport getSupport(World world, BlockPos pos, IBlockState state) {
+        if (state.getBlock() instanceof IContainerSupport && ((IContainerSupport) state.getBlock()).hasSupport(world, pos, state))
+            return (IContainerSupport) state.getBlock();
+        for (IContainerSupport support : containerSupports)
+            if (support.hasSupport(world, pos, state))
                 return support;
         return null;
     }

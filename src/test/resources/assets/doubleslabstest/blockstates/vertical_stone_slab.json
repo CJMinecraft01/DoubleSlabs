@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "type=north": { "model": "doubleslabstest:block/vertical_stone_slab", "y": 0, "uvlock": true },
+    "type=south": { "model": "doubleslabstest:block/vertical_stone_slab", "y": 180, "uvlock": true },
+    "type=east": { "model": "doubleslabstest:block/vertical_stone_slab", "y": 90, "uvlock": true },
+    "type=west": { "model": "doubleslabstest:block/vertical_stone_slab", "y": 270, "uvlock": true },
+    "type=double": { "model": "block/stone" }
+  }
+}

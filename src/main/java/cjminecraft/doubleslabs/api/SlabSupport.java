@@ -1,140 +1,99 @@
 package cjminecraft.doubleslabs.api;
 
-import cjminecraft.doubleslabs.DoubleSlabs;
-import cjminecraft.doubleslabs.addons.atum2.Atum2SlabSupport;
-import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedSlabSupport;
-import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedVerticalSlabSupport;
-import cjminecraft.doubleslabs.addons.conquestreforged.ConquestReforgedVerticalSlabWoodSupport;
-import cjminecraft.doubleslabs.addons.erebus.ErebusSlabSupport;
-import cjminecraft.doubleslabs.addons.libraryex.LibraryExSlabSupport;
-import cjminecraft.doubleslabs.addons.minecraft.MinecraftSlabSupport;
-import cjminecraft.doubleslabs.addons.stairwaytoaether.StairwayToAetherSlabSupport;
-import cjminecraft.doubleslabs.addons.thebetweenlands.TheBetweenlandsSlabSupport;
-import cjminecraft.doubleslabs.addons.engineersdecor.EngineersDecorSlabSupport;
-import net.minecraft.block.Block;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
+import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.util.AnnotationUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SlabSupport {
 
-    private static final List<ISlabSupport> supportedSlabs = new ArrayList<>();
+    private static List<IVerticalSlabSupport> verticalSlabSupports;
+    private static List<IHorizontalSlabSupport> horizontalSlabSupports;
 
-    public static void init() {
-        addSlabSupport(new MinecraftSlabSupport());
+    public static void load() {
+        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE);
+        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE);
 
-        if (Loader.isModLoaded("atum"))
-            addSlabSupport(new Atum2SlabSupport());
-
-        if (Loader.isModLoaded("libraryex"))
-            addSlabSupport(new LibraryExSlabSupport());
-
-        if (Loader.isModLoaded("erebus"))
-            addSlabSupport(new ErebusSlabSupport());
-
-        if (Loader.isModLoaded("thebetweenlands"))
-            addSlabSupport(new TheBetweenlandsSlabSupport());
-
-        if (Loader.isModLoaded("engineersdecor"))
-            addSlabSupport(new EngineersDecorSlabSupport());
-
-        if (Loader.isModLoaded("stairway"))
-            addSlabSupport(new StairwayToAetherSlabSupport());
-
-        if (Loader.isModLoaded("conquest")) {
-            addSlabSupport(new ConquestReforgedSlabSupport());
-            addSlabSupport(new ConquestReforgedVerticalSlabSupport());
-            addSlabSupport(new ConquestReforgedVerticalSlabWoodSupport());
-        }
+        DoubleSlabs.LOGGER.info("Loaded %s vertical slab support classes", verticalSlabSupports.size());
+        DoubleSlabs.LOGGER.info("Loaded %s horizontal slab support classes", horizontalSlabSupports.size());
     }
 
-    public static void addSlabSupport(@Nonnull ISlabSupport support) {
-        if (supportedSlabs.contains(support)) {
-            DoubleSlabs.LOGGER.warn("A slab support of type %s has already been registered - SKIPPING", support.getClass().getSimpleName());
-        } else {
-            supportedSlabs.add(support);
-            DoubleSlabs.LOGGER.info("Successfully added slab support for type %s", support.getClass().getSimpleName());
-        }
-    }
-
-    public static void addSupportFromIMC(String className) {
-        try {
-            Class<?> support = Class.forName(className);
-            for (Class<?> interfaces : support.getInterfaces())
-                if (interfaces.getName().equals(ISlabSupport.class.getName()))
-                    addSlabSupport((ISlabSupport) support.newInstance());
-        } catch (Exception e) {
-            DoubleSlabs.LOGGER.error("An error occurred when registering slab support for class %s", className);
-        }
-    }
-
-    public static @Nullable ISlabSupport getHorizontalSlabSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
-        return getSupport(world, pos, state);
-    }
-
-    public static @Nullable ISlabSupport getHorizontalSlabSupport(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        return getSupport(stack, player, hand);
-    }
-
-    public static @Nullable ISlabSupport getVerticalSlabSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
-        if (state.getBlock() instanceof ISlabSupport && ((ISlabSupport) state.getBlock()).isVerticalSlab(world, pos, state))
-            return (ISlabSupport) state.getBlock();
-        for (ISlabSupport support : supportedSlabs)
+    @Nullable
+    public static IVerticalSlabSupport getVerticalSlabSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
+        if (state.getBlock() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) state.getBlock()).isVerticalSlab(world, pos, state))
+            return (IVerticalSlabSupport) state.getBlock();
+        for (IVerticalSlabSupport support : verticalSlabSupports)
             if (support.isVerticalSlab(world, pos, state))
                 return support;
         return null;
     }
 
-    public static @Nullable ISlabSupport getVerticalSlabSupport(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        if ((stack.getItem() instanceof ItemBlock)) {
-            Block block = ((ItemBlock) stack.getItem()).getBlock();
-            if (block instanceof ISlabSupport) {
-                ISlabSupport support = (ISlabSupport) block;
-                if (support.isVerticalSlab(stack, player, hand))
-                    return support;
-            }
-        }
-        for (ISlabSupport support : supportedSlabs)
+    @Nullable
+    public static IVerticalSlabSupport getVerticalSlabSupport(ItemStack stack, EntityPlayer player, EnumHand hand) {
+        if (stack.getItem() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) stack.getItem()).isVerticalSlab(stack, player, hand))
+            return (IVerticalSlabSupport) stack.getItem();
+        if (stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) ((ItemBlock) stack.getItem()).getBlock()).isVerticalSlab(stack, player, hand))
+            return (IVerticalSlabSupport) ((ItemBlock) stack.getItem()).getBlock();
+        for (IVerticalSlabSupport support : verticalSlabSupports)
             if (support.isVerticalSlab(stack, player, hand))
                 return support;
         return null;
     }
 
-    @Deprecated
-    public static @Nullable ISlabSupport getSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
-        if (state.getBlock() instanceof ISlabSupport && ((ISlabSupport) state.getBlock()).isHorizontalSlab(world, pos, state))
-            return (ISlabSupport) state.getBlock();
-        for (ISlabSupport support : supportedSlabs)
+    @Nullable
+    public static IHorizontalSlabSupport isHorizontalSlab(IBlockAccess world, BlockPos pos, IBlockState state) {
+        if (state.getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) state.getBlock()).isHorizontalSlab(world, pos, state))
+            return (IHorizontalSlabSupport) state.getBlock();
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
             if (support.isHorizontalSlab(world, pos, state))
                 return support;
         return null;
     }
 
-    @Deprecated
-    public static @Nullable ISlabSupport getSupport(ItemStack stack, EntityPlayer player, EnumHand hand) {
-        if ((stack.getItem() instanceof ItemBlock)) {
-            Block block = ((ItemBlock) stack.getItem()).getBlock();
-            if (block instanceof ISlabSupport) {
-                ISlabSupport support = (ISlabSupport) block;
-                if (support.isHorizontalSlab(stack, player, hand))
-                    return support;
-            }
-        }
-        for (ISlabSupport support : supportedSlabs)
+    @Nullable
+    public static IHorizontalSlabSupport isHorizontalSlab(ItemStack stack, EntityPlayer player, EnumHand hand) {
+        if (stack.getItem() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) stack.getItem()).isHorizontalSlab(stack, player, hand))
+            return (IHorizontalSlabSupport) stack.getItem();
+        if (stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) ((ItemBlock) stack.getItem()).getBlock()).isHorizontalSlab(stack, player, hand))
+            return (IHorizontalSlabSupport) ((ItemBlock) stack.getItem()).getBlock();
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
             if (support.isHorizontalSlab(stack, player, hand))
                 return support;
         return null;
     }
+
+    public static boolean isHorizontalSlab(Item item) {
+        if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof IHorizontalSlabSupport)
+            return ((IHorizontalSlabSupport) ((ItemBlock) item).getBlock()).isHorizontalSlab(item);
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(item))
+                return true;
+        return false;
+    }
+
+    @Nullable
+    public static ISlabSupport getSlabSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
+        IHorizontalSlabSupport horizontalSlabSupport = isHorizontalSlab(world, pos, state);
+        return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(world, pos, state);
+    }
+
+    @Nullable
+    public static ISlabSupport getSlabSupport(ItemStack stack, EntityPlayer player, EnumHand hand) {
+        IHorizontalSlabSupport horizontalSlabSupport = isHorizontalSlab(stack, player, hand);
+        return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(stack, player, hand);
+    }
+
 }
