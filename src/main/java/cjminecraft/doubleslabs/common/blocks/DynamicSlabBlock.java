@@ -194,15 +194,18 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         List<ItemStack> drops = new ArrayList<>();
         if (tileEntity instanceof SlabTileEntity) {
             SlabTileEntity tile = (SlabTileEntity) tileEntity;
-            if (tile.getPositiveBlockInfo().getBlockState() != null)
-                drops.addAll(tile.getPositiveBlockInfo().getBlockState().getDrops(builder
-                        .withParameter(LootParameters.BLOCK_ENTITY, tile.getPositiveBlockInfo().getTileEntity())
-                        .withParameter(LootParameters.BLOCK_STATE, tile.getPositiveBlockInfo().getBlockState())));
-            if (tile.getNegativeBlockInfo().getBlockState() != null)
-                drops.addAll(tile.getPositiveBlockInfo().getBlockState().getDrops(builder
-                        .withParameter(LootParameters.BLOCK_ENTITY, tile.getNegativeBlockInfo().getTileEntity())
-                        .withParameter(LootParameters.BLOCK_STATE, tile.getNegativeBlockInfo().getBlockState())));
-
+            if (tile.getPositiveBlockInfo().getBlockState() != null) {
+                LootContext.Builder newBuilder = builder.withParameter(LootParameters.BLOCK_STATE, tile.getPositiveBlockInfo().getBlockState());
+                if (tile.getPositiveBlockInfo().getTileEntity() != null)
+                    newBuilder = newBuilder.withParameter(LootParameters.BLOCK_ENTITY, tile.getPositiveBlockInfo().getTileEntity());
+                drops.addAll(tile.getPositiveBlockInfo().getBlockState().getDrops(newBuilder));
+            }
+            if (tile.getNegativeBlockInfo().getBlockState() != null) {
+                LootContext.Builder newBuilder = builder.withParameter(LootParameters.BLOCK_STATE, tile.getNegativeBlockInfo().getBlockState());
+                if (tile.getNegativeBlockInfo().getTileEntity() != null)
+                    newBuilder = newBuilder.withParameter(LootParameters.BLOCK_ENTITY, tile.getNegativeBlockInfo().getTileEntity());
+                drops.addAll(tile.getNegativeBlockInfo().getBlockState().getDrops(newBuilder));
+            }
         }
         return drops;
     }
