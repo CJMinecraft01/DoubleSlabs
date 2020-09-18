@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "variant=default": { "model": "minecraft:slime_block" }
+  }
+}

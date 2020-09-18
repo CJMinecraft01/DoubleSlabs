@@ -1,16 +1,12 @@
 {
   "variants": {
-    "facing=north,type=bottom": { "model": "doubleslabstest:block/chest_slab", "y": 180 },
-    "facing=east,type=top": { "model": "doubleslabstest:block/chest_slab_top", "y": 270 },
-    "facing=south,type=double": { "model": "doubleslabstest:block/chest", "y": 0 },
-    "facing=west,type=bottom": { "model": "doubleslabstest:block/chest_slab", "y": 90 },
-    "facing=north,type=top": { "model": "doubleslabstest:block/chest_slab_top", "y": 180 },
-    "facing=east,type=double": { "model": "doubleslabstest:block/chest", "y": 270 },
-    "facing=south,type=bottom": { "model": "doubleslabstest:block/chest_slab", "y": 0 },
-    "facing=west,type=top": { "model": "doubleslabstest:block/chest_slab_top", "y": 90 },
-    "facing=north,type=double": { "model": "doubleslabstest:block/chest", "y": 180 },
-    "facing=east,type=bottom": { "model": "doubleslabstest:block/chest_slab", "y": 270 },
-    "facing=south,type=top": { "model": "doubleslabstest:block/chest_slab_top", "y": 0 },
-    "facing=west,type=double": { "model": "doubleslabstest:block/chest", "y": 90 }
+    "variant=default,facing=north,half=bottom": { "model": "doubleslabstest:chest_slab", "y": 180 },
+    "variant=default,facing=east,half=top": { "model": "doubleslabstest:chest_slab_top", "y": 270 },
+    "variant=default,facing=west,half=bottom": { "model": "doubleslabstest:chest_slab", "y": 90 },
+    "variant=default,facing=north,half=top": { "model": "doubleslabstest:chest_slab_top", "y": 180 },
+    "variant=default,facing=south,half=bottom": { "model": "doubleslabstest:chest_slab", "y": 0 },
+    "variant=default,facing=west,half=top": { "model": "doubleslabstest:chest_slab_top", "y": 90 },
+    "variant=default,facing=east,half=bottom": { "model": "doubleslabstest:chest_slab", "y": 270 },
+    "variant=default,facing=south,half=top": { "model": "doubleslabstest:chest_slab_top", "y": 0 }
   }
 }

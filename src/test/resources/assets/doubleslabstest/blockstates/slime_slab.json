@@ -1,7 +1,6 @@
 {
   "variants": {
-    "type=bottom": { "model": "doubleslabstest:block/slime_slab" },
-    "type=top": { "model": "doubleslabstest:block/slime_slab_top" },
-    "type=double": { "model": "minecraft:block/slime_block" }
+    "variant=default,half=bottom": { "model": "doubleslabstest:slime_slab" },
+    "variant=default,half=top": { "model": "doubleslabstest:slime_slab_top" }
   }
 }

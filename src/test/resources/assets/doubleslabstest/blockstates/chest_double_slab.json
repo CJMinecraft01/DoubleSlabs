@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "variant=default,facing=south": { "model": "doubleslabstest:chest", "y": 0 },
+    "variant=default,facing=west": { "model": "doubleslabstest:chest", "y": 90 },
+    "variant=default,facing=north": { "model": "doubleslabstest:chest", "y": 180 },
+    "variant=default,facing=east": { "model": "doubleslabstest:chest", "y": 270 }
+  }
+}

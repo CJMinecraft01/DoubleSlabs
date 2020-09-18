@@ -1,0 +1,14 @@
+[
+{
+  "modid": "doubleslabstest",
+  "name": "DoubleSlabsTest",
+  "description": "Testing 123",
+  "version": "${version}",
+  "mcversion": "1.12.2",
+  "authorList": ["CJMinecraft"],
+  "credits": "Thanks for PitsPower for inspiring me to get back into modding and helping me create the first draft of the mod!",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
