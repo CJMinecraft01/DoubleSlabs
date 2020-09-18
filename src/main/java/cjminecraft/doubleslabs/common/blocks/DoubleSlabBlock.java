@@ -91,7 +91,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
             if (!world.isRemote)
                 blockToRemove.getBlockState().getBlock().breakBlock(blockToRemove.getWorld(), blockToRemove.getPos(), Blocks.AIR.getDefaultState());
 
-            world.setBlockState(pos, remainingBlock.getBlockState(), Constants.BlockFlags.DEFAULT);
+            world.setBlockState(pos, remainingBlock.getExtendedBlockState(), Constants.BlockFlags.DEFAULT);
             world.setTileEntity(pos, remainingBlock.getTileEntity());
         }
     }

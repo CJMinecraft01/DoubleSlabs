@@ -55,6 +55,7 @@ public abstract class DynamicSlabBakedModel implements IBakedModel {
         return getFallbackModel().getOverrides();
     }
 
+    // TODO improve culling
     protected boolean shouldCull(IBlockState state, IBlockState neighbour, EnumFacing direction) {
         if (state == null || neighbour == null)
             return false;
