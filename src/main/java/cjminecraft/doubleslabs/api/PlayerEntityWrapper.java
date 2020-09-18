@@ -59,6 +59,7 @@ public class PlayerEntityWrapper extends EntityPlayer implements IPlayerWrapper<
         super(world, player.getGameProfile());
 //        super(player.server, player.getServerWorld(), player.getGameProfile(), player.interactionManager);
         this.player = player;
+        this.inventory = player.inventory;
         this.world = world;
     }
 

@@ -57,6 +57,7 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     public ServerPlayerEntityWrapper(EntityPlayerMP player, WorldServer world) {
         super(player.server, world, player.getGameProfile(), player.interactionManager);
         player.interactionManager.player = player;
+        this.inventory = player.inventory;
         this.connection = player.connection;
         this.player = player;
         this.world = world;

@@ -65,7 +65,7 @@ public class PlacementHandler {
         boolean flag1 = !(player.isSneaking() && flag) || (player.getHeldItemMainhand().doesSneakBypassUse(world, pos, player) && player.getHeldItemOffhand().doesSneakBypassUse(world, pos, player));
         if (flag1) {
             RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
-            boolean result = world.getBlockState(pos).getBlock().onBlockActivated(world, pos, world.getBlockState(pos), player, hand, rayTraceResult.sideHit, (float) rayTraceResult.hitVec.x, (float) rayTraceResult.hitVec.y, (float) rayTraceResult.hitVec.z);
+            boolean result = world.getBlockState(pos).getBlock().onBlockActivated(world, pos, world.getBlockState(pos), player, hand, rayTraceResult.sideHit, (float) rayTraceResult.hitVec.x - pos.getX(), (float) rayTraceResult.hitVec.y - pos.getY(), (float) rayTraceResult.hitVec.z - pos.getZ());
             if (result)
                 cancelEventConsumer.accept(result);
             return result;

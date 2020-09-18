@@ -85,6 +85,32 @@ public class DynamicSlabBlock extends Block {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isTranslucent(IBlockState state) {
+        return either(state, i -> i.getBlockState().isTranslucent());
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullBlock(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, CULL_INFO).build();
     }

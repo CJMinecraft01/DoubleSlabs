@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -144,6 +145,7 @@ public class WrappedContainer extends Container {
 
     @Override
     public void setAll(List<ItemStack> stacks) {
+        DoubleSlabs.LOGGER.info(Arrays.toString(stacks.toArray(new ItemStack[0])));
         if (getContainer().isPresent())
             getContainer().get().setAll(stacks);
         else if (stacks.size() < this.inventorySlots.size())

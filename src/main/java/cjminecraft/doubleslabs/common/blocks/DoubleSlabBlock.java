@@ -211,7 +211,8 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (state.getBlock() != this)
             return false;
-        return getHalfState(world, pos, hitY - pos.getY()).map(i -> {
+        return getHalfState(world, pos, hitY).map(i -> {
+            DoubleSlabs.LOGGER.info(i.getBlockState());
             IContainerSupport containerSupport = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
             if (containerSupport != null) {
