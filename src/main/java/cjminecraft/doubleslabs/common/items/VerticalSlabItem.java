@@ -38,7 +38,9 @@ public class VerticalSlabItem extends BlockItem {
 //    }
 
     public static ItemStack setStack(ItemStack stack, ItemStack toSet) {
-        stack.setTagInfo("item", toSet.write(new CompoundNBT()));
+        ItemStack copy = toSet.copy();
+        copy.setCount(1);
+        stack.setTagInfo("item", copy.write(new CompoundNBT()));
         return stack;
     }
 
