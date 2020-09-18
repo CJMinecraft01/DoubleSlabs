@@ -56,7 +56,7 @@ public class LibraryExSlabSupport<T extends Enum<T> & IStringSerializable> imple
 
     @Override
     public IBlockState getStateForHalf(World world, BlockPos pos, IBlockState state, BlockSlab.EnumBlockHalf half) {
-        return slab != null ? state.withProperty(slabTypeProperty, half == BlockSlab.EnumBlockHalf.BOTTOM ? slabTypes[1] : slabTypes[0]) : state;
+        return slab != null ? state.withProperty(slabTypeProperty, half == null ? slabTypes[2] : half == BlockSlab.EnumBlockHalf.BOTTOM ? slabTypes[1] : slabTypes[0]) : state;
     }
 
     @Override

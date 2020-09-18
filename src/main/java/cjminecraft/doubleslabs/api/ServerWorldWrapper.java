@@ -69,8 +69,6 @@ public class ServerWorldWrapper extends WorldServer implements IWorldWrapper<Wor
         if (WEAK_WORLD_MAP == null)
             return;
         try {
-            // todo remove
-            WEAK_WORLD_MAP.setAccessible(true);
             ConcurrentMap<World, World> map = (ConcurrentMap<World, World>) WEAK_WORLD_MAP.get(null);
             map.remove(instance);
         } catch (IllegalAccessException ignored) {
@@ -304,11 +302,6 @@ public class ServerWorldWrapper extends WorldServer implements IWorldWrapper<Wor
     @Override
     public WorldInfo getWorldInfo() {
         return this.worldInfo;
-    }
-
-    @Override
-    public GameRules getGameRules() {
-        return this.world.getGameRules();
     }
 
     @Override
@@ -1060,11 +1053,6 @@ public class ServerWorldWrapper extends WorldServer implements IWorldWrapper<Wor
     @Override
     public boolean mayPlace(Block blockIn, BlockPos pos, boolean skipCollisionCheck, EnumFacing sidePlacedOn, @Nullable Entity placer) {
         return this.world.mayPlace(blockIn, pos, skipCollisionCheck, sidePlacedOn, placer);
-    }
-
-    @Override
-    public void setSeaLevel(int seaLevelIn) {
-        this.world.setSeaLevel(seaLevelIn);
     }
 
     @Override

@@ -59,9 +59,9 @@ minecraft {
                     source sourceSets.main
                     source sourceSets.api
                 }
-//                doubleslabstest {
-//                    source sourceSets.test
-//                }
+                doubleslabstest {
+                    source sourceSets.test
+                }
             }
         }
 
@@ -79,15 +79,17 @@ minecraft {
                     source sourceSets.main
                     source sourceSets.api
                 }
-//                doubleslabstest {
-//                    source sourceSets.test
-//                }
+                doubleslabstest {
+                    source sourceSets.test
+                }
             }
         }
     }
 }
 
-sourceSets { main { output.resourcesDir = output.classesDir } }
+sourceSets {
+    main { output.resourcesDir = output.classesDir }
+}
 
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed

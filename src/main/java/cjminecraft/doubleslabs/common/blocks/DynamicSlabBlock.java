@@ -271,9 +271,9 @@ public class DynamicSlabBlock extends Block {
             if (world == null || pos == null)
                 return -1;
             return getTile(world, pos).map(tile -> {
-                if (tintIndex < ClientConstants.TINT_OFFSET)
-                    return tile.getPositiveBlockInfo().getBlockState() != null ? Minecraft.getMinecraft().getBlockColors().getColor(tile.getPositiveBlockInfo().getBlockState(), tile.getWorld(), pos) : -1;
-                return tile.getNegativeBlockInfo().getBlockState() != null ? Minecraft.getMinecraft().getBlockColors().getColor(tile.getNegativeBlockInfo().getBlockState(), tile.getWorld(), pos) : -1;
+                if (tintIndex >= ClientConstants.TINT_OFFSET)
+                    return tile.getPositiveBlockInfo().getBlockState() != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getPositiveBlockInfo().getBlockState(), tile.getPositiveBlockInfo().getWorld(), pos, tintIndex - ClientConstants.TINT_OFFSET) : -1;
+                return tile.getNegativeBlockInfo().getBlockState() != null ? Minecraft.getMinecraft().getBlockColors().colorMultiplier(tile.getNegativeBlockInfo().getBlockState(), tile.getNegativeBlockInfo().getWorld(), pos, tintIndex) : -1;
             }).orElse(-1);
         };
     }

@@ -43,6 +43,7 @@ public class DoubleSlabs {
             return stack;
         }
     };
+
     @SidedProxy(serverSide = "cjminecraft.doubleslabs.server.proxy.ServerProxy", clientSide = "cjminecraft.doubleslabs.client.proxy.ClientProxy")
     public static IProxy PROXY;
     @Mod.Instance(MODID)
@@ -58,8 +59,6 @@ public class DoubleSlabs {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         AnnotationUtil.prepare(event.getAsmData());
-        SlabSupport.load();
-        ContainerSupport.load();
         SlabSupport.load();
         ContainerSupport.load();
 

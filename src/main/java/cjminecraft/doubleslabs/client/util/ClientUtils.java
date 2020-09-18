@@ -33,7 +33,7 @@ public class ClientUtils {
 
     public static void checkOptiFineInstalled() {
         try {
-            OPTIFINE_CONFIG = Class.forName("net.optifine.Config");
+            OPTIFINE_CONFIG = Class.forName("Config");
             OPTIFINE_IS_SHADERS_METHOD = OPTIFINE_CONFIG.getMethod("isShaders");
             DoubleSlabs.LOGGER.info("Detected OptiFine is installed. Applying fixes");
         } catch (ClassNotFoundException | NoSuchMethodException ignored) {

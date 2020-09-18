@@ -128,11 +128,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     }
 
     @Override
-    public void setPositionAndUpdate(double x, double y, double z) {
-        this.player.setPositionAndUpdate(x, y, z);
-    }
-
-    @Override
     public void onCriticalHit(Entity entityHit) {
         this.player.onCriticalHit(entityHit);
     }
@@ -452,14 +447,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
         this.player.heal(healAmount);
     }
 
-    @Override
-    public void setHealth(float health) {
-        if (this.player == null)
-            this.player.setHealth(health);
-        else
-            this.player.setHealth(health);
-    }
-
     @Nullable
     @Override
     public DamageSource getLastDamageSource() {
@@ -504,11 +491,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public boolean attackEntityAsMob(Entity entityIn) {
         return this.player.attackEntityAsMob(entityIn);
-    }
-
-    @Override
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
-        this.player.setPositionAndRotationDirect(x, y, z, yaw, pitch, posRotationIncrements, teleport);
     }
 
     @Override
@@ -569,14 +551,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public void setActiveHand(EnumHand hand) {
         this.player.setActiveHand(hand);
-    }
-
-    @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
-        if (this.player == null)
-            this.player.notifyDataManagerChange(key);
-        else
-            this.player.notifyDataManagerChange(key);
     }
 
     @Override
@@ -685,14 +659,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     }
 
     @Override
-    public void setPosition(double x, double y, double z) {
-        if (this.player == null)
-            this.player.setPosition(x, y, z);
-        else
-            this.player.setPosition(x, y, z);
-    }
-
-    @Override
     public void setFire(int seconds) {
         this.player.setFire(seconds);
     }
@@ -756,24 +722,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public void setWorld(World worldIn) {
         this.player.setWorld(worldIn);
-    }
-
-    @Override
-    public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-        this.player.setPositionAndRotation(x, y, z, yaw, pitch);
-    }
-
-    @Override
-    public void moveToBlockPosAndAngles(BlockPos pos, float rotationYawIn, float rotationPitchIn) {
-        this.player.moveToBlockPosAndAngles(pos, rotationYawIn, rotationPitchIn);
-    }
-
-    @Override
-    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-        if (this.player == null)
-            this.player.setLocationAndAngles(x, y, z, yaw, pitch);
-        else
-            this.player.setLocationAndAngles(x, y, z, yaw, pitch);
     }
 
     @Override
@@ -974,19 +922,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     }
 
     @Override
-    public void setUniqueId(UUID uniqueIdIn) {
-        if (this.player == null)
-            this.player.setUniqueId(uniqueIdIn);
-        else
-            this.player.setUniqueId(uniqueIdIn);
-    }
-
-    @Override
-    public UUID getUniqueID() {
-        return this.player == null ? this.player.getUniqueID() : this.player.getUniqueID();
-    }
-
-    @Override
     public String getCachedUniqueIdString() {
         return this.player.getCachedUniqueIdString();
     }
@@ -994,17 +929,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public boolean hasCustomName() {
         return this.player.hasCustomName();
-    }
-
-    @Override
-    public World getEntityWorld() {
-        return this.player.getEntityWorld();
-    }
-
-    @Nullable
-    @Override
-    public MinecraftServer getServer() {
-        return this.player.getServer();
     }
 
     @Override
@@ -1407,11 +1331,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     }
 
     @Override
-    public String getName() {
-        return this.player.getName();
-    }
-
-    @Override
     public InventoryEnderChest getInventoryEnderChest() {
         return this.player.getInventoryEnderChest();
     }
@@ -1497,11 +1416,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     }
 
     @Override
-    public float getDefaultEyeHeight() {
-        return this.player.getDefaultEyeHeight();
-    }
-
-    @Override
     public String getDisplayNameString() {
         return this.player.getDisplayNameString();
     }
@@ -1524,12 +1438,12 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        return this.player.getCapability(capability, facing);
+        return this.player == null ? super.getCapability(capability, facing) : this.player.getCapability(capability, facing);
     }
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return this.player.hasCapability(capability, facing);
+        return this.player == null ? super.hasCapability(capability, facing) : this.player.hasCapability(capability, facing);
     }
 
     @Override
@@ -1634,16 +1548,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public void swingArm(EnumHand hand) {
         this.player.swingArm(hand);
-    }
-
-    @Override
-    public IAttributeInstance getEntityAttribute(IAttribute attribute) {
-        return this.player.getEntityAttribute(attribute);
-    }
-
-    @Override
-    public AbstractAttributeMap getAttributeMap() {
-        return this.player.getAttributeMap();
     }
 
     @Override
@@ -1886,26 +1790,6 @@ public class ServerPlayerEntityWrapper extends EntityPlayerMP implements IPlayer
     @Override
     public boolean isSpectatedByPlayer(EntityPlayerMP player) {
         return this.player.isSpectatedByPlayer(player);
-    }
-
-    @Override
-    public AxisAlignedBB getEntityBoundingBox() {
-        return this.player.getEntityBoundingBox();
-    }
-
-    @Override
-    public void setEntityBoundingBox(AxisAlignedBB bb) {
-        this.player.setEntityBoundingBox(bb);
-    }
-
-    @Override
-    public boolean isOutsideBorder() {
-        return this.player.isOutsideBorder();
-    }
-
-    @Override
-    public void setOutsideBorder(boolean outsideBorder) {
-        this.player.setOutsideBorder(outsideBorder);
     }
 
     @Override

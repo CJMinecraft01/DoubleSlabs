@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.common.container;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.PlayerEntityWrapper;
 import cjminecraft.doubleslabs.api.ServerPlayerEntityWrapper;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -21,7 +22,7 @@ import java.util.Optional;
 
 public class WrappedContainer extends Container {
 
-    public final Container wrapped;
+    public Container wrapped;
     public final World world;
     private final boolean positive;
     public final EntityPlayer player;
@@ -145,7 +146,7 @@ public class WrappedContainer extends Container {
     public void setAll(List<ItemStack> stacks) {
         if (getContainer().isPresent())
             getContainer().get().setAll(stacks);
-        else
+        else if (stacks.size() < this.inventorySlots.size())
             super.setAll(stacks);
     }
 

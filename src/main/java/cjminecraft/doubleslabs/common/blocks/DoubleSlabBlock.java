@@ -222,7 +222,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 //            if (containerSupport != null && !world.isRemote)
 //                    NetworkUtils.openGui((ServerPlayerEntity) player, containerSupport.getNamedContainerProvider(i.getWorld(), pos, state, player, hand, hit), pos, i.isPositive());
                 try {
-                    return slabSupport == null ? i.getBlockState().getBlock().onBlockActivated(i.getWorld(), i.getPos(), i.getBlockState(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, facing, hitX, hitY, hitZ);
+                    return slabSupport == null ? i.getBlockState().getBlock().onBlockActivated(i.getWorld(), pos, i.getBlockState(), player, hand, facing, hitX, hitY, hitZ) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, facing, hitX, hitY, hitZ);
                 } catch (Exception e) {
                     return false;
                 }

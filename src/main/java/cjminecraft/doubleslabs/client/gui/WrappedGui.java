@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class WrappedGui extends GuiContainer {
-    private GuiScreen wrapped;
+    private final GuiScreen wrapped;
 
     public WrappedGui(WrappedContainer screenContainer, int x, int y, int z) {
         super(screenContainer);
         this.wrapped = (GuiScreen) NetworkRegistry.INSTANCE.getLocalGuiContainer(screenContainer.mod, screenContainer.player, screenContainer.id, screenContainer.world, x, y, z);
+        getGuiContainer().ifPresent(s -> ((WrappedContainer)this.inventorySlots).wrapped = s.inventorySlots);
     }
 
     private Optional<GuiScreen> getGui() {
@@ -31,9 +32,18 @@ public class WrappedGui extends GuiContainer {
     }
 
     @Override
+    public void setWorldAndResolution(Minecraft mc, int width, int height) {
+        getGui().ifPresent(s -> s.setWorldAndResolution(mc, width, height));
+        super.setWorldAndResolution(mc, width, height);
+    }
+
+    @Override
     public void initGui() {
         super.initGui();
-        getGui().ifPresent(GuiScreen::initGui);
+        getGui().ifPresent(s -> {
+            if (s.mc != null)
+                s.initGui();
+        });
     }
 
     @Override

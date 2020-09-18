@@ -11,7 +11,7 @@ public class DSTiles {
     public static final TileEntityRegistrar TILES = new TileEntityRegistrar(DoubleSlabs.MODID);
 
     public static final Class<SlabTileEntity> DYNAMIC_SLAB = TILES.register("dynamic_slab", SlabTileEntity.class);
-    public static final Class<SlabConverterTileEntity> DOUBLE_SLAB = TILES.register("double_slabs", SlabConverterTileEntity.class);
+    public static final Class<SlabConverterTileEntity> DOUBLE_SLAB = TILES.register("double_slab", SlabConverterTileEntity.class);
     public static final Class<SlabConverterTileEntity2> VERTICAL_SLAB = TILES.register("vertical_slab", SlabConverterTileEntity2.class);
 
 }
