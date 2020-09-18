@@ -212,7 +212,6 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
         if (state.getBlock() != this)
             return false;
         return getHalfState(world, pos, hitY).map(i -> {
-            DoubleSlabs.LOGGER.info(i.getBlockState());
             IContainerSupport containerSupport = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
             if (containerSupport != null) {
