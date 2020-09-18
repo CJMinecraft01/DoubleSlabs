@@ -63,7 +63,7 @@ public abstract class DynamicSlabBakedModel implements IBakedModel {
     }
 
     protected boolean useDoubleSlabModel(IBlockState state1, IBlockState state2) {
-        return state1 == state2 && DSConfig.CLIENT.useDoubleSlabModel(state1);
+        return state1.equals(state2) && DSConfig.CLIENT.useDoubleSlabModel(state1);
     }
 
     @Override

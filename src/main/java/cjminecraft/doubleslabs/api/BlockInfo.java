@@ -37,7 +37,13 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<NBTTagCompound>, 
     @Nullable
     @Override
     public IBlockState getBlockState() {
-        return this.state != null ? this.state.getBlock().getExtendedState(this.state.getActualState(this.getWorld(), this.getPos()), this.getWorld(), this.getPos()) : null;
+        return this.state;
+    }
+
+    @Nullable
+    @Override
+    public IBlockState getExtendedBlockState() {
+        return this.state != null ? this.state.getBlock().getExtendedState(this.state, this.getWorld(), this.getPos()) : null;
     }
 
     @Nullable

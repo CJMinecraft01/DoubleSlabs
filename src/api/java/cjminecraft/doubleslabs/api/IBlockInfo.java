@@ -15,6 +15,9 @@ public interface IBlockInfo {
     IBlockState getBlockState();
 
     @Nullable
+    IBlockState getExtendedBlockState();
+
+    @Nullable
     TileEntity getTileEntity();
 
     void setBlockState(@Nullable IBlockState state);

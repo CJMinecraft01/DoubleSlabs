@@ -28,7 +28,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
         if (state == null)
             return new ArrayList<>();
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
-        return model.getQuads(state, cache.getSide(), cache.getRandom()).stream().map(quad -> {
+        return model.getQuads(positive ? cache.getPositiveBlockInfo().getExtendedBlockState() : cache.getNegativeBlockInfo().getExtendedBlockState(), cache.getSide(), cache.getRandom()).stream().map(quad -> {
             UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(quad.getFormat());
             TintOffsetTransformer transformer = new TintOffsetTransformer(builder, positive);
             quad.pipe(transformer);

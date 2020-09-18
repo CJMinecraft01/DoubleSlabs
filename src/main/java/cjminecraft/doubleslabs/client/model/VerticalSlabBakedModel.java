@@ -59,7 +59,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             return new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom()));
         EnumFacing direction = cache.getState().getValue(VerticalSlabBlock.FACING);
         EnumFacing side = ClientUtils.rotateFace(cache.getSide(), direction);
-        List<BakedQuad> quads = model.getQuads(state, side, cache.getRandom());
+        List<BakedQuad> quads = model.getQuads(positive ? cache.getPositiveBlockInfo().getExtendedBlockState() : cache.getNegativeBlockInfo().getExtendedBlockState(), side, cache.getRandom());
         if (DSConfig.CLIENT.useLazyModel(state)) {
             if (quads.size() == 0)
                 return new ArrayList<>();
