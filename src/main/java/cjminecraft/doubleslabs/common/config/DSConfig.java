@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -56,13 +57,13 @@ public class DSConfig {
         sync(false, false);
     }
 
-    private static boolean isItemPresent(List<String> option, Item item) {
-        if (item.getRegistryName() == null)
+    private static boolean isItemPresent(List<String> option, ItemStack stack) {
+        if (stack.getItem().getRegistryName() == null)
             return false;
         return option.stream().anyMatch(entry -> {
             if (entry.startsWith("*"))
                 return true;
-            return entry.equals(item.getRegistryName().toString());
+            return entry.equals(stack.getItem().getRegistryName().toString()) || entry.equals(stack.getItem().getRegistryName().toString() + "/" + stack.getItemDamage());
         });
     }
 
@@ -113,8 +114,8 @@ public class DSConfig {
             return isBlockPresent(verticalSlabBlacklist, state);
         }
 
-        public boolean isBlacklistedCraftingItem(Item item) {
-            return isItemPresent(verticalSlabCraftingBlacklist, item);
+        public boolean isBlacklistedCraftingItem(ItemStack stack) {
+            return isItemPresent(verticalSlabCraftingBlacklist, stack);
         }
 
         public void sync(boolean read) {
@@ -137,7 +138,8 @@ public class DSConfig {
             Property propertyVerticalSlabCraftingBlacklist = config.get(Configuration.CATEGORY_GENERAL, "verticalSlabCraftingBlacklist", new String[0]);
             propertyVerticalSlabCraftingBlacklist.setComment(
                     "The list of slabs to ignore when trying to convert between a regular slab and a vertical slab item\n" +
-                            "Use the wildcard value * to disable this feature for all slabs");
+                            "Use the wildcard value * to disable this feature for all slabs\n" +
+                    "Use the \"/\" symbol after an item name to specifiy specific meta data");
             propertyVerticalSlabCraftingBlacklist.setLanguageKey("doubleslabs.configgui.verticalSlabCraftingBlacklist");
 
             config.setCategoryPropertyOrder(Configuration.CATEGORY_GENERAL,

@@ -40,6 +40,7 @@ public class ConfigEventsHandler {
     @SubscribeEvent
     public static void onFileChange(final ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(DoubleSlabs.MODID)) {
+            DSConfig.syncFromGui();
             if (Minecraft.getMinecraft().player == null)
                 return;
             IPlayerConfig config = Minecraft.getMinecraft().player.getCapability(PlayerConfigCapability.PLAYER_CONFIG, null);

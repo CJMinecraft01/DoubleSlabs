@@ -18,8 +18,8 @@ public class VerticalSlabRecipe extends IForgeRegistryEntry.Impl<IRecipe> implem
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
             if (!stack.isEmpty()) {
-                if (!DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB)) {
-                    if (stack.getItem() == DSItems.VERTICAL_SLAB && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
+                if (!DSConfig.SERVER.isBlacklistedCraftingItem(stack) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB)) {
+                    if (stack.getItem() == DSItems.VERTICAL_SLAB && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack)))
                         continue;
                     matches++;
                 } else
@@ -34,7 +34,7 @@ public class VerticalSlabRecipe extends IForgeRegistryEntry.Impl<IRecipe> implem
         ItemStack stack = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack itemStack = inv.getStackInSlot(i);
-            if (!itemStack.isEmpty() && (SlabSupport.isHorizontalSlab(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB) && !DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem())) {
+            if (!itemStack.isEmpty() && (SlabSupport.isHorizontalSlab(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB) && !DSConfig.SERVER.isBlacklistedCraftingItem(stack)) {
                 stack = itemStack;
                 break;
             }
