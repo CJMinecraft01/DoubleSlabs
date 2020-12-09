@@ -52,7 +52,14 @@ public abstract class DynamicSlabBakedModel implements IBakedModel {
 
     @Override
     public ItemOverrideList getOverrides() {
+    	try
+    	{
         return getFallbackModel().getOverrides();
+    	}
+    	catch(Exception e)
+    	{
+    	    return null;
+    	}
     }
 
     // TODO improve culling
