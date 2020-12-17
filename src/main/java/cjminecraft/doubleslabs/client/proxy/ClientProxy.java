@@ -25,11 +25,12 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-@Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = DoubleSlabs.MODID)
 public class ClientProxy implements IProxy {
 
     @Override

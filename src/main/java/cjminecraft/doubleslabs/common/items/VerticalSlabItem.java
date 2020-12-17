@@ -20,6 +20,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class VerticalSlabItem extends ItemBlock {
     public VerticalSlabItem() {
@@ -87,9 +89,12 @@ public class VerticalSlabItem extends ItemBlock {
         return getStack(stack).getTranslationKey();
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
         return I18n.format("item.vertical_slab.prefix", getStack(stack).getDisplayName());
     }
+    
+    
 
 }
