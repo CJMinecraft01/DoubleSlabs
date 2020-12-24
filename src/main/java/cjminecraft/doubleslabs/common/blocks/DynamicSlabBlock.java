@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
@@ -338,12 +339,20 @@ public class DynamicSlabBlock extends Block {
 
     @Override
     public int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face) {
-        return max(world, pos, i -> i.getBlockState().getBlock().getFireSpreadSpeed(i.getWorld(), i.getPos(), face));
+        try {
+            return max(world, pos, i -> i.getBlockState().getBlock().getFireSpreadSpeed(i.getWorld(), i.getPos(), face));
+        } catch (IllegalArgumentException e) { // Likely BoP crash
+            return Blocks.PLANKS.getFireSpreadSpeed(world, pos, face);
+        }
     }
 
     @Override
     public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
-        return max(world, pos, i -> i.getBlockState().getBlock().getFlammability(i.getWorld(), i.getPos(), face));
+        try {
+            return max(world, pos, i -> i.getBlockState().getBlock().getFlammability(i.getWorld(), i.getPos(), face));
+        } catch (IllegalArgumentException e) { // Likely BoP crash
+            return Blocks.PLANKS.getFlammability(world, pos, face);
+        }
     }
 
     @Override
@@ -368,7 +377,11 @@ public class DynamicSlabBlock extends Block {
 
     @Override
     public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face) {
-        return either(world, pos, i -> i.getBlockState().getBlock().isFlammable(i.getWorld(), i.getPos(), face));
+        try {
+            return either(world, pos, i -> i.getBlockState().getBlock().isFlammable(i.getWorld(), i.getPos(), face));
+        } catch (IllegalArgumentException e) { // Likely BoP crash
+            return Blocks.PLANKS.isFlammable(world, pos, face);
+        }
     }
 
     @Override
