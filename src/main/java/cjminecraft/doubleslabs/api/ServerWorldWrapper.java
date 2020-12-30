@@ -84,7 +84,7 @@ public class ServerWorldWrapper extends WorldServer implements IWorldWrapper<Wor
     public ServerWorldWrapper(WorldServer world) {
         super(world.getMinecraftServer(), world.getSaveHandler(), world.getWorldInfo(), world.provider.getDimension(), world.profiler);
         this.world = world;
-        DimensionManager.setWorld(world.getWorldType().getId(), world, world.getMinecraftServer());
+        DimensionManager.setWorld(world.provider.getDimension(), world, world.getMinecraftServer());
         patch(this);
     }
 
