@@ -35,8 +35,8 @@
     "0.9.1": "=Fixed a client crash",
     "0.9.2": "+Added Tile Entity rendering to slabs",
     "0.10.0": "+Added a blacklist to disable slabs from being placed vertically\n=Improved the slab blacklist\n=Fix the back of vertical slab rotations\n=Improved ambient occlusion",
-    "0.11.0": "+Completely rewritten the entire mod fixing various issues in the process\n+Added vertical slab items which can be crafted from regular slabs\n+Added player specific placement options\n+Added a keybinding to toggle vertical slab placement from regular slabs\n+Added a crafting blacklist to disable the crafting recipe of slabs to vertical slabs\n=Tweaked slab rendering to use the double slab model when both slabs are of the same type\n=Fixed ambient occlusion for slabs (without OptiFine and shaders)\n=Improved dynamic placement mechanism\n=Fixed numerous crashes\n=Improved culling mechanism to work better with transparent and non full models\n+Added support for extended blockstates meaning mods like BlockCraftery finally work\n=Improved container support to work in it's entirety"
-	"0.11.1": "=Fixed some crashes"
+    "0.11.0": "+Completely rewritten the entire mod fixing various issues in the process\n+Added vertical slab items which can be crafted from regular slabs\n+Added player specific placement options\n+Added a keybinding to toggle vertical slab placement from regular slabs\n+Added a crafting blacklist to disable the crafting recipe of slabs to vertical slabs\n=Tweaked slab rendering to use the double slab model when both slabs are of the same type\n=Fixed ambient occlusion for slabs (without OptiFine and shaders)\n=Improved dynamic placement mechanism\n=Fixed numerous crashes\n=Improved culling mechanism to work better with transparent and non full models\n+Added support for extended blockstates meaning mods like BlockCraftery finally work\n=Improved container support to work in it's entirety",
+    "0.11.1": "=Fixed some crashes",
   },
   "1.14.4": {
     "1.0.0": "Initial port to 1.14",
