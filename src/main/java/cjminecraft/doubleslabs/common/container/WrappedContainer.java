@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.container;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.PlayerInventoryWrapper;
+import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalfCapability;
 import cjminecraft.doubleslabs.common.init.DSContainers;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +28,7 @@ public class WrappedContainer extends Container {
         super(DSContainers.WRAPPED_CONTAINER.get(), id);
         this.positive = blockInfo.isPositive();
         this.world = blockInfo.getWorld();
-        this.wrapped = provider.createMenu(id, new PlayerInventoryWrapper(playerInventory, blockInfo.getWorld()), player);
+        this.wrapped = provider.createMenu(id, playerInventory, player);
     }
 
     public WrappedContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -35,8 +36,9 @@ public class WrappedContainer extends Container {
         BlockPos pos = buffer.readBlockPos();
         this.positive = buffer.readBoolean();
         SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(pos));
-        this.world = this.positive ? tile.getPositiveBlockInfo().getWorld() : tile.getNegativeBlockInfo().getWorld();
-        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
+        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(positive));
+        this.world = tile.getWorld();
+        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, playerInventory, buffer);
 //        this.wrapped = Registry.MENU.getByValue(buffer.readInt()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
     }
 

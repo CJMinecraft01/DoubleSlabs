@@ -1,0 +1,10 @@
+{
+  "minVersion": "0.8",
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "doubleslabs.refmap.json",
+  "package": "cjminecraft.doubleslabs.common.mixin",
+  "mixins": [
+    "TileEntityMixin"
+  ]
+}

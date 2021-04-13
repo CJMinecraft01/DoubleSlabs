@@ -7,7 +7,7 @@ import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
-import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
+import cjminecraft.doubleslabs.common.DSEventsHandler;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
@@ -34,7 +34,7 @@ public class ClientProxy implements IProxy {
         mod.addListener(this::clientSetup);
         mod.addListener(this::registerBlockColours);
         mod.addListener(this::bakeModels);
-        mod.addListener(ConfigEventsHandler::onFileChange);
+        mod.addListener(DSEventsHandler::onFileChange);
     }
 
     private void replaceModel(IBakedModel model, Block block, BiConsumer<IBakedModel, BlockState> perModel, Map<ResourceLocation, IBakedModel> registry) {

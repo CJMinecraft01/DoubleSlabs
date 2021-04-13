@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalfCapability;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.BlockState;
@@ -24,7 +25,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     private ISlabSupport support;
     private BlockState state;
     private TileEntity tile;
-    private IWorldWrapper<?> world;
+    private World world;
 
     private final SlabTileEntity slab;
     private final boolean positive;
@@ -49,7 +50,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Nonnull
     @Override
     public World getWorld() {
-        return (World) this.world;
+        return this.world;
     }
 
     @Override
@@ -89,28 +90,21 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Override
     public void setTileEntity(@Nullable TileEntity tile) {
         if (tile != null) {
-            tile.setWorldAndPos(this.slab.getWorld(), this.slab.getPos());
-            if (this.tile != null) {
-                this.tile.setWorldAndPos(this.slab.getWorld(), this.slab.getPos());
+            tile.setWorldAndPos(this.world, this.slab.getPos());
+            if (this.tile != null)
                 this.tile.remove();
-            }
             tile.onLoad();
-            tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
         }
         this.tile = tile;
     }
 
     public void setWorld(World world) {
-        if (this.world != null)
-            this.world.setWorld(world);
-        else
-            this.world = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
-        this.world.setPositive(this.positive);
-        this.world.setBlockPos(this.slab.getPos());
-        this.world.setStateContainer(this.slab);
+        this.world = world;
 
-        if (this.tile != null)
-            this.tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
+        if (this.tile != null) {
+            this.tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(positive));
+            this.tile.setWorldAndPos(world, this.slab.getPos());
+        }
     }
 
     @Override
@@ -145,7 +139,6 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
 
     public void remove() {
         if (this.tile != null) {
-            this.tile.setWorldAndPos(this.slab.getWorld(), this.slab.getPos());
             this.tile.remove();
             this.tile = null;
         }

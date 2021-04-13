@@ -1,8 +1,10 @@
-package cjminecraft.doubleslabs.common.config;
+package cjminecraft.doubleslabs.common;
 
-import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalfContainer;
+import cjminecraft.doubleslabs.common.capability.DoubleSlabsCapabilities;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigContainer;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
 import cjminecraft.doubleslabs.common.network.packet.config.RequestPlayerConfigPacket;
 import cjminecraft.doubleslabs.common.network.packet.config.UpdateServerPlayerConfigPacket;
@@ -10,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -20,12 +23,17 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 @Mod.EventBusSubscriber(modid = DoubleSlabs.MODID)
-public class ConfigEventsHandler {
+public class DSEventsHandler {
 
     @SubscribeEvent
     public static void attachConfigCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity)
-            event.addCapability(PlayerConfigCapability.PLAYER_CONFIG_RESOURCE_LOCATION, new PlayerConfigContainer());
+            event.addCapability(DoubleSlabsCapabilities.PLAYER_CONFIG_RESOURCE_LOCATION, new PlayerConfigContainer());
+    }
+
+    @SubscribeEvent
+    public static void attachBlockHalfCapability(AttachCapabilitiesEvent<TileEntity> event) {
+        event.addCapability(DoubleSlabsCapabilities.BLOCK_HALF_RESOURCE_LOCATION, new BlockHalfContainer());
     }
 
     @SubscribeEvent
