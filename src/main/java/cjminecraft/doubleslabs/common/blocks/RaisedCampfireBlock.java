@@ -4,14 +4,19 @@ import cjminecraft.doubleslabs.common.tileentity.RaisedCampfireTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 
 public class RaisedCampfireBlock extends CampfireBlock {
 
@@ -22,7 +27,13 @@ public class RaisedCampfireBlock extends CampfireBlock {
     public RaisedCampfireBlock(Block parent, boolean smokey, int fireDamage, Properties properties) {
         super(smokey, fireDamage, properties);
         this.parent = parent;
+    }
 
+    @Override
+    public void onEntityWalk(World world, BlockPos pos, Entity entityIn) {
+        if (!entityIn.isImmuneToFire() && world.getBlockState(pos).get(LIT) && entityIn instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entityIn)) {
+            entityIn.attackEntityFrom(DamageSource.IN_FIRE, (float) this.fireDamage);
+        }
     }
 
     @Override
