@@ -24,7 +24,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     private ISlabSupport support;
     private BlockState state;
     private TileEntity tile;
-    private World world;
+    private IWorldWrapper<?> world;
 
     private final SlabTileEntity slab;
     private final boolean positive;
@@ -49,7 +49,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Nonnull
     @Override
     public World getWorld() {
-        return this.world;
+        return (World) this.world;
     }
 
     @Override
@@ -77,16 +77,11 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
         if (this.state == null)
             setTileEntity(null);
         this.state = state;
-        if (state != null && state.hasTileEntity()) {
-            // If the world is not wrapped, then we should wrap the world
-            if (!(this.world instanceof IWorldWrapper<?>))
-                wrapWorld(this.world);
+        if (state != null && state.hasTileEntity())
             if (this.tile == null)
                 setTileEntity(state.createTileEntity(this.getWorld()));
-            else {
+            else
                 this.tile.updateContainingBlockInfo();
-            }
-        }
         this.slab.markDirtyClient();
         this.support = state == null ? null : SlabSupport.getSlabSupport(this.getWorld(), this.getPos(), this.state);
     }
@@ -100,36 +95,19 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
                 this.tile.remove();
             }
             tile.onLoad();
-            // If the world is not wrapped, then we should wrap the world
-            if (!(this.world instanceof IWorldWrapper<?>))
-                wrapWorld(this.world);
             tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
         }
         this.tile = tile;
     }
 
-    private void wrapWorld(World world) {
-        IWorldWrapper<?> w = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
-        w.setPositive(this.positive);
-        w.setBlockPos(this.slab.getPos());
-        w.setStateContainer(this.slab);
-        this.world = (World) w;
-    }
-
     public void setWorld(World world) {
-        if (this.world != null && this.world instanceof IWorldWrapper<?>)
-            ((IWorldWrapper<?>) this.world).setWorld(world);
-        else if (this.tile != null)
-            this.world = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
+        if (this.world != null)
+            this.world.setWorld(world);
         else
-            this.world = world;
-
-        if (this.world instanceof IWorldWrapper<?>) {
-            IWorldWrapper<?> w = (IWorldWrapper<?>) this.world;
-            w.setPositive(this.positive);
-            w.setBlockPos(this.slab.getPos());
-            w.setStateContainer(this.slab);
-        }
+            this.world = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
+        this.world.setPositive(this.positive);
+        this.world.setBlockPos(this.slab.getPos());
+        this.world.setStateContainer(this.slab);
 
         if (this.tile != null)
             this.tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
@@ -151,16 +129,10 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
             this.state = NBTUtil.readBlockState(nbt.getCompound("state"));
         if (nbt.contains("tile"))
             this.tile = TileEntity.readTileEntity(this.state, nbt.getCompound("tile"));
-        // If the world is not wrapped, then we should wrap the world
-        if (this.tile != null && this.world != null && !(this.world instanceof IWorldWrapper<?>))
-            this.wrapWorld(this.world);
     }
 
     public void onLoad() {
         if (this.tile != null) {
-            // If the world is not wrapped, then we should wrap the world
-//            if (!(this.world instanceof IWorldWrapper<?>))
-//                this.wrapWorld(this.world);
             this.tile.setWorldAndPos(this.getWorld(), this.slab.getPos());
             this.tile.onLoad();
         }
@@ -185,9 +157,8 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     }
 
     public void updateContainingBlockInfo() {
-        if (this.tile != null) {
+        if (this.tile != null)
             this.tile.updateContainingBlockInfo();
-        }
     }
 
     @Nonnull

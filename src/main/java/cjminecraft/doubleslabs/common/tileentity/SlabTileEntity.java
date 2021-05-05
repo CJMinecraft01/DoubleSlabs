@@ -3,9 +3,6 @@ package cjminecraft.doubleslabs.common.tileentity;
 import cjminecraft.doubleslabs.api.BlockInfo;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.IStateContainer;
-import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalf;
-import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalfCapability;
-import cjminecraft.doubleslabs.api.capability.blockhalf.IBlockHalf;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import net.minecraft.block.BlockState;
@@ -33,7 +30,6 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
 
     protected final BlockInfo negativeBlockInfo = new BlockInfo(this, false);
     protected final BlockInfo positiveBlockInfo = new BlockInfo(this, true);
-    private final IBlockHalf half = new BlockHalf();
 
     public SlabTileEntity() {
         super(DSTiles.DYNAMIC_SLAB.get());
@@ -158,8 +154,6 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == BlockHalfCapability.BLOCK_HALF)
-            return LazyOptional.of(() -> this.half).cast();
         LazyOptional<T> negativeCapability = this.negativeBlockInfo.getCapability(cap);
         return negativeCapability.isPresent() ? negativeCapability : this.positiveBlockInfo.getCapability(cap);
     }
@@ -167,8 +161,6 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == BlockHalfCapability.BLOCK_HALF)
-            return LazyOptional.of(() -> this.half).cast();
         LazyOptional<T> negativeCapability = this.negativeBlockInfo.getCapability(cap, side);
         return negativeCapability.isPresent() ? negativeCapability : this.positiveBlockInfo.getCapability(cap, side);
     }
@@ -185,13 +177,11 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
             if (this.positiveBlockInfo.getTileEntity() != null && this.positiveBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
                 if (this.positiveBlockInfo.getTileEntity().getWorld() == null)
                     this.positiveBlockInfo.getTileEntity().setWorldAndPos(this.positiveBlockInfo.getWorld(), this.positiveBlockInfo.getPos());
-                this.half.setHalf(true);
                 ((ITickableTileEntity) this.positiveBlockInfo.getTileEntity()).tick();
             }
             if (this.negativeBlockInfo.getTileEntity() != null && this.negativeBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
                 if (this.negativeBlockInfo.getTileEntity().getWorld() == null)
                     this.negativeBlockInfo.getTileEntity().setWorldAndPos(this.negativeBlockInfo.getWorld(), this.negativeBlockInfo.getPos());
-                this.half.setHalf(false);
                 ((ITickableTileEntity) this.negativeBlockInfo.getTileEntity()).tick();
             }
         }

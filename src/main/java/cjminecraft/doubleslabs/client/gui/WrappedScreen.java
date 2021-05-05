@@ -26,9 +26,9 @@ public class WrappedScreen extends Screen implements IHasContainer<WrappedContai
     public WrappedScreen(WrappedContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(titleIn);
         this.container = screenContainer;
-//        PlayerInventory wrappedInv = new PlayerInventoryWrapper(inv, screenContainer.world);
+        PlayerInventory wrappedInv = new PlayerInventoryWrapper(inv, screenContainer.world);
         ScreenManager.getScreenFactory(screenContainer.wrapped.getType(), Minecraft.getInstance(), screenContainer.windowId, titleIn)
-                .ifPresent(f -> wrapped = ((ScreenManager.IScreenFactory<Container, ?>)f).create(screenContainer.wrapped, inv, titleIn));
+                .ifPresent(f -> wrapped = ((ScreenManager.IScreenFactory<Container, ?>)f).create(screenContainer.wrapped, wrappedInv, titleIn));
     }
 
     private Optional<Screen> getScreen() {

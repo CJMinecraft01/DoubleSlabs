@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.common;
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
-import cjminecraft.doubleslabs.common.capability.DoubleSlabsCapabilities;
+import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
@@ -64,6 +64,6 @@ public class DoubleSlabs {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.registerPackets();
-        DoubleSlabsCapabilities.register();
+        PlayerConfigCapability.register();
     }
 }

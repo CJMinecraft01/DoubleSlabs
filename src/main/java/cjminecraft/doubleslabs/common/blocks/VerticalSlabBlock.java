@@ -196,11 +196,10 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         RayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getType() == RayTraceResult.Type.BLOCK ? rayTraceResult.getHitVec() : null;
         if (hitVec == null)
-            return minFloat(world, pos, i -> i.getState().map(s -> s.getPlayerRelativeBlockHardness(player, i.getWorld(), pos)).orElseGet(() -> super.getPlayerRelativeBlockHardness(state, player, world, pos)));
+            return minFloat(world, pos, i -> i.getBlockState().getPlayerRelativeBlockHardness(player, i.getWorld(), pos));
         return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ())
-                .map(i -> i.getState().map(s -> s.getPlayerRelativeBlockHardness(player, i.getWorld(), pos))
-                        .orElseGet(() -> super.getPlayerRelativeBlockHardness(state, player, world, pos)))
-                .orElseGet(() -> super.getPlayerRelativeBlockHardness(state, player, world, pos));
+                .map(i -> i.getBlockState().getPlayerRelativeBlockHardness(player, i.getWorld(), pos))
+                .orElse(super.getPlayerRelativeBlockHardness(state, player, world, pos));
     }
 
     @Override
@@ -223,7 +222,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player) {
         BlockRayTraceResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vector3d hitVec = rayTraceResult.getHitVec();
-        return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ()).map(i -> i.getState().map(s -> s.canHarvestBlock(i.getWorld(), i.getPos(), player)).orElse(false)).orElse(false);
+        return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ()).map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), i.getPos(), player)).orElse(false);
     }
 
     @Override
@@ -245,16 +244,14 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                 IBlockInfo blockToRemove = positive ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo();
 //                BlockState stateToRemove = positive ? tile.getPositiveBlockInfo().getBlockState() : tile.getNegativeBlockInfo().getBlockState();
 
-                blockToRemove.getState().ifPresent(s -> {
-                    player.addStat(Stats.BLOCK_MINED.get(s.getBlock()));
-                    world.playEvent(2001, pos, Block.getStateId(s));
-                    player.addExhaustion(0.005F);
+                player.addStat(Stats.BLOCK_MINED.get(blockToRemove.getBlockState().getBlock()));
+                world.playEvent(2001, pos, Block.getStateId(blockToRemove.getBlockState()));
+                player.addExhaustion(0.005F);
 
-                    if (!player.abilities.isCreativeMode)
-                        spawnDrops(s, world, pos, null, player, stack);
+                if (!player.abilities.isCreativeMode)
+                    spawnDrops(blockToRemove.getBlockState(), world, pos, null, player, stack);
 
-                    s.onReplaced(blockToRemove.getWorld(), pos, Blocks.AIR.getDefaultState(), false);
-                });
+                blockToRemove.getBlockState().onReplaced(blockToRemove.getWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
                 blockToRemove.setBlockState(null);
 //                if (positive)
@@ -268,16 +265,14 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                 boolean positive = tile.getPositiveBlockInfo().getBlockState() != null;
                 IBlockInfo blockToRemove = positive ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo();
 //                BlockState remainingState = positive ? tile.getPositiveBlockInfo().getBlockState() : tile.getNegativeBlockInfo().getBlockState();
-                blockToRemove.getState().ifPresent(s -> {
-                    player.addStat(Stats.BLOCK_MINED.get(s.getBlock()));
-                    world.playEvent(2001, pos, Block.getStateId(s));
-                    player.addExhaustion(0.005F);
+                player.addStat(Stats.BLOCK_MINED.get(blockToRemove.getBlockState().getBlock()));
+                world.playEvent(2001, pos, Block.getStateId(blockToRemove.getBlockState()));
+                player.addExhaustion(0.005F);
 
-                    if (!player.abilities.isCreativeMode)
-                        spawnDrops(s, world, pos, null, player, stack);
+                if (!player.abilities.isCreativeMode)
+                    spawnDrops(blockToRemove.getBlockState(), world, pos, blockToRemove.getTileEntity(), player, stack);
 
-                    s.onReplaced(blockToRemove.getWorld(), pos, Blocks.AIR.getDefaultState(), false);
-                });
+                blockToRemove.getBlockState().onReplaced(blockToRemove.getWorld(), pos, Blocks.AIR.getDefaultState(), false);
 
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
                 world.removeTileEntity(pos);
@@ -290,18 +285,18 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         float f = (float) MathHelper.ceil(entity.fallDistance - 3.0F);
         double d0 = Math.min((0.2F + f / 15.0F), 2.5D);
         final int numOfParticles = state1.get(DOUBLE) ? (int) (75.0D * d0) : (int) (150.0D * d0);
-        runIfAvailable(worldserver, pos, i -> i.getState().ifPresent(s -> worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, s), entity.getPosX(), entity.getPosY(), entity.getPosZ(), numOfParticles, 0.0D, 0.0D, 0.0D, 0.15000000596046448D)));
+        runIfAvailable(worldserver, pos, i -> worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, i.getBlockState()), entity.getPosX(), entity.getPosY(), entity.getPosZ(), numOfParticles, 0.0D, 0.0D, 0.0D, 0.15000000596046448D));
         return true;
     }
 
     @Override
     public boolean addRunningEffects(BlockState state, World world, BlockPos pos, Entity entity) {
         if (world.isRemote) {
-            runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, s),
+            runIfAvailable(world, pos, i -> world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, i.getBlockState()),
                     entity.getPosX() + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.getWidth(),
                     entity.getBoundingBox().minY + 0.1D,
                     entity.getPosZ() + ((double) world.rand.nextFloat() - 0.5D) * (double) entity.getWidth(),
-                    -entity.getMotion().x * 4.0D, 1.5D, -entity.getMotion().z * 4.0D)));
+                    -entity.getMotion().x * 4.0D, 1.5D, -entity.getMotion().z * 4.0D));
         }
         return true;
     }
@@ -311,7 +306,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
         if (target.getType() == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult result = (BlockRayTraceResult) target;
-            return getHalfState(world, result.getPos(), target.getHitVec().x, target.getHitVec().z).flatMap(IBlockInfo::getState).map(s -> {
+            return getHalfState(world, result.getPos(), target.getHitVec().x, target.getHitVec().z).map(info -> {
                 BlockPos pos = result.getPos();
                 Direction side = result.getFace();
 
@@ -346,7 +341,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
                 DiggingParticle.Factory factory = new DiggingParticle.Factory();
 
-                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, info.getBlockState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 if (particle != null) {
                     ((DiggingParticle) particle).setBlockPos(pos);
                     particle = particle.multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F);
@@ -372,11 +367,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                         double d1 = ((double) k + 0.5D) / 4.0D + pos.getY();
                         double d2 = ((double) l + 0.5D) / 4.0D + pos.getZ();
 
-                        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> {
-                            Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, s), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        runIfAvailable(world, pos, i -> {
+                            Particle particle = factory.makeParticle(new BlockParticleData(ParticleTypes.BLOCK, i.getBlockState()), (ClientWorld) world, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                             if (particle != null)
                                 manager.addEffect(particle);
-                        }));
+                        });
                     }
                 }
             }
@@ -388,8 +383,8 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (state.getBlock() != this)
             return ActionResultType.PASS;
-        return getHalfState(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(i -> i.getState().map(s -> {
-            IContainerSupport containerSupport = ContainerSupport.getSupport(i.getWorld(), pos, s);
+        return getHalfState(world, pos, hit.getHitVec().x - pos.getX(), hit.getHitVec().z - pos.getZ()).map(i -> {
+            IContainerSupport containerSupport = ContainerSupport.getSupport(i.getWorld(), pos, i.getBlockState());
             ISlabSupport slabSupport = SlabSupport.getSlabSupport(world, pos, i.getBlockState());
             if (containerSupport != null) {
                 if (!world.isRemote) {
@@ -416,12 +411,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 //            if (containerSupport != null && !world.isRemote)
 //                    NetworkUtils.openGui((ServerPlayerEntity) player, containerSupport.getNamedContainerProvider(i.getWorld(), pos, state, player, hand, hit), pos, i.isPositive());
                 try {
-                    return slabSupport == null ? s.onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onBlockActivated(s, i.getWorld(), pos, player, hand, hit);
+                    return slabSupport == null ? i.getBlockState().onBlockActivated(i.getWorld(), player, hand, hit) : slabSupport.onBlockActivated(i.getBlockState(), i.getWorld(), pos, player, hand, hit);
                 } catch (Exception e) {
                     return ActionResultType.PASS;
                 }
             }
-        }).orElse(ActionResultType.PASS)).orElse(ActionResultType.PASS);
+        }).orElse(ActionResultType.PASS);
     }
 
     @Override
@@ -429,13 +424,13 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         BlockRayTraceResult result = RayTraceUtil.rayTrace(player);
         if (result.getHitVec() != null)
             getHalfState(world, pos, result.getHitVec().x - pos.getX(), result.getHitVec().z - pos.getZ())
-                    .ifPresent(pair -> pair.getState().ifPresent(s -> s.onBlockClicked(pair.getWorld(), pos, player)));
+                    .ifPresent(i -> i.getBlockState().onBlockClicked(i.getWorld(), pos, player));
     }
 
     @Override
     public void onFallenUpon(World world, BlockPos pos, Entity entity, float fallDistance) {
         if (!getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> {
-            i.getState().ifPresent(s -> s.getBlock().onFallenUpon(i.getWorld(), pos, entity, fallDistance));
+            i.getBlockState().getBlock().onFallenUpon(i.getWorld(), pos, entity, fallDistance);
             return true;
         }).orElse(false))
             super.onFallenUpon(world, pos, entity, fallDistance);
@@ -446,7 +441,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         BlockPos pos = new BlockPos(entity.getPositionVec()).down();
         if (world.getBlockState(pos).getBlock() == this)
             if (!getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> {
-                i.getState().ifPresent(s -> s.getBlock().onLanded(i.getWorld(), entity));
+                i.getBlockState().getBlock().onLanded(i.getWorld(), entity);
                 return true;
             }).orElse(false))
                 super.onLanded(world, entity);
@@ -455,7 +450,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
         if (!getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> {
-            i.getState().ifPresent(s -> s.getBlock().onEntityWalk(i.getWorld(), pos, entity));
+            i.getBlockState().getBlock().onEntityWalk(i.getWorld(), pos, entity);
             return true;
         }).orElse(false))
             super.onEntityWalk(world, pos, entity);
@@ -468,28 +463,28 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).ifPresent(i -> i.getState().ifPresent(s -> s.onEntityCollision(i.getWorld(), pos, entity)));
+        getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).ifPresent(i -> i.getBlockState().onEntityCollision(i.getWorld(), pos, entity));
     }
 
     @Override
     public void onProjectileCollision(World world, BlockState state, BlockRayTraceResult hit, ProjectileEntity projectile) {
-        getHalfState(world, hit.getPos(), hit.getHitVec().x, hit.getHitVec().z).ifPresent(i -> i.getState().ifPresent(s -> s.onProjectileCollision(i.getWorld(), s, hit, projectile)));
+        getHalfState(world, hit.getPos(), hit.getHitVec().x, hit.getHitVec().z).ifPresent(i -> i.getBlockState().onProjectileCollision(i.getWorld(), i.getBlockState(), hit, projectile));
     }
 
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
         if (entity != null)
-            return getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> i.getState().map(s -> s.getSoundType(i.getWorld(), pos, entity)).orElseGet(() -> super.getSoundType(state, world, pos, entity))).orElseGet(() -> super.getSoundType(state, world, pos, entity));
-        return getAvailable(world, pos).map(i -> i.getState().map(s -> s.getSoundType(i.getWorld(), pos, null)).orElseGet(() -> super.getSoundType(state, world, pos, null))).orElseGet(() -> super.getSoundType(state, world, pos, null));
+            return getHalfState(world, pos, entity.getPosX() - pos.getX(), entity.getPosZ() - pos.getZ()).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElse(super.getSoundType(state, world, pos, entity));
+        return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, null)).orElse(super.getSoundType(state, world, pos, null));
     }
 
     @Override
     public void fillWithRain(World world, BlockPos pos) {
-        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.getBlock().fillWithRain(i.getWorld(), i.getPos())));
+        runIfAvailable(world, pos, i -> i.getBlockState().getBlock().fillWithRain(i.getWorld(), i.getPos()));
     }
 
     @Override
     public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction facing, IPlantable plantable) {
-        return both(world, pos, i -> i.getState().map(s -> s.canSustainPlant(i.getWorld(), pos, facing, plantable)).orElse(false));
+        return both(world, pos, i -> i.getBlockState().canSustainPlant(i.getWorld(), pos, facing, plantable));
     }
 }

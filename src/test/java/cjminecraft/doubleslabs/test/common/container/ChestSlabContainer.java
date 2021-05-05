@@ -1,6 +1,5 @@
 package cjminecraft.doubleslabs.test.common.container;
 
-import cjminecraft.doubleslabs.api.Flags;
 import cjminecraft.doubleslabs.test.common.init.DSTContainers;
 import cjminecraft.doubleslabs.test.common.tileentity.ChestSlabTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +22,7 @@ public class ChestSlabContainer extends Container {
     }
 
     public ChestSlabContainer(int id, PlayerInventory inv, PacketBuffer data) {
-        this(id, inv, (ChestSlabTileEntity) Flags.getTileEntityAtPos(data.readBlockPos(), inv.player.world));
+        this(id, inv, ((ChestSlabTileEntity) inv.player.world.getTileEntity(data.readBlockPos())));
     }
 
     public ChestSlabContainer(int id, PlayerInventory inv, @Nullable ChestSlabTileEntity tile) {

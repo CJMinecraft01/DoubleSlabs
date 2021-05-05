@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.common.container;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.PlayerInventoryWrapper;
-import cjminecraft.doubleslabs.api.capability.blockhalf.BlockHalfCapability;
 import cjminecraft.doubleslabs.common.init.DSContainers;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,10 +26,8 @@ public class WrappedContainer extends Container {
     public WrappedContainer(int id, PlayerInventory playerInventory, PlayerEntity player, INamedContainerProvider provider, IBlockInfo blockInfo) {
         super(DSContainers.WRAPPED_CONTAINER.get(), id);
         this.positive = blockInfo.isPositive();
-        SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(blockInfo.getPos()));
-        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(this.positive));
         this.world = blockInfo.getWorld();
-        this.wrapped = provider.createMenu(id, playerInventory, player);
+        this.wrapped = provider.createMenu(id, new PlayerInventoryWrapper(playerInventory, blockInfo.getWorld()), player);
     }
 
     public WrappedContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -38,9 +35,8 @@ public class WrappedContainer extends Container {
         BlockPos pos = buffer.readBlockPos();
         this.positive = buffer.readBoolean();
         SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(pos));
-        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(this.positive));
-        this.world = tile.getWorld();
-        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, playerInventory, buffer);
+        this.world = this.positive ? tile.getPositiveBlockInfo().getWorld() : tile.getNegativeBlockInfo().getWorld();
+        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
 //        this.wrapped = Registry.MENU.getByValue(buffer.readInt()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
     }
 
