@@ -149,7 +149,7 @@
     "3.4.5": "=Fixed the tile entity of a single slab is lost when combined with another slab",
     "3.4.6": "=Fix a startup crash",
     "3.4.7": "=Fixed vertical slab items not decreasing in stack size when placed\n=Fixed vertical slab blocks not dropping the correct item when broken\n=Fixed a crash\n=Improve container support",
-    "3.4.8": "=Fixed a crash with an autobreaker\n=Fixed the vertical slab conversion recipe\n+Updated to 1.16.3",
+    "3.4.8": "=Fixed a crash with an auto breaker\n=Fixed the vertical slab conversion recipe\n+Updated to 1.16.3",
     "3.4.9": "=Fixed an item duplication bug when crafting vertical slabs",
     "3.5.0rc1": "=Attempted to improve RAM usage",
     "3.5.0rc2": "=Change to a different mechanism to improve performance\n=Fix campfire damage with double slabs"
