@@ -150,7 +150,9 @@
     "3.4.6": "=Fix a startup crash",
     "3.4.7": "=Fixed vertical slab items not decreasing in stack size when placed\n=Fixed vertical slab blocks not dropping the correct item when broken\n=Fixed a crash\n=Improve container support",
     "3.4.8": "=Fixed a crash with an autobreaker\n=Fixed the vertical slab conversion recipe\n+Updated to 1.16.3",
-    "3.4.9": "=Fixed an item duplication bug when crafting vertical slabs"
+    "3.4.9": "=Fixed an item duplication bug when crafting vertical slabs",
+    "3.5.0rc1": "=Attempted to improve RAM usage",
+    "3.5.0rc2": "=Change to a different mechanism to improve performance\n=Fix campfire damage with double slabs"
   },
   "promos": {
     "1.12.2-latest": "0.11.0",
@@ -159,7 +161,7 @@
     "1.14.4-recommended": "1.11.3",
     "1.15.2-latest": "2.11.7",
     "1.15.2-recommended": "2.11.7",
-    "1.16.1-latest": "3.4.9",
+    "1.16.1-latest": "3.5.0rc2",
     "1.16.1-recommended": "3.4.9"
   }
 }
