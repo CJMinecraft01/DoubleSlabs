@@ -44,6 +44,8 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Nullable
     @Override
     public TileEntity getTileEntity() {
+        if (this.tile != null && this.tile.cachedBlockState != this.state)
+            this.tile.cachedBlockState = this.state;
         return this.tile;
     }
 
@@ -85,6 +87,8 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
                 this.tile.updateContainingBlockInfo();
         this.slab.markDirtyClient();
         this.support = state == null ? null : SlabSupport.getSlabSupport(this.getWorld(), this.getPos(), this.state);
+        if (this.tile != null)
+            this.tile.cachedBlockState = this.state;
     }
 
     @Override
@@ -93,6 +97,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
             tile.setWorldAndPos(this.world, this.slab.getPos());
             if (this.tile != null)
                 this.tile.remove();
+            tile.cachedBlockState = this.state;
             tile.onLoad();
         }
         this.tile = tile;

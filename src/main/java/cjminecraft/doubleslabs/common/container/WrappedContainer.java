@@ -27,6 +27,8 @@ public class WrappedContainer extends Container {
     public WrappedContainer(int id, PlayerInventory playerInventory, PlayerEntity player, INamedContainerProvider provider, IBlockInfo blockInfo) {
         super(DSContainers.WRAPPED_CONTAINER.get(), id);
         this.positive = blockInfo.isPositive();
+        SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(blockInfo.getPos()));
+        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(this.positive));
         this.world = blockInfo.getWorld();
         this.wrapped = provider.createMenu(id, playerInventory, player);
     }
@@ -36,7 +38,7 @@ public class WrappedContainer extends Container {
         BlockPos pos = buffer.readBlockPos();
         this.positive = buffer.readBoolean();
         SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.world.getTileEntity(pos));
-        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(positive));
+        tile.getCapability(BlockHalfCapability.BLOCK_HALF).ifPresent(half -> half.setHalf(this.positive));
         this.world = tile.getWorld();
         this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, playerInventory, buffer);
 //        this.wrapped = Registry.MENU.getByValue(buffer.readInt()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);

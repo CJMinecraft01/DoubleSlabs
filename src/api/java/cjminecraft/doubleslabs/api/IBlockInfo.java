@@ -8,14 +8,25 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface IBlockInfo {
 
     @Nullable
     BlockState getBlockState();
 
+    default Optional<BlockState> getState() {
+        BlockState state = getBlockState();
+        return state == null ? Optional.empty() : Optional.of(state);
+    }
+
     @Nullable
     TileEntity getTileEntity();
+
+    default Optional<TileEntity> getTile() {
+        TileEntity tile = getTileEntity();
+        return tile == null ? Optional.empty() : Optional.of(tile);
+    }
 
     void setBlockState(@Nullable BlockState state);
 

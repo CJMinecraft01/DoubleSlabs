@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.test.common.blocks;
 
+import cjminecraft.doubleslabs.api.Flags;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.test.common.container.ChestSlabContainer;
 import cjminecraft.doubleslabs.test.common.init.DSTContainers;
@@ -97,7 +98,7 @@ public class ChestSlab extends SlabBlock implements IContainerSupport {
             @Nullable
             @Override
             public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new ChestSlabContainer(windowId, playerInventory, (ChestSlabTileEntity) world.getTileEntity(pos));
+                return new ChestSlabContainer(windowId, playerInventory, (ChestSlabTileEntity) Flags.getTileEntityAtPos(pos, world));
             }
         };
     }

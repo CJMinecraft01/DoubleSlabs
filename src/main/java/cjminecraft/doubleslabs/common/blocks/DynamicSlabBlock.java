@@ -124,10 +124,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean receiveFluid(@Nonnull IWorld world, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidState) {
-        runIfAvailable(world, pos, i -> {
-            if (i.getBlockState().getBlock() instanceof IWaterLoggable)
-                ((IWaterLoggable) i.getBlockState().getBlock()).receiveFluid(i.getWorld(), pos, i.getBlockState(), fluidState);
-        });
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> {
+            if (s instanceof IWaterLoggable)
+                ((IWaterLoggable) s).receiveFluid(i.getWorld(), pos, s, fluidState);
+        }));
         return IWaterLoggable.super.receiveFluid(world, pos, state, fluidState);
     }
 
@@ -163,7 +163,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
-        return maxFloat(world, pos, i -> i.getBlockState().getExplosionResistance(i.getWorld(), pos, explosion));
+        return maxFloat(world, pos, i -> i.getState().map(s -> s.getExplosionResistance(i.getWorld(), pos, explosion)).orElseGet(() -> super.getExplosionResistance(state, world, pos, explosion)));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return max(world, pos, i -> i.getBlockState().getLightValue(i.getWorld(), pos));
+        return max(world, pos, i -> i.getState().map(s -> s.getLightValue(i.getWorld(), pos)).orElseGet(() -> super.getLightValue(state, world, pos)));
     }
 
     @Nullable
@@ -223,7 +223,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     @Override
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (player.isCreative()) {
-            runIfAvailable(world, pos, i -> i.getBlockState().onReplaced(i.getWorld(), pos, Blocks.AIR.getDefaultState(), false));
+            runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.onReplaced(i.getWorld(), pos, Blocks.AIR.getDefaultState(), false)));
             super.onBlockHarvested(world, pos, state, player);
         }
     }
@@ -249,49 +249,48 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
-        runIfAvailable(world, pos, i -> i.getBlockState().randomTick(world, pos, random));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.randomTick(world, pos, random)));
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
-        runIfAvailable(world, pos, i -> i.getBlockState().getBlock().animateTick(i.getBlockState(), i.getWorld(), pos, rand));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.getBlock().animateTick(s, i.getWorld(), pos, rand)));
     }
 
     @Override
     public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
-        return either(world, pos, i -> i.getBlockState().canConnectRedstone(i.getWorld(), pos, side));
+        return either(world, pos, i -> i.getState().map(s -> s.canConnectRedstone(i.getWorld(), pos, side)).orElseGet(() -> super.canConnectRedstone(state, world, pos, side)));
     }
 
     @Override
     public int getWeakPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-        return max(world, pos, i -> i.getBlockState().getWeakPower(i.getWorld(), pos, side));
+        return max(world, pos, i -> i.getState().map(s -> s.getWeakPower(i.getWorld(), pos, side)).orElseGet(() -> super.getWeakPower(state, world, pos, side)));
     }
 
     @Override
     public int getStrongPower(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-        return max(world, pos, i -> i.getBlockState().getStrongPower(i.getWorld(), pos, side));
+        return max(world, pos, i -> i.getState().map(s -> s.getStrongPower(i.getWorld(), pos, side)).orElseGet(() -> super.getStrongPower(state, world, pos, side)));
     }
-
 
     @Override
     public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
-        return max(world, pos, i -> i.getBlockState().getComparatorInputOverride(i.getWorld(), pos));
+        return max(world, pos, i -> i.getState().map(s -> s.getComparatorInputOverride(i.getWorld(), pos)).orElseGet(() -> super.getComparatorInputOverride(state, world, pos)));
     }
 
     @Override
     public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
-        return addFloat(world, pos, i -> i.getBlockState().getEnchantPowerBonus(i.getWorld(), pos));
+        return addFloat(world, pos, i -> i.getState().map(s -> s.getEnchantPowerBonus(i.getWorld(), pos)).orElseGet(() -> super.getEnchantPowerBonus(state, world, pos)));
     }
 
     @Override
     public int getFireSpreadSpeed(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
-        return max(world, pos, i -> i.getBlockState().getFireSpreadSpeed(i.getWorld(), pos, face));
+        return max(world, pos, i -> i.getState().map(s -> s.getFireSpreadSpeed(i.getWorld(), pos, face)).orElseGet(() -> super.getFireSpreadSpeed(state, world, pos, face)));
     }
 
     @Override
     public int getFlammability(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
-        return max(world, pos, i -> i.getBlockState().getFlammability(i.getWorld(), pos, face));
+        return max(world, pos, i -> i.getState().map(s -> s.getFlammability(i.getWorld(), pos, face)).orElseGet(() -> super.getFlammability(state, world, pos, face)));
     }
 
     @Override
@@ -301,77 +300,74 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean isBurning(BlockState state, IBlockReader world, BlockPos pos) {
-        return either(world, pos, i -> i.getBlockState().isBurning(i.getWorld(), pos));
+        return either(world, pos, i -> i.getState().map(s -> s.isBurning(i.getWorld(), pos)).orElse(false));
     }
 
     @Override
     public boolean isFertile(BlockState state, IBlockReader world, BlockPos pos) {
-        return either(world, pos, i -> i.getBlockState().isFertile(i.getWorld(), pos));
+        return either(world, pos, i -> i.getState().map(s -> s.isFertile(i.getWorld(), pos)).orElse(false));
     }
 
     @Override
     public boolean isFireSource(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
-        return either(world, pos, i -> i.getBlockState().isFireSource(i.getWorld(), pos, side));
+        return either(world, pos, i -> i.getState().map(s -> s.isFireSource(i.getWorld(), pos, side)).orElse(false));
     }
 
     @Override
     public boolean isFlammable(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
-        return either(world, pos, i -> i.getBlockState().isFlammable(i.getWorld(), pos, face));
+        return either(world, pos, i -> i.getState().map(s -> s.isFlammable(i.getWorld(), pos, face)).orElse(false));
     }
 
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
-        runIfAvailable(world, pos, i -> i.getBlockState().neighborChanged(i.getWorld(), pos, i.getBlockState().getBlock(), fromPos, isMoving));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.neighborChanged(i.getWorld(), pos, s.getBlock(), fromPos, isMoving)));
     }
 
 
     @Override
     public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
-        runIfAvailable(world, pos, i -> i.getBlockState().onNeighborChange(i.getWorld(), pos, neighbor));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.onNeighborChange(i.getWorld(), pos, neighbor)));
     }
 
     @Override
     public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
-        runIfAvailable(world, pos, i -> i.getBlockState().tick(world, pos, rand));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.tick(world, pos, rand)));
     }
 
     @Override
     public void onExplosionDestroy(World world, BlockPos pos, Explosion explosion) {
-        runIfAvailable(world, pos, i -> i.getBlockState().getBlock().onExplosionDestroy(i.getWorld(), pos, explosion));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.getBlock().onExplosionDestroy(i.getWorld(), pos, explosion)));
     }
 
     @Override
     public void fillWithRain(World world, BlockPos pos) {
-        getTile(world, pos).ifPresent(tile -> {
-            if (tile.getPositiveBlockInfo().getBlockState() != null)
-                tile.getPositiveBlockInfo().getBlockState().getBlock().fillWithRain(tile.getPositiveBlockInfo().getWorld(), pos);
-        });
+        getTile(world, pos).ifPresent(tile -> tile.getPositiveBlockInfo().getState().ifPresent(s -> s.getBlock().fillWithRain(tile.getPositiveBlockInfo().getWorld(), pos)));
     }
 
     @Override
     public float getSlipperiness(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
-        return maxFloat(world, pos, i -> i.getBlockState().getSlipperiness(i.getWorld(), pos, entity));
+        return maxFloat(world, pos, i -> i.getState().map(s -> s.getSlipperiness(i.getWorld(), pos, entity)).orElseGet(() -> super.getSlipperiness(state, world, pos, entity)));
     }
 
     @Override
     public boolean canSustainPlant(BlockState state, IBlockReader world, BlockPos pos, Direction facing, IPlantable plantable) {
-        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() != null && tile.getPositiveBlockInfo().getBlockState().canSustainPlant(tile.getPositiveBlockInfo().getWorld(), pos, facing, plantable)).orElse(false);
+        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getState().map(s -> s.canSustainPlant(tile.getPositiveBlockInfo().getWorld(), pos, facing, plantable)).orElse(false)).orElse(false);
     }
 
     @Override
     public void updateDiagonalNeighbors(BlockState state, IWorld world, BlockPos pos, int flags, int recursionLeft) {
-        runIfAvailable(world, pos, i -> i.getBlockState().updateDiagonalNeighbors(i.getWorld(), pos, flags, recursionLeft));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.updateDiagonalNeighbors(i.getWorld(), pos, flags, recursionLeft)));
     }
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
-        runIfAvailable(world, pos, i -> i.getBlockState().onBlockAdded(i.getWorld(), pos, oldState, isMoving));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.onBlockAdded(i.getWorld(), pos, oldState, isMoving)));
     }
 
     @Override
     public boolean eventReceived(BlockState state, World world, BlockPos pos, int id, int param) {
-        return either(world, pos, i -> i.getBlockState().receiveBlockEvent(i.getWorld(), pos, id, param));
+        return either(world, pos, i -> i.getState().map(s -> s.receiveBlockEvent(i.getWorld(), pos, id, param)).orElseGet(() -> super.eventReceived(state, world, pos, id, param)));
     }
 
     @Override
@@ -381,32 +377,32 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public boolean isLadder(BlockState state, IWorldReader world, BlockPos pos, LivingEntity entity) {
-        return either(world, pos, i -> i.getBlockState().isLadder(i.getWorld(), pos, entity));
+        return either(world, pos, i -> i.getState().map(s -> s.isLadder(i.getWorld(), pos, entity)).orElse(false));
     }
 
     @Override
     public boolean isBed(BlockState state, IBlockReader world, BlockPos pos, @Nullable Entity player) {
-        return either(world, pos, i -> i.getBlockState().isBed(i.getWorld(), pos, (LivingEntity) player));
+        return either(world, pos, i -> i.getState().map(s -> s.isBed(i.getWorld(), pos, (LivingEntity) player)).orElse(false));
     }
 
     @Override
     public void onPlantGrow(BlockState state, IWorld world, BlockPos pos, BlockPos source) {
-        runIfAvailable(world, pos, i -> i.getBlockState().getBlock().onPlantGrow(i.getBlockState(), i.getWorld(), pos, source));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.getBlock().onPlantGrow(s, i.getWorld(), pos, source)));
     }
 
     @Override
     public boolean isConduitFrame(BlockState state, IWorldReader world, BlockPos pos, BlockPos conduit) {
-        return either(world, pos, i -> i.getBlockState().isConduitFrame(i.getWorld(), pos, conduit));
+        return either(world, pos, i -> i.getState().map(s -> s.isConduitFrame(i.getWorld(), pos, conduit)).orElse(false));
     }
 
     @Override
     public boolean isPortalFrame(BlockState state, IBlockReader world, BlockPos pos) {
-        return either(world, pos, i -> i.getBlockState().isPortalFrame(i.getWorld(), pos));
+        return either(world, pos, i -> i.getState().map(s -> s.isPortalFrame(i.getWorld(), pos)).orElse(false));
     }
 
     @Override
     public int getExpDrop(BlockState state, IWorldReader world, BlockPos pos, int fortune, int silktouch) {
-        return max(world, pos, i -> i.getBlockState().getExpDrop(i.getWorld(), pos, fortune, silktouch));
+        return max(world, pos, i -> i.getState().map(s -> s.getExpDrop(i.getWorld(), pos, fortune, silktouch)).orElseGet(() -> super.getExpDrop(state, world, pos, fortune, silktouch)));
     }
 
     @Override
@@ -417,7 +413,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
         if (entity == null)
-            return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, null)).orElse(super.getSoundType(state, world, pos, entity));
+            return getAvailable(world, pos).map(i -> i.getState().map(s -> s.getSoundType(i.getWorld(), pos, null)).orElseGet(() -> super.getSoundType(state, world, pos, null))).orElseGet(() -> super.getSoundType(state, world, pos, null));
         return super.getSoundType(state, world, pos, entity);
     }
 
@@ -465,17 +461,17 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public void catchFire(BlockState state, World world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        runIfAvailable(world, pos, i -> i.getBlockState().catchFire(i.getWorld(), pos, face, igniter));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.catchFire(i.getWorld(), pos, face, igniter)));
     }
 
     @Override
     public boolean canEntityDestroy(BlockState state, IBlockReader world, BlockPos pos, Entity entity) {
-        return both(world, pos, i -> i.getBlockState().canEntityDestroy(i.getWorld(), pos, entity));
+        return both(world, pos, i -> i.getState().map(s -> s.canEntityDestroy(i.getWorld(), pos, entity)).orElseGet(() -> super.canEntityDestroy(state, world, pos, entity)));
     }
 
     @Override
     public void onBlockExploded(BlockState state, World world, BlockPos pos, Explosion explosion) {
-        runIfAvailable(world, pos, i -> i.getBlockState().onBlockExploded(i.getWorld(), pos, explosion));
+        runIfAvailable(world, pos, i -> i.getState().ifPresent(s -> s.onBlockExploded(i.getWorld(), pos, explosion)));
         super.onBlockExploded(state, world, pos, explosion);
     }
 

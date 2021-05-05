@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api.support.minecraft;
 
+import cjminecraft.doubleslabs.api.Flags;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
@@ -9,8 +10,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.stats.Stats;
+import net.minecraft.tileentity.CampfireTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -21,6 +26,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
+import java.util.Optional;
 import java.util.Random;
 
 @SlabSupportProvider
@@ -63,7 +69,24 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        ActionResultType result = state.onBlockActivated(world, player, hand, hit);
+        ActionResultType result = ActionResultType.PASS;
+
+        // the tile at current pos is not a campfire but a slab block and so won't work..
+
+        TileEntity tileentity = Flags.getTileEntityAtPos(pos, world);
+        if (tileentity instanceof CampfireTileEntity) {
+            CampfireTileEntity campfiretileentity = (CampfireTileEntity)tileentity;
+            ItemStack itemstack = player.getHeldItem(hand);
+            Optional<CampfireCookingRecipe> optional = campfiretileentity.findMatchingRecipe(itemstack);
+            if (optional.isPresent()) {
+                if (!world.isRemote && campfiretileentity.addItem(player.abilities.isCreativeMode ? itemstack.copy() : itemstack, optional.get().getCookTime())) {
+                    player.addStat(Stats.INTERACT_WITH_CAMPFIRE);
+                    result = ActionResultType.SUCCESS;
+                }
+
+                result = ActionResultType.CONSUME;
+            }
+        }
         if (!result.isSuccessOrConsume()) {
             if (state.get(CampfireBlock.LIT) && player.getHeldItem(hand).getItem() instanceof ShovelItem) {
                 if (!world.isRemote()) {
