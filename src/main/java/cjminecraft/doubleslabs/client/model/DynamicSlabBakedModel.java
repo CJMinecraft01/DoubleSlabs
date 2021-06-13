@@ -1,44 +1,25 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.CullInfo;
-import cjminecraft.doubleslabs.client.util.SlabCacheKey;
-import cjminecraft.doubleslabs.client.util.vertex.TintOffsetTransformer;
-import cjminecraft.doubleslabs.common.DoubleSlabs;
-import cjminecraft.doubleslabs.common.blocks.DynamicSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
-import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.UncheckedExecutionException;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
-import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
@@ -114,11 +95,8 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
 
     protected List<BakedQuad> getQuadsForModel(IBakedModel model, BlockState state, Direction side, Random rand, IModelData modelData, boolean positive) {
         // Ensure blocks have the correct tint
-        return model.getQuads(state, side, rand, modelData).stream().map(quad -> {
-            BakedQuadBuilder builder = new BakedQuadBuilder();
-            TintOffsetTransformer transformer = new TintOffsetTransformer(builder, positive);
-            quad.pipe(transformer);
-            return builder.build();
-        }).collect(Collectors.toList());
+        return model.getQuads(state, side, rand, modelData).stream().map(quad ->
+                new BakedQuad(quad.getVertexData(), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), quad.func_187508_a(), quad.func_239287_f_())
+        ).collect(Collectors.toList());
     }
 }
