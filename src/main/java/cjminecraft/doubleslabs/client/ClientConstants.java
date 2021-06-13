@@ -31,7 +31,7 @@ public class ClientConstants {
 
     private static final Map<BlockState, Map<Direction, IBakedModel>> VERTICAL_SLAB_MODELS = Maps.newIdentityHashMap();
     private static final Map<Item, IBakedModel> VERTICAL_SLAB_ITEM_MODELS = Maps.newIdentityHashMap();
-    private static final TransformationMatrix TRANSFORMATION_2D = new TransformationMatrix(new Vector3f(0, 0, 1), Vector3f.ZN.rotationDegrees(90), null, null);
+    private static final TransformationMatrix TRANSFORMATION_2D = new TransformationMatrix(null, Vector3f.ZN.rotationDegrees(90), null, null);
     public static final int TINT_OFFSET = 1000;
 
     public static IBakedModel getFallbackModel() {
@@ -125,7 +125,7 @@ public class ClientConstants {
                     } else {
                         // Rotate 90 for 2d model
                         VERTICAL_SLAB_ITEM_MODELS.put(item, bake(modelLoader, model, resourceLocation, uvlock,
-                                new Variant(resourceLocation, new TransformationMatrix(new Vector3f(0, 0, 0), Vector3f.ZN.rotationDegrees(90), null, null), uvlock, 1)));
+                                new Variant(resourceLocation, TRANSFORMATION_2D, uvlock, 1)));
                     }
                 } catch (Exception e) {
                     DoubleSlabs.LOGGER.warn("Failed to generate vertical slab item model for: {}", resourceLocation.toString());
