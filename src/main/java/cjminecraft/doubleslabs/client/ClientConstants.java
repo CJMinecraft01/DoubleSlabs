@@ -125,7 +125,7 @@ public class ClientConstants {
                     } else {
                         // Rotate 90 for 2d model
                         VERTICAL_SLAB_ITEM_MODELS.put(item, bake(modelLoader, model, resourceLocation, uvlock,
-                                new Variant(resourceLocation, TRANSFORMATION_2D, uvlock, 1)));
+                                new Variant(resourceLocation, new TransformationMatrix(new Vector3f(0, 0, 0), Vector3f.ZN.rotationDegrees(90), null, null), uvlock, 1)));
                     }
                 } catch (Exception e) {
                     DoubleSlabs.LOGGER.warn("Failed to generate vertical slab item model for: {}", resourceLocation.toString());
