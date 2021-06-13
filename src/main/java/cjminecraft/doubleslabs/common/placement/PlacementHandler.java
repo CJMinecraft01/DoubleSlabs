@@ -140,7 +140,7 @@ public class PlacementHandler {
             return false;
         IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
 
-        return config.placeVerticalSlabs() || config.getVerticalSlabPlacementMethod().shouldPlace(player, face);
+        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
     }
 
     @SubscribeEvent
