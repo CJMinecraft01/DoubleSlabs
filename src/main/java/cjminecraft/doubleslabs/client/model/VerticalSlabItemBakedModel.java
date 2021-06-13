@@ -1,9 +1,9 @@
 package cjminecraft.doubleslabs.client.model;
 
+import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.client.util.VerticalSlabItemCacheKey;
 import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
-import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
@@ -25,14 +25,12 @@ import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.QuadTransformer;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
@@ -41,71 +39,16 @@ public class VerticalSlabItemBakedModel implements IBakedModel {
 
     private static final Cache<VerticalSlabItemCacheKey, List<BakedQuad>> cache = CacheBuilder.newBuilder().build();
 
-    private static final QuadTransformer TRANSFORMER_2D = new QuadTransformer(new TransformationMatrix(new Vector3f(0, 1, 0), Vector3f.ZN.rotationDegrees(90), null, null));
     public static VerticalSlabItemBakedModel INSTANCE;
 
-    private final ItemStack stack;
     private final IBakedModel baseModel;
 
-    public IBakedModel getBaseModel() {
-        return this.baseModel;
-    }
-
     public VerticalSlabItemBakedModel(IBakedModel baseModel) {
-        this(baseModel, ItemStack.EMPTY);
-    }
-
-    public VerticalSlabItemBakedModel(IBakedModel baseModel, ItemStack stack) {
         this.baseModel = baseModel;
-        this.stack = stack;
-    }
-
-    private Block getBlock() {
-        return this.stack.getItem() instanceof BlockItem ? ((BlockItem) this.stack.getItem()).getBlock() : Blocks.AIR;
-    }
-
-    private List<BakedQuad> getQuads(@Nullable Direction side, Random rand) {
-        if (isGui3d()) {
-            Direction rotatedSide = ClientUtils.rotateFace(side, Direction.SOUTH);
-            List<BakedQuad> quads = this.baseModel.getQuads(null, rotatedSide, rand);
-            if (DSConfig.CLIENT.useLazyModel(getBlock())) {
-                if (quads.size() == 0)
-                    return new ArrayList<>();
-                BlockState baseState = DSBlocks.VERTICAL_SLAB.get().getDefaultState().with(VerticalSlabBlock.FACING, Direction.SOUTH);
-                TextureAtlasSprite sprite = quads.get(0).func_187508_a();
-                return VerticalSlabBakedModel.INSTANCE.getModel(baseState).getQuads(baseState, side, rand, EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(ClientUtils.changeQuadUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() : -1, quad.getFace(), sprite, quad.func_239287_f_())).collect(Collectors.toList());
-            }
-//            return quads.stream().map(quad -> {
-//                BakedQuadBuilder builder = new BakedQuadBuilder();
-//                VerticalSlabTransformer transformer = new VerticalSlabTransformer(builder, Direction.SOUTH, side, true);
-//                quad.pipe(transformer);
-//                return builder.build();
-//            }).collect(Collectors.toList());
-            if (ClientUtils.areShadersEnabled()) {
-                VerticalSlabTransformer transformer = new VerticalSlabTransformer(Direction.SOUTH, side, true);
-                return transformer.processMany(quads);
-            }
-            return quads.stream().map(quad -> {
-                int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), Direction.SOUTH, side);
-                return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.func_239287_f_());
-            }).collect(Collectors.toList());
-        } else
-            return TRANSFORMER_2D.processMany(this.baseModel.getQuads(null, side, rand));
-//        return this.baseModel.getQuads(null, side, rand);
     }
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-        VerticalSlabItemCacheKey key = new VerticalSlabItemCacheKey(side, rand, this.stack, this.baseModel);
-        try {
-//                if (false)
-//                    throw new ExecutionException("", new Throwable());
-//                return getQuads(side, rand);
-            return cache.get(key, () -> getQuads(side, rand));
-        } catch (ExecutionException e) {
-            DoubleSlabs.LOGGER.debug("Caught error when getting quads for key {}", key);
-            DoubleSlabs.LOGGER.catching(Level.DEBUG, e);
-        }
         return getFallbackModel().getQuads(state, side, rand);
     }
 
@@ -153,12 +96,8 @@ public class VerticalSlabItemBakedModel implements IBakedModel {
         @Nullable
         @Override
         public IBakedModel func_239290_a_(IBakedModel parent, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-            ItemStack slabStack = VerticalSlabItem.getStack(stack);
-            if (cache.containsKey(slabStack))
-                return cache.get(slabStack);
-            IBakedModel model = new VerticalSlabItemBakedModel(Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(slabStack), slabStack);
-            cache.put(slabStack, model);
-            return model;
+//            IBakedModel model = new VerticalSlabItemBakedModel(Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(slabStack), slabStack);
+            return ClientConstants.getVerticalModel(VerticalSlabItem.getStack(stack).getItem());
         }
     }
 }

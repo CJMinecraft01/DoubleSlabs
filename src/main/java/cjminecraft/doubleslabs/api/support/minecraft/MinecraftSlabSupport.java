@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,13 +24,18 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
         return (state.getBlock() instanceof SlabBlock && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || (hasEnumHalfProperty(state) && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE);
     }
 
-    private boolean hasEnumHalfProperty(BlockState state) {
-        return state.getProperties().contains(BlockStateProperties.SLAB_TYPE);
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return block instanceof SlabBlock;
     }
 
     @Override
     public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
         return isValid(state);
+    }
+
+    private boolean hasEnumHalfProperty(BlockState state) {
+        return state.getProperties().contains(BlockStateProperties.SLAB_TYPE);
     }
 
     @Override

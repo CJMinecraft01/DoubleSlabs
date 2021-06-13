@@ -35,6 +35,36 @@ public class DSConfig {
         SERVER = specPair.getLeft();
     }
 
+    private static boolean isItemPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Item item) {
+        if (item.getRegistryName() == null)
+            return false;
+        return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("*"))
+                return true;
+            if (entry.startsWith("#")) {
+                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
+                ITag<Item> tag = ItemTags.getCollection().get(tagLocation);
+                return tag != null && tag.contains(item);
+            }
+            return entry.equals(item.getRegistryName().toString());
+        });
+    }
+
+    private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
+        if (block.getRegistryName() == null)
+            return false;
+        return option.get().stream().anyMatch(entry -> {
+            if (entry.startsWith("*"))
+                return true;
+            if (entry.startsWith("#")) {
+                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
+                ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
+                return tag != null && tag.contains(block);
+            }
+            return entry.equals(block.getRegistryName().toString());
+        });
+    }
+
     public static class Server {
         public final ConfigValue<List<String>> slabBlacklist;
         public final ConfigValue<List<String>> verticalSlabBlacklist;
@@ -42,18 +72,6 @@ public class DSConfig {
         public final BooleanValue disableVerticalSlabPlacement;
         public final ConfigValue<List<String>> verticalSlabCraftingBlacklist;
 //        public final BooleanValue disableVerticalSlabItems;
-
-        public boolean isBlacklistedHorizontalSlab(Block block) {
-            return isBlockPresent(slabBlacklist, block);
-        }
-
-        public boolean isBlacklistedVerticalSlab(Block block) {
-            return isBlockPresent(verticalSlabBlacklist, block);
-        }
-
-        public boolean isBlacklistedCraftingItem(Item item) {
-            return isItemPresent(verticalSlabCraftingBlacklist, item);
-        }
 
         Server(Builder builder) {
             builder.comment("General Configuration")
@@ -96,37 +114,39 @@ public class DSConfig {
 
             builder.pop();
         }
+
+        public boolean isBlacklistedHorizontalSlab(Block block) {
+            return isBlockPresent(slabBlacklist, block);
+        }
+
+        public boolean isBlacklistedVerticalSlab(Block block) {
+            return isBlockPresent(verticalSlabBlacklist, block);
+        }
+
+        public boolean isBlacklistedCraftingItem(Item item) {
+            return isItemPresent(verticalSlabCraftingBlacklist, item);
+        }
     }
 
     public static class Client {
-        public final ConfigValue<List<String>> lazyVerticalSlabModels;
+        public final ConfigValue<List<String>> uvlockModelBlacklist;
         public final ConfigValue<List<String>> slabCullBlacklist;
         public final ConfigValue<List<String>> useDoubleSlabModelBlacklist;
-
-        public boolean shouldCull(Block block) {
-            return !isBlockPresent(slabCullBlacklist, block);
-        }
-
-        public boolean useLazyModel(Block block) {
-            return isBlockPresent(lazyVerticalSlabModels, block);
-        }
-
-        public boolean useDoubleSlabModel(Block block) {
-            return !isBlockPresent(useDoubleSlabModelBlacklist, block);
-        }
-
         public final EnumValue<VerticalSlabPlacementMethod> verticalSlabPlacementMethod;
 
         Client(Builder builder) {
             builder.push("Client Only Settings");
 
-            lazyVerticalSlabModels = builder
-                    .comment("The list of slabs (or tags) which should use the lazy model rendering technique",
-                            "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model",
+            uvlockModelBlacklist = builder
+                    .comment("The list of slabs (or tags) which should NOT have uvlock enabled when creating a vertical slab model.",
                             "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs",
                             "Use the wildcard value * to enable this feature for all slabs")
-                    .translation("doubleslabs.configgui.lazyVerticalSlabModels")
-                    .define("lazyVerticalSlabModels", Lists.newArrayList("#doubleslabs:plank_slabs"));
+                    .translation("doubleslabs.configgui.uvlockModels")
+                    .define("uvlockModelBlacklist", Lists.newArrayList("minecraft:smooth_stone_slab",
+                            "minecraft:sandstone_slab", "minecraft:cut_sandstone_slab", "minecraft:red_sandstone_slab",
+                            "minecraft:cut_red_sandstone_slab", "minecraft:prismarine_brick_slab", "minecraft:campfire",
+                            "minecraft:soul_campfire", "doubleslabs:raised_campfire",
+                            "doubleslabs:raised_soul_campfire"));
 
             slabCullBlacklist = builder
                     .comment("The list of slabs (or tags) which should not be culled when combined",
@@ -154,36 +174,22 @@ public class DSConfig {
 
             builder.pop();
         }
-    }
 
-    private static boolean isItemPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Item item) {
-        if (item.getRegistryName() == null)
-            return false;
-        return option.get().stream().anyMatch(entry -> {
-            if (entry.startsWith("*"))
-                return true;
-            if (entry.startsWith("#")) {
-                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                ITag<Item> tag = ItemTags.getCollection().get(tagLocation);
-                return tag != null && tag.contains(item);
-            }
-            return entry.equals(item.getRegistryName().toString());
-        });
-    }
+        public boolean uvlock(Block block) {
+            return !isBlockPresent(uvlockModelBlacklist, block);
+        }
 
-    private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
-        if (block.getRegistryName() == null)
-            return false;
-        return option.get().stream().anyMatch(entry -> {
-            if (entry.startsWith("*"))
-                return true;
-            if (entry.startsWith("#")) {
-                ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
-                return tag != null && tag.contains(block);
-            }
-            return entry.equals(block.getRegistryName().toString());
-        });
+        public boolean uvlock(Item item) {
+            return !isItemPresent(uvlockModelBlacklist, item);
+        }
+
+        public boolean shouldCull(Block block) {
+            return !isBlockPresent(slabCullBlacklist, block);
+        }
+
+        public boolean useDoubleSlabModel(Block block) {
+            return !isBlockPresent(useDoubleSlabModelBlacklist, block);
+        }
     }
 
 }

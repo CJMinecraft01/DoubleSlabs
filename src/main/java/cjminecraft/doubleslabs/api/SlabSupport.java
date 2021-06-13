@@ -5,7 +5,9 @@ import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.AnnotationUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -80,6 +82,17 @@ public class SlabSupport {
             return ((IHorizontalSlabSupport) ((BlockItem) item).getBlock()).isHorizontalSlab(item);
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
             if (support.isHorizontalSlab(item))
+                return true;
+        return false;
+    }
+
+    public static boolean isHorizontalSlab(Block block) {
+        if (DSConfig.SERVER.isBlacklistedHorizontalSlab(block))
+            return false;
+        if (block instanceof IHorizontalSlabSupport)
+            return true;
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(block))
                 return true;
         return false;
     }

@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.proxy;
 
+import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.gui.WrappedScreen;
 import cjminecraft.doubleslabs.client.model.*;
 import cjminecraft.doubleslabs.client.render.RaisedCampfireTileEntityRenderer;
@@ -12,15 +13,22 @@ import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.IModelLoader;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.SimpleModelTransform;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -52,34 +60,30 @@ public class ClientProxy implements IProxy {
         }
     }
 
+    public static final TransformationMatrix RAISED_CAMPFIRE_TRANSFORM = new TransformationMatrix(new Vector3f(0, 0.5f, 0), null, null, null);
+
+    private void replaceCampfireModel(Block block, Map<ResourceLocation, IBakedModel> registry, ModelLoader loader) {
+        for (BlockState state : block.getStateContainer().getValidStates()) {
+            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
+            IUnbakedModel existingModel = loader.getUnbakedModel(variantResourceLocation);
+            registry.put(variantResourceLocation, ClientConstants.bake(loader, existingModel, variantResourceLocation, false, new SimpleModelTransform(RAISED_CAMPFIRE_TRANSFORM)));
+        }
+    }
+
     private void bakeModels(ModelBakeEvent event) {
+        ClientConstants.bakeVerticalSlabModels(event.getModelLoader());
+
         VerticalSlabTransformer.reload();
 
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
-//        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
         replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModelRegistry());
 
-        RaisedCampfireBakedModel campfireBakedModel = new RaisedCampfireBakedModel();
-        replaceModel(campfireBakedModel, DSBlocks.RAISED_CAMPFIRE.get(), campfireBakedModel::addModel, event.getModelRegistry());
-        RaisedCampfireBakedModel soulCampfireBakedModel = new RaisedCampfireBakedModel();
-        replaceModel(soulCampfireBakedModel, DSBlocks.RAISED_SOUL_CAMPFIRE.get(), soulCampfireBakedModel::addModel, event.getModelRegistry());
+        replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+        replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
 
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
         VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
         event.getModelRegistry().put(verticalSlabItemResourceLocation, VerticalSlabItemBakedModel.INSTANCE);
-
-//        DoubleSlabBakedModel doubleSlabBakedModel = new DoubleSlabBakedModel();
-//        for (BlockState state : DSBlocks.DOUBLE_SLAB.get().getStateContainer().getValidStates()) {
-//            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
-//            IBakedModel existingModel = event.getModelRegistry().get(variantResourceLocation);
-//            if (existingModel == null) {
-//                DoubleSlabs.LOGGER.warn("Did not find the expected vanilla baked model(s) for the vertical slab in registry");
-//            } else if (existingModel instanceof DoubleSlabBakedModel) {
-//                DoubleSlabs.LOGGER.warn("Tried to replace slab model twice");
-//            } else {
-//                event.getModelRegistry().put(variantResourceLocation, doubleSlabBakedModel);
-//            }
-//        }
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
