@@ -4,14 +4,8 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.CullInfo;
-import cjminecraft.doubleslabs.client.util.SlabCacheKey;
-import cjminecraft.doubleslabs.client.util.vertex.TintOffsetTransformer;
 import cjminecraft.doubleslabs.common.config.DSConfig;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -22,20 +16,14 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
-// TODO should not cull in this class but should just generate the model
-// should then override BlockModelRenderer#renderModelSmooth and BlockModelRenderer#renderModelFlat to handle culling
-// Should cache rotations for vertical slabs
 public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
     @Nonnull
@@ -57,8 +45,8 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
             boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;
             boolean renderPositive = renderHalves && extraData.getData(RENDER_POSITIVE);
 
-            boolean topTransparent = ClientUtils.isTransparent(positiveState);
-            boolean bottomTransparent = ClientUtils.isTransparent(negativeState);
+            boolean topTransparent = ClientConstants.isTransparent(positiveState);
+            boolean bottomTransparent = ClientConstants.isTransparent(negativeState);
             boolean shouldCull = DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
 
             // If the top and bottom states are the same, use the combined block model where possible

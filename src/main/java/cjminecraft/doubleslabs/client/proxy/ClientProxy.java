@@ -2,18 +2,18 @@ package cjminecraft.doubleslabs.client.proxy;
 
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.gui.WrappedScreen;
-import cjminecraft.doubleslabs.client.model.*;
+import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.render.RaisedCampfireTileEntityRenderer;
 import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.RenderType;
@@ -26,7 +26,6 @@ import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.SimpleModelTransform;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -73,8 +72,6 @@ public class ClientProxy implements IProxy {
     private void bakeModels(ModelBakeEvent event) {
         ClientConstants.bakeVerticalSlabModels(event.getModelLoader());
 
-        VerticalSlabTransformer.reload();
-
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
         replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModelRegistry());
 
@@ -95,8 +92,6 @@ public class ClientProxy implements IProxy {
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
         ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
-
-        ClientUtils.checkOptiFineInstalled();
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {

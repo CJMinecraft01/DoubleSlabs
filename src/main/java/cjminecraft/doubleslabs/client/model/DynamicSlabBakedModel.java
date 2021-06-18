@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.client.ClientConstants;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;
@@ -70,7 +69,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
     protected boolean shouldCull(BlockState state, BlockState neighbour, Direction direction) {
         if (state == null || neighbour == null)
             return false;
-        return state.isSideInvisible(neighbour, direction) || (!ClientUtils.isTransparent(state) && !ClientUtils.isTransparent(neighbour));
+        return state.isSideInvisible(neighbour, direction) || (!ClientConstants.isTransparent(state) && !ClientConstants.isTransparent(neighbour));
     }
 
     public static boolean useDoubleSlabModel(BlockState state1, BlockState state2) {

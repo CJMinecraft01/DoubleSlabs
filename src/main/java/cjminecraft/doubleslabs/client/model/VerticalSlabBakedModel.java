@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
@@ -51,8 +50,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             if (positiveState == null && negativeState == null)
                 return getFallbackModel().getQuads(state, side, rand, extraData);
 
-            boolean positiveTransparent = positiveState == null || ClientUtils.isTransparent(positiveState);
-            boolean negativeTransparent = negativeState == null || ClientUtils.isTransparent(negativeState);
+            boolean positiveTransparent = positiveState == null || ClientConstants.isTransparent(positiveState);
+            boolean negativeTransparent = negativeState == null || ClientConstants.isTransparent(negativeState);
             boolean shouldCull = positiveState != null && negativeState != null && DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(positiveTransparent && negativeTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
 
             boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;

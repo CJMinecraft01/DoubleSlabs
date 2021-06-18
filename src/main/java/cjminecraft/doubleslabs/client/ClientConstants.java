@@ -29,6 +29,10 @@ public class ClientConstants {
     private static final TransformationMatrix TRANSFORMATION_2D = new TransformationMatrix(null, Vector3f.ZN.rotationDegrees(90), null, null);
     public static final int TINT_OFFSET = 1000;
 
+    public static boolean isTransparent(BlockState state) {
+        return !state.getMaterial().isOpaque() || !state.isSolid();
+    }
+
     public static IBakedModel getFallbackModel() {
         return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
     }
