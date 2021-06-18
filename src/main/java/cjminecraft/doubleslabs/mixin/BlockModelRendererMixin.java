@@ -1,8 +1,8 @@
-package cjminecraft.doubleslabs.client.mixin;
+package cjminecraft.doubleslabs.mixin;
 
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
-import cjminecraft.doubleslabs.client.util.DoubleSlabCulling;
 import cjminecraft.doubleslabs.client.util.AmbientOcclusionFace;
+import cjminecraft.doubleslabs.client.util.DoubleSlabCulling;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -18,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
