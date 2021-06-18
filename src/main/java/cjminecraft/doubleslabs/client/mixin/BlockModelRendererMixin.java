@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -180,13 +181,37 @@ public abstract class BlockModelRendererMixin {
 
     }
 
-    @Shadow
     private void renderQuadSmooth(IBlockDisplayReader blockAccessIn, BlockState stateIn, BlockPos posIn, IVertexBuilder buffer, MatrixStack.Entry matrixEntry, BakedQuad quadIn, float colorMul0, float colorMul1, float colorMul2, float colorMul3, int brightness0, int brightness1, int brightness2, int brightness3, int combinedOverlayIn) {
+        float f;
+        float f1;
+        float f2;
+        if (quadIn.hasTintIndex()) {
+            int i = this.blockColors.getColor(stateIn, blockAccessIn, posIn, quadIn.getTintIndex());
+            f = (float)(i >> 16 & 255) / 255.0F;
+            f1 = (float)(i >> 8 & 255) / 255.0F;
+            f2 = (float)(i & 255) / 255.0F;
+        } else {
+            f = 1.0F;
+            f1 = 1.0F;
+            f2 = 1.0F;
+        }
 
+        buffer.addQuad(matrixEntry, quadIn, new float[]{colorMul0, colorMul1, colorMul2, colorMul3}, f, f1, f2, new int[]{brightness0, brightness1, brightness2, brightness3}, combinedOverlayIn, true);
     }
 
-    @Shadow
     private void renderQuadsFlat(IBlockDisplayReader blockAccessIn, BlockState stateIn, BlockPos posIn, int brightnessIn, int combinedOverlayIn, boolean ownBrightness, MatrixStack matrixStackIn, IVertexBuilder buffer, List<BakedQuad> list, BitSet bitSet) {
+        Iterator var11 = list.iterator();
 
+        while(var11.hasNext()) {
+            BakedQuad bakedquad = (BakedQuad)var11.next();
+            if (ownBrightness) {
+                this.fillQuadBounds(blockAccessIn, stateIn, posIn, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, bitSet);
+                BlockPos blockpos = bitSet.get(0) ? posIn.offset(bakedquad.getFace()) : posIn;
+                brightnessIn = WorldRenderer.getPackedLightmapCoords(blockAccessIn, stateIn, blockpos);
+            }
+
+            float f = blockAccessIn.func_230487_a_(bakedquad.getFace(), bakedquad.func_239287_f_());
+            this.renderQuadSmooth(blockAccessIn, stateIn, posIn, buffer, matrixStackIn.getLast(), bakedquad, f, f, f, f, brightnessIn, brightnessIn, brightnessIn, brightnessIn, combinedOverlayIn);
+        }
     }
 }

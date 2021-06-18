@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
@@ -51,7 +52,7 @@ import java.util.Optional;
 
 public class DoubleSlabBlock extends DynamicSlabBlock {
 
-    protected static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double y) {
+    public static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double y) {
         return getTile(world, pos).flatMap(tile -> tile.getNegativeBlockInfo().getBlockState() == null && tile.getPositiveBlockInfo().getBlockState() == null ? Optional.empty() :
                 (y > 0.5 || tile.getNegativeBlockInfo().getBlockState() == null) && tile.getPositiveBlockInfo().getBlockState() != null ?
                         Optional.of(tile.getPositiveBlockInfo()) : Optional.of(tile.getNegativeBlockInfo()));

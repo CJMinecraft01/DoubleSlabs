@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
@@ -74,7 +75,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         setDefaultState(this.getStateContainer().getBaseState().with(WATERLOGGED, false).with(DOUBLE, false).with(FACING, Direction.NORTH));
     }
 
-    protected static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double x, double z) {
+    public static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double x, double z) {
         BlockState state = world.getBlockState(pos);
 
         return getTile(world, pos).flatMap(tile -> tile.getPositiveBlockInfo().getBlockState() == null && tile.getNegativeBlockInfo().getBlockState() == null ? Optional.empty() :

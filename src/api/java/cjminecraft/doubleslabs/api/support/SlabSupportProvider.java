@@ -11,4 +11,6 @@ public @interface SlabSupportProvider {
 
     String modid() default "";
 
+    int priority() default 1000;
+
 }
