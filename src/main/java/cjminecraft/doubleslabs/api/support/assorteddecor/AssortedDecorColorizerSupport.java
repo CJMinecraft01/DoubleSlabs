@@ -90,7 +90,6 @@ public class AssortedDecorColorizerSupport extends MinecraftSlabSupport {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         ItemStack stack = player.getHeldItem(hand);
-        DoubleSlabs.LOGGER.info("HERE");
         //noinspection ConstantConditions
         if (stack.getItem().equals(COLORIZER_BRUSH)) {
             try {
