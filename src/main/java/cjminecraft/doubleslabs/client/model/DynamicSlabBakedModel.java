@@ -28,6 +28,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
 
     public static final ModelProperty<IBlockInfo> NEGATIVE_BLOCK = new ModelProperty<>();
     public static final ModelProperty<IBlockInfo> POSITIVE_BLOCK = new ModelProperty<>();
+    public static final ModelProperty<Boolean> RENDER_POSITIVE = new ModelProperty<>();
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -72,7 +73,7 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         return state.isSideInvisible(neighbour, direction) || (!ClientUtils.isTransparent(state) && !ClientUtils.isTransparent(neighbour));
     }
 
-    protected boolean useDoubleSlabModel(BlockState state1, BlockState state2) {
+    public static boolean useDoubleSlabModel(BlockState state1, BlockState state2) {
         return state1.getBlock() == state2.getBlock() && state2.getBlockState().isIn(state2.getBlock()) && DSConfig.CLIENT.useDoubleSlabModel(state1.getBlock());
     }
 

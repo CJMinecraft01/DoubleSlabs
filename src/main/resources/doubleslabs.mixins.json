@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cjminecraft.doubleslabs.client.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "doubleslabs.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "BlockModelRendererMixin"
+  ],
+  "minVersion": "0.8"
+}

@@ -54,18 +54,21 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
             if (positiveState == null || negativeState == null)
                 return getFallbackModel().getQuads(state, side, rand, extraData);
 
+            boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;
+            boolean renderPositive = renderHalves && extraData.getData(RENDER_POSITIVE);
+
             boolean topTransparent = ClientUtils.isTransparent(positiveState);
             boolean bottomTransparent = ClientUtils.isTransparent(negativeState);
             boolean shouldCull = DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
 
             // If the top and bottom states are the same, use the combined block model where possible
             if (useDoubleSlabModel(positiveState, negativeState)) {
-                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
+                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
                     if (RenderTypeLookup.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
                         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(doubleState);
-                        return model.getQuads(state, side, rand, EmptyModelData.INSTANCE);
+                        return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
                     }
                     return Lists.newArrayList();
                 }
@@ -73,14 +76,14 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             List<BakedQuad> quads = Lists.newArrayList();
 
-            if (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+            if ((!renderHalves || renderPositive) && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> topQuads = getQuadsForState(positiveBlock, side, rand);
                 if (shouldCull)
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                         topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
                 quads.addAll(topQuads);
             }
-            if (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+            if ((!renderHalves || !renderPositive) && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> bottomQuads = getQuadsForState(negativeBlock, side, rand);
                 if (shouldCull)
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
