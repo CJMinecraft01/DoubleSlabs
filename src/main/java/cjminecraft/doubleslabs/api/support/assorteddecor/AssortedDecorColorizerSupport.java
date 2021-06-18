@@ -29,6 +29,9 @@ public class AssortedDecorColorizerSupport extends MinecraftSlabSupport {
     @ObjectHolder("assorteddecor:colorizer_brush")
     public static final Item COLORIZER_BRUSH = null;
 
+    @ObjectHolder("assorteddecor:colorizer_slab")
+    public static final Block COLORIZER_SLAB = null;
+
     private final Class<?> iColorizer;
     private final Method getStoredState;
     private final Method setColorizer;
@@ -79,12 +82,14 @@ public class AssortedDecorColorizerSupport extends MinecraftSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(Item item) {
-        return item instanceof BlockItem && iColorizer != null && getStoredState != null && setColorizer != null &&  iColorizer.isAssignableFrom(((BlockItem) item).getBlock().getClass());
+        //noinspection ConstantConditions
+        return item instanceof BlockItem && iColorizer != null && getStoredState != null && setColorizer != null &&  iColorizer.isAssignableFrom(((BlockItem) item).getBlock().getClass()) && ((BlockItem) item).getBlock().equals(COLORIZER_SLAB);
     }
 
     @Override
     public boolean isHorizontalSlab(Block block) {
-        return iColorizer != null && getStoredState != null && setColorizer != null && iColorizer.isAssignableFrom(block.getClass());
+        //noinspection ConstantConditions
+        return iColorizer != null && getStoredState != null && setColorizer != null && iColorizer.isAssignableFrom(block.getClass()) && block.equals(COLORIZER_SLAB);
     }
 
     @Override
