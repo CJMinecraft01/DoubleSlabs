@@ -365,7 +365,7 @@ public class DoubleSlabCulling {
 
                         return otherBlock.getBlockState() == null || block.getBlockState() == null ||
                                 shouldSideBeRendered(block.getBlockState(),
-                                        matchState(slab.getPositiveBlockInfo().getBlockState(), otherBlock.getBlockState(), world, pos, otherPos),
+                                        matchState(block.getBlockState(), otherBlock.getBlockState(), world, pos, otherPos),
                                         world, pos, otherPos, direction);
                     }
                 }
