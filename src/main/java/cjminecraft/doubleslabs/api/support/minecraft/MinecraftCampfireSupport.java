@@ -21,11 +21,21 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.registries.ObjectHolder;
 
 import java.util.Random;
 
 @SlabSupportProvider
 public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
+
+    @ObjectHolder("endergetic:ender_campfire")
+    public static final Block ENDER_CAMPFIRE = null;
+
+    @ObjectHolder("byg:boric_campfire")
+    public static final Block BORIC_CAMPFIRE = null;
+
+    @ObjectHolder("byg:cryptic_campfire")
+    public static final Block CRYPTIC_CAMPFIRE = null;
 
     @Override
     public boolean isHorizontalSlab(Block block) {
@@ -47,10 +57,24 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
         return IHorizontalSlabSupport.super.getStateFromStack(stack, context);
     }
 
+    private Block getRaisedBlock(Block block) {
+        if (block == Blocks.CAMPFIRE)
+            return DSBlocks.RAISED_CAMPFIRE.get();
+        if (block == Blocks.SOUL_CAMPFIRE)
+            return DSBlocks.RAISED_SOUL_CAMPFIRE.get();
+        if (block == ENDER_CAMPFIRE)
+            return DSBlocks.RAISED_ENDER_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
+        if (block == BORIC_CAMPFIRE)
+            return DSBlocks.RAISED_BORIC_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
+        if (block == CRYPTIC_CAMPFIRE)
+            return DSBlocks.RAISED_CRYPTIC_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
+        return DSBlocks.RAISED_CAMPFIRE.get();
+    }
+
     @Override
     public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
         if (half == SlabType.TOP)
-            return (state.getBlock() == Blocks.CAMPFIRE ? DSBlocks.RAISED_CAMPFIRE.get() : DSBlocks.RAISED_SOUL_CAMPFIRE.get()).getDefaultState()
+            return getRaisedBlock(state.getBlock()).getDefaultState()
                     .with(CampfireBlock.FACING, state.get(CampfireBlock.FACING))
                     .with(CampfireBlock.LIT, state.get(CampfireBlock.LIT))
                     .with(CampfireBlock.SIGNAL_FIRE, state.get(CampfireBlock.SIGNAL_FIRE))

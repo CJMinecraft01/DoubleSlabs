@@ -145,8 +145,10 @@ public class DSConfig {
                     .define("uvlockModelBlacklist", Lists.newArrayList("minecraft:smooth_stone_slab",
                             "minecraft:sandstone_slab", "minecraft:cut_sandstone_slab", "minecraft:red_sandstone_slab",
                             "minecraft:cut_red_sandstone_slab", "minecraft:prismarine_brick_slab", "minecraft:campfire",
-                            "minecraft:soul_campfire", "doubleslabs:raised_campfire",
-                            "doubleslabs:raised_soul_campfire"));
+                            "minecraft:soul_campfire", "doubleslabs:raised_campfire", "doubleslabs:raised_soul_campfire",
+                            "byg:boric_campfire", "doubleslabs:raised_boric_campfire", "byg:cryptic_campfire",
+                            "doubleslabs:raised_cryptic_campfire", "endergetic:ender_campfire",
+                            "doubleslabs:raised_ender_campfire"));
 
             slabCullBlacklist = builder
                     .comment("The list of slabs (or tags) which should not be culled when combined",

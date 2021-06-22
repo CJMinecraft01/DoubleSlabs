@@ -29,6 +29,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.SimpleModelTransform;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -77,6 +78,14 @@ public class ClientProxy implements IProxy {
 
         replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
         replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+        ModList list = ModList.get();
+        if (list.isLoaded("endergetic")) {
+            replaceCampfireModel(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+        }
+        if (list.isLoaded("byg")) {
+            replaceCampfireModel(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+            replaceCampfireModel(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+        }
 
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
         VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
@@ -89,6 +98,14 @@ public class ClientProxy implements IProxy {
         RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
+        ModList list = ModList.get();
+        if (list.isLoaded("endergetic")) {
+            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), RenderType.getCutout());
+        }
+        if (list.isLoaded("byg")) {
+            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), RenderType.getCutout());
+            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), RenderType.getCutout());
+        }
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
         ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
