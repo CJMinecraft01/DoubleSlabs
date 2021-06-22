@@ -1,8 +1,11 @@
 package cjminecraft.doubleslabs.mixin;
 
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
 import cjminecraft.doubleslabs.client.util.AmbientOcclusionFace;
 import cjminecraft.doubleslabs.client.util.DoubleSlabCulling;
+import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -18,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IModelData;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,11 +59,15 @@ public abstract class BlockModelRendererMixin {
             AmbientOcclusionFace blockmodelrenderer$ambientocclusionface = new AmbientOcclusionFace();
 
             boolean doubleSlab = false;
+            boolean renderNegative = true;
+            boolean renderPositive = true;
 
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof SlabTileEntity) {
                 SlabTileEntity slab = (SlabTileEntity) tile;
                 doubleSlab = slab.getPositiveBlockInfo().getBlockState() != null && slab.getNegativeBlockInfo().getBlockState() != null && DynamicSlabBakedModel.useDoubleSlabModel(slab.getPositiveBlockInfo().getBlockState(), slab.getNegativeBlockInfo().getBlockState());
+                renderNegative = slab.getNegativeBlockInfo().getBlockState() != null;
+                renderPositive = slab.getPositiveBlockInfo().getBlockState() != null;
             }
 
             for(Direction direction : Direction.values()) {
@@ -73,20 +81,31 @@ public abstract class BlockModelRendererMixin {
                         flag = true;
                     }
                 } else {
-                    modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
-                    List<BakedQuad> quads = model.getQuads(state, direction, random, modelData);
+                    if (renderPositive) {
+                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
+                        List<BakedQuad> quads = model.getQuads(state, direction, random, modelData);
 
-                    if (!quads.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, true))) {
-                        this.renderQuadsSmooth(world, state, pos, matrixStack, buffer, quads, afloat, bitset, blockmodelrenderer$ambientocclusionface, combinedOverlay);
-                        flag = true;
+                        if (!quads.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, true))) {
+                            this.renderQuadsSmooth(world, state, pos, matrixStack, buffer, quads, afloat, bitset, blockmodelrenderer$ambientocclusionface, combinedOverlay);
+                            flag = true;
+                        }
                     }
+                    if (renderNegative) {
+                        List<BakedQuad> quads;
+                        if (MinecraftForgeClient.getRenderLayer() == null && model instanceof VerticalSlabBakedModel) {
+                            // Handle the block breaking animation for a single vertical slab on the negative half
+                            // We must flip the direction of the facing in order to get the correct half rendered
+                            BlockState newState = state.with(VerticalSlabBlock.FACING, state.get(VerticalSlabBlock.FACING).getOpposite());
+                            quads = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData);
+                        } else {
+                            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
+                            quads = model.getQuads(state, direction, random, modelData);
+                        }
 
-                    modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
-                    quads = model.getQuads(state, direction, random, modelData);
-
-                    if (!quads.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, false))) {
-                        this.renderQuadsSmooth(world, state, pos, matrixStack, buffer, quads, afloat, bitset, blockmodelrenderer$ambientocclusionface, combinedOverlay);
-                        flag = true;
+                        if (!quads.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, false))) {
+                            this.renderQuadsSmooth(world, state, pos, matrixStack, buffer, quads, afloat, bitset, blockmodelrenderer$ambientocclusionface, combinedOverlay);
+                            flag = true;
+                        }
                     }
                 }
             }
@@ -111,11 +130,15 @@ public abstract class BlockModelRendererMixin {
             BitSet bitset = new BitSet(3);
 
             boolean doubleSlab = false;
+            boolean renderNegative = true;
+            boolean renderPositive = true;
 
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof SlabTileEntity) {
                 SlabTileEntity slab = (SlabTileEntity) tile;
                 doubleSlab = slab.getPositiveBlockInfo().getBlockState() != null && slab.getNegativeBlockInfo().getBlockState() != null && DynamicSlabBakedModel.useDoubleSlabModel(slab.getPositiveBlockInfo().getBlockState(), slab.getNegativeBlockInfo().getBlockState());
+                renderNegative = slab.getNegativeBlockInfo().getBlockState() != null;
+                renderPositive = slab.getPositiveBlockInfo().getBlockState() != null;
             }
 
             for(Direction direction : Direction.values()) {
@@ -130,22 +153,35 @@ public abstract class BlockModelRendererMixin {
                         flag = true;
                     }
                 } else {
-                    modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
-                    List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
+                    if (renderPositive) {
+                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
+                        List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
 
-                    if (!list.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, true))) {
-                        int i = WorldRenderer.getPackedLightmapCoords(world, state, pos.offset(direction));
-                        this.renderQuadsFlat(world, state, pos, i, combinedOverlay, false, matrixStack, buffer, list, bitset);
-                        flag = true;
+                        if (!list.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, true))) {
+                            int i = WorldRenderer.getPackedLightmapCoords(world, state, pos.offset(direction));
+                            this.renderQuadsFlat(world, state, pos, i, combinedOverlay, false, matrixStack, buffer, list, bitset);
+                            flag = true;
+                        }
                     }
 
-                    modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
-                    list = model.getQuads(state, direction, random, modelData);
+                    if (renderNegative) {
+                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
+                        List<BakedQuad> list;
+                        if (MinecraftForgeClient.getRenderLayer() == null && model instanceof VerticalSlabBakedModel) {
+                            // Handle the block breaking animation for a single vertical slab on the negative half
+                            // We must flip the direction of the facing in order to get the correct half rendered
+                            BlockState newState = state.with(VerticalSlabBlock.FACING, state.get(VerticalSlabBlock.FACING).getOpposite());
+                            list = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData);
+                        } else {
+                            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
+                            list = model.getQuads(state, direction, random, modelData);
+                        }
 
-                    if (!list.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, false))) {
-                        int i = WorldRenderer.getPackedLightmapCoords(world, state, pos.offset(direction));
-                        this.renderQuadsFlat(world, state, pos, i, combinedOverlay, false, matrixStack, buffer, list, bitset);
-                        flag = true;
+                        if (!list.isEmpty() && (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, false))) {
+                            int i = WorldRenderer.getPackedLightmapCoords(world, state, pos.offset(direction));
+                            this.renderQuadsFlat(world, state, pos, i, combinedOverlay, false, matrixStack, buffer, list, bitset);
+                            flag = true;
+                        }
                     }
                 }
             }

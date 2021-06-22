@@ -8,7 +8,9 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +19,8 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class RaisedCampfireBlock extends CampfireBlock {
 
@@ -27,6 +31,21 @@ public class RaisedCampfireBlock extends CampfireBlock {
     public RaisedCampfireBlock(Block parent, boolean smokey, int fireDamage, Properties properties) {
         super(smokey, fireDamage, properties);
         this.parent = parent;
+    }
+
+    @Override
+    public Item asItem() {
+        return this.parent.asItem();
+    }
+
+    @Override
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {
+        return this.parent.getItem(worldIn, pos, state);
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        return this.parent.getDrops(state, builder);
     }
 
     @Override
