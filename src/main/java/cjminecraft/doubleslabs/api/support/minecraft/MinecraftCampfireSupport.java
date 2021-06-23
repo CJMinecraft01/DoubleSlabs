@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
@@ -26,8 +27,8 @@ import java.util.Random;
 @SlabSupportProvider
 public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     @Override
-    public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
-        return state.getBlock() instanceof CampfireBlock;
+    public boolean isHorizontalSlab(Block block) {
+        return block instanceof CampfireBlock;
     }
 
     @Override

@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -60,8 +61,16 @@ public class SlimeSlab extends SlabBlock {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Override
     public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return adjacentBlockState.getBlock() == this ? true : super.isSideInvisible(state, adjacentBlockState, side);
+        if (adjacentBlockState.getBlock() == this) {
+            SlabType type = state.get(BlockStateProperties.SLAB_TYPE);
+            SlabType otherType = adjacentBlockState.get(BlockStateProperties.SLAB_TYPE);
+            if (side == Direction.UP)
+                return (type == SlabType.DOUBLE || type == SlabType.TOP) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.BOTTOM);
+            else if (side == Direction.DOWN)
+                return (type == SlabType.DOUBLE || type == SlabType.BOTTOM) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.TOP);
+            return adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(state.get(BlockStateProperties.SLAB_TYPE)) || adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(SlabType.DOUBLE);
+        }
+        return super.isSideInvisible(state, adjacentBlockState, side);
     }
 }

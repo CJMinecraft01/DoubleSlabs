@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.client.util;
+package cjminecraft.doubleslabs.common.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;

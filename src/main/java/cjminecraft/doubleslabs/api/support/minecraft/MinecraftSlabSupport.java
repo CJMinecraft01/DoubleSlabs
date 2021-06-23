@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
@@ -32,6 +33,11 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     @Override
     public boolean isHorizontalSlab(Item item) {
         return item instanceof BlockItem && ((BlockItem) item).getBlock() != null && isValid(((BlockItem) item).getBlock().getDefaultState());
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return isValid(block.getDefaultState());
     }
 
     @Override

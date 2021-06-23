@@ -5,36 +5,28 @@ import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.CullInfo;
-import cjminecraft.doubleslabs.client.util.SlabCacheKey;
-import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
-import net.minecraft.block.Block;
+import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.ILightReader;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
@@ -44,6 +36,70 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
     public static final ModelProperty<Boolean> ROTATE_POSITIVE = new ModelProperty<>();
     public static final ModelProperty<Boolean> ROTATE_NEGATIVE = new ModelProperty<>();
+
+    @Nonnull
+    @Override
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+        if (state != null && extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
+            IBlockInfo positiveBlock = extraData.getData(POSITIVE_BLOCK);
+            IBlockInfo negativeBlock = extraData.getData(NEGATIVE_BLOCK);
+
+            assert positiveBlock != null;
+            assert negativeBlock != null;
+
+            BlockState positiveState = positiveBlock.getBlockState();
+            BlockState negativeState = negativeBlock.getBlockState();
+
+            if (positiveState == null && negativeState == null)
+                return getFallbackModel().getQuads(state, side, rand, extraData);
+
+            boolean positiveTransparent = positiveState == null || ClientConstants.isTransparent(positiveState);
+            boolean negativeTransparent = negativeState == null || ClientConstants.isTransparent(negativeState);
+            boolean shouldCull = positiveState != null && negativeState != null && DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(positiveTransparent && negativeTransparent) || (positiveState.getBlock() == negativeState.getBlock()));
+
+            boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;
+            boolean renderPositive = renderHalves && extraData.getData(RENDER_POSITIVE);
+
+            Direction direction = state.get(VerticalSlabBlock.FACING);
+
+            // If the top and bottom states are the same, use the combined block model where possible
+            if (positiveState != null && negativeState != null && useDoubleSlabModel(positiveState, negativeState)) {
+                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
+                if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
+                    BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
+                    if (RenderTypeLookup.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+                        IBakedModel model = ClientConstants.getVerticalModel(doubleState, direction);
+                        return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
+                    }
+                    return Lists.newArrayList();
+                }
+            }
+
+            List<BakedQuad> quads = Lists.newArrayList();
+
+            if ((!renderHalves || renderPositive) && positiveState != null && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+                List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, ClientConstants.getVerticalModel(positiveState, direction), side, rand);
+                if (shouldCull)
+                    if ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent))
+                        positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
+                quads.addAll(positiveQuads);
+            }
+            if ((!renderHalves || !renderPositive) && negativeState != null && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+                List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, ClientConstants.getVerticalModel(negativeState, direction), side, rand);
+                if (shouldCull)
+                    if ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent))
+                        negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
+                quads.addAll(negativeQuads);
+            }
+            return quads;
+        } else if (MinecraftForgeClient.getRenderLayer() == null) {
+            // Rendering the break block animation
+            IBakedModel model = this.models.get(state);
+            if (model != null)
+                return model.getQuads(state, side, rand, extraData);
+        }
+        return getFallbackModel().getQuads(state, side, rand, extraData);
+    }
 
     private final Map<BlockState, IBakedModel> models = new HashMap<>();
 
@@ -55,148 +111,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         return this.models.get(state);
     }
 
-    @Override
-    protected Block getBlock() {
-        return DSBlocks.VERTICAL_SLAB.get();
-    }
-
-    private List<BakedQuad> getQuadsForState(SlabCacheKey cache, boolean positive) {
-        BlockState state = positive ? cache.getPositiveBlockInfo().getBlockState() : cache.getNegativeBlockInfo().getBlockState();
-        if (state == null)
-            return new ArrayList<>();
-        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        IModelData tileData = positive ? cache.getPositiveBlockInfo().getTileEntity() != null ? cache.getPositiveBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE : cache.getNegativeBlockInfo().getTileEntity() != null ? cache.getNegativeBlockInfo().getTileEntity().getModelData() : EmptyModelData.INSTANCE;
-        IModelData modelData = model.getModelData(positive ? cache.getPositiveBlockInfo().getWorld() : cache.getNegativeBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), state, tileData);
-        ModelProperty<Boolean> property = positive ? ROTATE_POSITIVE : ROTATE_NEGATIVE;
-        boolean rotate = cache.getModelData().hasProperty(property) && cache.getModelData().getData(property) != null ? cache.getModelData().getData(property) : true;
-        if (!rotate)
-            return new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), modelData));
-        Direction direction = cache.getState().get(VerticalSlabBlock.FACING);
-        Direction side = ClientUtils.rotateFace(cache.getSide(), direction);
-        List<BakedQuad> quads = model.getQuads(state, side, cache.getRandom(), modelData);
-        if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
-            if (quads.size() == 0)
-                return new ArrayList<>();
-            BlockState baseState = positive ? cache.getState() : cache.getState().with(VerticalSlabBlock.FACING, direction.getOpposite());
-            baseState = baseState.with(VerticalSlabBlock.DOUBLE, false);
-            TextureAtlasSprite sprite = quads.get(0).func_187508_a();
-            return this.models.get(baseState).getQuads(baseState, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> new BakedQuad(ClientUtils.changeQuadUVs(quad.getVertexData(), quad.func_187508_a(), sprite), quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, quad.getFace(), sprite, quad.shouldApplyDiffuseLighting())).collect(Collectors.toList());
-        }
-//        return quads.stream().map(quad -> {
-//            BakedQuadBuilder builder = new BakedQuadBuilder();
-//            VerticalSlabTransformer transformer = new VerticalSlabTransformer(builder, direction, cache.getSide(), positive);
-//            quad.pipe(transformer);
-//            return builder.build();
-//        }).collect(Collectors.toList());
-        if (ClientUtils.areShadersEnabled()) {
-            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), positive);
-            return transformer.processMany(quads);
-        }
-        return quads.stream().map(quad -> {
-            int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
-            return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() + (positive ? ClientConstants.TINT_OFFSET : 0) : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
-        }).collect(Collectors.toList());
-    }
-
-    @Override
-    protected List<BakedQuad> getQuads(SlabCacheKey cache) {
-        if (!cache.isValid()) {
-            IBakedModel model = this.models.getOrDefault(cache.getState(), null);
-            if (model != null)
-                return model.getQuads(cache.getState(), cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE);
-            return getFallbackModel().getQuads(cache.getState(), cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE);
-        }
-        List<BakedQuad> quads = new ArrayList<>();
-        boolean positiveTransparent = cache.getPositiveBlockInfo().getBlockState() == null || ClientUtils.isTransparent(cache.getPositiveBlockInfo().getBlockState());
-        boolean negativeTransparent = cache.getNegativeBlockInfo().getBlockState() == null || ClientUtils.isTransparent(cache.getNegativeBlockInfo().getBlockState());
-        boolean shouldCull = cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && DSConfig.CLIENT.shouldCull(cache.getPositiveBlockInfo().getBlockState().getBlock()) && DSConfig.CLIENT.shouldCull(cache.getNegativeBlockInfo().getBlockState().getBlock()) && (!(positiveTransparent && negativeTransparent) || (cache.getPositiveBlockInfo().getBlockState().getBlock() == cache.getNegativeBlockInfo().getBlockState().getBlock() && cache.getPositiveBlockInfo().getBlockState().getBlock() == cache.getNegativeBlockInfo().getBlockState().getBlock()));
-
-        Direction direction = cache.getState().get(VerticalSlabBlock.FACING);
-
-        // If the top and bottom states are the same, use the combined block model where possible
-        if (cache.getPositiveBlockInfo().getBlockState() != null && cache.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState(), cache.getNegativeBlockInfo().getBlockState())) {
-            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState());
-            if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(cache.getPositiveBlockInfo().getBlockState())) {
-                BlockState state = horizontalSlabSupport.getStateForHalf(cache.getPositiveBlockInfo().getWorld(), cache.getPositiveBlockInfo().getPos(), cache.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
-                if (RenderTypeLookup.canRenderInLayer(state, cache.getRenderLayer()) || cache.getRenderLayer() == null) {
-                    IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-                    Direction side = ClientUtils.rotateFace(cache.getSide(), direction);
-                    if (DSConfig.CLIENT.useLazyModel(state.getBlock())) {
-                        quads = new ArrayList<>(model.getQuads(state, cache.getSide(), cache.getRandom(), EmptyModelData.INSTANCE));
-                    } else {
-                        if (!ClientUtils.isOptiFineInstalled()) {
-                            quads = model.getQuads(state, side, cache.getRandom(), EmptyModelData.INSTANCE).stream().map(quad -> {
-                                int[] vertexData = ClientUtils.rotateVertexData(quad.getVertexData(), direction, cache.getSide());
-                                return new BakedQuad(vertexData, quad.hasTintIndex() ? quad.getTintIndex() : -1, FaceBakery.getFacingFromVertexData(vertexData), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
-                            }).collect(Collectors.toList());
-                        } else {
-                            VerticalSlabTransformer transformer = new VerticalSlabTransformer(direction, cache.getSide(), false);
-                            quads = transformer.processMany(model.getQuads(state, ClientUtils.rotateFace(cache.getSide(), direction), cache.getRandom(), EmptyModelData.INSTANCE));
-                        }
-                    }
-                    if (cache.getSide() != null) {
-                        // Only cull the non general sides
-                        for (CullInfo cullInfo : cache.getCullInfo()) {
-                            if (cullInfo.getOtherState().get(VerticalSlabBlock.DOUBLE) && cullInfo.getPositiveBlockInfo().getBlockState() != null && cullInfo.getNegativeBlockInfo().getBlockState() != null && useDoubleSlabModel(cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getNegativeBlockInfo().getBlockState())) {
-                                IHorizontalSlabSupport support = SlabSupport.isHorizontalSlab(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState());
-                                // try with vertical slabs
-                                if (support != null) {
-                                    BlockState s = support.getStateForHalf(cullInfo.getPositiveBlockInfo().getWorld(), cullInfo.getPositiveBlockInfo().getPos(), cullInfo.getPositiveBlockInfo().getBlockState(), SlabType.DOUBLE);
-                                    if (shouldCull(state, s, cullInfo.getDirection()))
-                                        quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
-                                }
-                            } else if (cullInfo.getOtherState().get(VerticalSlabBlock.FACING) == cullInfo.getDirection() && shouldCull(state, cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()) || shouldCull(state, cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection())) {
-                                quads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
-                            }
-                        }
-                    }
-                    return quads;
-                }
-                return new ArrayList<>();
-            } else {
-                // try with vertical slabs
-            }
-        }
-
-        if (cache.getPositiveBlockInfo().getBlockState() != null && (RenderTypeLookup.canRenderInLayer(cache.getPositiveBlockInfo().getBlockState(), cache.getRenderLayer()) || cache.getRenderLayer() == null)) {
-            List<BakedQuad> positiveQuads = getQuadsForState(cache, true);
-            if (shouldCull)
-                if ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent))
-                    positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
-                // might not be able to use the following cull technique as I need to handle the various faces of a vertical slab
-            if (cache.getSide() != null) {
-                for (CullInfo cullInfo : cache.getCullInfo()) {
-                    Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
-                    if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
-                        continue;
-                    boolean positive = (direction == otherDirection && cullInfo.getDirection().getAxis() != direction.getAxis()) || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
-                    if (shouldCull(cache.getPositiveBlockInfo().getBlockState(), positive ? cullInfo.getPositiveBlockInfo().getBlockState() : cullInfo.getNegativeBlockInfo().getBlockState(), cullInfo.getDirection()))
-                        positiveQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
-                }
-            }
-            quads.addAll(positiveQuads);
-        }
-        if (cache.getNegativeBlockInfo().getBlockState() != null && (RenderTypeLookup.canRenderInLayer(cache.getNegativeBlockInfo().getBlockState(), cache.getRenderLayer()) || cache.getRenderLayer() == null)) {
-            List<BakedQuad> negativeQuads = getQuadsForState(cache, false);
-            if (shouldCull)
-                if ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent))
-                    negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
-            if (cache.getSide() != null) {
-                for (CullInfo cullInfo : cache.getCullInfo()) {
-                    Direction otherDirection = cullInfo.getOtherState().get(VerticalSlabBlock.FACING);
-                    if (!cullInfo.getState().get(VerticalSlabBlock.DOUBLE) && otherDirection.getAxis() != direction.getAxis())
-                        continue;
-                    boolean negative = (direction == otherDirection && cullInfo.getDirection().getAxis() != direction.getAxis()) || otherDirection.getAxis() != direction.getAxis() || (direction == otherDirection.getOpposite() && cullInfo.getDirection().getAxis() == direction.getAxis());
-                    if (shouldCull(cache.getNegativeBlockInfo().getBlockState(), negative ? cullInfo.getNegativeBlockInfo().getBlockState() : cullInfo.getPositiveBlockInfo().getBlockState(), cullInfo.getDirection()))
-                        negativeQuads.removeIf(quad -> quad.getFace() == cullInfo.getDirection());
-                }
-            }
-            quads.addAll(negativeQuads);
-        }
-        return quads;
-    }
-
-    private boolean rotateModel(IModelData modelData, ModelProperty<IBlockInfo> property, IBlockReader world, BlockPos pos) {
+    private boolean rotateModel(IModelData modelData, ModelProperty<IBlockInfo> property, ILightReader world, BlockPos pos) {
         if (modelData.hasProperty(property)) {
             IBlockInfo blockInfo = modelData.getData(property);
             if (blockInfo != null && blockInfo.getBlockState() != null) {

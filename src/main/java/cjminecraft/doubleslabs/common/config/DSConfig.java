@@ -99,7 +99,7 @@ public class DSConfig {
     }
 
     public static class Client {
-        public final ConfigValue<List<String>> lazyVerticalSlabModels;
+        public final ConfigValue<List<String>> uvlockModelBlacklist;
         public final ConfigValue<List<String>> slabCullBlacklist;
         public final ConfigValue<List<String>> useDoubleSlabModelBlacklist;
 
@@ -107,8 +107,12 @@ public class DSConfig {
             return !isBlockPresent(slabCullBlacklist, block);
         }
 
-        public boolean useLazyModel(Block block) {
-            return isBlockPresent(lazyVerticalSlabModels, block);
+        public boolean uvlock(Block block) {
+            return !isBlockPresent(uvlockModelBlacklist, block);
+        }
+
+        public boolean uvlock(Item item) {
+            return !isItemPresent(uvlockModelBlacklist, item);
         }
 
         public boolean useDoubleSlabModel(Block block) {
@@ -120,13 +124,15 @@ public class DSConfig {
         Client(Builder builder) {
             builder.push("Client Only Settings");
 
-            lazyVerticalSlabModels = builder
-                    .comment("The list of slabs (or tags) which should use the lazy model rendering technique",
-                            "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model",
+            uvlockModelBlacklist = builder
+                    .comment("The list of slabs (or tags) which should NOT have uvlock enabled when creating a vertical slab model.",
                             "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs",
                             "Use the wildcard value * to enable this feature for all slabs")
-                    .translation("doubleslabs.configgui.lazyVerticalSlabModels")
-                    .define("lazyVerticalSlabModels", Lists.newArrayList("#doubleslabs:plank_slabs"));
+                    .translation("doubleslabs.configgui.uvlockModels")
+                    .define("uvlockModelBlacklist", Lists.newArrayList("minecraft:smooth_stone_slab",
+                            "minecraft:sandstone_slab", "minecraft:cut_sandstone_slab", "minecraft:red_sandstone_slab",
+                            "minecraft:cut_red_sandstone_slab", "minecraft:prismarine_brick_slab", "minecraft:campfire",
+                            "doubleslabs:raised_campfire"));
 
             slabCullBlacklist = builder
                     .comment("The list of slabs (or tags) which should not be culled when combined",

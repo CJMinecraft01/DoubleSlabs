@@ -72,15 +72,17 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         setDefaultState(this.getStateContainer().getBaseState().with(WATERLOGGED, false).with(DOUBLE, false).with(FACING, Direction.NORTH));
     }
 
-    protected static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double x, double z) {
+    public static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double x, double z) {
         BlockState state = world.getBlockState(pos);
 
-        return getTile(world, pos).flatMap(tile -> tile.getPositiveBlockInfo().getBlockState() == null && tile.getNegativeBlockInfo().getBlockState() == null ? Optional.empty() :
+        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() == null
+                && tile.getNegativeBlockInfo().getBlockState() == null ? null :
                 ((state.get(FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) > 0.5 :
                         (state.get(FACING).getAxis() == Direction.Axis.X ? x : z) < 0.5)
                         || tile.getNegativeBlockInfo().getBlockState() == null) && tile.getPositiveBlockInfo().getBlockState() != null ?
-                        Optional.of(tile.getPositiveBlockInfo()) : Optional.of(tile.getNegativeBlockInfo()));
+                        tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo())
+                .flatMap(block -> block == null || block.getBlockState() == null ? Optional.empty() : Optional.of(block));
     }
 
     @Override
