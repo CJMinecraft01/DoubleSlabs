@@ -25,6 +25,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.SimpleModelTransform;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -73,22 +74,12 @@ public class ClientProxy implements IProxy {
 
         replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
 
+        if (ModList.get().isLoaded("extendednether"))
+            replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
         VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
         event.getModelRegistry().put(verticalSlabItemResourceLocation, VerticalSlabItemBakedModel.INSTANCE);
-
-//        DoubleSlabBakedModel doubleSlabBakedModel = new DoubleSlabBakedModel();
-//        for (BlockState state : DSBlocks.DOUBLE_SLAB.get().getStateContainer().getValidStates()) {
-//            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
-//            IBakedModel existingModel = event.getModelRegistry().get(variantResourceLocation);
-//            if (existingModel == null) {
-//                DoubleSlabs.LOGGER.warn("Did not find the expected vanilla baked model(s) for the vertical slab in registry");
-//            } else if (existingModel instanceof DoubleSlabBakedModel) {
-//                DoubleSlabs.LOGGER.warn("Tried to replace slab model twice");
-//            } else {
-//                event.getModelRegistry().put(variantResourceLocation, doubleSlabBakedModel);
-//            }
-//        }
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -96,6 +87,8 @@ public class ClientProxy implements IProxy {
         RenderTypeLookup.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
         RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
         RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.getCutout());
+        if (ModList.get().isLoaded("extendednether"))
+            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
         ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
