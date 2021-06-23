@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.api.support.abnormals_core;
 
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
+import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+@SlabSupportProvider(modid = "abnormals_core")
 public class AbnormalsCoreDirectionalVerticalSlabBlock<T extends Enum<T> & IStringSerializable> implements IVerticalSlabSupport {
 
     private final Class<?> verticalSlab;
