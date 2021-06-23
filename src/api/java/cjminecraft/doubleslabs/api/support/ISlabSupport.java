@@ -24,7 +24,8 @@ public interface ISlabSupport {
     }
 
     default BlockState getStateFromStack(ItemStack stack, BlockItemUseContext context) {
-        return stack.getItem() instanceof BlockItem ? ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(context) : Blocks.AIR.getDefaultState();
+        BlockState state = stack.getItem() instanceof BlockItem ? ((BlockItem) stack.getItem()).getBlock().getStateForPlacement(context) : Blocks.AIR.getDefaultState();
+        return state != null ? state : Blocks.AIR.getDefaultState();
     }
 
     default boolean useDoubleSlabModel(BlockState state) {
