@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.common.placement;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.client.util.DoubleSlabBlockItemUseContext;
+import cjminecraft.doubleslabs.common.util.DoubleSlabBlockItemUseContext;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.DoubleSlabBlock;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
