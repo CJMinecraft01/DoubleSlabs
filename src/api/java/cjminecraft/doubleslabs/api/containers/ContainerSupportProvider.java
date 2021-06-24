@@ -11,4 +11,6 @@ public @interface ContainerSupportProvider {
 
     String modid() default "";
 
+    int priority() default 1000;
+
 }

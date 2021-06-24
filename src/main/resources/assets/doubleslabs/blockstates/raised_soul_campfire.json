@@ -5,7 +5,7 @@
       "y": 270
     },
     "facing=east,lit=true": {
-      "model": "minecraft:block/soul_campfire",
+      "model": "extendednether:block/soul_campfire",
       "y": 270
     },
     "facing=north,lit=false": {
@@ -13,21 +13,21 @@
       "y": 180
     },
     "facing=north,lit=true": {
-      "model": "minecraft:block/soul_campfire",
+      "model": "extendednether:block/soul_campfire",
       "y": 180
     },
     "facing=south,lit=false": {
       "model": "minecraft:block/campfire_off"
     },
     "facing=south,lit=true": {
-      "model": "minecraft:block/soul_campfire"
+      "model": "extendednether:block/soul_campfire"
     },
     "facing=west,lit=false": {
       "model": "minecraft:block/campfire_off",
       "y": 90
     },
     "facing=west,lit=true": {
-      "model": "minecraft:block/soul_campfire",
+      "model": "extendednether:block/soul_campfire",
       "y": 90
     }
   }

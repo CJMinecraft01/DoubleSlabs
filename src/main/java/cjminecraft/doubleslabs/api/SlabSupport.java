@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.List;
 
 public class SlabSupport {
@@ -26,8 +27,8 @@ public class SlabSupport {
     private static List<IHorizontalSlabSupport> horizontalSlabSupports;
 
     public static void load() {
-        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE);
-        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE);
+        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.getAnnotationData().getOrDefault("priority", 1000))));
+        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.getAnnotationData().getOrDefault("priority", 1000))));
 
         DoubleSlabs.LOGGER.info("Loaded %s vertical slab support classes", verticalSlabSupports.size());
         DoubleSlabs.LOGGER.info("Loaded %s horizontal slab support classes", horizontalSlabSupports.size());

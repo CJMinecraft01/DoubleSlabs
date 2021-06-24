@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class ContainerSupport {
@@ -15,7 +16,7 @@ public class ContainerSupport {
     private static List<IContainerSupport> containerSupports;
 
     public static void load() {
-        containerSupports = AnnotationUtil.getClassInstances(ContainerSupportProvider.class, IContainerSupport.class, AnnotationUtil.MODID_PREDICATE);
+        containerSupports = AnnotationUtil.getClassInstances(ContainerSupportProvider.class, IContainerSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.getAnnotationData().getOrDefault("priority", 1000))));
 
         DoubleSlabs.LOGGER.info("Loaded %s container support classes", containerSupports.size());
     }

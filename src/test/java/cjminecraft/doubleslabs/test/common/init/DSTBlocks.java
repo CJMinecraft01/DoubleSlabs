@@ -22,6 +22,7 @@ public class DSTBlocks {
     public static final RegistryObject<Block> GLASS_SLAB = register(BLOCKS.register("glass_slab", GlassSlab::new));
     public static final RegistryObject<Block> SLIME_SLAB = register(BLOCKS.register("slime_slab", SlimeSlab::new));
     public static final RegistryObject<Block> VERTICAL_STONE_SLAB = register(BLOCKS.register("vertical_stone_slab", () -> new VerticalSlab(Block.Properties.create(Material.ROCK))));
+    public static final RegistryObject<Block> VERTICAL_COBBLESTONE_SLAB = register(BLOCKS.register("vertical_cobblestone_slab", () -> new VerticalSlab(Block.Properties.create(Material.ROCK))));
     public static final RegistryObject<Block> CHEST_SLAB = register(BLOCKS.register("chest_slab", ChestSlab::new));
 
     public static RegistryObject<Block> register(RegistryObject<Block> block) {

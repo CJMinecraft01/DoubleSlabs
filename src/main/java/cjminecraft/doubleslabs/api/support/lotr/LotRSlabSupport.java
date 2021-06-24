@@ -5,9 +5,11 @@ import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.api.support.minecraft.MinecraftSlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -18,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-@SlabSupportProvider(modid = "lotr")
+@SlabSupportProvider(modid = "lotr", priority = 0)
 public class LotRSlabSupport extends MinecraftSlabSupport implements IVerticalSlabSupport {
 
     public static boolean isLotRSlab(BlockState state) {
@@ -43,7 +45,7 @@ public class LotRSlabSupport extends MinecraftSlabSupport implements IVerticalSl
 
     @Override
     public boolean isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
-        return false;
+        return slab != null && stack.getItem() instanceof BlockItem && slab.isAssignableFrom(((BlockItem) stack.getItem()).getBlock().getClass());
     }
 
     @Override
@@ -52,8 +54,14 @@ public class LotRSlabSupport extends MinecraftSlabSupport implements IVerticalSl
     }
 
     @Override
+    public BlockState getStateFromStack(ItemStack stack, BlockItemUseContext context) {
+        return super.getStateFromStack(stack, context).with(BlockStateProperties.AXIS, Direction.Axis.Y);
+    }
+
+    @Override
     public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
-        return super.getStateForHalf(world, pos, state, half).with(BlockStateProperties.AXIS, Direction.Axis.Y);
+        DoubleSlabs.LOGGER.info(state);
+        return state.with(BlockStateProperties.SLAB_TYPE, half).with(BlockStateProperties.AXIS, Direction.Axis.Y);
     }
 
     @Override
@@ -77,7 +85,7 @@ public class LotRSlabSupport extends MinecraftSlabSupport implements IVerticalSl
 
     @Override
     public BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction) {
-        return state.with(BlockStateProperties.AXIS, direction.getAxis()).with(SlabBlock.TYPE, direction.getAxisDirection() == Direction.AxisDirection.POSITIVE ? SlabType.BOTTOM : SlabType.TOP);
+        return state.with(BlockStateProperties.AXIS, direction.getAxis()).with(SlabBlock.TYPE, direction.getAxisDirection() == Direction.AxisDirection.POSITIVE ? SlabType.TOP : SlabType.BOTTOM);
     }
 
     @Override

@@ -6,10 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -54,6 +51,29 @@ public class AnnotationUtil {
         List<String> classNames = new ArrayList<>();
         scanData.stream().map(datum -> datum.getAnnotations().stream()
                 .filter(a -> Objects.equals(a.getAnnotationType(), type) && filter.test(a.getAnnotationData()))
+                .map(ModFileScanData.AnnotationData::getMemberName)
+                .collect(Collectors.toList()))
+                .forEach(classNames::addAll);
+        return classNames.stream().map(className -> {
+            try {
+                Class<?> clazz = Class.forName(className);
+                if (!instance.isAssignableFrom(clazz))
+                    return null;
+                Class<? extends T> instanceClass = clazz.asSubclass(instance);
+                return instanceClass.newInstance();
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ignored) {
+                return (T)null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public static <T> List<T> getClassInstances(Class<?> annotation, Class<T> instance, Predicate<Map<String, Object>> filter, Comparator<ModFileScanData.AnnotationData> sort) {
+        Type type = Type.getType(annotation);
+        List<ModFileScanData> scanData = ModList.get().getAllScanData();
+        List<String> classNames = new ArrayList<>();
+        scanData.stream().map(datum -> datum.getAnnotations().stream()
+                .filter(a -> Objects.equals(a.getAnnotationType(), type) && filter.test(a.getAnnotationData()))
+                .sorted(sort)
                 .map(ModFileScanData.AnnotationData::getMemberName)
                 .collect(Collectors.toList()))
                 .forEach(classNames::addAll);
