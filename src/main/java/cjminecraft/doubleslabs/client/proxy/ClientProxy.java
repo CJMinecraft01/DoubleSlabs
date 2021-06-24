@@ -14,8 +14,10 @@ import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IUnbakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -28,6 +30,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -36,7 +39,7 @@ public class ClientProxy implements IProxy {
     @Override
     public void addListeners(IEventBus mod, IEventBus forge) {
         mod.addListener(this::clientSetup);
-        mod.addListener(this::registerBlockColours);
+//        mod.addListener(this::registerBlockColours);
         mod.addListener(this::bakeModels);
         mod.addListener(ConfigEventsHandler::onFileChange);
     }
@@ -94,8 +97,14 @@ public class ClientProxy implements IProxy {
         ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
     }
 
-    private void registerBlockColours(final ColorHandlerEvent.Block event) {
-        event.getBlockColors().register(DSBlocks.DOUBLE_SLAB.get().getBlockColor(), DSBlocks.DOUBLE_SLAB.get());
-        event.getBlockColors().register(DSBlocks.VERTICAL_SLAB.get().getBlockColor(), DSBlocks.VERTICAL_SLAB.get());
+    @Override
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        // Register block colors on load complete since using the register event causes a crash
+        registerBlockColours(Minecraft.getInstance().getBlockColors());
+    }
+
+    private void registerBlockColours(BlockColors colors) {
+        colors.register(DSBlocks.DOUBLE_SLAB.get().getBlockColor(), DSBlocks.DOUBLE_SLAB.get());
+        colors.register(DSBlocks.VERTICAL_SLAB.get().getBlockColor(), DSBlocks.VERTICAL_SLAB.get());
     }
 }

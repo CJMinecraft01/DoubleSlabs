@@ -52,6 +52,7 @@ public class DoubleSlabs {
         ContainerSupport.load();
 
         mod.addListener(this::commonSetup);
+        mod.addListener(PROXY::loadComplete);
 
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
