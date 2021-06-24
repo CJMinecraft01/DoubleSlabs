@@ -9,6 +9,7 @@ import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -78,14 +79,16 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             List<BakedQuad> quads = Lists.newArrayList();
 
             if ((!renderHalves || renderPositive) && positiveState != null && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, ClientConstants.getVerticalModel(positiveState, direction), side, rand);
+                IBakedModel model = !extraData.hasProperty(ROTATE_POSITIVE) || extraData.getData(ROTATE_POSITIVE) ? ClientConstants.getVerticalModel(positiveState, direction) : Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(positiveState);
+                List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, model, side, rand);
                 if (shouldCull)
                     if ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent))
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                 quads.addAll(positiveQuads);
             }
             if ((!renderHalves || !renderPositive) && negativeState != null && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, ClientConstants.getVerticalModel(negativeState, direction), side, rand);
+                IBakedModel model = !extraData.hasProperty(ROTATE_NEGATIVE) || extraData.getData(ROTATE_NEGATIVE) ? ClientConstants.getVerticalModel(negativeState, direction) : Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(negativeState);
+                List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, model, side, rand);
                 if (shouldCull)
                     if ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent))
                         negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);
