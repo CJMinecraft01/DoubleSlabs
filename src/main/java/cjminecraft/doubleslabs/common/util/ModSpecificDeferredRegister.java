@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.util;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -50,7 +51,37 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
      *
      * @param name The new entry's name, it will automatically have the modid prefixed.
      * @param sup  A factory for the new entry, it should return a new instance every time it is called.
-     * @param requiredModid The modid of the mod that should be loaded in order for this entry to be registered
+     * @return A RegistryObject that will be updated with when the entries in the registry change.
+     */
+    @SuppressWarnings("unchecked")
+    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup) {
+        if (seenRegisterEvent)
+            throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegistryEvent.Register has been fired.");
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(sup);
+        final ResourceLocation key = new ResourceLocation(modid, name);
+
+        RegistryObject<I> ret;
+        if (this.type != null)
+            ret = RegistryObject.of(key, this.type);
+        else if (this.superType != null)
+            ret = RegistryObject.of(key, this.superType, this.modid);
+        else
+            throw new IllegalStateException("Could not create RegistryObject in DeferredRegister");
+
+        if (entries.putIfAbsent((RegistryObject<T>) ret, () -> sup.get().setRegistryName(key)) != null) {
+            throw new IllegalArgumentException("Duplicate registration " + name);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
+     *
+     * @param name The new entry's name, it will automatically have the modid prefixed.
+     * @param sup  A factory for the new entry, it should return a new instance every time it is called.
+     * @param requiredModid The modid that is required for this object to be registered
      * @return A RegistryObject that will be updated with when the entries in the registry change.
      */
     @SuppressWarnings("unchecked")
@@ -71,36 +102,6 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
 
         if (!ModList.get().isLoaded(requiredModid))
             return ret;
-
-        if (entries.putIfAbsent((RegistryObject<T>) ret, () -> sup.get().setRegistryName(key)) != null) {
-            throw new IllegalArgumentException("Duplicate registration " + name);
-        }
-
-        return ret;
-    }
-
-    /**
-     * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
-     *
-     * @param name The new entry's name, it will automatically have the modid prefixed.
-     * @param sup  A factory for the new entry, it should return a new instance every time it is called.
-     * @return A RegistryObject that will be updated with when the entries in the registry change.
-     */
-    @SuppressWarnings("unchecked")
-    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup) {
-        if (seenRegisterEvent)
-            throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegistryEvent.Register has been fired.");
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(sup);
-        final ResourceLocation key = new ResourceLocation(modid, name);
-
-        RegistryObject<I> ret;
-        if (this.type != null)
-            ret = RegistryObject.of(key, this.type);
-        else if (this.superType != null)
-            ret = RegistryObject.of(key, this.superType, this.modid);
-        else
-            throw new IllegalStateException("Could not create RegistryObject in DeferredRegister");
 
         if (entries.putIfAbsent((RegistryObject<T>) ret, () -> sup.get().setRegistryName(key)) != null) {
             throw new IllegalArgumentException("Duplicate registration " + name);
@@ -135,9 +136,12 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
      * @param bus The Mod Specific event bus.
      */
     public void register(IEventBus bus) {
-        bus.register(new EventDispatcher(this));
-        if (this.type == null && this.registryFactory != null) {
-            bus.addListener(this::createRegistry);
+        bus.addListener(this::addEntries);
+        if (this.type == null) {
+            if (this.registryFactory != null)
+                bus.addListener(this::createRegistry);
+            else
+                bus.addListener(EventPriority.LOWEST, this::captureRegistry);
         }
     }
 
@@ -149,13 +153,6 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
     }
 
     private void addEntries(RegistryEvent.Register<?> event) {
-        if (this.type == null && this.registryFactory == null) {
-            //If there is no type yet and we don't have a registry factory, attempt to capture the registry
-            //Note: This will only ever get run on the first registry event, as after that time,
-            // the type will no longer be null. This is needed here rather than during the NewRegistry event
-            // to ensure that mods can properly use deferred registers for custom registries added by other mods
-            captureRegistry();
-        }
         if (this.type != null && event.getGenericType() == this.type.getRegistrySuperType()) {
             this.seenRegisterEvent = true;
             @SuppressWarnings("unchecked")
@@ -171,25 +168,12 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
         this.type = this.registryFactory.get().create();
     }
 
-    private void captureRegistry() {
+    private void captureRegistry(RegistryEvent.NewRegistry event) {
         if (this.superType != null) {
             this.type = RegistryManager.ACTIVE.getRegistry(this.superType);
             if (this.type == null)
                 throw new IllegalStateException("Unable to find registry for type " + this.superType.getName() + " for modid \"" + modid + "\" after NewRegistry event");
         } else
             throw new IllegalStateException("Unable to find registry for mod \"" + modid + "\" No lookup criteria specified.");
-    }
-
-    public static class EventDispatcher {
-        private final ModSpecificDeferredRegister<?> register;
-
-        public EventDispatcher(final ModSpecificDeferredRegister<?> register) {
-            this.register = register;
-        }
-
-        @SubscribeEvent
-        public void handleEvent(RegistryEvent.Register<?> event) {
-            register.addEntries(event);
-        }
     }
 }
