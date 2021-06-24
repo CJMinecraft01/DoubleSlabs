@@ -309,37 +309,40 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
         if (target.getType() == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult result = (BlockRayTraceResult) target;
-            return getHalfState(world, result.getPos(), target.getHitVec().x, target.getHitVec().z).map(info -> {
+            return getHalfState(world, result.getPos(), target.getHitVec().x - result.getPos().getX(), target.getHitVec().z - result.getPos().getZ()).map(info -> {
                 BlockPos pos = result.getPos();
                 Direction side = result.getFace();
+                Direction facing = state.get(FACING);
 
-                int i = pos.getX();
-                int j = pos.getY();
-                int k = pos.getZ();
+                boolean flag = !state.get(DOUBLE) && !info.isPositive();
+
+                double i = flag && facing.getAxis().equals(Direction.Axis.X) ? pos.getX() + (facing.getAxisDirection().equals(Direction.AxisDirection.POSITIVE) ? -0.5 : 0.5) : pos.getX();
+                double j = pos.getY();
+                double k = flag && facing.getAxis().equals(Direction.Axis.Z) ? pos.getZ() + (facing.getAxisDirection().equals(Direction.AxisDirection.POSITIVE) ? -0.5 : 0.5) : pos.getZ();
 
                 AxisAlignedBB axisalignedbb = state.getCollisionShape(world, pos).getBoundingBox();
-                double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
-                double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
-                double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
+                double d0 = i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
+                double d1 = j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
+                double d2 = k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
 
                 switch (side) {
                     case DOWN:
-                        d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
+                        d1 = j + axisalignedbb.minY - 0.10000000149011612D;
                         break;
                     case UP:
-                        d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
+                        d1 = j + axisalignedbb.maxY + 0.10000000149011612D;
                         break;
                     case NORTH:
-                        d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
+                        d2 = k + axisalignedbb.minZ - 0.10000000149011612D;
                         break;
                     case SOUTH:
-                        d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
+                        d2 = k + axisalignedbb.maxZ + 0.10000000149011612D;
                         break;
                     case WEST:
-                        d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
+                        d0 = i + axisalignedbb.minX - 0.10000000149011612D;
                         break;
                     case EAST:
-                        d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
+                        d0 = i + axisalignedbb.maxX + 0.10000000149011612D;
                 }
 
                 DiggingParticle.Factory factory = new DiggingParticle.Factory();

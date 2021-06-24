@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
 import cjminecraft.doubleslabs.client.util.AmbientOcclusionFace;
 import cjminecraft.doubleslabs.client.util.DoubleSlabCulling;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
