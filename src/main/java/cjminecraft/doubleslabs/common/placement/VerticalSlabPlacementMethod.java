@@ -1,20 +1,22 @@
 package cjminecraft.doubleslabs.common.placement;
 
+import cjminecraft.doubleslabs.common.util.TriFunction;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 
 import java.util.function.BiFunction;
 
 public enum VerticalSlabPlacementMethod {
-    PLACE_WHEN_SNEAKING(0, (player, face) -> player.isSneaking()),
-    DYNAMIC(1, (player, face) ->
+    PLACE_WHEN_SNEAKING(0, (player, face, keybindingDown) -> player.isSneaking()),
+    DYNAMIC(1, (player, face, keybindingDown) ->
             (player.isSneaking() && face.getAxis().isVertical()) ||
-                    (!player.isSneaking() && !face.getAxis().isVertical()));
+                    (!player.isSneaking() && !face.getAxis().isVertical())),
+    KEYBINDING(2, (player, face, keybindingDown) -> keybindingDown);
 
     private final int index;
-    private final BiFunction<EntityPlayer, EnumFacing, Boolean> shouldPlace;
+    private final TriFunction<EntityPlayer, EnumFacing, Boolean, Boolean> shouldPlace;
 
-    VerticalSlabPlacementMethod(int index, BiFunction<EntityPlayer, EnumFacing, Boolean> shouldPlace) {
+    VerticalSlabPlacementMethod(int index, TriFunction<EntityPlayer, EnumFacing, Boolean, Boolean> shouldPlace) {
         this.index = index;
         this.shouldPlace = shouldPlace;
     }
@@ -30,7 +32,7 @@ public enum VerticalSlabPlacementMethod {
         return DYNAMIC;
     }
 
-    public boolean shouldPlace(EntityPlayer player, EnumFacing face) {
-        return this.shouldPlace.apply(player, face);
+    public boolean shouldPlace(EntityPlayer player, EnumFacing face, boolean keybindingDown) {
+        return this.shouldPlace.apply(player, face, keybindingDown);
     }
 }

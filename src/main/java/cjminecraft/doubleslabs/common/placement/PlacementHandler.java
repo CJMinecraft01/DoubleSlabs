@@ -4,7 +4,6 @@ import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
-import cjminecraft.doubleslabs.common.blocks.DoubleSlabBlock;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.capability.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
@@ -121,7 +120,7 @@ public class PlacementHandler {
         if (config == null)
             config = new PlayerConfig();
 
-        return config.placeVerticalSlabs() || config.getVerticalSlabPlacementMethod().shouldPlace(player, face);
+        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
     }
 
     @SubscribeEvent
@@ -136,7 +135,7 @@ public class PlacementHandler {
 
             if (stack.getItem() == DSItems.VERTICAL_SLAB)
                 stack = VerticalSlabItem.getStack(stack);
-            IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.isHorizontalSlab(stack, player, hand);
+            IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.getHorizontalSlabSupport(stack, player, hand);
             Consumer<Boolean> cancel = resultType -> {
                 event.setCanceled(true);
                 event.setCancellationResult(resultType ? EnumActionResult.SUCCESS : EnumActionResult.PASS);
@@ -251,7 +250,7 @@ public class PlacementHandler {
                     }
                 }
             } else {
-                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.isHorizontalSlab(world, pos, state);
+                IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, state);
 
                 boolean verticalSlab = state.getBlock() == DSBlocks.VERTICAL_SLAB && !state.getValue(VerticalSlabBlock.DOUBLE) && (((SlabTileEntity) world.getTileEntity(pos)).getPositiveBlockInfo().getBlockState() != null ? face == state.getValue(VerticalSlabBlock.FACING).getOpposite() : face == state.getValue(VerticalSlabBlock.FACING));
 
@@ -298,7 +297,7 @@ public class PlacementHandler {
 
                     verticalSlab = newState.getBlock() == DSBlocks.VERTICAL_SLAB && !newState.getValue(VerticalSlabBlock.DOUBLE);
 
-                    horizontalSlabSupport = SlabSupport.isHorizontalSlab(world, newPos, newState);
+                    horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(world, newPos, newState);
                     if (horizontalSlabSupport == null && !verticalSlab) {
                         // If the offset block is not a horizontal slab and is not a dynamic vertical slab
                         verticalSlabSupport = SlabSupport.getVerticalSlabSupport(world, newPos, newState);

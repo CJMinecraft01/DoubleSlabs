@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -20,6 +21,11 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     private boolean hasEnumHalfProperty(IBlockState state) {
         return state.getPropertyKeys().contains(BlockSlab.HALF);
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return isValid(block.getDefaultState());
     }
 
     @Override

@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.atum2;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
@@ -42,6 +43,11 @@ public class Atum2SlabSupport<T extends Enum<T> & IStringSerializable> implement
     @Override
     public boolean isHorizontalSlab(Item item) {
         return slab != null && item instanceof ItemBlock && slab.isAssignableFrom(((ItemBlock) item).getBlock().getClass());
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return slab != null && slab.isAssignableFrom(block.getClass());
     }
 
     @Override

@@ -3,9 +3,7 @@ package cjminecraft.doubleslabs.common.blocks;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.IStateContainer;
 import cjminecraft.doubleslabs.client.ClientConstants;
-import cjminecraft.doubleslabs.client.util.CullInfo;
 import cjminecraft.doubleslabs.common.blocks.properties.UnlistedPropertyBlockInfo;
-import cjminecraft.doubleslabs.common.blocks.properties.UnlistedPropertyCullInfo;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -31,7 +29,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -51,7 +48,6 @@ public class DynamicSlabBlock extends Block {
 
     public static final UnlistedPropertyBlockInfo POSITIVE_BLOCK = new UnlistedPropertyBlockInfo();
     public static final UnlistedPropertyBlockInfo NEGATIVE_BLOCK = new UnlistedPropertyBlockInfo();
-    public static final UnlistedPropertyCullInfo CULL_INFO = new UnlistedPropertyCullInfo();
 
     public DynamicSlabBlock() {
         super(Material.ROCK);
@@ -113,23 +109,7 @@ public class DynamicSlabBlock extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, CULL_INFO).build();
-    }
-
-    protected List<CullInfo> getCullInfo(IBlockState state, IBlockAccess world, BlockPos pos) {
-        List<CullInfo> cullDirections = new ArrayList<>();
-        for (EnumFacing direction : EnumFacing.values()) {
-            BlockPos otherPos = pos.offset(direction);
-            IBlockState otherState = world.getBlockState(otherPos);
-            if (otherState.getBlock() instanceof DynamicSlabBlock && otherState.getBlock() == this) {
-                TileEntity tileEntity = world.getTileEntity(otherPos);
-                if (tileEntity instanceof SlabTileEntity) {
-                    SlabTileEntity tile = (SlabTileEntity) tileEntity;
-                    cullDirections.add(new CullInfo(tile.getPositiveBlockInfo(), tile.getNegativeBlockInfo(), state, otherState, direction));
-                }
-            }
-        }
-        return cullDirections;
+        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK).build();
     }
 
     @Override
@@ -138,8 +118,7 @@ public class DynamicSlabBlock extends Block {
         return actualState instanceof IExtendedBlockState ? getTile(world, pos)
                 .map(tile -> ((IExtendedBlockState) actualState)
                         .withProperty(POSITIVE_BLOCK, tile.getPositiveBlockInfo())
-                        .withProperty(NEGATIVE_BLOCK, tile.getNegativeBlockInfo())
-                        .withProperty(CULL_INFO, getCullInfo(state, world, pos)))
+                        .withProperty(NEGATIVE_BLOCK, tile.getNegativeBlockInfo()))
                 .orElse((IExtendedBlockState) actualState) : actualState;
     }
 

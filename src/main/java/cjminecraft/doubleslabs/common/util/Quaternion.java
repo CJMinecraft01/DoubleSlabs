@@ -2,6 +2,8 @@ package cjminecraft.doubleslabs.common.util;
 
 import net.minecraft.util.math.MathHelper;
 
+import javax.vecmath.Quat4f;
+
 public final class Quaternion {
     public static final Quaternion ONE = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
     private float x;
@@ -172,5 +174,9 @@ public final class Quaternion {
 
     public org.lwjgl.util.vector.Quaternion toLWJGLQuaternion() {
         return new org.lwjgl.util.vector.Quaternion(this.x, this.y, this.z, this.w);
+    }
+
+    public Quat4f toQuat() {
+        return new Quat4f(this.x, this.y, this.z, this.w);
     }
 }

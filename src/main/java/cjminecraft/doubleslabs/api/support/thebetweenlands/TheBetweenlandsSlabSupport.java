@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.thebetweenlands;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
@@ -36,6 +37,11 @@ public class TheBetweenlandsSlabSupport<T extends Enum<T> & IStringSerializable>
         this.slab = slab;
         this.slabTypeProperty = slabTypeProperty;
         this.slabTypes = slabTypes;
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return slab != null && slab.isAssignableFrom(block.getClass());
     }
 
     @Override

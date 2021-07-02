@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.conquestreforged;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.properties.PropertyEnum;
@@ -34,8 +35,8 @@ public class ConquestReforgedSlabSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public boolean isHorizontalSlab(IBlockAccess world, BlockPos pos, IBlockState state) {
-        return slab != null && slab.isAssignableFrom(state.getBlock().getClass());
+    public boolean isHorizontalSlab(Block block) {
+        return slab != null && slab.isAssignableFrom(block.getClass());
     }
 
     @Override

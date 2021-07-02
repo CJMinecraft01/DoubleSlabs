@@ -56,20 +56,22 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         setDefaultState(this.getBlockState().getBaseState().withProperty(DOUBLE, false).withProperty(FACING, EnumFacing.NORTH));
     }
 
-    protected static Optional<IBlockInfo> getHalfState(IBlockAccess world, BlockPos pos, double x, double z) {
+    public static Optional<IBlockInfo> getHalfState(IBlockAccess world, BlockPos pos, double x, double z) {
         IBlockState state = world.getBlockState(pos);
 
-        return getTile(world, pos).flatMap(tile -> tile.getPositiveBlockInfo().getBlockState() == null && tile.getNegativeBlockInfo().getBlockState() == null ? Optional.empty() :
+        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() == null
+                && tile.getNegativeBlockInfo().getBlockState() == null ? null :
                 ((state.getValue(FACING).getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ?
                         (state.getValue(FACING).getAxis() == EnumFacing.Axis.X ? x : z) > 0.5 :
                         (state.getValue(FACING).getAxis() == EnumFacing.Axis.X ? x : z) < 0.5)
                         || tile.getNegativeBlockInfo().getBlockState() == null) && tile.getPositiveBlockInfo().getBlockState() != null ?
-                        Optional.of(tile.getPositiveBlockInfo()) : Optional.of(tile.getNegativeBlockInfo()));
+                        tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo())
+                .flatMap(block -> block == null || block.getBlockState() == null ? Optional.empty() : Optional.of(block));
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, CULL_INFO, ROTATE_POSITIVE, ROTATE_NEGATIVE).add(FACING, DOUBLE).build();
+        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, ROTATE_POSITIVE, ROTATE_NEGATIVE).add(FACING, DOUBLE).build();
     }
 
     private boolean rotateModel(IBlockInfo info) {

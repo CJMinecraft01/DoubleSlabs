@@ -71,7 +71,7 @@ public class VerticalSlabItem extends ItemBlock {
         boolean result = super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState);
         VerticalSlabBlock.getTile(world, pos).ifPresent(tile -> {
             ItemStack slabStack = getStack(stack);
-            IHorizontalSlabSupport support = SlabSupport.isHorizontalSlab(slabStack, player, EnumHand.MAIN_HAND);
+            IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(slabStack, player, EnumHand.MAIN_HAND);
             if (support != null) {
                 boolean positive = tile.getPositiveBlockInfo().getBlockState() == null;
                 IBlockState slabState = PlacementHandler.getStateFromSupport(world, pos, player, EnumHand.MAIN_HAND, slabStack, positive ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP, support);

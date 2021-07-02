@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api.support.stairwaytoaether;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
@@ -41,6 +42,11 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
         this.slab = slab;
         this.typeProperty = typeProperty;
         this.slabTypes = slabTypes;
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return slab != null && slab.isAssignableFrom(block.getClass());
     }
 
     @Override

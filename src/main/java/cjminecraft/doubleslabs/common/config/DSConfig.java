@@ -57,6 +57,10 @@ public class DSConfig {
         sync(false, false);
     }
 
+    private static boolean isItemPresent(List<String> option, Item item) {
+        return isItemPresent(option, item.getDefaultInstance());
+    }
+
     private static boolean isItemPresent(List<String> option, ItemStack stack) {
         if (stack.getItem().getRegistryName() == null)
             return false;
@@ -86,6 +90,10 @@ public class DSConfig {
             }
         }
         return state.getBlock().getRegistryName().toString();
+    }
+
+    private static boolean isBlockPresent(List<String> option, Block block) {
+        return isBlockPresent(option, block.getDefaultState());
     }
 
     private static boolean isBlockPresent(List<String> option, IBlockState state) {
@@ -166,25 +174,25 @@ public class DSConfig {
     }
 
     public static class Client {
-        public List<String> lazyVerticalSlabModels;
+        public List<String> uvlockModelBlacklist;
         public List<String> slabCullBlacklist;
         public List<String> useDoubleSlabModelBlacklist;
         public VerticalSlabPlacementMethod verticalSlabPlacementMethod;
 
         public void sync(boolean read) {
-            Property propertyLazyVerticalSlabModels = config.get(Configuration.CATEGORY_CLIENT, "lazyVerticalSlabModels", new String[]{
-                    "minecraft:wooden_slab#variant=oak",
-                    "minecraft:wooden_slab#variant=spruce",
-                    "minecraft:wooden_slab#variant=birch",
-                    "minecraft:wooden_slab#variant=jungle",
-                    "minecraft:wooden_slab#variant=acacia",
-                    "minecraft:wooden_slab#variant=dark_oak"});
-            propertyLazyVerticalSlabModels.setComment(
+            Property propertyUvlockModelBlacklist = config.get(Configuration.CATEGORY_CLIENT, "uvlockModelBlacklist", new String[]{
+                    "minecraft:stone_slab#variant=stone",
+                    "minecraft:stone_slab#variant=sandstone",
+                    "minecraft:stone_slab2#variant=red_sandstone",
+                    "minecraft:stone_slab",
+                    "minecraft:sandstone_slab",
+                    "minecraft:red_sandstone_slab"
+            });
+            propertyUvlockModelBlacklist.setComment(
                     "The list of slabs which should use the lazy model rendering technique\n" +
-                            "Lazy model rendering does not physically rotate the original slab model, but applies the same texture to a default vertical slab model\n" +
                             "This often yields better looking results with wooden planks and does not necessarily improve the look of all vertical slabs\n" +
                             "Use the wildcard value * to enable this feature for all slabs");
-            propertyLazyVerticalSlabModels.setLanguageKey("doubleslabs.configgui.lazyVerticalSlabModels");
+            propertyUvlockModelBlacklist.setLanguageKey("doubleslabs.configgui.uvlockModelBlacklist");
 
             Property propertySlabCullBlacklist = config.get(Configuration.CATEGORY_CLIENT, "slabCullBlacklist", new String[0]);
             propertySlabCullBlacklist.setComment(
@@ -208,19 +216,19 @@ public class DSConfig {
             propertyVerticalSlabPlacementMethod.setLanguageKey("doubleslabs.configgui.verticalSlabPlacementMethod");
 
             config.setCategoryPropertyOrder(Configuration.CATEGORY_CLIENT,
-                    Lists.newArrayList(propertyLazyVerticalSlabModels.getName(),
+                    Lists.newArrayList(propertyUvlockModelBlacklist.getName(),
                             propertySlabCullBlacklist.getName(),
                             propertyUseDoubleSlabModelBlacklist.getName(),
                             propertyVerticalSlabPlacementMethod.getName()));
 
             if (read) {
-                this.lazyVerticalSlabModels = Lists.newArrayList(propertyLazyVerticalSlabModels.getStringList());
+                this.uvlockModelBlacklist = Lists.newArrayList(propertyUvlockModelBlacklist.getStringList());
                 this.slabCullBlacklist = Lists.newArrayList(propertySlabCullBlacklist.getStringList());
                 this.useDoubleSlabModelBlacklist = Lists.newArrayList(propertyUseDoubleSlabModelBlacklist.getStringList());
                 this.verticalSlabPlacementMethod = VerticalSlabPlacementMethod.valueOf(propertyVerticalSlabPlacementMethod.getString());
             }
 
-            propertyLazyVerticalSlabModels.set(this.lazyVerticalSlabModels.toArray(new String[0]));
+            propertyUvlockModelBlacklist.set(this.uvlockModelBlacklist.toArray(new String[0]));
             propertySlabCullBlacklist.set(this.slabCullBlacklist.toArray(new String[0]));
             propertyUseDoubleSlabModelBlacklist.set(this.useDoubleSlabModelBlacklist.toArray(new String[0]));
             propertyVerticalSlabPlacementMethod.set(this.verticalSlabPlacementMethod.name());
@@ -231,11 +239,19 @@ public class DSConfig {
         }
 
         public boolean useLazyModel(IBlockState state) {
-            return isBlockPresent(lazyVerticalSlabModels, state);
+            return isBlockPresent(uvlockModelBlacklist, state);
         }
 
         public boolean useDoubleSlabModel(IBlockState state) {
             return !isBlockPresent(useDoubleSlabModelBlacklist, state);
+        }
+
+        public boolean uvlock(IBlockState state) {
+            return !isBlockPresent(uvlockModelBlacklist, state);
+        }
+
+        public boolean uvlock(Item item) {
+            return !isItemPresent(uvlockModelBlacklist, item);
         }
     }
 

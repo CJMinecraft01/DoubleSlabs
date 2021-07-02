@@ -48,10 +48,18 @@ public abstract class GlassSlab extends BlockSlab {
 
     @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        IBlockState state = blockAccess.getBlockState(pos.offset(side));
-        Block block = state.getBlock();
-
-        return block == this;
+        IBlockState adjacentState = blockAccess.getBlockState(pos.offset(side));
+        if (adjacentState.getBlock() == this) {
+            EnumBlockHalf type = blockState.getValue(HALF);
+            EnumBlockHalf otherType = adjacentState.getValue(HALF);
+            BlockSlab otherSlab = (BlockSlab) adjacentState.getBlock();
+            if (side == EnumFacing.UP)
+                return !((this.isDouble() || type == EnumBlockHalf.TOP) && (otherSlab.isDouble() || otherType == EnumBlockHalf.BOTTOM));
+            else if (side == EnumFacing.DOWN)
+                return !((this.isDouble() || type == EnumBlockHalf.BOTTOM) && (otherSlab.isDouble() || otherType == EnumBlockHalf.TOP));
+            return !(adjacentState.getValue(HALF).equals(blockState.getValue(HALF)) || otherSlab.isDouble());
+        }
+        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
     @Override

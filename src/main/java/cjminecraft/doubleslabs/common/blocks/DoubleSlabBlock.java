@@ -270,7 +270,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
         getTile(world, pos).ifPresent(tile -> {
             if (tile.getPositiveBlockInfo().getBlockState() != null)
-                tile.getPositiveBlockInfo().getBlockState().getBlock().onEntityWalk(world, pos, entity);
+                tile.getPositiveBlockInfo().getBlockState().getBlock().onEntityWalk(tile.getPositiveBlockInfo().getWorld(), pos, entity);
         });
     }
 
@@ -279,6 +279,8 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
         getTile(world, pos).ifPresent(tile -> {
             if (tile.getPositiveBlockInfo().getBlockState() != null)
                 tile.getPositiveBlockInfo().getBlockState().getBlock().onEntityCollision(world, pos, tile.getPositiveBlockInfo().getBlockState(), entity);
+            if (tile.getNegativeBlockInfo().getBlockState() != null)
+                tile.getNegativeBlockInfo().getBlockState().getBlock().onEntityCollision(world, pos, tile.getNegativeBlockInfo().getBlockState(), entity);
         });
     }
 

@@ -1,9 +1,11 @@
 package cjminecraft.doubleslabs.client.proxy;
 
-import cjminecraft.doubleslabs.client.model.*;
+import cjminecraft.doubleslabs.client.ClientConstants;
+import cjminecraft.doubleslabs.client.model.DoubleSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.render.SlabTileEntityRenderer;
-import cjminecraft.doubleslabs.client.util.ClientUtils;
-import cjminecraft.doubleslabs.client.util.vertex.VerticalSlabTransformer;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
@@ -13,10 +15,8 @@ import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -43,7 +43,7 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void postInit() {
-        ClientUtils.checkOptiFineInstalled();
+
     }
 
     private static String getPropertyString(Map<IProperty<?>, Comparable<?>> values) {
@@ -90,7 +90,7 @@ public class ClientProxy implements IProxy {
 
     @SubscribeEvent
     public static void bakeModels(ModelBakeEvent event) {
-        VerticalSlabTransformer.reload();
+        ClientConstants.bakeVerticalSlabModels(event.getModelLoader());
 
         replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB, (model, state) -> {}, event.getModelRegistry());
 //        VerticalSlabBakedModel verticalSlabBakedModel = new VerticalSlabBakedModel();
