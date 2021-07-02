@@ -21,6 +21,6 @@ public class UnlistedPropertyBoolean implements IUnlistedProperty<Boolean> {
 
     @Override
     public String valueToString(Boolean value) {
-        return value.toString();
+        return value != null ? value.toString() : "null";
     }
 }

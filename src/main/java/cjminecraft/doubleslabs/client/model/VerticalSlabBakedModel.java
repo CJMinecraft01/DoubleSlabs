@@ -9,11 +9,13 @@ import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -36,6 +38,10 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
         return this.models.get(state);
     }
 
+    private static boolean rotateHalf(IExtendedBlockState extendedState, IUnlistedProperty<Boolean> property) {
+        return !extendedState.getUnlistedProperties().containsKey(property) || extendedState.getValue(property);
+    }
+
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state instanceof IExtendedBlockState) {
@@ -53,8 +59,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             boolean negativeTransparent = negativeState == null || ClientConstants.isTransparent(negativeState);
             boolean shouldCull = positiveState != null && negativeState != null && DSConfig.CLIENT.shouldCull(positiveState) && DSConfig.CLIENT.shouldCull(negativeState) && (!(positiveTransparent && negativeTransparent) || (positiveState.getBlock() == negativeState.getBlock()));
 
-            boolean renderHalves = false;
-            boolean renderPositive = false;
+            boolean renderHalves = extendedState.getUnlistedProperties().containsKey(DynamicSlabBlock.POSITIVE_BLOCK) && extendedState.getValue(DynamicSlabBlock.RENDER_POSITIVE) != null;
+            boolean renderPositive = renderHalves && extendedState.getValue(DynamicSlabBlock.RENDER_POSITIVE);
 
             EnumFacing direction = state.getValue(VerticalSlabBlock.FACING);
 
@@ -74,14 +80,16 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             List<BakedQuad> quads = Lists.newArrayList();
 
             if ((!renderHalves || renderPositive) && positiveState != null && (positiveState.getBlock().canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, ClientConstants.getVerticalModel(positiveState, direction), side, rand);
+                IBakedModel model = rotateHalf(extendedState, VerticalSlabBlock.ROTATE_POSITIVE) ? ClientConstants.getVerticalModel(positiveState, direction) : Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(positiveState);
+                List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, model, side, rand);
                 if (shouldCull)
                     if ((!negativeTransparent && !positiveTransparent) || (positiveTransparent && !negativeTransparent) || (positiveTransparent && negativeTransparent))
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction.getOpposite());
                 quads.addAll(positiveQuads);
             }
             if ((!renderHalves || !renderPositive) && negativeState != null && (negativeState.getBlock().canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
-                List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, ClientConstants.getVerticalModel(negativeState, direction), side, rand);
+                IBakedModel model = rotateHalf(extendedState, VerticalSlabBlock.ROTATE_NEGATIVE) ? ClientConstants.getVerticalModel(negativeState, direction) : Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(negativeState);
+                List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, model, side, rand);
                 if (shouldCull)
                     if ((!positiveTransparent && !negativeTransparent) || (negativeTransparent && !positiveTransparent) || (positiveTransparent && negativeTransparent))
                         negativeQuads.removeIf(bakedQuad -> bakedQuad.getFace() == direction);

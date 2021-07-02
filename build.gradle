@@ -54,6 +54,9 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
+            // Add the core mod
+            property 'fml.coreMods.load', 'cjminecraft.doubleslabs.client.asm.LoadingPlugin'
+
             mods {
                 doubleslabs {
                     source sourceSets.main

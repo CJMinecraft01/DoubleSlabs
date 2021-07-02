@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.IStateContainer;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.blocks.properties.UnlistedPropertyBlockInfo;
+import cjminecraft.doubleslabs.common.blocks.properties.UnlistedPropertyBoolean;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -48,6 +49,7 @@ public class DynamicSlabBlock extends Block {
 
     public static final UnlistedPropertyBlockInfo POSITIVE_BLOCK = new UnlistedPropertyBlockInfo();
     public static final UnlistedPropertyBlockInfo NEGATIVE_BLOCK = new UnlistedPropertyBlockInfo();
+    public static final UnlistedPropertyBoolean RENDER_POSITIVE = new UnlistedPropertyBoolean();
 
     public DynamicSlabBlock() {
         super(Material.ROCK);
@@ -109,7 +111,7 @@ public class DynamicSlabBlock extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK).build();
+        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, RENDER_POSITIVE).build();
     }
 
     @Override

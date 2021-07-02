@@ -71,7 +71,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, ROTATE_POSITIVE, ROTATE_NEGATIVE).add(FACING, DOUBLE).build();
+        return new BlockStateContainer.Builder(this).add(POSITIVE_BLOCK, NEGATIVE_BLOCK, ROTATE_POSITIVE, ROTATE_NEGATIVE, RENDER_POSITIVE).add(FACING, DOUBLE).build();
     }
 
     private boolean rotateModel(IBlockInfo info) {

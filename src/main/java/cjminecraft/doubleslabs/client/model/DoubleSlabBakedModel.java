@@ -36,9 +36,8 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
             if (positiveState == null || negativeState == null)
                 return getFallbackModel().getQuads(state, side, rand);
 
-            // todo add culling
-            boolean renderHalves = false;
-            boolean renderPositive = false;
+            boolean renderHalves = extendedState.getUnlistedProperties().containsKey(DynamicSlabBlock.POSITIVE_BLOCK) && extendedState.getValue(DynamicSlabBlock.RENDER_POSITIVE) != null;
+            boolean renderPositive = renderHalves && extendedState.getValue(DynamicSlabBlock.RENDER_POSITIVE);
 
             boolean topTransparent = ClientConstants.isTransparent(positiveState);
             boolean bottomTransparent = ClientConstants.isTransparent(negativeState);
