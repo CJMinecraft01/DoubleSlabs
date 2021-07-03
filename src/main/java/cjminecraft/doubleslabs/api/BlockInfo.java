@@ -117,6 +117,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<NBTTagCompound>, 
     }
 
     private void wrapWorld(World world) {
+        // add a try catch?
         IWorldWrapper<?> w = world instanceof WorldServer ? new ServerWorldWrapper((WorldServer) world) : new WorldWrapper(world);
         w.setPositive(this.positive);
         w.setBlockPos(this.slab.getPos());
@@ -128,6 +129,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<NBTTagCompound>, 
         if (this.world != null && this.world instanceof IWorldWrapper<?>)
             ((IWorldWrapper<?>) this.world).setWorld(world);
         else if (this.tile != null)
+            // add a try catch?
             this.world = world instanceof WorldServer ? new ServerWorldWrapper((WorldServer) world) : new WorldWrapper(world);
         else
             this.world = world;

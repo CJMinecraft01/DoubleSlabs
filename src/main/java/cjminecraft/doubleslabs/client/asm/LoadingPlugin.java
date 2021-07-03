@@ -8,7 +8,7 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("DoubleSlabs Plugin")
 @IFMLLoadingPlugin.TransformerExclusions("cjminecraft.doubleslabs.client.asm")
-//@IFMLLoadingPlugin.SortingIndex(1001) // After runtime deobfuscation
+@IFMLLoadingPlugin.SortingIndex(1001) // After runtime deobfuscation
 public class LoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {

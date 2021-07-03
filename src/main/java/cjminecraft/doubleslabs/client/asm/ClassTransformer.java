@@ -27,6 +27,7 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
 
     static {
         TRANSFORMERS.put("net.minecraftforge.client.model.pipeline.ForgeBlockModelRenderer", ClassTransformer::transformBlockModelRenderer);
+        TRANSFORMERS.put("net.minecraft.client.renderer.BlockModelRenderer", ClassTransformer::transformBlockModelRenderer);
     }
 
     @Override

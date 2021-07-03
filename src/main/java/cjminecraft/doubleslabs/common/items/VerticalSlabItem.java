@@ -49,7 +49,7 @@ public class VerticalSlabItem extends ItemBlock {
 
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (tab == DoubleSlabs.TAB) {
+        if (tab == DoubleSlabs.TAB || tab == CreativeTabs.SEARCH) {
             ForgeRegistries.ITEMS.forEach(item -> {
                 if (item != null && SlabSupport.isHorizontalSlab(item)) {
                     NonNullList<ItemStack> list = NonNullList.create();

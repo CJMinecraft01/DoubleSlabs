@@ -219,7 +219,7 @@ public class PlacementHandler {
                         if (blockSupport == null)
                             return;
 
-                        face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
+                        face = blockSupport.getDirection(event.getWorld(), pos, state);
                     }
 
                     if (DSConfig.SERVER.isBlacklistedVerticalSlab(state))
@@ -231,7 +231,7 @@ public class PlacementHandler {
                     // Get the direction that the vertical slab block is facing
                     EnumFacing direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
-                    if (face == direction.getOpposite()) {
+                    if (face == direction) {
                         // Get the state for the vertical slab item using the direction of the already placed vertical slab
                         IBlockState slabState = getStateFromSupport(world, pos, player, hand, stack, direction.getOpposite(), verticalSlabItemSupport);
 //                        BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), direction.getOpposite());

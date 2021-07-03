@@ -11,12 +11,15 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
+@SideOnly(Side.CLIENT)
 public abstract class DynamicSlabBakedModel implements IBakedModel {
 
     @Override

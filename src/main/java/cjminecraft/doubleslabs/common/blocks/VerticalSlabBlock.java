@@ -302,37 +302,37 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @SideOnly(Side.CLIENT)
     public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
         if (target.typeOfHit == RayTraceResult.Type.BLOCK) {
-            return getHalfState(world, target.getBlockPos(), target.hitVec.x, target.hitVec.z).map(info -> {
+            return getHalfState(world, target.getBlockPos(), target.hitVec.x - target.getBlockPos().getX(), target.hitVec.z - target.getBlockPos().getZ()).map(info -> {
                 BlockPos pos = target.getBlockPos();
                 EnumFacing side = target.sideHit;
 
-                int i = pos.getX();
-                int j = pos.getY();
-                int k = pos.getZ();
+                double i = pos.getX();
+                double j = pos.getY();
+                double k = pos.getZ();
 
                 AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(world, pos);
-                double d0 = (double) i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
-                double d1 = (double) j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
-                double d2 = (double) k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
+                double d0 = i + world.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
+                double d1 = j + world.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
+                double d2 = k + world.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
 
                 switch (side) {
                     case DOWN:
-                        d1 = (double) j + axisalignedbb.minY - 0.10000000149011612D;
+                        d1 = j + axisalignedbb.minY - 0.10000000149011612D;
                         break;
                     case UP:
-                        d1 = (double) j + axisalignedbb.maxY + 0.10000000149011612D;
+                        d1 = j + axisalignedbb.maxY + 0.10000000149011612D;
                         break;
                     case NORTH:
-                        d2 = (double) k + axisalignedbb.minZ - 0.10000000149011612D;
+                        d2 = k + axisalignedbb.minZ - 0.10000000149011612D;
                         break;
                     case SOUTH:
-                        d2 = (double) k + axisalignedbb.maxZ + 0.10000000149011612D;
+                        d2 = k + axisalignedbb.maxZ + 0.10000000149011612D;
                         break;
                     case WEST:
-                        d0 = (double) i + axisalignedbb.minX - 0.10000000149011612D;
+                        d0 = i + axisalignedbb.minX - 0.10000000149011612D;
                         break;
                     case EAST:
-                        d0 = (double) i + axisalignedbb.maxX + 0.10000000149011612D;
+                        d0 = i + axisalignedbb.maxX + 0.10000000149011612D;
                 }
 
                 ParticleDigging.Factory factory = new ParticleDigging.Factory();

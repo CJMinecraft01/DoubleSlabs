@@ -10,7 +10,10 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class SlabTileEntityRenderer extends TileEntitySpecialRenderer<SlabTileEntity> {
 
 //    private static final Quaternion NORTH_ROTATION = new Quaternion(new Vector3f(1, 0, 0), 90, true);

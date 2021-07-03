@@ -8,21 +8,16 @@ import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class DoubleSlabCulling {
 

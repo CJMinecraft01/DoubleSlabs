@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.Vector3f;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -15,12 +16,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ItemModelMesherForge;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.model.*;
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -39,11 +43,29 @@ public class ClientConstants {
     private static final Class<?> WEIGHTED_RANDOM_MODEL;
     private static final Constructor<?> WEIGHTED_RANDOM_MODEL_CONSTRUCTOR;
     private static final Field WEIGHTED_RANDOM_MODEL_VARIANTS;
+    private static final Class<?> FORGE_VARIANT;
+    private static final Constructor<?> FORGE_VARIANT_CONSTRUCTOR;
+    private static final Field FORGE_VARIANT_BLOCKSTATE_LOCATION;
+    private static final Field FORGE_VARIANT_TEXTURES;
+    private static final Field FORGE_VARIANT_PARTS;
+    private static final Field FORGE_VARIANT_CUSTOMDATA;
+    private static final Field FORGE_VARIANT_STATE;
+    private static final Field FORGE_VARIANT_SMOOTH;
+    private static final Field FORGE_VARIANT_GUI3D;
 
     static {
         Class<?> weightedRandomModel;
         Constructor<?> weightedRandomModelConstructor;
         Field weightedRandomModelVariants;
+        Class<?> forgeVariant;
+        Constructor<?> forgeVariantConstructor;
+        Field forgeVariantBlockstateLocation;
+        Field forgeVariantTextures;
+        Field forgeVariantParts;
+        Field forgeVariantCustomData;
+        Field forgeVariantState;
+        Field forgeVariantSmooth;
+        Field forgeVariantGui3d;
 
         try {
             weightedRandomModel = Class.forName("net.minecraftforge.client.model.ModelLoader$WeightedRandomModel");
@@ -51,15 +73,51 @@ public class ClientConstants {
             weightedRandomModelConstructor.setAccessible(true);
             weightedRandomModelVariants = weightedRandomModel.getDeclaredField("variants");
             weightedRandomModelVariants.setAccessible(true);
+            forgeVariant = Class.forName("net.minecraftforge.client.model.BlockStateLoader$ForgeVariant");
+            forgeVariantConstructor = forgeVariant.getConstructor(ResourceLocation.class, ResourceLocation.class, IModelState.class, boolean.class, Optional.class, Optional.class, int.class, ImmutableMap.class, ImmutableMap.class, ImmutableMap.class);
+            forgeVariantConstructor.setAccessible(true);
+            forgeVariantBlockstateLocation = forgeVariant.getDeclaredField("blockstateLocation");
+            forgeVariantBlockstateLocation.setAccessible(true);
+            forgeVariantTextures = forgeVariant.getDeclaredField("textures");
+            forgeVariantTextures.setAccessible(true);
+            forgeVariantParts = forgeVariant.getDeclaredField("parts");
+            forgeVariantParts.setAccessible(true);
+            forgeVariantCustomData = forgeVariant.getDeclaredField("customData");
+            forgeVariantCustomData.setAccessible(true);
+            forgeVariantSmooth = forgeVariant.getDeclaredField("smooth");
+            forgeVariantSmooth.setAccessible(true);
+            forgeVariantGui3d = forgeVariant.getDeclaredField("gui3d");
+            forgeVariantGui3d.setAccessible(true);
+            forgeVariantState = forgeVariant.getDeclaredField("state");
+            forgeVariantState.setAccessible(true);
+
         } catch (Exception ignore) {
             weightedRandomModel = null;
             weightedRandomModelConstructor = null;
             weightedRandomModelVariants = null;
+            forgeVariant = null;
+            forgeVariantConstructor = null;
+            forgeVariantBlockstateLocation = null;
+            forgeVariantTextures = null;
+            forgeVariantParts = null;
+            forgeVariantCustomData = null;
+            forgeVariantState = null;
+            forgeVariantSmooth = null;
+            forgeVariantGui3d = null;
         }
 
         WEIGHTED_RANDOM_MODEL = weightedRandomModel;
         WEIGHTED_RANDOM_MODEL_CONSTRUCTOR = weightedRandomModelConstructor;
         WEIGHTED_RANDOM_MODEL_VARIANTS = weightedRandomModelVariants;
+        FORGE_VARIANT = forgeVariant;
+        FORGE_VARIANT_CONSTRUCTOR = forgeVariantConstructor;
+        FORGE_VARIANT_BLOCKSTATE_LOCATION = forgeVariantBlockstateLocation;
+        FORGE_VARIANT_TEXTURES = forgeVariantTextures;
+        FORGE_VARIANT_PARTS = forgeVariantParts;
+        FORGE_VARIANT_CUSTOMDATA = forgeVariantCustomData;
+        FORGE_VARIANT_STATE = forgeVariantState;
+        FORGE_VARIANT_SMOOTH = forgeVariantSmooth;
+        FORGE_VARIANT_GUI3D = forgeVariantGui3d;
     }
 
     public static boolean isTransparent(IBlockState state) {
@@ -82,40 +140,6 @@ public class ClientConstants {
         return VERTICAL_SLAB_ITEM_MODELS.getOrDefault(location, getFallbackModel());
     }
 
-    public static IBakedModel bake(ModelLoader modelLoader, VariantList variants, boolean uvlock, ModelRotation rotation) {
-        if (variants.getVariantList().isEmpty()) {
-            return null;
-        } else {
-            WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
-            int i = 0;
-
-            for (Variant variant : variants.getVariantList()) {
-                ModelBlock modelblock = modelLoader.models.get(variant.getModelLocation());
-
-                if (modelblock != null && modelblock.isResolved()) {
-                    if (!modelblock.getElements().isEmpty()) {
-                        IBakedModel ibakedmodel = modelLoader.bakeModel(modelblock, rotation, variant.isUvLock() || uvlock);
-
-                        if (ibakedmodel != null) {
-                            ++i;
-                            weightedbakedmodel$builder.add(ibakedmodel, variant.getWeight());
-                        }
-                    }
-                }
-            }
-
-            IBakedModel ibakedmodel1 = null;
-
-            if (i == 1) {
-                ibakedmodel1 = weightedbakedmodel$builder.first();
-            } else if (i != 0) {
-                ibakedmodel1 = weightedbakedmodel$builder.build();
-            }
-
-            return ibakedmodel1;
-        }
-    }
-
     private static IModel newWeightedRandomModel(VariantList variants) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         return (IModel) WEIGHTED_RANDOM_MODEL_CONSTRUCTOR.newInstance(new ResourceLocation(""), variants);
     }
@@ -123,6 +147,29 @@ public class ClientConstants {
     private static List<Variant> getVariantListFromWeightedRandomModel(IModel model) throws IllegalAccessException {
         Object obj = WEIGHTED_RANDOM_MODEL.cast(model);
         return (List<Variant>) WEIGHTED_RANDOM_MODEL_VARIANTS.get(obj);
+    }
+
+    private static Variant convertVariant(Variant variant, boolean uvlock) {
+        if (FORGE_VARIANT != null && FORGE_VARIANT.isAssignableFrom(variant.getClass())) {
+            try {
+                Object obj = FORGE_VARIANT.cast(variant);
+                return (Variant) FORGE_VARIANT_CONSTRUCTOR.newInstance(
+                        (ResourceLocation) FORGE_VARIANT_BLOCKSTATE_LOCATION.get(obj),
+                        variant.getModelLocation(),
+                        (IModelState) FORGE_VARIANT_STATE.get(obj),
+                        variant.isUvLock() || uvlock,
+                        (Optional<Boolean>) FORGE_VARIANT_SMOOTH.get(obj),
+                        (Optional<Boolean>) FORGE_VARIANT_GUI3D.get(obj),
+                        variant.getWeight(),
+                        (ImmutableMap<String, String>) FORGE_VARIANT_TEXTURES.get(obj),
+                        (ImmutableMap<String, BlockStateLoader.SubModel>) FORGE_VARIANT_PARTS.get(obj),
+                        (ImmutableMap<String, String>) FORGE_VARIANT_CUSTOMDATA.get(obj)
+                        );
+            } catch (Exception ignored) {
+
+            }
+        }
+        return new Variant(variant.getModelLocation(), variant.getRotation(), variant.isUvLock() || uvlock, variant.getWeight());
     }
 
     public static IBakedModel bake(ModelLoader modelLoader, IModel model, ModelRotation rotation, boolean uvlock) {
@@ -154,7 +201,7 @@ public class ClientConstants {
             }
         } else if (WEIGHTED_RANDOM_MODEL != null && WEIGHTED_RANDOM_MODEL_VARIANTS != null && WEIGHTED_RANDOM_MODEL_CONSTRUCTOR != null && WEIGHTED_RANDOM_MODEL.isAssignableFrom(model.getClass())) {
             try {
-                IModel newModel = newWeightedRandomModel(new VariantList(getVariantListFromWeightedRandomModel(model).stream().map(v -> new Variant(v.getModelLocation(), v.getRotation(), v.isUvLock() || uvlock, v.getWeight())).collect(Collectors.toList())));
+                IModel newModel = newWeightedRandomModel(new VariantList(getVariantListFromWeightedRandomModel(model).stream().map(v -> convertVariant(v, uvlock)).collect(Collectors.toList())));
                 return newModel.bake(rotation, DefaultVertexFormats.ITEM, textureGetter);
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException ignored) {
 

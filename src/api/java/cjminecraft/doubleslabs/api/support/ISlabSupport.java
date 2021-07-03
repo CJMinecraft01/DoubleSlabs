@@ -22,7 +22,8 @@ public interface ISlabSupport {
     }
 
     default IBlockState getStateFromStack(ItemStack stack, World world, BlockPos pos, EntityPlayer player, EnumHand hand, RayTraceResult hit) {
-        return stack.getItem() instanceof ItemBlock ? ((ItemBlock) stack.getItem()).getBlock().getStateForPlacement(world, pos, hit.sideHit, (float) hit.hitVec.x, (float) hit.hitVec.y, (float) hit.hitVec.z, stack.getMetadata(), player, hand) : Blocks.AIR.getDefaultState();
+        IBlockState state = stack.getItem() instanceof ItemBlock ? ((ItemBlock) stack.getItem()).getBlock().getStateForPlacement(world, pos, hit.sideHit, (float) hit.hitVec.x, (float) hit.hitVec.y, (float) hit.hitVec.z, stack.getMetadata(), player, hand) : Blocks.AIR.getDefaultState();
+        return state != null ? state : Blocks.AIR.getDefaultState();
     }
 
     default boolean useDoubleSlabModel(IBlockState state) {
