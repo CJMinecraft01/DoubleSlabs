@@ -97,6 +97,15 @@ public class SlabSupport {
         return false;
     }
 
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(Block block) {
+        if (block instanceof IHorizontalSlabSupport)
+            return (IHorizontalSlabSupport) block;
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(block))
+                return support;
+        return null;
+    }
+
     @Nullable
     public static ISlabSupport getSlabSupport(IBlockAccess world, BlockPos pos, IBlockState state) {
         IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(world, pos, state);

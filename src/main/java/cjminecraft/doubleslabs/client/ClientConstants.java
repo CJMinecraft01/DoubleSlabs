@@ -1,11 +1,14 @@
 package cjminecraft.doubleslabs.client;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
+import cjminecraft.doubleslabs.api.support.libraryex.LibraryExSlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.Vector3f;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
@@ -217,19 +220,24 @@ public class ClientConstants {
         BlockStateMapper mapper = modelLoader.blockModelShapes.getBlockStateMapper();
 
         ForgeRegistries.BLOCKS.forEach(block -> {
-            if (SlabSupport.isHorizontalSlab(block)) {
+            IHorizontalSlabSupport slabSupport = SlabSupport.getHorizontalSlabSupport(block);
+            if (slabSupport != null) {
                 Map<IBlockState, ModelResourceLocation> variants = mapper.getVariants(block);
                 block.getBlockState().getValidStates().forEach(state -> {
                     boolean uvlock = DSConfig.CLIENT.uvlock(state);
                     ModelResourceLocation resourceLocation = variants.get(state);
                     if (resourceLocation != null) {
+                        // Quark and netherex fix
+                        boolean fix = resourceLocation.getNamespace().equals("quark") && state.getValue(BlockSlab.HALF).equals(BlockSlab.EnumBlockHalf.TOP);
+                        if (slabSupport instanceof LibraryExSlabSupport)
+                            fix = slabSupport.getHalf(null, null, state) == BlockSlab.EnumBlockHalf.TOP;
                         try {
                             IModel model = ModelLoaderRegistry.getModel(resourceLocation).uvlock(uvlock);
                             Map<EnumFacing, IBakedModel> map = Maps.newEnumMap(EnumFacing.class);
-                            map.put(EnumFacing.NORTH, bake(modelLoader, model, ModelRotation.X90_Y180, uvlock));
-                            map.put(EnumFacing.EAST, bake(modelLoader, model, ModelRotation.X90_Y270, uvlock));
-                            map.put(EnumFacing.SOUTH, bake(modelLoader, model, ModelRotation.X90_Y0, uvlock));
-                            map.put(EnumFacing.WEST, bake(modelLoader, model, ModelRotation.X90_Y90, uvlock));
+                            map.put(EnumFacing.NORTH, bake(modelLoader, model, fix ? ModelRotation.X90_Y0 : ModelRotation.X90_Y180, uvlock));
+                            map.put(EnumFacing.EAST, bake(modelLoader, model, fix ? ModelRotation.X90_Y90 : ModelRotation.X90_Y270, uvlock));
+                            map.put(EnumFacing.SOUTH, bake(modelLoader, model, fix ? ModelRotation.X90_Y180 : ModelRotation.X90_Y0, uvlock));
+                            map.put(EnumFacing.WEST, bake(modelLoader, model, fix ? ModelRotation.X90_Y270 : ModelRotation.X90_Y90, uvlock));
                             VERTICAL_SLAB_MODELS.put(state, map);
                         } catch (Exception e) {
                             DoubleSlabs.LOGGER.warn("Failed to generate vertical slab model for: {}", resourceLocation.toString());
@@ -237,29 +245,6 @@ public class ClientConstants {
                         }
                     }
                 });
-//                for (final ResourceLocation resourcelocation : mapper.getBlockstateLocations(block)) {
-//                    DoubleSlabs.LOGGER.info(resourcelocation.toString());
-//                    Map<IBlockState, ModelResourceLocation> variants = mapper.getVariants(block);
-//
-//                    variants.forEach((state, modelResourceLocation) -> {
-//                        DoubleSlabs.LOGGER.info(modelResourceLocation.toString());
-//                        if (resourcelocation.equals(modelResourceLocation)) {
-//                            try {
-//                                VariantList list = modelLoader.variants.get(modelResourceLocation);
-//                                DoubleSlabs.LOGGER.info(list);
-//                                Map<EnumFacing, IBakedModel> map = Maps.newEnumMap(EnumFacing.class);
-//                                map.put(EnumFacing.NORTH, bake(modelLoader, list, uvlock, ModelRotation.X90_Y180));
-//                                map.put(EnumFacing.EAST, bake(modelLoader, list, uvlock, ModelRotation.X90_Y270));
-//                                map.put(EnumFacing.SOUTH, bake(modelLoader, list, uvlock, ModelRotation.X90_Y0));
-//                                map.put(EnumFacing.WEST, bake(modelLoader, list, uvlock, ModelRotation.X90_Y90));
-//                                VERTICAL_SLAB_MODELS.put(state, map);
-//                            } catch (Exception e) {
-//                                DoubleSlabs.LOGGER.warn("Failed to generate vertical slab model for: {}", modelResourceLocation.toString());
-//                                DoubleSlabs.LOGGER.catching(e);
-//                            }
-//                        }
-//                    });
-//                }
             }
         });
 
