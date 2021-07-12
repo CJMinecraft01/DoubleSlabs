@@ -356,14 +356,17 @@ public class DoubleSlabCulling {
                                         || shouldSideBeRendered(block.getBlockState(),
                                         matchState(block.getBlockState(), otherSlab.getNegativeBlockInfo().getBlockState(), world, pos, otherPos), world, pos, otherPos, direction));
                     } else {
-                        IBlockInfo otherBlock = direction.equals(otherFacing) ? otherSlab.getNegativeBlockInfo() : otherSlab.getPositiveBlockInfo();
-
                         IBlockInfo block = positive ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo();
 
-                        return otherBlock.getBlockState() == null || block.getBlockState() == null ||
-                                shouldSideBeRendered(block.getBlockState(),
-                                        matchState(block.getBlockState(), otherBlock.getBlockState(), world, pos, otherPos),
-                                        world, pos, otherPos, direction);
+                        return otherSlab.getPositiveBlockInfo().getBlockState() == null
+                                || otherSlab.getNegativeBlockInfo().getBlockState() == null
+                                || block.getBlockState() == null
+                                || shouldSideBeRendered(block.getBlockState(),
+                                matchState(block.getBlockState(), otherSlab.getPositiveBlockInfo().getBlockState(), world, pos, otherPos),
+                                world, pos, otherPos, direction)
+                                || shouldSideBeRendered(block.getBlockState(),
+                                matchState(block.getBlockState(), otherSlab.getNegativeBlockInfo().getBlockState(), world, pos, otherPos),
+                                world, pos, otherPos, direction);
                     }
                 }
             } else if (adjacentState.getBlock().equals(DSBlocks.DOUBLE_SLAB)) {
