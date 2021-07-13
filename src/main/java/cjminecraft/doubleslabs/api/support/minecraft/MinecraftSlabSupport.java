@@ -58,7 +58,9 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     }
 
     protected static <T extends Comparable<T>> IBlockState makeState(IBlockState state, IProperty<T> property, Comparable<?> value) {
-        return state.withProperty(property, (T) value);
+        if (property != null)
+            return state.withProperty(property, (T) value);
+        return state;
     }
 
     @Override
