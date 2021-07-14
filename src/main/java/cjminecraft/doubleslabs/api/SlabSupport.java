@@ -5,7 +5,9 @@ import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.AnnotationUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -54,7 +56,7 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static IHorizontalSlabSupport isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) state.getBlock()).isHorizontalSlab(world, pos, state))
             return (IHorizontalSlabSupport) state.getBlock();
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
@@ -64,7 +66,7 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static IHorizontalSlabSupport isHorizontalSlab(ItemStack stack, PlayerEntity player, Hand hand) {
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
         if (stack.getItem() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) stack.getItem()).isHorizontalSlab(stack, player, hand))
             return (IHorizontalSlabSupport) stack.getItem();
         if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) ((BlockItem) stack.getItem()).getBlock()).isHorizontalSlab(stack, player, hand))
@@ -84,15 +86,26 @@ public class SlabSupport {
         return false;
     }
 
+    public static boolean isHorizontalSlab(Block block) {
+        if (DSConfig.SERVER.isBlacklistedHorizontalSlab(block))
+            return false;
+        if (block instanceof IHorizontalSlabSupport)
+            return true;
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(block))
+                return true;
+        return false;
+    }
+
     @Nullable
     public static ISlabSupport getSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
-        IHorizontalSlabSupport horizontalSlabSupport = isHorizontalSlab(world, pos, state);
+        IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(world, pos, state);
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(world, pos, state);
     }
 
     @Nullable
     public static ISlabSupport getSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
-        IHorizontalSlabSupport horizontalSlabSupport = isHorizontalSlab(stack, player, hand);
+        IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(stack, player, hand);
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(stack, player, hand);
     }
 

@@ -53,6 +53,8 @@ public class DoubleSlabs {
 
         mod.addListener(this::commonSetup);
 
+        mod.addListener(PROXY::loadComplete);
+
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
         DSTiles.TILES.register(mod);

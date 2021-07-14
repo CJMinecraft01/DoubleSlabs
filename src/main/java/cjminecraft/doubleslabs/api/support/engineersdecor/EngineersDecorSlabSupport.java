@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.api.support.engineersdecor;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -31,6 +32,11 @@ public class EngineersDecorSlabSupport implements IHorizontalSlabSupport {
         }
         this.slab = slab;
         this.parts = parts;
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return (slab != null) && (block.getClass().equals(slab));
     }
 
     @Override

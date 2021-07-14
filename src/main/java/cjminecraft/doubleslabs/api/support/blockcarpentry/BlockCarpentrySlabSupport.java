@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api.support.blockcarpentry;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -31,6 +32,11 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
             slab = null;
         }
         this.slab = slab;
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Block block) {
+        return slab != null && slab.isAssignableFrom(block.getClass());
     }
 
     @Override

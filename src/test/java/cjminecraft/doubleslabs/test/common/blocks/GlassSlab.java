@@ -5,6 +5,8 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
@@ -33,7 +35,16 @@ public class GlassSlab extends SlabBlock {
 
     @OnlyIn(Dist.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return adjacentBlockState.getBlock() == this || super.isSideInvisible(state, adjacentBlockState, side);
+        if (adjacentBlockState.getBlock() == this) {
+            SlabType type = state.get(BlockStateProperties.SLAB_TYPE);
+            SlabType otherType = adjacentBlockState.get(BlockStateProperties.SLAB_TYPE);
+            if (side == Direction.UP)
+                return (type == SlabType.DOUBLE || type == SlabType.TOP) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.BOTTOM);
+            else if (side == Direction.DOWN)
+                return (type == SlabType.DOUBLE || type == SlabType.BOTTOM) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.TOP);
+            return adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(state.get(BlockStateProperties.SLAB_TYPE)) || adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(SlabType.DOUBLE);
+        }
+        return super.isSideInvisible(state, adjacentBlockState, side);
     }
 
     @OnlyIn(Dist.CLIENT)

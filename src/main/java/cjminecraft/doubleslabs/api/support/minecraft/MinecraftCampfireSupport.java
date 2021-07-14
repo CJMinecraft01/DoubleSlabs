@@ -4,20 +4,18 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.SlabType;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -26,8 +24,8 @@ import java.util.Random;
 @SlabSupportProvider
 public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     @Override
-    public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
-        return state.getBlock() instanceof CampfireBlock;
+    public boolean isHorizontalSlab(Block block) {
+        return block instanceof CampfireBlock;
     }
 
     @Override

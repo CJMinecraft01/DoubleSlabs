@@ -25,7 +25,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     private ISlabSupport support;
     private BlockState state;
     private TileEntity tile;
-    private IWorldWrapper<?> world;
+    private World world;
 
     private final SlabTileEntity slab;
     private final boolean positive;
@@ -50,7 +50,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Nonnull
     @Override
     public World getWorld() {
-        return (World) this.world;
+        return this.world;
     }
 
     @Override
@@ -78,11 +78,16 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
         if (this.state == null)
             setTileEntity(null);
         this.state = state;
-        if (state != null && state.hasTileEntity())
+        if (state != null && state.hasTileEntity()) {
+            // If the world is not wrapped, then we should wrap the world
+            if (!(this.world instanceof IWorldWrapper<?>))
+                wrapWorld(this.world);
             if (this.tile == null)
                 setTileEntity(state.createTileEntity(this.getWorld()));
-            else
+            else {
                 this.tile.updateContainingBlockInfo();
+            }
+        }
         this.slab.markDirtyClient();
         this.support = state == null ? null : SlabSupport.getSlabSupport(this.getWorld(), this.getPos(), this.state);
     }
@@ -90,34 +95,52 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
     @Override
     public void setTileEntity(@Nullable TileEntity tile) {
         if (tile != null) {
+            tile.setWorld(this.slab.getWorld());
+            tile.setPos(this.slab.getPos());
             if (this.tile != null) {
                 this.tile.setWorld(this.slab.getWorld());
                 this.tile.setPos(this.slab.getPos());
                 this.tile.remove();
             }
-            tile.setWorld(this.slab.getWorld());
-            tile.setPos(this.slab.getPos());
             tile.onLoad();
+            // If the world is not wrapped, then we should wrap the world
+            if (!(this.world instanceof IWorldWrapper<?>))
+                wrapWorld(this.world);
             tile.setWorld(getWorld());
         }
         this.tile = tile;
     }
 
+    private void wrapWorld(World world) {
+        IWorldWrapper<?> w = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
+        w.setPositive(this.positive);
+        w.setBlockPos(this.slab.getPos());
+        w.setStateContainer(this.slab);
+        this.world = (World) w;
+    }
+
     public void setWorld(World world) {
-        if (this.world != null)
-            this.world.setWorld(world);
-        else
+        if (this.world != null && this.world instanceof IWorldWrapper<?>)
+            ((IWorldWrapper<?>) this.world).setWorld(world);
+        else if (this.tile != null)
             this.world = world instanceof ServerWorld ? new ServerWorldWrapper((ServerWorld) world) : new WorldWrapper(world);
-        this.world.setPositive(this.positive);
-        this.world.setBlockPos(this.slab.getPos());
-        this.world.setStateContainer(this.slab);
+        else
+            this.world = world;
+
+        if (this.world instanceof IWorldWrapper<?>) {
+            IWorldWrapper<?> w = (IWorldWrapper<?>) this.world;
+            w.setPositive(this.positive);
+            w.setBlockPos(this.slab.getPos());
+            w.setStateContainer(this.slab);
+        }
 
         if (this.tile != null)
             this.tile.setWorld(this.getWorld());
     }
 
     public void setPos(BlockPos pos) {
-        this.world.setBlockPos(pos);
+        if (this.world instanceof IWorldWrapper<?>)
+            ((IWorldWrapper<?>) this.world).setBlockPos(pos);
         if (this.tile != null)
             this.tile.setPos(pos);
     }
@@ -138,6 +161,9 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundNBT>, ICa
             this.state = NBTUtil.readBlockState(nbt.getCompound("state"));
         if (nbt.contains("tile"))
             this.tile = TileEntity.create(nbt.getCompound("tile"));
+        // If the world is not wrapped, then we should wrap the world
+        if (this.tile != null && this.world != null && !(this.world instanceof IWorldWrapper<?>))
+            this.wrapWorld(this.world);
     }
 
     public void onLoad() {
