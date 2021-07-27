@@ -9,7 +9,6 @@ import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.AnnotationUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -18,6 +17,8 @@ import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -116,26 +117,28 @@ public class SlabSupport {
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(stack, player, hand);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static BlockState getSlabForType(BlockState state, IBlockReader world, BlockPos pos, SlabType type) {
         IHorizontalSlabSupport horizontalSupport = getHorizontalSlabSupport(world, pos, state);
         if (horizontalSupport != null) {
-            return horizontalSupport.getStateForHalf(Minecraft.getInstance().world, pos, state, type);
+            return horizontalSupport.getStateForHalf(net.minecraft.client.Minecraft.getInstance().world, pos, state, type);
         }
         return state;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static BlockState matchState(BlockState state1, BlockState state2, IBlockReader world, BlockPos pos1, BlockPos pos2) {
         IHorizontalSlabSupport horizontalSupport = getHorizontalSlabSupport(world, pos1, state1);
         if (horizontalSupport != null) {
             IHorizontalSlabSupport otherSupport = getHorizontalSlabSupport(world, pos2, state2);
             if (otherSupport != null)
-                return otherSupport.getStateForHalf(Minecraft.getInstance().world, pos2, state2, horizontalSupport.getHalf(Minecraft.getInstance().world, pos1, state1));
+                return otherSupport.getStateForHalf(net.minecraft.client.Minecraft.getInstance().world, pos2, state2, horizontalSupport.getHalf(net.minecraft.client.Minecraft.getInstance().world, pos1, state1));
         } else {
             IVerticalSlabSupport verticalSupport = getVerticalSlabSupport(world, pos1, state1);
             if (verticalSupport != null) {
                 IVerticalSlabSupport otherSupport = getVerticalSlabSupport(world, pos2, state2);
                 if (otherSupport != null)
-                    return otherSupport.getStateForDirection(Minecraft.getInstance().world, pos2, state2, verticalSupport.getDirection(Minecraft.getInstance().world, pos1, state1));
+                    return otherSupport.getStateForDirection(net.minecraft.client.Minecraft.getInstance().world, pos2, state2, verticalSupport.getDirection(net.minecraft.client.Minecraft.getInstance().world, pos1, state1));
             }
         }
         return state2;
