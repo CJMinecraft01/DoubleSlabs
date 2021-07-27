@@ -22,32 +22,10 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 
+import static cjminecraft.doubleslabs.api.SlabSupport.getSlabForType;
+import static cjminecraft.doubleslabs.api.SlabSupport.matchState;
+
 public class DoubleSlabCulling {
-
-    private static BlockState getSlabForType(BlockState state, IBlockReader world, BlockPos pos, SlabType type) {
-        IHorizontalSlabSupport horizontalSupport = SlabSupport.getHorizontalSlabSupport(world, pos, state);
-        if (horizontalSupport != null) {
-            return horizontalSupport.getStateForHalf(Minecraft.getInstance().world, pos, state, type);
-        }
-        return state;
-    }
-
-    private static BlockState matchState(BlockState state1, BlockState state2, IBlockReader world, BlockPos pos1, BlockPos pos2) {
-        IHorizontalSlabSupport horizontalSupport = SlabSupport.getHorizontalSlabSupport(world, pos1, state1);
-        if (horizontalSupport != null) {
-            IHorizontalSlabSupport otherSupport = SlabSupport.getHorizontalSlabSupport(world, pos2, state2);
-            if (otherSupport != null)
-                return otherSupport.getStateForHalf(Minecraft.getInstance().world, pos2, state2, horizontalSupport.getHalf(Minecraft.getInstance().world, pos1, state1));
-        } else {
-            IVerticalSlabSupport verticalSupport = SlabSupport.getVerticalSlabSupport(world, pos1, state1);
-            if (verticalSupport != null) {
-                IVerticalSlabSupport otherSupport = SlabSupport.getVerticalSlabSupport(world, pos2, state2);
-                if (otherSupport != null)
-                    return otherSupport.getStateForDirection(Minecraft.getInstance().world, pos2, state2, verticalSupport.getDirection(Minecraft.getInstance().world, pos1, state1));
-            }
-        }
-        return state2;
-    }
 
     public static boolean shouldDoubleSlabSideBeRendered(BlockState state, IBlockDisplayReader world, BlockPos pos, Direction direction) {
         BlockPos otherPos = pos.offset(direction);
@@ -349,8 +327,8 @@ public class DoubleSlabCulling {
                                         matchState(currentBlock.getBlockState(), otherBlock.getBlockState(), world, pos, otherPos), world, pos, otherPos, direction);
                     }
                 } else {
+                    IBlockInfo block = positive ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo();
                     if (direction.getAxis().equals(facing.getAxis())) {
-                        IBlockInfo block = positive ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo();
 
                         return otherSlab.getPositiveBlockInfo().getBlockState() == null || otherSlab.getNegativeBlockInfo().getBlockState() == null ||
                                 block.getBlockState() == null ||
@@ -359,8 +337,6 @@ public class DoubleSlabCulling {
                                         || shouldSideBeRendered(block.getBlockState(),
                                         matchState(block.getBlockState(), otherSlab.getNegativeBlockInfo().getBlockState(), world, pos, otherPos), world, pos, otherPos, direction));
                     } else {
-                        IBlockInfo block = positive ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo();
-
                         return otherSlab.getPositiveBlockInfo().getBlockState() == null
                                 || otherSlab.getNegativeBlockInfo().getBlockState() == null
                                 || block.getBlockState() == null
@@ -423,97 +399,6 @@ public class DoubleSlabCulling {
 
         return Block.shouldSideBeRendered(state, world, pos, direction);
     }
-
-//    public static boolean shouldSideBeRendered(BlockState state, IBlockDisplayReader world, BlockPos pos, Direction direction, boolean positive) {
-//        BlockPos otherPos = pos.offset(direction);
-//        BlockState adjacentState = world.getBlockState(otherPos);
-//
-//        TileEntity tile = world.getTileEntity(pos);
-//
-//        if (!(tile instanceof SlabTileEntity))
-//            return Block.shouldSideBeRendered(state, world, pos, direction);
-//
-//        IBlockInfo block = positive ? ((SlabTileEntity) tile).getPositiveBlockInfo() : ((SlabTileEntity) tile).getNegativeBlockInfo();
-//
-//        if (block.getBlockState() == null)
-//            return false;
-//
-//        if (state.getBlock().equals(DSBlocks.DOUBLE_SLAB.get())) {
-//            // Both blocks are double slabs
-//            if (adjacentState.getBlock().equals(DSBlocks.DOUBLE_SLAB.get())) {
-//                TileEntity otherTile = world.getTileEntity(otherPos);
-//                if (!(otherTile instanceof SlabTileEntity))
-//                    return Block.shouldSideBeRendered(state, world, pos, direction);
-//
-//                IBlockInfo otherBlock = positive ? ((SlabTileEntity) otherTile).getPositiveBlockInfo() : ((SlabTileEntity) otherTile).getNegativeBlockInfo();
-//                return shouldSideBeRendered(block.getBlockState(), otherBlock.getBlockState(), world, pos, otherPos, direction);
-//            }
-//        } else {
-//            Direction facing = state.get(VerticalSlabBlock.FACING);
-//
-//            // Both are vertical slabs
-//            if (adjacentState.getBlock().equals(DSBlocks.VERTICAL_SLAB.get())) {
-//                TileEntity otherTile = world.getTileEntity(otherPos);
-//                if (!(otherTile instanceof SlabTileEntity))
-//                    return Block.shouldSideBeRendered(state, world, pos, direction);
-//
-//                Direction otherFacing = adjacentState.get(VerticalSlabBlock.FACING);
-//
-//                BlockState positiveState = ((SlabTileEntity) otherTile).getPositiveBlockInfo().getBlockState();
-//                BlockState negativeState = ((SlabTileEntity) otherTile).getNegativeBlockInfo().getBlockState();
-//
-//                if (facing.equals(otherFacing)) {
-//                    if (direction.getAxis().equals(facing.getAxis())) {
-//                        BlockState otherState = direction.equals(facing) ? (positive ? negativeState : positiveState) : (positive ? positiveState : negativeState);
-//
-//                        if (otherState == null)
-//                            return true;
-//
-//                        IHorizontalSlabSupport horizontalSupport = SlabSupport.getHorizontalSlabSupport(world, pos, block.getBlockState());
-//                        if (horizontalSupport != null) {
-//                            IHorizontalSlabSupport otherSupport = SlabSupport.getHorizontalSlabSupport(world, otherPos, otherState);
-//                            if (otherSupport != null)
-//                                otherState = otherSupport.getStateForHalf(Minecraft.getInstance().world, otherPos, otherState, horizontalSupport.getHalf(Minecraft.getInstance().world, pos, block.getBlockState()));
-//                        } else {
-//                            IVerticalSlabSupport verticalSupport = SlabSupport.getVerticalSlabSupport(world, pos, block.getBlockState());
-//                            if (verticalSupport != null) {
-//                                IVerticalSlabSupport otherSupport = SlabSupport.getVerticalSlabSupport(world, otherPos, otherState);
-//                                if (otherSupport != null)
-//                                    otherState = otherSupport.getStateForDirection(Minecraft.getInstance().world, otherPos, otherState, verticalSupport.getDirection(Minecraft.getInstance().world, pos, block.getBlockState()));
-//                            }
-//                        }
-////                        if (doubleSlab && !positive)
-////                            return shouldSideBeRendered(block.getBlockState(), otherState, world, pos, otherPos, direction) && shouldSideBeRendered(state, world, pos, direction, true, true);
-//                        return shouldSideBeRendered(block.getBlockState(), otherState, world, pos, otherPos, direction);
-//                    }
-//                    BlockState otherState = positive ? negativeState : positiveState;
-//                    return otherState == null || shouldSideBeRendered(block.getBlockState(), otherState, world, pos, otherPos, facing);
-//                } else if (facing.equals(otherFacing.getOpposite())) {
-//                    BlockState otherState = direction.getAxis().equals(facing.getAxis()) ? (positive ? negativeState : positiveState) : (positive ? positiveState : negativeState);
-//                    return otherState == null || shouldSideBeRendered(block.getBlockState(), otherState, world, pos, otherPos, facing);
-//                }
-//
-//                if (direction.getAxis().equals(facing.getAxis())) {
-//                    return (positiveState == null || shouldSideBeRendered(block.getBlockState(), positiveState, world, pos, otherPos, direction)
-//                            || (negativeState == null || shouldSideBeRendered(block.getBlockState(), negativeState, world, pos, otherPos, direction)));
-//                } else {
-//                    return direction.getAxis().equals(otherFacing.getAxis()) ? (positiveState == null || shouldSideBeRendered(block.getBlockState(), positiveState, world, pos, otherPos, direction)) : (negativeState == null || shouldSideBeRendered(block.getBlockState(), negativeState, world, pos, otherPos, direction));
-//                }
-//
-////                if (!otherFacing.getAxis().equals(facing.getAxis())) {
-////                    return (positiveState == null || shouldSideBeRendered(block.getBlockState(), positiveState, world, pos, otherPos, direction)
-////                            || (negativeState == null || shouldSideBeRendered(block.getBlockState(), negativeState, world, pos, otherPos, direction)));
-////                }
-////
-////                IBlockInfo otherBlock = (otherFacing.equals(facing) != positive) ? ((SlabTileEntity) otherTile).getPositiveBlockInfo() : ((SlabTileEntity) otherTile).getNegativeBlockInfo();
-////                if (otherBlock.getBlockState() != null)
-////                    return shouldSideBeRendered(block.getBlockState(), otherBlock.getBlockState(), world, pos, otherPos, direction);
-//            }
-//
-//            return Block.shouldSideBeRendered(state, world, pos, direction);
-//        }
-//        return Block.shouldSideBeRendered(block.getBlockState(), world, pos, direction);
-//    }
 
     public static boolean shouldSideBeRendered(BlockState state, BlockState otherState, IBlockReader world, BlockPos pos, BlockPos otherPos, Direction direction) {
         assert state != null;

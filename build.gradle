@@ -115,6 +115,12 @@ minecraft {
     }
 }
 
+repositories {
+//    maven { // CTM
+//        url "http://maven.tterrag.com/"
+//    }
+}
+
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
@@ -122,6 +128,8 @@ dependencies {
     minecraft 'net.minecraftforge:forge:' + modMinecraftVersion + '-' + modForgeVersion
 
     implementation sourceSets.api.output
+
+//    compileOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctmVersion}:api")
 
     annotationProcessor 'org.spongepowered:mixin:0.8:processor'
 

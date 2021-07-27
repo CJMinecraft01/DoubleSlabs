@@ -101,6 +101,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         return getTile(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null && predicate.test(tile.getPositiveBlockInfo())) || (tile.getNegativeBlockInfo().getBlockState() != null && predicate.test(tile.getNegativeBlockInfo()))).orElse(false);
     }
 
+    public static boolean formsDoubleSlab(BlockState state1, BlockState state2) {
+        return state1.getBlock() == state2.getBlock() && state2.getBlockState().isIn(state2.getBlock());
+    }
+
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
@@ -134,6 +138,15 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     @Override
     public boolean canContainFluid(IBlockReader world, BlockPos pos, BlockState state, Fluid fluid) {
         return IWaterLoggable.super.canContainFluid(world, pos, state, fluid) && either(world, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState()));
+    }
+
+    @Override
+    public Fluid pickupFluid(IWorld world, BlockPos pos, BlockState state) {
+        runIfAvailable(world, pos, i -> {
+            if (i.getBlockState().getBlock() instanceof IWaterLoggable)
+                ((IWaterLoggable) i.getBlockState().getBlock()).pickupFluid(i.getWorld(), pos, i.getBlockState());
+        });
+        return IWaterLoggable.super.pickupFluid(world, pos, state);
     }
 
     @Override

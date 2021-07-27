@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
-import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
@@ -50,6 +49,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+
 public class DoubleSlabBlock extends DynamicSlabBlock {
 
     public static Optional<IBlockInfo> getHalfState(IBlockReader world, BlockPos pos, double y) {
@@ -57,6 +57,31 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
                 (y > 0.5 || tile.getNegativeBlockInfo().getBlockState() == null) && tile.getPositiveBlockInfo().getBlockState() != null ?
                         Optional.of(tile.getPositiveBlockInfo()) : Optional.of(tile.getNegativeBlockInfo()));
     }
+
+//    // not sure
+//    @Nonnull
+//    public BlockState getFacade(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nullable Direction side) {
+//        return getTile(world, pos).map(tile -> {
+//            if (tile.getNegativeBlockInfo().getBlockState() != null && tile.getPositiveBlockInfo().getBlockState() != null) {
+//                if (formsDoubleSlab(tile.getNegativeBlockInfo().getBlockState(), tile.getPositiveBlockInfo().getBlockState())) {
+//                    DoubleSlabs.LOGGER.info("formed double slab!");
+//                    return SlabSupport.getSlabForType(tile.getNegativeBlockInfo().getBlockState(), world, pos, SlabType.DOUBLE);
+//                }
+//                DoubleSlabs.LOGGER.info("didn't form double slab");
+//                if (side == Direction.UP)
+//                    return tile.getPositiveBlockInfo().getBlockState();
+//                // no way of having the halves separate
+//                return tile.getNegativeBlockInfo().getBlockState();
+//            }
+//            return world.getBlockState(pos);
+//        }).orElseGet(() -> world.getBlockState(pos));
+//    }
+//
+//    @Nonnull
+//    @Override
+//    public BlockState getFacade(@Nonnull IBlockReader world, @Nonnull BlockPos pos, @Nullable Direction side, @Nonnull BlockPos connection) {
+//        return getFacade(world, pos, side);
+//    }
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, IBlockReader world, BlockPos pos) {
