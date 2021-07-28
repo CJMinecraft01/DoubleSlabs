@@ -16,9 +16,9 @@ public interface IVerticalSlabSupport extends ISlabSupport {
 
     boolean isVerticalSlab(ItemStack stack, PlayerEntity player, Hand hand);
 
-    Direction getDirection(World world, BlockPos pos, BlockState state);
+    Direction getDirection(IBlockReader world, BlockPos pos, BlockState state);
 
-    BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction);
+    BlockState getStateForDirection(IBlockReader world, BlockPos pos, BlockState state, Direction direction);
 
     default boolean rotateModel(IBlockDisplayReader world, BlockPos pos, BlockState state) {
         return false;

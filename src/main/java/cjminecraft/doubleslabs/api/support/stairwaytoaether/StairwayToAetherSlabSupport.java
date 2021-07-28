@@ -75,12 +75,12 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction) {
+    public BlockState getStateForDirection(IBlockReader world, BlockPos pos, BlockState state, Direction direction) {
         return slab == null ? state : state.with(typeProperty, slabTypes[direction.getIndex()]);
     }
 
     @Override
-    public Direction getDirection(World world, BlockPos pos, BlockState state) {
+    public Direction getDirection(IBlockReader world, BlockPos pos, BlockState state) {
         if (slab == null)
             // shouldn't ever be called if this is the case
             return null;
@@ -95,7 +95,7 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public SlabType getHalf(World world, BlockPos pos, BlockState state) {
+    public SlabType getHalf(IBlockReader world, BlockPos pos, BlockState state) {
         if (slab == null)
             // shouldn't ever be called if this is the case
             return null;
@@ -108,7 +108,7 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
         return slab == null ? state : state.with(typeProperty, slabTypes[half == SlabType.TOP ? 0 : 1]);
     }
 }

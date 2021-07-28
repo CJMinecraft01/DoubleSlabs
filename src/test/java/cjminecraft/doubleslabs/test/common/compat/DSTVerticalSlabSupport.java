@@ -27,12 +27,12 @@ public class DSTVerticalSlabSupport implements IVerticalSlabSupport {
     }
 
     @Override
-    public Direction getDirection(World world, BlockPos pos, BlockState state) {
+    public Direction getDirection(IBlockReader world, BlockPos pos, BlockState state) {
         return state.get(VerticalSlab.TYPE).direction;
     }
 
     @Override
-    public BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction) {
+    public BlockState getStateForDirection(IBlockReader world, BlockPos pos, BlockState state, Direction direction) {
         VerticalSlab.VerticalSlabType type = VerticalSlab.VerticalSlabType.fromDirection(direction);
         return state.with(VerticalSlab.TYPE, type != null ? type : VerticalSlab.VerticalSlabType.NORTH);
     }

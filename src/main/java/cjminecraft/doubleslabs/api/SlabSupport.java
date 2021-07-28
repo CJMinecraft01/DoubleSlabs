@@ -132,13 +132,13 @@ public class SlabSupport {
         if (horizontalSupport != null) {
             IHorizontalSlabSupport otherSupport = getHorizontalSlabSupport(world, pos2, state2);
             if (otherSupport != null)
-                return otherSupport.getStateForHalf(net.minecraft.client.Minecraft.getInstance().world, pos2, state2, horizontalSupport.getHalf(net.minecraft.client.Minecraft.getInstance().world, pos1, state1));
+                return otherSupport.getStateForHalf(world, pos2, state2, horizontalSupport.getHalf(world, pos1, state1));
         } else {
             IVerticalSlabSupport verticalSupport = getVerticalSlabSupport(world, pos1, state1);
             if (verticalSupport != null) {
                 IVerticalSlabSupport otherSupport = getVerticalSlabSupport(world, pos2, state2);
                 if (otherSupport != null)
-                    return otherSupport.getStateForDirection(net.minecraft.client.Minecraft.getInstance().world, pos2, state2, verticalSupport.getDirection(net.minecraft.client.Minecraft.getInstance().world, pos1, state1));
+                    return otherSupport.getStateForDirection(world, pos2, state2, verticalSupport.getDirection(world, pos1, state1));
             }
         }
         return state2;

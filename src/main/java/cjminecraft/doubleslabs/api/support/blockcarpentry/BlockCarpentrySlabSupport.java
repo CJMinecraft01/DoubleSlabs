@@ -50,12 +50,12 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
     }
 
     @Override
-    public SlabType getHalf(World world, BlockPos pos, BlockState state) {
+    public SlabType getHalf(IBlockReader world, BlockPos pos, BlockState state) {
         return state.get(FACING) == Direction.DOWN ? SlabType.TOP : SlabType.BOTTOM;
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
         return state.with(FACING, half == SlabType.BOTTOM ? Direction.UP : Direction.DOWN);
     }
 
@@ -70,12 +70,12 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
     }
 
     @Override
-    public Direction getDirection(World world, BlockPos pos, BlockState state) {
+    public Direction getDirection(IBlockReader world, BlockPos pos, BlockState state) {
         return state.get(FACING).getOpposite();
     }
 
     @Override
-    public BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction) {
+    public BlockState getStateForDirection(IBlockReader world, BlockPos pos, BlockState state, Direction direction) {
         return state.with(FACING, direction.getOpposite());
     }
 
