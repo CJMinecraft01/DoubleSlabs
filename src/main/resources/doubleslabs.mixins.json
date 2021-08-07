@@ -4,10 +4,10 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "doubleslabs.refmap.json",
   "mixins": [
-    "PotionEntityMixin"
+    "ThrownPotionMixin"
   ],
   "client": [
-    "BlockModelRendererMixin"
+    "ModelBlockRendererMixin"
   ],
   "minVersion": "0.8"
 }

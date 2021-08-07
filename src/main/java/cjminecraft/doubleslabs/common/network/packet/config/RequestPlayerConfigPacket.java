@@ -4,14 +4,14 @@ import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class RequestPlayerConfigPacket {
 
-    public static RequestPlayerConfigPacket decode(PacketBuffer buf) {
+    public static RequestPlayerConfigPacket decode(FriendlyByteBuf buf) {
         return new RequestPlayerConfigPacket();
     }
 
@@ -30,7 +30,7 @@ public class RequestPlayerConfigPacket {
         ctx.setPacketHandled(true);
     }
 
-    public void encode(PacketBuffer buf) {
+    public void encode(FriendlyByteBuf buf) {
 
     }
 

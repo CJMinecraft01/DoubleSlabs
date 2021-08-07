@@ -6,4 +6,6 @@ public interface IStateContainer {
 
     IBlockInfo getNegativeBlockInfo();
 
+    void markDirty();
+
 }

@@ -2,26 +2,24 @@ package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.state.properties.SlabType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.SlabType;
 
 @SlabSupportProvider
 public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     private boolean isValid(BlockState state) {
-        return (state.getBlock() instanceof SlabBlock && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || (hasEnumHalfProperty(state) && state.get(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE);
+        return (state.getBlock() instanceof SlabBlock && state.getValue(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE && hasEnumHalfProperty(state)) || (hasEnumHalfProperty(state) && state.getValue(BlockStateProperties.SLAB_TYPE) != SlabType.DOUBLE);
     }
 
     @Override
@@ -30,7 +28,7 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public boolean isHorizontalSlab(IBlockReader world, BlockPos pos, BlockState state) {
+    public boolean isHorizontalSlab(BlockGetter world, BlockPos pos, BlockState state) {
         return isValid(state);
     }
 
@@ -40,17 +38,17 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(Item item) {
-        return item instanceof BlockItem && ((BlockItem) item).getBlock() != null && isValid(((BlockItem) item).getBlock().getDefaultState());
+        return item instanceof BlockItem && ((BlockItem) item).getBlock() != null && isValid(((BlockItem) item).getBlock().defaultBlockState());
     }
 
     @Override
-    public SlabType getHalf(World world, BlockPos pos, BlockState state) {
-        return state.get(BlockStateProperties.SLAB_TYPE);
+    public SlabType getHalf(BlockGetter world, BlockPos pos, BlockState state) {
+        return state.getValue(BlockStateProperties.SLAB_TYPE);
     }
 
     @Override
-    public BlockState getStateForHalf(World world, BlockPos pos, BlockState state, SlabType half) {
-        return state.with(BlockStateProperties.SLAB_TYPE, half);
+    public BlockState getStateForHalf(BlockGetter world, BlockPos pos, BlockState state, SlabType half) {
+        return state.setValue(BlockStateProperties.SLAB_TYPE, half);
     }
 
     @Override

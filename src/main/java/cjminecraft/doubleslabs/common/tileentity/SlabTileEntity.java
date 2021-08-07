@@ -3,107 +3,100 @@ package cjminecraft.doubleslabs.common.tileentity;
 import cjminecraft.doubleslabs.api.BlockInfo;
 import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.IStateContainer;
+import cjminecraft.doubleslabs.api.IWorldWrapper;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import cjminecraft.doubleslabs.common.init.DSTiles;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SlabTileEntity extends TileEntity implements IStateContainer, ITickableTileEntity {
+public class SlabTileEntity extends BlockEntity implements IStateContainer {
 
     protected final BlockInfo negativeBlockInfo = new BlockInfo(this, false);
     protected final BlockInfo positiveBlockInfo = new BlockInfo(this, true);
 
-    public SlabTileEntity() {
-        super(DSTiles.DYNAMIC_SLAB.get());
-    }
-
-    protected SlabTileEntity(TileEntityType<?> type) {
-        super(type);
+    public SlabTileEntity(BlockPos pos, BlockState state) {
+        super(DSTiles.DYNAMIC_SLAB.get(), pos, state);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         this.negativeBlockInfo.deserializeNBT(nbt.getCompound("negativeBlock"));
         this.positiveBlockInfo.deserializeNBT(nbt.getCompound("positiveBlock"));
-        super.read(state, nbt);
+        super.load(nbt);
         markDirtyClient();
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         nbt.put("negativeBlock", this.negativeBlockInfo.serializeNBT());
         nbt.put("positiveBlock", this.positiveBlockInfo.serializeNBT());
-        return super.write(nbt);
+        return super.save(nbt);
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT nbt = super.getUpdateTag();
-        this.write(nbt);
-        return nbt;
+    public CompoundTag getUpdateTag() {
+        return serializeNBT();
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.handleUpdateTag(state, tag);
-        this.read(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
+        this.deserializeNBT(tag);
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        super.onDataPacket(net, pkt);
+        this.deserializeNBT(pkt.getTag());
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT nbt = new CompoundNBT();
-        this.write(nbt);
-        return new SUpdateTileEntityPacket(getPos(), -1, nbt);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.serializeNBT());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        super.onDataPacket(net, pkt);
-        this.read(this.world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+    public CompoundTag getTileData() {
+        return this.serializeNBT();
     }
 
     @Override
-    public CompoundNBT getTileData() {
-        return this.write(new CompoundNBT());
-    }
-
-    protected void markDirtyFast() {
-        if (this.world != null)
-            this.world.markChunkDirty(this.pos, this);
+    public void markDirty() {
+        markDirtyClient();
     }
 
     public void markDirtyClient() {
-        markDirty();
+        setChanged();
         requestModelDataUpdate();
-        if (this.world != null) {
-            BlockState state = this.world.getBlockState(this.pos);
-            this.world.notifyBlockUpdate(this.pos, state, state, Constants.BlockFlags.DEFAULT);
-            this.world.getLightManager().checkBlock(this.pos);
+        if (this.level != null) {
+            BlockState state = this.level.getBlockState(this.worldPosition);
+            this.level.sendBlockUpdated(this.worldPosition, state, state, Constants.BlockFlags.DEFAULT);
+            this.level.getLightEngine().checkBlock(this.worldPosition);
         }
     }
 
     @Override
-    public void setWorldAndPos(World world, BlockPos pos) {
-        super.setWorldAndPos(world, pos);
+    public void setLevel(Level world) {
+        // prevent a circular reference
+        if (world instanceof IWorldWrapper<?>)
+            return;
+        super.setLevel(world);
         this.negativeBlockInfo.setWorld(world);
         this.positiveBlockInfo.setWorld(world);
     }
@@ -131,24 +124,10 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         this.negativeBlockInfo.remove();
         this.positiveBlockInfo.remove();
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-        this.negativeBlockInfo.validate();
-        this.positiveBlockInfo.validate();
-    }
-
-    @Override
-    public void updateContainingBlockInfo() {
-        super.updateContainingBlockInfo();
-        this.negativeBlockInfo.updateContainingBlockInfo();
-        this.positiveBlockInfo.updateContainingBlockInfo();
     }
 
     @Nonnull
@@ -172,17 +151,28 @@ public class SlabTileEntity extends TileEntity implements IStateContainer, ITick
     }
 
     @Override
-    public void tick() {
-        if (this.world != null) {
-            if (this.positiveBlockInfo.getTileEntity() != null && this.positiveBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
-                if (this.positiveBlockInfo.getTileEntity().getWorld() == null)
-                    this.positiveBlockInfo.getTileEntity().setWorldAndPos(this.positiveBlockInfo.getWorld(), this.positiveBlockInfo.getPos());
-                ((ITickableTileEntity) this.positiveBlockInfo.getTileEntity()).tick();
+    public boolean triggerEvent(int pA, int pB) {
+        return this.negativeBlockInfo.triggerEvent(pA, pB) | this.positiveBlockInfo.triggerEvent(pA, pB);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends SlabTileEntity, A extends BlockEntity, B extends BlockEntity> void tick(Level world, BlockPos blockPos, BlockState blockState, E entity) {
+        if (world != null) {
+            if (entity.positiveBlockInfo.getBlockEntity() != null && entity.positiveBlockInfo.getBlockState() != null) {
+                BlockEntityTicker<A> ticker = (BlockEntityTicker<A>) entity.positiveBlockInfo.getBlockState().getTicker(entity.getLevel(), entity.positiveBlockInfo.getBlockEntity().getType());
+                if (ticker != null) {
+                    if (entity.positiveBlockInfo.getBlockEntity().getLevel() == null)
+                        entity.positiveBlockInfo.getBlockEntity().setLevel(entity.positiveBlockInfo.getWorld());
+                    ticker.tick(entity.positiveBlockInfo.getWorld(), blockPos, entity.positiveBlockInfo.getBlockState(), (A) entity.positiveBlockInfo.getBlockEntity());
+                }
             }
-            if (this.negativeBlockInfo.getTileEntity() != null && this.negativeBlockInfo.getTileEntity() instanceof ITickableTileEntity) {
-                if (this.negativeBlockInfo.getTileEntity().getWorld() == null)
-                    this.negativeBlockInfo.getTileEntity().setWorldAndPos(this.negativeBlockInfo.getWorld(), this.negativeBlockInfo.getPos());
-                ((ITickableTileEntity) this.negativeBlockInfo.getTileEntity()).tick();
+            if (entity.negativeBlockInfo.getBlockEntity() != null && entity.negativeBlockInfo.getBlockState() != null) {
+                BlockEntityTicker<B> ticker = (BlockEntityTicker<B>) entity.negativeBlockInfo.getBlockState().getTicker(entity.getLevel(), entity.negativeBlockInfo.getBlockEntity().getType());
+                if (ticker != null) {
+                    if (entity.negativeBlockInfo.getBlockEntity().getLevel() == null)
+                        entity.negativeBlockInfo.getBlockEntity().setLevel(entity.negativeBlockInfo.getWorld());
+                    ticker.tick(entity.negativeBlockInfo.getWorld(), blockPos, entity.negativeBlockInfo.getBlockState(), (B) entity.negativeBlockInfo.getBlockEntity());
+                }
             }
         }
     }

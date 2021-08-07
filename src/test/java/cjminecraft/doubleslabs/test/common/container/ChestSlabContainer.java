@@ -2,30 +2,29 @@ package cjminecraft.doubleslabs.test.common.container;
 
 import cjminecraft.doubleslabs.test.common.init.DSTContainers;
 import cjminecraft.doubleslabs.test.common.tileentity.ChestSlabTileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 
-public class ChestSlabContainer extends Container {
+public class ChestSlabContainer extends AbstractContainerMenu {
     private final ItemStackHandler inventory;
 
-    public ChestSlabContainer(int id, PlayerInventory inv) {
+    public ChestSlabContainer(int id, Inventory inv) {
         this(id, inv, (ChestSlabTileEntity) null);
     }
 
-    public ChestSlabContainer(int id, PlayerInventory inv, PacketBuffer data) {
-        this(id, inv, ((ChestSlabTileEntity) inv.player.world.getTileEntity(data.readBlockPos())));
+    public ChestSlabContainer(int id, Inventory inv, FriendlyByteBuf data) {
+        this(id, inv, ((ChestSlabTileEntity) inv.player.level.getBlockEntity(data.readBlockPos())));
     }
 
-    public ChestSlabContainer(int id, PlayerInventory inv, @Nullable ChestSlabTileEntity tile) {
+    public ChestSlabContainer(int id, Inventory inv, @Nullable ChestSlabTileEntity tile) {
         super(DSTContainers.CHEST_SLAB.get(), id);
 
         this.inventory = tile != null ? tile.getInventory() : new ItemStackHandler(9);
@@ -33,9 +32,10 @@ public class ChestSlabContainer extends Container {
         for(int j = 0; j < 9; ++j) {
             this.addSlot(new SlotItemHandler(this.inventory, j, 8 + j * 18, 20){
                 @Override
-                public void onSlotChanged() {
+                public void setChanged() {
+                    super.setChanged();
                     if (tile != null)
-                        tile.markDirty();
+                        tile.setChanged();
                 }
             });
         }
@@ -52,24 +52,24 @@ public class ChestSlabContainer extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (index < this.inventory.getSlots()) {
-                if (!this.mergeItemStack(itemstack1, this.inventory.getSlots(), this.inventorySlots.size(), true)) {
+                if (!this.moveItemStackTo(itemstack1, this.inventory.getSlots(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 0, this.inventory.getSlots(), false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 0, this.inventory.getSlots(), false)) {
                 return ItemStack.EMPTY;
             }
 
             if (itemstack1.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
 
@@ -77,7 +77,7 @@ public class ChestSlabContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean stillValid(Player player) {
         return true;
     }
 }

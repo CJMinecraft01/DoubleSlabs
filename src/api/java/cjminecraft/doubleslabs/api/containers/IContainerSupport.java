@@ -1,23 +1,23 @@
 package cjminecraft.doubleslabs.api.containers;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.function.Consumer;
 
 public interface IContainerSupport {
-    boolean hasSupport(World world, BlockPos pos, BlockState state);
+    boolean hasSupport(Level world, BlockPos pos, BlockState state);
 
-    ContainerType<?> getContainer(World world, BlockPos pos, BlockState state);
+    MenuType<?> getContainer(Level world, BlockPos pos, BlockState state);
 
-    Consumer<PacketBuffer> writeExtraData(World world, BlockPos pos, BlockState state);
+    Consumer<FriendlyByteBuf> writeExtraData(Level world, BlockPos pos, BlockState state);
 
-    INamedContainerProvider getNamedContainerProvider(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit);
+    MenuProvider getNamedContainerProvider(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, BlockHitResult hit);
 }

@@ -1,9 +1,9 @@
 package cjminecraft.doubleslabs.api;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-public interface IWorldWrapper<W extends World> {
+public interface IWorldWrapper<W extends Level> {
     boolean isPositive();
 
     void setPositive(boolean positive);
@@ -20,7 +20,7 @@ public interface IWorldWrapper<W extends World> {
         return (W) this;
     }
 
-    World getWorld();
+    Level getWorld();
 
-    void setWorld(World world);
+    void setWorld(Level world);
 }

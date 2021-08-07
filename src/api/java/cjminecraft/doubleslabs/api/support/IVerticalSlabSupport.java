@@ -1,26 +1,27 @@
 package cjminecraft.doubleslabs.api.support;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface IVerticalSlabSupport extends ISlabSupport {
 
-    boolean isVerticalSlab(IBlockReader world, BlockPos pos, BlockState state);
+    boolean isVerticalSlab(BlockGetter world, BlockPos pos, BlockState state);
 
-    boolean isVerticalSlab(ItemStack stack, PlayerEntity player, Hand hand);
+    boolean isVerticalSlab(ItemStack stack, Player player, InteractionHand hand);
 
-    Direction getDirection(World world, BlockPos pos, BlockState state);
+    Direction getDirection(BlockGetter world, BlockPos pos, BlockState state);
 
-    BlockState getStateForDirection(World world, BlockPos pos, BlockState state, Direction direction);
+    BlockState getStateForDirection(BlockGetter world, BlockPos pos, BlockState state, Direction direction);
 
-    default boolean rotateModel(IBlockDisplayReader world, BlockPos pos, BlockState state) {
+    default boolean rotateModel(LevelAccessor world, BlockPos pos, BlockState state) {
         return false;
     }
 

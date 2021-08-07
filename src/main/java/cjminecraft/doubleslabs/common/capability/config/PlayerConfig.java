@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.common.capability.config;
 
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public class PlayerConfig implements IPlayerConfig {
 
@@ -29,15 +29,15 @@ public class PlayerConfig implements IPlayerConfig {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("verticalSlabPlacementMethod", this.verticalSlabPlacementMethod.getIndex());
         nbt.putBoolean("placeVerticalSlabs", this.placeVerticalSlabs);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         this.verticalSlabPlacementMethod = VerticalSlabPlacementMethod.fromIndex(nbt.getInt("verticalSlabPlacementMethod"));
         this.placeVerticalSlabs = nbt.getBoolean("placeVerticalSlabs");
     }

@@ -12,25 +12,24 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.ConfigEventsHandler;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.BlockModelShapes;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.SimpleModelTransform;
+import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Map;
@@ -45,10 +44,10 @@ public class ClientProxy implements IProxy {
         mod.addListener(ConfigEventsHandler::onFileChange);
     }
 
-    private void replaceModel(IBakedModel model, Block block, BiConsumer<IBakedModel, BlockState> perModel, Map<ResourceLocation, IBakedModel> registry) {
-        for (BlockState state : block.getStateContainer().getValidStates()) {
-            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
-            IBakedModel existingModel = registry.get(variantResourceLocation);
+    private void replaceModel(BakedModel model, Block block, BiConsumer<BakedModel, BlockState> perModel, Map<ResourceLocation, BakedModel> registry) {
+        for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+            ModelResourceLocation variantResourceLocation = BlockModelShaper.stateToModelLocation(state);
+            BakedModel existingModel = registry.get(variantResourceLocation);
             if (existingModel == null) {
                 DoubleSlabs.LOGGER.warn("Did not find the expected vanilla baked model(s) for the block in registry");
             } else if (existingModel instanceof DynamicSlabBakedModel) {
@@ -60,13 +59,13 @@ public class ClientProxy implements IProxy {
         }
     }
 
-    public static final TransformationMatrix RAISED_CAMPFIRE_TRANSFORM = new TransformationMatrix(new Vector3f(0, 0.5f, 0), null, null, null);
+    public static final Transformation RAISED_CAMPFIRE_TRANSFORM = new Transformation(new Vector3f(0, 0.5f, 0), null, null, null);
 
-    private void replaceCampfireModel(Block block, Map<ResourceLocation, IBakedModel> registry, ModelLoader loader) {
-        for (BlockState state : block.getStateContainer().getValidStates()) {
-            ModelResourceLocation variantResourceLocation = BlockModelShapes.getModelLocation(state);
-            IUnbakedModel existingModel = loader.getUnbakedModel(variantResourceLocation);
-            registry.put(variantResourceLocation, ClientConstants.bake(loader, existingModel, variantResourceLocation, false, new SimpleModelTransform(RAISED_CAMPFIRE_TRANSFORM)));
+    private void replaceCampfireModel(Block block, Map<ResourceLocation, BakedModel> registry, ModelLoader loader) {
+        for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+            ModelResourceLocation variantResourceLocation = BlockModelShaper.stateToModelLocation(state);
+            UnbakedModel existingModel = loader.getModel(variantResourceLocation);
+            registry.put(variantResourceLocation, ClientConstants.bake(loader, existingModel, variantResourceLocation, false, new SimpleModelState(RAISED_CAMPFIRE_TRANSFORM)));
         }
     }
 
@@ -78,14 +77,14 @@ public class ClientProxy implements IProxy {
 
         replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
         replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-        ModList list = ModList.get();
-        if (list.isLoaded("endergetic")) {
-            replaceCampfireModel(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-        }
-        if (list.isLoaded("byg")) {
-            replaceCampfireModel(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-            replaceCampfireModel(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-        }
+//        ModList list = ModList.get();
+//        if (list.isLoaded("endergetic")) {
+//            replaceCampfireModel(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+//        }
+//        if (list.isLoaded("byg")) {
+//            replaceCampfireModel(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+//            replaceCampfireModel(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+//        }
 
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
         VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
@@ -94,21 +93,21 @@ public class ClientProxy implements IProxy {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         DSKeyBindings.register();
-        RenderTypeLookup.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
-        RenderTypeLookup.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
-        RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.getCutout());
-        ModList list = ModList.get();
-        if (list.isLoaded("endergetic")) {
-            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), RenderType.getCutout());
-        }
-        if (list.isLoaded("byg")) {
-            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), RenderType.getCutout());
-            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), RenderType.getCutout());
-        }
-        ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
-        ScreenManager.registerFactory(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
+        ItemBlockRenderTypes.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
+        ItemBlockRenderTypes.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
+        ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.cutout());
+//        ModList list = ModList.get();
+//        if (list.isLoaded("endergetic")) {
+//            ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), RenderType.getCutout());
+//        }
+//        if (list.isLoaded("byg")) {
+//            ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), RenderType.getCutout());
+//            ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), RenderType.getCutout());
+//        }
+        BlockEntityRenderers.register(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
+        BlockEntityRenderers.register(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);
+        MenuScreens.register(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
     }
 
     private void registerBlockColours(final ColorHandlerEvent.Block event) {

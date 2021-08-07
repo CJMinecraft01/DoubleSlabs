@@ -9,10 +9,9 @@ import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.common.network.PacketHandler;
 import cjminecraft.doubleslabs.common.proxy.IProxy;
 import cjminecraft.doubleslabs.server.proxy.ServerProxy;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -32,11 +31,11 @@ public class DoubleSlabs {
 
     public static final IProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
-    public static final ItemGroup TAB = new ItemGroup("verticalslabs") {
+    public static final CreativeModeTab TAB = new CreativeModeTab("verticalslabs") {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             ItemStack stack = new ItemStack(DSItems.VERTICAL_SLAB.get());
-            stack.setTagInfo("item", Items.STONE_BRICK_SLAB.getDefaultInstance().write(new CompoundNBT()));
+            stack.addTagElement("item", Items.STONE_BRICK_SLAB.getDefaultInstance().serializeNBT());
             return stack;
         }
     };

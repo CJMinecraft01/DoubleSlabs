@@ -1,64 +1,51 @@
 package cjminecraft.doubleslabs.test.common.blocks;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.state.properties.SlabType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class GlassSlab extends SlabBlock {
     public GlassSlab() {
-        super(Properties.create(Material.GLASS).hardnessAndResistance(0.3f).notSolid());
+        super(Properties.of(Material.GLASS).strength(0.3f).noOcclusion().isSuffocating((state, world, pos) -> true).isValidSpawn((block, state, pos, entity) -> false));
     }
 
     @Override
-    public boolean isTransparent(BlockState state) {
-        return true;
+    public VoxelShape getVisualShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return Shapes.empty();
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
+    @Override
+    public boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
         if (adjacentBlockState.getBlock() == this) {
-            SlabType type = state.get(BlockStateProperties.SLAB_TYPE);
-            SlabType otherType = adjacentBlockState.get(BlockStateProperties.SLAB_TYPE);
+            SlabType type = state.getValue(BlockStateProperties.SLAB_TYPE);
+            SlabType otherType = adjacentBlockState.getValue(BlockStateProperties.SLAB_TYPE);
             if (side == Direction.UP)
                 return (type == SlabType.DOUBLE || type == SlabType.TOP) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.BOTTOM);
             else if (side == Direction.DOWN)
                 return (type == SlabType.DOUBLE || type == SlabType.BOTTOM) &&  (otherType == SlabType.DOUBLE || otherType == SlabType.TOP);
-            return adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(state.get(BlockStateProperties.SLAB_TYPE)) || adjacentBlockState.get(BlockStateProperties.SLAB_TYPE).equals(SlabType.DOUBLE);
+            return adjacentBlockState.getValue(BlockStateProperties.SLAB_TYPE).equals(state.getValue(BlockStateProperties.SLAB_TYPE)) || adjacentBlockState.getValue(BlockStateProperties.SLAB_TYPE).equals(SlabType.DOUBLE);
         }
-        return super.isSideInvisible(state, adjacentBlockState, side);
+        return super.skipRendering(state, adjacentBlockState, side);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return 1.0F;
+    @Override
+    public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos) {
+        return 1F;
     }
 
-    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
-    }
-
-    public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return false;
-    }
-
-    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return false;
-    }
-
-    public boolean canEntitySpawn(BlockState state, IBlockReader worldIn, BlockPos pos, EntityType<?> type) {
-        return false;
     }
 }

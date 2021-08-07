@@ -4,19 +4,19 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import net.minecraft.block.BlockState;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawHighlightEvent;
+import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,57 +32,59 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void renderBlockHighlight(DrawHighlightEvent.HighlightBlock event) {
+    public static void renderBlockHighlight(DrawSelectionEvent.HighlightBlock event) {
         // Reference net.minecraft.client.renderer.WorldRenderer#drawSelectionBox
 
-        BlockState state = Minecraft.getInstance().world.getBlockState(event.getTarget().getPos());
+        BlockState state = Minecraft.getInstance().level.getBlockState(event.getTarget().getBlockPos());
 
-        if (!Minecraft.getInstance().player.abilities.isCreativeMode || (Minecraft.getInstance().player.abilities.isCreativeMode && Minecraft.getInstance().player.isSneaking())) {
+        Player player = Minecraft.getInstance().player;
+
+        if (player != null && (!player.isCreative() || (player.isCreative() && player.isCrouching()))) {
             // We are trying to render the block highlight for the double slab
             if (state.getBlock() == DSBlocks.DOUBLE_SLAB.get()) {
                 // Offset the position of the block for when we render
-                double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
-                double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
-                double z = (double) event.getTarget().getPos().getZ() - event.getInfo().getProjectedView().z;
+                double x = (double) event.getTarget().getBlockPos().getX() - event.getInfo().getPosition().x;
+                double y = (double) event.getTarget().getBlockPos().getY() - event.getInfo().getPosition().y;
+                double z = (double) event.getTarget().getBlockPos().getZ() - event.getInfo().getPosition().z;
                 // Check if we are looking at the top slab or bottom slab
-                if (event.getTarget().getHitVec().y - event.getTarget().getPos().getY() > 0.5) {
+                if (event.getTarget().getLocation().y - event.getTarget().getBlockPos().getY() > 0.5) {
                     // Draw the top slab bounding box
-                    WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y + 0.5f, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                    LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y + 0.5f, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                 } else {
                     // Draw the bottom slab bounding box
-                    WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y, z, x + 1, y + 0.5f, z + 1, 0, 0, 0, 0.4f);
+                    LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 0.5f, z + 1, 0, 0, 0, 0.4f);
                 }
                 // Don't draw the default block highlight
                 event.setCanceled(true);
             }
 
-            if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.get(VerticalSlabBlock.DOUBLE)) {
+            if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.getValue(VerticalSlabBlock.DOUBLE)) {
                 // Offset the position of the block for when we render
-                double x = (double) event.getTarget().getPos().getX() - event.getInfo().getProjectedView().x;
-                double y = (double) event.getTarget().getPos().getY() - event.getInfo().getProjectedView().y;
-                double z = (double) event.getTarget().getPos().getZ() - event.getInfo().getProjectedView().z;
+                double x = (double) event.getTarget().getBlockPos().getX() - event.getInfo().getPosition().x;
+                double y = (double) event.getTarget().getBlockPos().getY() - event.getInfo().getPosition().y;
+                double z = (double) event.getTarget().getBlockPos().getZ() - event.getInfo().getPosition().z;
 
-                switch (state.get(VerticalSlabBlock.FACING).getAxis()) {
+                switch (state.getValue(VerticalSlabBlock.FACING).getAxis()) {
                     case X:
                         // Check if we are looking at the top slab or bottom slab
-                        if (event.getTarget().getHitVec().x - event.getTarget().getPos().getX() > 0.5) {
+                        if (event.getTarget().getLocation().x - event.getTarget().getBlockPos().getX() > 0.5) {
                             // Draw the top slab bounding box
-                            WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x + 0.5f, y, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x + 0.5f, y, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                         } else {
                             // Draw the bottom slab bounding box
-                            WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y, z, x + 0.5f, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 0.5f, y + 1, z + 1, 0, 0, 0, 0.4f);
                         }
                         // Don't draw the default block highlight
                         event.setCanceled(true);
                         break;
                     case Z:
                         // Check if we are looking at the top slab or bottom slab
-                        if (event.getTarget().getHitVec().z - event.getTarget().getPos().getZ() > 0.5) {
+                        if (event.getTarget().getLocation().z - event.getTarget().getBlockPos().getZ() > 0.5) {
                             // Draw the top slab bounding box
-                            WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y, z + 0.5f, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z + 0.5f, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                         } else {
                             // Draw the bottom slab bounding box
-                            WorldRenderer.drawBoundingBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.getLines()), x, y, z, x + 1, y + 1, z + 0.5f, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 1, z + 0.5f, 0, 0, 0, 0.4f);
                         }
                         // Don't draw the default block highlight
                         event.setCanceled(true);
@@ -112,32 +114,32 @@ public class ClientRenderHandler {
 
     private static String stateToString(@Nullable BlockState state) {
         if (state == null)
-            return TextFormatting.RED + "null";
+            return ChatFormatting.RED + "null";
         return state.getBlock().getRegistryName().toString() + "[" + state.getValues().entrySet().stream().map(MAP_ENTRY_TO_STRING).collect(Collectors.joining(",")) + "]";
     }
 
-    private static String tileToString(@Nullable TileEntity tile) {
+    private static String tileToString(@Nullable BlockEntity tile) {
         if (tile == null)
-            return TextFormatting.RED + "null";
+            return ChatFormatting.RED + "null";
         String data = tile.getTileData().toString();
-        return ForgeRegistries.TILE_ENTITIES.getKey(tile.getType()).toString() + data;
+        return ForgeRegistries.BLOCK_ENTITIES.getKey(tile.getType()).toString() + data;
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void renderOverlayText(RenderGameOverlayEvent.Text event) {
-        if (Minecraft.getInstance().gameSettings.showDebugInfo) {
-            if (Minecraft.getInstance().objectMouseOver != null && Minecraft.getInstance().world != null && Minecraft.getInstance().objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-                BlockPos pos = ((BlockRayTraceResult) Minecraft.getInstance().objectMouseOver).getPos();
-                TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(pos);
+        if (Minecraft.getInstance().options.renderDebug) {
+            if (Minecraft.getInstance().hitResult != null && Minecraft.getInstance().level != null && Minecraft.getInstance().hitResult.getType() == BlockHitResult.Type.BLOCK) {
+                BlockPos pos = ((BlockHitResult) Minecraft.getInstance().hitResult).getBlockPos();
+                BlockEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(pos);
                 if (tileEntity instanceof SlabTileEntity) {
                     SlabTileEntity tile = (SlabTileEntity) tileEntity;
                     event.getRight().add("");
                     event.getRight().add("Slab Types");
                     event.getRight().add("Positive Block: " + stateToString(tile.getPositiveBlockInfo().getBlockState()));
-                    event.getRight().add("Positive Tile: " + tileToString(tile.getPositiveBlockInfo().getTileEntity()));
+                    event.getRight().add("Positive Tile: " + tileToString(tile.getPositiveBlockInfo().getBlockEntity()));
                     event.getRight().add("Negative Block: " + stateToString(tile.getNegativeBlockInfo().getBlockState()));
-                    event.getRight().add("Negative Tile: " + tileToString(tile.getNegativeBlockInfo().getTileEntity()));
+                    event.getRight().add("Negative Tile: " + tileToString(tile.getNegativeBlockInfo().getBlockEntity()));
                 }
             }
         }

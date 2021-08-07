@@ -23,8 +23,8 @@ public class AnnotationUtil {
         List<ModFileScanData> scanData = ModList.get().getAllScanData();
         List<Pair<String, String>> classAndFieldNames = new ArrayList<>();
         scanData.stream().map(datum -> datum.getAnnotations().stream()
-                    .filter(a -> Objects.equals(a.getAnnotationType(), type))
-                    .map(a -> Pair.of(a.getClassType().getClassName(), a.getMemberName()))
+                    .filter(a -> Objects.equals(a.annotationType(), type))
+                    .map(a -> Pair.of(a.clazz().getClassName(), a.memberName()))
                 .collect(Collectors.toList()))
                 .forEach(classAndFieldNames::addAll);
         return classAndFieldNames.stream().map(pair -> {
@@ -51,8 +51,8 @@ public class AnnotationUtil {
         List<ModFileScanData> scanData = ModList.get().getAllScanData();
         List<String> classNames = new ArrayList<>();
         scanData.stream().map(datum -> datum.getAnnotations().stream()
-                .filter(a -> Objects.equals(a.getAnnotationType(), type) && filter.test(a.getAnnotationData()))
-                .map(ModFileScanData.AnnotationData::getMemberName)
+                .filter(a -> Objects.equals(a.annotationType(), type) && filter.test(a.annotationData()))
+                .map(ModFileScanData.AnnotationData::memberName)
                 .collect(Collectors.toList()))
                 .forEach(classNames::addAll);
         return classNames.stream().map(className -> {
@@ -73,9 +73,9 @@ public class AnnotationUtil {
         List<ModFileScanData> scanData = ModList.get().getAllScanData();
         List<String> classNames = new ArrayList<>();
         scanData.stream().map(datum -> datum.getAnnotations().stream()
-                .filter(a -> Objects.equals(a.getAnnotationType(), type) && filter.test(a.getAnnotationData()))
+                .filter(a -> Objects.equals(a.annotationType(), type) && filter.test(a.annotationData()))
                 .sorted(sort)
-                .map(ModFileScanData.AnnotationData::getMemberName)
+                .map(ModFileScanData.AnnotationData::memberName)
                 .collect(Collectors.toList()))
                 .forEach(classNames::addAll);
         return classNames.stream().map(className -> {

@@ -6,13 +6,13 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.state.properties.SlabType;
-import net.minecraft.util.Direction;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
@@ -47,15 +47,15 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             boolean topTransparent = ClientConstants.isTransparent(positiveState);
             boolean bottomTransparent = ClientConstants.isTransparent(negativeState);
-            boolean shouldCull = DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
+            boolean shouldCull = DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.is(negativeState.getBlock())));
 
             // If the top and bottom states are the same, use the combined block model where possible
             if (useDoubleSlabModel(positiveState, negativeState)) {
                 IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
-                    if (RenderTypeLookup.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
-                        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(doubleState);
+                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+                        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
                         return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
                     }
                     return Lists.newArrayList();
@@ -64,18 +64,18 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             List<BakedQuad> quads = Lists.newArrayList();
 
-            if ((!renderHalves || renderPositive) && (RenderTypeLookup.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> topQuads = getQuadsForState(positiveBlock, side, rand);
                 if (shouldCull)
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
-                        topQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.DOWN);
+                        topQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == Direction.DOWN);
                 quads.addAll(topQuads);
             }
-            if ((!renderHalves || !renderPositive) && (RenderTypeLookup.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || !renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
                 List<BakedQuad> bottomQuads = getQuadsForState(negativeBlock, side, rand);
                 if (shouldCull)
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
-                        bottomQuads.removeIf(bakedQuad -> bakedQuad.getFace() == Direction.UP);
+                        bottomQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == Direction.UP);
                 quads.addAll(bottomQuads);
             }
             return quads;

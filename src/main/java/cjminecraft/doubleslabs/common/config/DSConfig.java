@@ -1,16 +1,18 @@
 package cjminecraft.doubleslabs.common.config;
 
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
-
 import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.*;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class DSConfig {
                 return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                ITag<Item> tag = ItemTags.getCollection().get(tagLocation);
+                Tag<Item> tag = ItemTags.getAllTags().getTag(tagLocation);
                 return tag != null && tag.contains(item);
             }
             return entry.equals(item.getRegistryName().toString());
@@ -58,7 +60,7 @@ public class DSConfig {
                 return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                ITag<Block> tag = BlockTags.getCollection().get(tagLocation);
+                Tag<Block> tag = BlockTags.getAllTags().getTag(tagLocation);
                 return tag != null && tag.contains(block);
             }
             return entry.equals(block.getRegistryName().toString());

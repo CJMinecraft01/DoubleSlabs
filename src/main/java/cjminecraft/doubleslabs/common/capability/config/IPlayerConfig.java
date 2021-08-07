@@ -1,10 +1,9 @@
 package cjminecraft.doubleslabs.common.capability.config;
 
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.CompoundTag;
 
-public interface IPlayerConfig extends INBTSerializable<CompoundNBT> {
+public interface IPlayerConfig {
 
     VerticalSlabPlacementMethod getVerticalSlabPlacementMethod();
 
@@ -13,5 +12,9 @@ public interface IPlayerConfig extends INBTSerializable<CompoundNBT> {
     boolean placeVerticalSlabs();
 
     void setPlaceVerticalSlabs(boolean place);
+
+    CompoundTag serializeNBT();
+
+    void deserializeNBT(CompoundTag nbt);
 
 }

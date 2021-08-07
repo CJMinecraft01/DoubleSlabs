@@ -1,78 +1,78 @@
 package cjminecraft.doubleslabs.api;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.RecipeItemHelper;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.Container;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class PlayerInventoryWrapper extends PlayerInventory {
-    private final PlayerInventory inv;
+public class PlayerInventoryWrapper extends Inventory {
+    private final Inventory inv;
     
-    public PlayerInventoryWrapper(PlayerInventory inv, World world) {
+    public PlayerInventoryWrapper(Inventory inv, Level world) {
         super(new PlayerEntityWrapper(inv.player, world));
         this.inv = inv;
     }
 
     @Override
-    public ItemStack getCurrentItem() {
-        return this.inv.getCurrentItem();
+    public ItemStack getSelected() {
+        return this.inv.getSelected();
     }
 
     @Override
-    public int getFirstEmptyStack() {
-        return this.inv.getFirstEmptyStack();
+    public int getFreeSlot() {
+        return this.inv.getFreeSlot();
     }
 
     @Override
-    public void setPickedItemStack(ItemStack stack) {
-        this.inv.setPickedItemStack(stack);
+    public void setPickedItem(ItemStack stack) {
+        this.inv.setPickedItem(stack);
     }
 
     @Override
-    public void pickItem(int index) {
-        this.inv.pickItem(index);
+    public void pickSlot(int slot) {
+        this.inv.pickSlot(slot);
     }
 
     @Override
-    public int getSlotFor(ItemStack stack) {
-        return this.inv.getSlotFor(stack);
+    public int findSlotMatchingItem(ItemStack stack) {
+        return this.inv.findSlotMatchingItem(stack);
     }
 
     @Override
-    public int findSlotMatchingUnusedItem(ItemStack p_194014_1_) {
-        return this.inv.findSlotMatchingUnusedItem(p_194014_1_);
+    public int findSlotMatchingUnusedItem(ItemStack stack) {
+        return this.inv.findSlotMatchingUnusedItem(stack);
     }
 
     @Override
-    public int getBestHotbarSlot() {
-        return this.inv.getBestHotbarSlot();
+    public int getSuitableHotbarSlot() {
+        return this.inv.getSuitableHotbarSlot();
     }
 
     @Override
-    public void changeCurrentItem(double direction) {
-        this.inv.changeCurrentItem(direction);
+    public void swapPaint(double paint) {
+        this.inv.swapPaint(paint);
     }
 
     @Override
-    public int func_234564_a_(Predicate<ItemStack> p_234564_1_, int p_234564_2_, IInventory p_234564_3_) {
-        return this.inv.func_234564_a_(p_234564_1_, p_234564_2_, p_234564_3_);
+    public int clearOrCountMatchingItems(Predicate<ItemStack> predicate, int i, Container container) {
+        return this.inv.clearOrCountMatchingItems(predicate, i, container);
     }
 
     @Override
-    public int storeItemStack(ItemStack itemStackIn) {
-        return this.inv.storeItemStack(itemStackIn);
+    public int getSlotWithRemainingSpace(ItemStack stack) {
+        return this.inv.getSlotWithRemainingSpace(stack);
     }
 
     @Override
@@ -81,38 +81,43 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     }
 
     @Override
-    public boolean addItemStackToInventory(ItemStack itemStackIn) {
-        return this.inv.addItemStackToInventory(itemStackIn);
+    public boolean add(ItemStack stack) {
+        return this.inv.add(stack);
     }
 
     @Override
-    public boolean add(int slotIn, ItemStack stack) {
-        return this.inv.add(slotIn, stack);
+    public boolean add(int slot, ItemStack stack) {
+        return this.inv.add(slot, stack);
     }
 
     @Override
-    public void placeItemBackInInventory(World worldIn, ItemStack stack) {
-        this.inv.placeItemBackInInventory(worldIn, stack);
+    public void placeItemBackInInventory(ItemStack stack) {
+        this.inv.placeItemBackInInventory(stack);
     }
 
     @Override
-    public ItemStack decrStackSize(int index, int count) {
-        return this.inv.decrStackSize(index, count);
+    public void placeItemBackInInventory(ItemStack stack, boolean b) {
+        this.inv.placeItemBackInInventory(stack, b);
     }
 
     @Override
-    public void deleteStack(ItemStack stack) {
-        this.inv.deleteStack(stack);
+    public ItemStack removeItem(int slot, int count) {
+        return this.inv.removeItem(slot, count);
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return this.inv.removeStackFromSlot(index);
+    public void removeItem(ItemStack stack) {
+        this.inv.removeItem(stack);
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        this.inv.setInventorySlotContents(index, stack);
+    public ItemStack removeItemNoUpdate(int slot) {
+        return this.inv.removeItemNoUpdate(slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        this.inv.setItem(slot, stack);
     }
 
     @Override
@@ -121,18 +126,18 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     }
 
     @Override
-    public ListNBT write(ListNBT nbtTagListIn) {
-        return this.inv.write(nbtTagListIn);
+    public ListTag save(ListTag tag) {
+        return this.inv.save(tag);
     }
 
     @Override
-    public void read(ListNBT nbtTagListIn) {
-        this.inv.read(nbtTagListIn);
+    public void load(ListTag tag) {
+        this.inv.load(tag);
     }
 
     @Override
-    public int getSizeInventory() {
-        return this.inv.getSizeInventory();
+    public int getContainerSize() {
+        return this.inv.getContainerSize();
     }
 
     @Override
@@ -141,33 +146,33 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     }
 
     @Override
-    public ItemStack getStackInSlot(int index) {
-        return this.inv.getStackInSlot(index);
+    public ItemStack getItem(int slot) {
+        return this.inv.getItem(slot);
     }
 
     @Override
-    public ITextComponent getName() {
+    public Component getName() {
         return this.inv.getName();
     }
 
     @Override
-    public ItemStack armorItemInSlot(int slotIn) {
-        return this.inv.armorItemInSlot(slotIn);
+    public ItemStack getArmor(int slot) {
+        return this.inv.getArmor(slot);
     }
 
     @Override
-    public void func_234563_a_(DamageSource p_234563_1_, float p_234563_2_) {
-        this.inv.func_234563_a_(p_234563_1_, p_234563_2_);
+    public void hurtArmor(DamageSource source, float amount, int[] weight) {
+        this.inv.hurtArmor(source, amount, weight);
     }
 
     @Override
-    public void dropAllItems() {
-        this.inv.dropAllItems();
+    public void dropAll() {
+        this.inv.dropAll();
     }
 
     @Override
-    public void markDirty() {
-        this.inv.markDirty();
+    public void setChanged() {
+        this.inv.setChanged();
     }
 
     @Override
@@ -176,73 +181,68 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     }
 
     @Override
-    public void setItemStack(ItemStack itemStackIn) {
-        this.inv.setItemStack(itemStackIn);
+    public boolean stillValid(Player player) {
+        return this.inv.stillValid(player);
     }
 
     @Override
-    public ItemStack getItemStack() {
-        return this.inv.getItemStack();
+    public boolean contains(ItemStack stack) {
+        return this.inv.contains(stack);
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        return this.inv.isUsableByPlayer(player);
+    public boolean contains(Tag<Item> tag) {
+        return this.inv.contains(tag);
     }
 
     @Override
-    public boolean hasItemStack(ItemStack itemStackIn) {
-        return this.inv.hasItemStack(itemStackIn);
+    public void replaceWith(Inventory inventory) {
+        this.inv.replaceWith(inventory);
     }
 
     @Override
-    public boolean hasTag(ITag<Item> itemTag) {
-        return this.inv.hasTag(itemTag);
+    public void clearContent() {
+        this.inv.clearContent();
     }
 
     @Override
-    public void copyInventory(PlayerInventory playerInventory) {
-        this.inv.copyInventory(playerInventory);
+    public void fillStackedContents(StackedContents contents) {
+        this.inv.fillStackedContents(contents);
     }
 
     @Override
-    public void clear() {
-        this.inv.clear();
+    public ItemStack removeFromSelected(boolean b) {
+        return this.inv.removeFromSelected(b);
     }
 
     @Override
-    public void accountStacks(RecipeItemHelper p_201571_1_) {
-        this.inv.accountStacks(p_201571_1_);
+    public int getMaxStackSize() {
+        return this.inv.getMaxStackSize();
     }
 
     @Override
-    public int getInventoryStackLimit() {
-        return this.inv.getInventoryStackLimit();
+    public void startOpen(Player player) {
+        this.inv.startOpen(player);
     }
 
     @Override
-    public void openInventory(PlayerEntity player) {
-        this.inv.openInventory(player);
+    public void stopOpen(Player player) {
+        this.inv.stopOpen(player);
     }
 
     @Override
-    public void closeInventory(PlayerEntity player) {
-        this.inv.closeInventory(player);
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return this.inv.canPlaceItem(slot, stack);
     }
 
     @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return this.inv.isItemValidForSlot(index, stack);
+    public int countItem(Item item) {
+        return this.inv.countItem(item);
     }
 
     @Override
-    public int count(Item itemIn) {
-        return this.inv.count(itemIn);
-    }
-
-    @Override
-    public boolean hasAny(Set<Item> set) {
-        return this.inv.hasAny(set);
+    public boolean hasAnyOf(Set<Item> items) {
+        return this.inv.hasAnyOf(items);
     }
 
     @Override
@@ -251,13 +251,13 @@ public class PlayerInventoryWrapper extends PlayerInventory {
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return this.inv.getDisplayName();
     }
 
     @Nullable
     @Override
-    public ITextComponent getCustomName() {
+    public Component getCustomName() {
         return this.inv.getCustomName();
     }
 }

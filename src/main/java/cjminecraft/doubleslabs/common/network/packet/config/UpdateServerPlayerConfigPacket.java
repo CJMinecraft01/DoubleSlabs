@@ -4,8 +4,8 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.capability.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -17,9 +17,9 @@ public class UpdateServerPlayerConfigPacket {
         this.config = config;
     }
 
-    public static UpdateServerPlayerConfigPacket decode(PacketBuffer buf) {
+    public static UpdateServerPlayerConfigPacket decode(FriendlyByteBuf buf) {
         PlayerConfig config = new PlayerConfig();
-        config.deserializeNBT(buf.readCompoundTag());
+        config.deserializeNBT(buf.readNbt());
         return new UpdateServerPlayerConfigPacket(config);
     }
 
@@ -35,8 +35,8 @@ public class UpdateServerPlayerConfigPacket {
         ctx.setPacketHandled(true);
     }
 
-    public void encode(PacketBuffer buf) {
-        buf.writeCompoundTag(this.config.serializeNBT());
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeNbt(this.config.serializeNBT());
     }
 
 }

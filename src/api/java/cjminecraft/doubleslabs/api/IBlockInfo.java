@@ -1,10 +1,10 @@
 package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,14 +15,14 @@ public interface IBlockInfo {
     BlockState getBlockState();
 
     @Nullable
-    TileEntity getTileEntity();
+    BlockEntity getBlockEntity();
 
     void setBlockState(@Nullable BlockState state);
 
-    void setTileEntity(@Nullable TileEntity tile);
+    void setBlockEntity(@Nullable BlockEntity tile);
 
     @Nonnull
-    World getWorld();
+    Level getWorld();
 
     boolean isPositive();
 

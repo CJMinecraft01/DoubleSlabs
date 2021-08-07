@@ -1,26 +1,25 @@
 package cjminecraft.doubleslabs.client.render;
 
 import cjminecraft.doubleslabs.common.tileentity.RaisedCampfireTileEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.tileentity.CampfireTileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.CampfireRenderer;
 
-public class RaisedCampfireTileEntityRenderer extends TileEntityRenderer<RaisedCampfireTileEntity> {
+public class RaisedCampfireTileEntityRenderer implements BlockEntityRenderer<RaisedCampfireTileEntity> {
 
-    private final CampfireTileEntityRenderer renderer;
+    private final CampfireRenderer renderer;
 
-    public RaisedCampfireTileEntityRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-        this.renderer = new CampfireTileEntityRenderer(rendererDispatcherIn);
+    public RaisedCampfireTileEntityRenderer(BlockEntityRendererProvider.Context context) {
+        this.renderer = new CampfireRenderer(context);
     }
 
     @Override
-    public void render(RaisedCampfireTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        matrixStack.push();
-        matrixStack.translate(0, 0.5d, 0);
-        this.renderer.render(tile, partialTicks, matrixStack, buffer, combinedLightIn, combinedOverlayIn);
-        matrixStack.pop();
+    public void render(RaisedCampfireTileEntity tile, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        poseStack.pushPose();
+        poseStack.translate(0, 0.5, 0);
+        this.renderer.render(tile, partialTicks, poseStack, buffer, combinedLightIn, combinedOverlayIn);
+        poseStack.popPose();
     }
 }

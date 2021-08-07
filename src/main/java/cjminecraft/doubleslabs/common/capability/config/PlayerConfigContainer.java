@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.common.capability.config;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PlayerConfigContainer implements ICapabilitySerializable<CompoundNBT> {
+public class PlayerConfigContainer implements ICapabilitySerializable<CompoundTag> {
 
     protected final LazyOptional<PlayerConfig> config;
 
@@ -28,12 +28,12 @@ public class PlayerConfigContainer implements ICapabilitySerializable<CompoundNB
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
         return this.getConfig().serializeNBT();
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         this.getConfig().deserializeNBT(nbt);
     }
 }

@@ -1,12 +1,13 @@
 package cjminecraft.doubleslabs.test.common.tileentity;
 
 import cjminecraft.doubleslabs.test.common.init.DSTTiles;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -15,7 +16,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ChestSlabTileEntity extends TileEntity {
+public class ChestSlabTileEntity extends BlockEntity {
 
     private final LazyOptional<ItemStackHandler> inventory = LazyOptional.of(() -> new ItemStackHandler(9));
 
@@ -23,49 +24,49 @@ public class ChestSlabTileEntity extends TileEntity {
         return this.inventory.orElseThrow(RuntimeException::new);
     }
 
-    public ChestSlabTileEntity() {
-        super(DSTTiles.CHEST.get());
+    public ChestSlabTileEntity(BlockPos pos, BlockState state) {
+        super(DSTTiles.CHEST.get(), pos, state);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
-        super.read(state, nbt);
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
+        nbt.put("inventory", this.getInventory().serializeNBT());
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+        super.deserializeNBT(nbt);
         this.getInventory().deserializeNBT(nbt.getCompound("inventory"));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        nbt.put("inventory", this.getInventory().serializeNBT());
-        return super.write(nbt);
+    public CompoundTag getTileData() {
+        return this.serializeNBT();
     }
 
     @Override
-    public CompoundNBT getTileData() {
-        return this.write(new CompoundNBT());
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
+        this.deserializeNBT(tag);
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        this.read(state, tag);
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        return this.serializeNBT();
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT nbt = new CompoundNBT();
-        this.write(nbt);
-        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, serializeNBT());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         super.onDataPacket(net, pkt);
-        this.read(this.world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        this.deserializeNBT(pkt.getTag());
     }
 
     @Nonnull

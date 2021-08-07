@@ -7,15 +7,16 @@ import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.util.AnnotationUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -27,15 +28,15 @@ public class SlabSupport {
     private static List<IHorizontalSlabSupport> horizontalSlabSupports;
 
     public static void load() {
-        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.getAnnotationData().getOrDefault("priority", 1000))));
-        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.getAnnotationData().getOrDefault("priority", 1000))));
+        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.annotationData().getOrDefault("priority", 1000))));
+        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.annotationData().getOrDefault("priority", 1000))));
 
         DoubleSlabs.LOGGER.info("Loaded %s vertical slab support classes", verticalSlabSupports.size());
         DoubleSlabs.LOGGER.info("Loaded %s horizontal slab support classes", horizontalSlabSupports.size());
     }
 
     @Nullable
-    public static IVerticalSlabSupport getVerticalSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
+    public static IVerticalSlabSupport getVerticalSlabSupport(BlockGetter world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) state.getBlock()).isVerticalSlab(world, pos, state))
             return (IVerticalSlabSupport) state.getBlock();
         for (IVerticalSlabSupport support : verticalSlabSupports)
@@ -45,7 +46,7 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static IVerticalSlabSupport getVerticalSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
+    public static IVerticalSlabSupport getVerticalSlabSupport(ItemStack stack, Player player, InteractionHand hand) {
         if (stack.getItem() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) stack.getItem()).isVerticalSlab(stack, player, hand))
             return (IVerticalSlabSupport) stack.getItem();
         if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IVerticalSlabSupport && ((IVerticalSlabSupport) ((BlockItem) stack.getItem()).getBlock()).isVerticalSlab(stack, player, hand))
@@ -57,7 +58,7 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static IHorizontalSlabSupport getHorizontalSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(BlockGetter world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) state.getBlock()).isHorizontalSlab(world, pos, state))
             return (IHorizontalSlabSupport) state.getBlock();
         for (IHorizontalSlabSupport support : horizontalSlabSupports)
@@ -67,7 +68,7 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static IHorizontalSlabSupport getHorizontalSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(ItemStack stack, Player player, InteractionHand hand) {
         if (stack.getItem() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) stack.getItem()).isHorizontalSlab(stack, player, hand))
             return (IHorizontalSlabSupport) stack.getItem();
         if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IHorizontalSlabSupport && ((IHorizontalSlabSupport) ((BlockItem) stack.getItem()).getBlock()).isHorizontalSlab(stack, player, hand))
@@ -99,13 +100,13 @@ public class SlabSupport {
     }
 
     @Nullable
-    public static ISlabSupport getSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
+    public static ISlabSupport getSlabSupport(BlockGetter world, BlockPos pos, BlockState state) {
         IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(world, pos, state);
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(world, pos, state);
     }
 
     @Nullable
-    public static ISlabSupport getSlabSupport(ItemStack stack, PlayerEntity player, Hand hand) {
+    public static ISlabSupport getSlabSupport(ItemStack stack, Player player, InteractionHand hand) {
         IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(stack, player, hand);
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(stack, player, hand);
     }
