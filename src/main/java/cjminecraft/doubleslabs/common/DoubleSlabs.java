@@ -29,7 +29,7 @@ public class DoubleSlabs {
 
     public static final Logger LOGGER = LogManager.getFormatterLogger(MODID);
 
-    public static final IProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+    public static final IProxy PROXY = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public static final CreativeModeTab TAB = new CreativeModeTab("verticalslabs") {
         @Override

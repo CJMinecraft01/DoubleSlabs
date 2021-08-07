@@ -317,10 +317,6 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                 blockToRemove.getBlockState().onRemove(blockToRemove.getWorld(), pos, Blocks.AIR.defaultBlockState(), false);
 
                 blockToRemove.setBlockState(null);
-//                if (positive)
-//                    tile.getPositiveBlockInfo().setBlockState(null);
-//                else
-//                    tile.getNegativeBlockInfo().setBlockState(null);
 
                 world.setBlock(pos, state.setValue(DOUBLE, false), Constants.BlockFlags.DEFAULT);
             } else {
@@ -457,8 +453,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
-        if (entity != null)
-            return getHalfState(world, pos, entity.getX() - pos.getX(), entity.getZ() - pos.getZ()).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElseGet(() -> super.getSoundType(state, world, pos, entity));
+        if (entity instanceof Player) {
+            BlockHitResult result = RayTraceUtil.rayTrace((Player) entity);
+            if (result.getBlockPos().equals(pos))
+                return getHalfState(world, pos, result.getLocation().x - pos.getX(), result.getLocation().z - pos.getZ()).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElseGet(() -> super.getSoundType(state, world, pos, entity));
+        }
         return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, null)).orElseGet(() -> super.getSoundType(state, world, pos, null));
     }
 

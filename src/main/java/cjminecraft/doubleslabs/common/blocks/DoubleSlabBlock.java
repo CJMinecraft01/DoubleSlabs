@@ -271,7 +271,12 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
     @Override
     public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, @Nullable Entity entity) {
-        return getTile(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState().getSoundType(tile.getPositiveBlockInfo().getWorld(), pos, entity)).orElse(super.getSoundType(state, world, pos, entity));
+        if (entity instanceof Player) {
+            BlockHitResult result = RayTraceUtil.rayTrace((Player) entity);
+            if (result.getBlockPos().equals(pos))
+                return getHalfState(world, pos, result.getLocation().y - pos.getY()).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElseGet(() -> super.getSoundType(state, world, pos, entity));
+        }
+        return getAvailable(world, pos).map(i -> i.getBlockState().getSoundType(i.getWorld(), pos, entity)).orElseGet(() -> super.getSoundType(state, world, pos, entity));
     }
 
 }

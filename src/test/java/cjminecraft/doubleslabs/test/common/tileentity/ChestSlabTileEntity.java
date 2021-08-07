@@ -29,15 +29,14 @@ public class ChestSlabTileEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
+    public CompoundTag save(CompoundTag nbt) {
         nbt.put("inventory", this.getInventory().serializeNBT());
-        return nbt;
+        return super.save(nbt);
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.getInventory().deserializeNBT(nbt.getCompound("inventory"));
     }
 
