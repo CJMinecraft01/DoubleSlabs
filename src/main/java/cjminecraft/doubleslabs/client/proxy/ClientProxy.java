@@ -42,6 +42,7 @@ public class ClientProxy implements IProxy {
     public void addListeners(IEventBus mod, IEventBus forge) {
         mod.addListener(this::clientSetup);
         mod.addListener(this::registerBlockColours);
+        mod.addListener(this::registerItemColours);
         mod.addListener(this::bakeModels);
         mod.addListener(ConfigEventsHandler::onFileChange);
     }
@@ -115,5 +116,9 @@ public class ClientProxy implements IProxy {
     private void registerBlockColours(final ColorHandlerEvent.Block event) {
         event.getBlockColors().register(DSBlocks.DOUBLE_SLAB.get().getBlockColor(), DSBlocks.DOUBLE_SLAB.get());
         event.getBlockColors().register(DSBlocks.VERTICAL_SLAB.get().getBlockColor(), DSBlocks.VERTICAL_SLAB.get());
+    }
+
+    private void registerItemColours(final ColorHandlerEvent.Item event) {
+        event.getItemColors().register(DSItems.VERTICAL_SLAB.get().getItemColor(), DSItems.VERTICAL_SLAB.get());
     }
 }

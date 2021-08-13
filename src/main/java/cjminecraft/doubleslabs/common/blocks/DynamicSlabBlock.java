@@ -295,7 +295,7 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
                 return -1;
             return getTile(world, pos).map(tile -> {
                 if (tintIndex >= ClientConstants.TINT_OFFSET)
-                    return tile.getPositiveBlockInfo().getBlockState() != null ? Minecraft.getInstance().getBlockColors().getColor(tile.getPositiveBlockInfo().getBlockState(), world, pos, tintIndex) : -1;
+                    return tile.getPositiveBlockInfo().getBlockState() != null ? Minecraft.getInstance().getBlockColors().getColor(tile.getPositiveBlockInfo().getBlockState(), world, pos, tintIndex - ClientConstants.TINT_OFFSET) : -1;
                 return tile.getNegativeBlockInfo().getBlockState() != null ? Minecraft.getInstance().getBlockColors().getColor(tile.getNegativeBlockInfo().getBlockState(), world, pos, tintIndex) : -1;
             }).orElse(-1);
         };

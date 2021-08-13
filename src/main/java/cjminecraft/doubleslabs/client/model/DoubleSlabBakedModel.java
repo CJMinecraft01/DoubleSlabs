@@ -47,7 +47,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             boolean topTransparent = ClientConstants.isTransparent(positiveState);
             boolean bottomTransparent = ClientConstants.isTransparent(negativeState);
-            boolean shouldCull = DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.is(negativeState.getBlock())));
+            boolean shouldCull = (positiveBlock.getSupport() == null || positiveBlock.getSupport().shouldCull(positiveState, negativeState)) && (negativeBlock.getSupport() == null || negativeBlock.getSupport().shouldCull(negativeState, positiveState)) && DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(topTransparent && bottomTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.is(negativeState.getBlock())));
 
             // If the top and bottom states are the same, use the combined block model where possible
             if (useDoubleSlabModel(positiveState, negativeState)) {

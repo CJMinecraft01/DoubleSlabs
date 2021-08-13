@@ -30,4 +30,7 @@ public interface IHorizontalSlabSupport extends ISlabSupport {
 
     BlockState getStateForHalf(BlockGetter world, BlockPos pos, BlockState state, SlabType half);
 
+    default boolean canCraft(Item item) {
+        return true;
+    }
 }

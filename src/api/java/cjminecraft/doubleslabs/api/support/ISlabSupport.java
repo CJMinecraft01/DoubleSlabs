@@ -8,6 +8,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChangeOverTimeBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +38,14 @@ public interface ISlabSupport {
 
     default boolean requiresWrappedWorld(BlockState state) {
         return state.hasBlockEntity() || state.getBlock() instanceof ChangeOverTimeBlock<?>;
+    }
+
+    default boolean shouldCull(BlockState currentState, BlockState otherState) {
+        return true;
+    }
+
+    default boolean uvlock(Block block) {
+        return true;
     }
 
 }

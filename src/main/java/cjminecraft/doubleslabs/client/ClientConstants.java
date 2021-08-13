@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.client;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
@@ -79,9 +80,10 @@ public class ClientConstants {
         VERTICAL_SLAB_ITEM_MODELS.clear();
 
         ForgeRegistries.BLOCKS.forEach(block -> {
-            if (SlabSupport.isHorizontalSlab(block)) {
+            ISlabSupport support = SlabSupport.getHorizontalSlabSupport(block);
+            if (support != null) {
                 boolean raisedCampfire = block instanceof RaisedCampfireBlock;
-                boolean uvlock = DSConfig.CLIENT.uvlock(block);
+                boolean uvlock = support.uvlock(block) && DSConfig.CLIENT.uvlock(block);
                 block.getStateDefinition().getPossibleStates().forEach(state -> {
                     ModelResourceLocation resourceLocation = BlockModelShaper.stateToModelLocation(state);
                     try {

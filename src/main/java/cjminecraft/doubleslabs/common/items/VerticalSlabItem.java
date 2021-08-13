@@ -6,6 +6,8 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -83,5 +85,13 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     public Component getName(ItemStack stack) {
         return new TranslatableComponent("item.vertical_slab.prefix", new TranslatableComponent(this.getDescriptionId(stack)));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public ItemColor getItemColor() {
+        return (stack, tintIndex) -> {
+            ItemStack actualStack = getStack(stack);
+            return Minecraft.getInstance().getItemColors().getColor(actualStack, tintIndex);
+        };
     }
 }
