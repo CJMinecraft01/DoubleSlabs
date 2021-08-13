@@ -37,6 +37,9 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     @ObjectHolder("byg:cryptic_campfire")
     public static final Block CRYPTIC_CAMPFIRE = null;
 
+    @ObjectHolder("infernalexp:glow_campfire")
+    public static final Block GLOW_CAMPFIRE = null;
+
     @Override
     public boolean isHorizontalSlab(Block block) {
         return block instanceof CampfireBlock;
@@ -68,6 +71,8 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
             return DSBlocks.RAISED_BORIC_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
         if (block == CRYPTIC_CAMPFIRE)
             return DSBlocks.RAISED_CRYPTIC_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
+        if (block == GLOW_CAMPFIRE)
+            return DSBlocks.RAISED_GLOW_CAMPFIRE.orElseGet(DSBlocks.RAISED_CAMPFIRE);
         return DSBlocks.RAISED_CAMPFIRE.get();
     }
 
@@ -128,5 +133,15 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     @Override
     public boolean waterloggableWhenDouble(World world, BlockPos pos, BlockState state) {
         return true;
+    }
+
+    @Override
+    public boolean shouldCull(BlockState currentState, BlockState otherState) {
+        return false;
+    }
+
+    @Override
+    public boolean uvlock(Block block) {
+        return false;
     }
 }

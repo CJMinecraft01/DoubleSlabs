@@ -86,6 +86,9 @@ public class ClientProxy implements IProxy {
             replaceCampfireModel(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
             replaceCampfireModel(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
         }
+        if (list.isLoaded("infernalexp")) {
+            replaceCampfireModel(DSBlocks.RAISED_GLOW_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
+        }
 
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
         VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
@@ -105,6 +108,9 @@ public class ClientProxy implements IProxy {
         if (list.isLoaded("byg")) {
             RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), RenderType.getCutout());
             RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), RenderType.getCutout());
+        }
+        if (list.isLoaded("infernalexp")) {
+            RenderTypeLookup.setRenderLayer(DSBlocks.RAISED_GLOW_CAMPFIRE.get(), RenderType.getCutout());
         }
         ClientRegistry.bindTileEntityRenderer(DSTiles.DYNAMIC_SLAB.get(), SlabTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(DSTiles.CAMPFIRE.get(), RaisedCampfireTileEntityRenderer::new);

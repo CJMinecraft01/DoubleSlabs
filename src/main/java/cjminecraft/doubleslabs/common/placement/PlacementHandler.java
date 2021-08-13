@@ -252,7 +252,7 @@ public class PlacementHandler {
                     // Get the direction that the vertical slab block is facing
                     Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
 
-                    if (face == direction.getOpposite()) {
+                    if ((!offset && face == direction) || (offset && face == direction.getOpposite())) {
                         // Get the state for the vertical slab item using the direction of the already placed vertical slab
                         BlockState slabState = getStateFromSupport(world, pos, player, hand, stack, direction.getOpposite(), verticalSlabItemSupport);
 //                        BlockState slabState = itemSupport.getStateForDirection(event.getWorld(), pos, event.getItemStack(), new BlockItemUseContext(event.getPlayer(), event.getHand(), event.getItemStack(), Utils.rayTrace(event.getPlayer())), direction.getOpposite());
