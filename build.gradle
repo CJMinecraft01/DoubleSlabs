@@ -129,6 +129,10 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.k-4u.nl"
     }
+    maven { // TOP
+        name 'tterrag maven'
+        url "https://maven.tterrag.com/"
+    }
 }
 
 dependencies {
@@ -147,6 +151,9 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${modMinecraftVersion}:${jeiVersion}:api")
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${modMinecraftVersion}:${jeiVersion}")
+
+    compileOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.16:${topVersion}:api")
+    runtimeOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.16:${topVersion}")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

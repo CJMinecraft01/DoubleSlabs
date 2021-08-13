@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common;
 
 import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.client.integration.top.TOPDoubleSlabsProvider;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
@@ -16,6 +17,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -65,5 +68,8 @@ public class DoubleSlabs {
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.registerPackets();
         PlayerConfigCapability.register();
+
+        if (ModList.get().isLoaded("theoneprobe"))
+            InterModComms.sendTo("theoneprobe", "getTheOneProbe", TOPDoubleSlabsProvider::new);
     }
 }
