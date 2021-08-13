@@ -106,6 +106,18 @@ public class SlabSupport {
     }
 
     @Nullable
+    public static IHorizontalSlabSupport getHorizontalSlabSupport(Block block) {
+        if (DSConfig.SERVER.isBlacklistedHorizontalSlab(block))
+            return null;
+        if (block instanceof IHorizontalSlabSupport)
+            return (IHorizontalSlabSupport) block;
+        for (IHorizontalSlabSupport support : horizontalSlabSupports)
+            if (support.isHorizontalSlab(block))
+                return support;
+        return null;
+    }
+
+    @Nullable
     public static ISlabSupport getSlabSupport(IBlockReader world, BlockPos pos, BlockState state) {
         IHorizontalSlabSupport horizontalSlabSupport = getHorizontalSlabSupport(world, pos, state);
         return horizontalSlabSupport != null ? horizontalSlabSupport : getVerticalSlabSupport(world, pos, state);

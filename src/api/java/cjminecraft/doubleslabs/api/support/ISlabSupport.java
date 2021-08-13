@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api.support;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +34,14 @@ public interface ISlabSupport {
 
     default boolean waterloggableWhenDouble(World world, BlockPos pos, BlockState state) {
         return false;
+    }
+
+    default boolean shouldCull(BlockState currentState, BlockState otherState) {
+        return true;
+    }
+
+    default boolean uvlock(Block block) {
+        return true;
     }
 
 }

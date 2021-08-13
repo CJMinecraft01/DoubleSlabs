@@ -53,7 +53,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
             boolean positiveTransparent = positiveState == null || ClientConstants.isTransparent(positiveState);
             boolean negativeTransparent = negativeState == null || ClientConstants.isTransparent(negativeState);
-            boolean shouldCull = positiveState != null && negativeState != null && DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(positiveTransparent && negativeTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
+            boolean shouldCull = positiveState != null && negativeState != null && (positiveBlock.getSupport() == null || positiveBlock.getSupport().shouldCull(positiveState, negativeState)) && (negativeBlock.getSupport() == null || negativeBlock.getSupport().shouldCull(negativeState, positiveState)) && DSConfig.CLIENT.shouldCull(positiveState.getBlock()) && DSConfig.CLIENT.shouldCull(negativeState.getBlock()) && (!(positiveTransparent && negativeTransparent) || (positiveState.getBlock() == negativeState.getBlock() && positiveState.isIn(negativeState.getBlock())));
 
             boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;
             boolean renderPositive = renderHalves && extraData.getData(RENDER_POSITIVE);
