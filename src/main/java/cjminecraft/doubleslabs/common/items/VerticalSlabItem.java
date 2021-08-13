@@ -7,6 +7,8 @@ import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -90,5 +92,13 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
         return new TranslationTextComponent("item.vertical_slab.prefix", new TranslationTextComponent(this.getTranslationKey(stack)));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public IItemColor getItemColor() {
+        return (stack, tintIndex) -> {
+            ItemStack actualStack = getStack(stack);
+            return Minecraft.getInstance().getItemColors().getColor(actualStack, tintIndex);
+        };
     }
 }
