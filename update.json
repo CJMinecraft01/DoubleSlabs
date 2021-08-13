@@ -161,7 +161,13 @@
     "3.5.0": "=Fixed OpenGL Error 1281 spam when installed with OptiFine\n=Improved Vertical Slab models by prebaking them before loading the game\n=Fixed Vertical Slab lighting and ambient occlusion\n=Improved performance of slabs, reducing RAM usage\n=Fixed campfire damaging players\n=Campfires that are stacked or vertical can be put out using a water potion\n=Improved slab culling to use a more efficient method\n=Fixed a crash when rendering slabs\n=Changed option of lazy slab rendering to uvlock rendering in the config. By default most vertical slabs should have uvlock enabled.\n+Added Productive Bees support\n+Added Assorted Decor support\n+Added an option to place vertical slabs ONLY when the vertical slab keybinding is down",
     "3.5.1": "=Fixed a bunch of crashes\n=Fixed campfire related issues\n+Added campfire support for Endergetic Expansion\n+Added campfire support for Biomes You'll Go",
     "3.5.2": "=Fixed vertical slab breaking particles\n=Fixed rendering of mixed vertical slabs (where the slab is not rotated)",
-    "3.5.3": "=Fixed a slab culling issue\n+Added Spanish language"
+    "3.5.3": "=Fixed a slab culling issue\n+Added Spanish language",
+    "3.5.4": "=Fixes",
+    "3.5.5": "=Fix a server bootup crash",
+    "3.6.0": "=Fix item and block colours\n=API - override culling and uvlock\n+Add JEI support\n+Add The One Probe support\n+Add Quark slab support\n+Add Abnormals Core slab support\n+Add Infernal Expansion slab support"
+  },
+  "1.17.1": {
+    "4.0.0": "+Updated to 1.17!"
   },
   "promos": {
     "1.12.2-latest": "0.12.2",
@@ -170,7 +176,9 @@
     "1.14.4-recommended": "1.12.0",
     "1.15.2-latest": "2.12.1",
     "1.15.2-recommended": "2.12.1",
-    "1.16.5-latest": "3.5.3",
-    "1.16.5-recommended": "3.5.3"
+    "1.16.5-latest": "3.6.0",
+    "1.16.5-recommended": "3.6.0",
+    "1.17.1-latest": "4.0.0",
+    "1.17.1-recommended": "4.0.0"
   }
 }
