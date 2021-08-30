@@ -311,8 +311,8 @@ public class PlacementHandler {
                         }
                     }
 
-//                    if (activateBlock(world, pos, player, hand, cancel))
-//                        return;
+                    if (activateBlock(world, pos, player, hand, cancel))
+                        return;
 
                     BlockPos newPos = pos.offset(face);
                     BlockState newState = world.getBlockState(newPos);
@@ -379,7 +379,7 @@ public class PlacementHandler {
                     if (!offset && activateBlock(world, pos, player, hand, cancel))
                         return;
                     TileEntity tileEntity = world.getTileEntity(pos);
-                    if (tileEntity instanceof SlabTileEntity && !player.isSneaking() && (face != state.get(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
+                    if (tileEntity instanceof SlabTileEntity && (face != state.get(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
                         SlabTileEntity tile = (SlabTileEntity) tileEntity;
                         FluidState fluidstate = world.getFluidState(pos);
                         BlockState newState = state.with(VerticalSlabBlock.DOUBLE, true).with(VerticalSlabBlock.WATERLOGGED, fluidstate.getFluid() == Fluids.WATER && VerticalSlabBlock.either(world, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getWorld(), i.getPos(), i.getBlockState())));
