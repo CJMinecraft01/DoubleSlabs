@@ -9,6 +9,7 @@ import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -18,26 +19,24 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class VerticalSlabItem extends BlockItem {
     public VerticalSlabItem() {
-//        super(DSBlocks.VERTICAL_SLAB.get(), new Item.Properties().setISTER(() -> VerticalSlabItemStackTileEntityRenderer::new).group(DoubleSlabs.TAB));
         super(DSBlocks.VERTICAL_SLAB.get(), new Item.Properties().group(DoubleSlabs.TAB));
     }
-    
-//    public static BlockState getState(ItemStack stack) {
-//        CompoundNBT nbt = stack.getOrCreateChildTag("state");
-//        return NBTUtil.readBlockState(nbt);
-//    }
 
     public static ItemStack setStack(ItemStack stack, ItemStack toSet) {
         ItemStack copy = toSet.copy();
@@ -49,6 +48,16 @@ public class VerticalSlabItem extends BlockItem {
     public static ItemStack getStack(ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateChildTag("item");
         return ItemStack.read(nbt);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        ItemStack slab = getStack(stack);
+        ResourceLocation registryName = slab.getItem().getRegistryName();
+        if (registryName != null)
+            ModList.get().getModContainerById(registryName.getNamespace()).ifPresent(
+                    c -> tooltip.add(new TranslationTextComponent("item.vertical_slab.tooltip").modifyStyle(s -> s.applyFormatting(TextFormatting.GRAY)).append(new StringTextComponent(c.getModInfo().getDisplayName()).modifyStyle(s -> s.applyFormatting(TextFormatting.BLUE).setItalic(true))))
+            );
     }
 
     @Override
