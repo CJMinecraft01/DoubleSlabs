@@ -58,7 +58,6 @@ public class ClientConstants {
                 WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
                 for(Variant variant : model.getVariantList()) {
-//                    IBakedModel ibakedmodel = modelLoader.getBakedModel(variant.getModelLocation(), new ModelTransformComposition(variant, transform, uvlock), modelLoader.getSpriteMap()::getSprite);
                     IBakedModel ibakedmodel = modelLoader.getBakedModel(variant.getModelLocation(), transform, modelLoader.getSpriteMap()::getSprite);
                     builder.add(ibakedmodel, variant.getWeight());
                 }
