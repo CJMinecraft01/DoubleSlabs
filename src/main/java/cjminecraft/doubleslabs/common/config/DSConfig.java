@@ -170,9 +170,11 @@ public class DSConfig {
                     .comment("Which placement method to use to place vertical slabs",
                             "This is a per user option and can be any of the following values:",
                             "PLACE_WHEN_SNEAKING - Only place vertical slabs when you are sneaking",
-                            "DYNAMIC - Place vertical slabs when clicking on the side of a block unless you are sneaking and place vertical slabs when sneaking when looking at the top or bottom face of a block but place regular slabs by default")
+                            "DYNAMIC - Place vertical slabs when clicking on the side of a block unless you are sneaking and place vertical slabs when sneaking when looking at the top or bottom face of a block but place regular slabs by default",
+                            "KEYBINDING - Only place vertical slabs when the keybinding is active",
+                            "ITEM - Only place vertical slabs when holding a vertical slab item (not a horizontal slab item)")
                     .translation("doubleslabs.configgui.verticalSlabPlacementMethod")
-                    .defineEnum("verticalSlabPlacementMethod", VerticalSlabPlacementMethod.DYNAMIC);
+                    .defineEnum("verticalSlabPlacementMethod", VerticalSlabPlacementMethod.ITEM);
 
             builder.pop();
         }

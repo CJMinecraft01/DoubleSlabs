@@ -134,12 +134,12 @@ public class PlacementHandler {
         });
     }
 
-    private static boolean shouldPlaceVerticalSlab(PlayerEntity player, Direction face) {
+    private static boolean shouldPlaceVerticalSlab(PlayerEntity player, Direction face, boolean verticalSlabItem) {
         if (DSConfig.SERVER.disableVerticalSlabPlacement.get())
             return false;
         IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
 
-        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
+        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs(), verticalSlabItem);
     }
 
     @SubscribeEvent
@@ -152,8 +152,12 @@ public class PlacementHandler {
             Direction face = event.getFace();
             BlockPos pos = event.getPos();
 
-            if (stack.getItem() == DSItems.VERTICAL_SLAB.get())
+            boolean verticalSlabItem = false;
+
+            if (stack.getItem() == DSItems.VERTICAL_SLAB.get()) {
                 stack = VerticalSlabItem.getStack(stack);
+                verticalSlabItem = true;
+            }
             IHorizontalSlabSupport horizontalSlabItemSupport = SlabSupport.getHorizontalSlabSupport(stack, player, hand);
             Consumer<ActionResultType> cancel = resultType -> {
                 event.setCanceled(true);
@@ -339,7 +343,7 @@ public class PlacementHandler {
 
                             if (placeSlab(world, newPos, verticalSlabState, player, newState, slabState))
                                 finishBlockPlacement(world, pos, slabState, player, event.getItemStack(), cancel);
-                        } else if (shouldPlaceVerticalSlab(player, face)) {
+                        } else if (shouldPlaceVerticalSlab(player, face, verticalSlabItem)) {
                             // We should place the horizontal slab as a vertical slab
 //                            BlockRayTraceResult result = RayTraceUtil.rayTrace(player);
                             if (state.isReplaceable(context)) {

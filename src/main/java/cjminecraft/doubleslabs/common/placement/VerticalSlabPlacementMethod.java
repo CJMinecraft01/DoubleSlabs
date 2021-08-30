@@ -1,22 +1,21 @@
 package cjminecraft.doubleslabs.common.placement;
 
-import cjminecraft.doubleslabs.common.util.TriFunction;
+import cjminecraft.doubleslabs.common.util.QuadFunction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 
-import java.util.function.BiFunction;
-
 public enum VerticalSlabPlacementMethod {
-    PLACE_WHEN_SNEAKING(0, (player, face, keybindingDown) -> player.isSneaking()),
-    DYNAMIC(1, (player, face, keybindingDown) ->
+    PLACE_WHEN_SNEAKING(0, (player, face, keybindingDown, verticalSlabItem) -> player.isSneaking()),
+    DYNAMIC(1, (player, face, keybindingDown, verticalSlabItem) ->
             (player.isSneaking() && face.getAxis().isVertical()) ||
                     (!player.isSneaking() && !face.getAxis().isVertical())),
-    KEYBINDING(2, (player, face, keybindingDown) -> keybindingDown);
+    KEYBINDING(2, (player, face, keybindingDown, verticalSlabItem) -> keybindingDown),
+    ITEM(3, (player, face, keybindingDown, verticalSlabItem) -> verticalSlabItem);
 
     private final int index;
-    private final TriFunction<PlayerEntity, Direction, Boolean, Boolean> shouldPlace;
+    private final QuadFunction<PlayerEntity, Direction, Boolean, Boolean, Boolean> shouldPlace;
 
-    VerticalSlabPlacementMethod(int index, TriFunction<PlayerEntity, Direction, Boolean, Boolean> shouldPlace) {
+    VerticalSlabPlacementMethod(int index, QuadFunction<PlayerEntity, Direction, Boolean, Boolean, Boolean> shouldPlace) {
         this.index = index;
         this.shouldPlace = shouldPlace;
     }
@@ -32,7 +31,7 @@ public enum VerticalSlabPlacementMethod {
         return DYNAMIC;
     }
 
-    public boolean shouldPlace(PlayerEntity player, Direction face, boolean keybindingDown) {
-        return this.shouldPlace.apply(player, face, keybindingDown);
+    public boolean shouldPlace(PlayerEntity player, Direction face, boolean keybindingDown, boolean verticalSlabItem) {
+        return this.shouldPlace.apply(player, face, keybindingDown, verticalSlabItem);
     }
 }
