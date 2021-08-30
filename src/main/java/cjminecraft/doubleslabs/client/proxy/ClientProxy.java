@@ -33,7 +33,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-import java.awt.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
