@@ -398,7 +398,8 @@ public class PlacementHandler {
                     }
                 }
 
-                if (horizontalSlabSupport == null)
+                // If we are using a vertical slab item, then we shouldn't combine with a horizontal slab
+                if (horizontalSlabSupport == null || verticalSlabItem)
                     return;
 
                 if (DSConfig.SERVER.isBlacklistedHorizontalSlab(state.getBlock()))
