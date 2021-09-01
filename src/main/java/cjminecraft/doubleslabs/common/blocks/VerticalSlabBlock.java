@@ -8,6 +8,7 @@ import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import net.minecraft.block.Block;
@@ -207,7 +208,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return getHalfState(world, pos, target.getHitVec().x - pos.getX(), target.getHitVec().z - pos.getZ()).map(i -> i.getBlockState().getPickBlock(target, i.getWorld(), pos, player)).orElse(ItemStack.EMPTY);
+        return getHalfState(world, pos, target.getHitVec().x - pos.getX(), target.getHitVec().z - pos.getZ()).map(i -> {
+            ItemStack stack  = i.getBlockState().getPickBlock(target, i.getWorld(), pos, player);
+            if (SlabSupport.isHorizontalSlab(stack.getItem()))
+                return VerticalSlabItem.setStack(new ItemStack(DSItems.VERTICAL_SLAB.get()), stack);
+            return stack;
+        }).orElse(ItemStack.EMPTY);
     }
 
     @Override

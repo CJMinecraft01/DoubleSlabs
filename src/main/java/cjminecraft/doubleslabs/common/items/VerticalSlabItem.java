@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.items;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
+import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
@@ -53,11 +54,7 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         ItemStack slab = getStack(stack);
-        ResourceLocation registryName = slab.getItem().getRegistryName();
-        if (registryName != null)
-            ModList.get().getModContainerById(registryName.getNamespace()).ifPresent(
-                    c -> tooltip.add(new TranslationTextComponent("item.vertical_slab.tooltip").modifyStyle(s -> s.applyFormatting(TextFormatting.GRAY)).append(new StringTextComponent(c.getModInfo().getDisplayName()).modifyStyle(s -> s.applyFormatting(TextFormatting.BLUE).setItalic(true))))
-            );
+        tooltip.add(new TranslationTextComponent("item.vertical_slab.tooltip").modifyStyle(s -> s.applyFormatting(TextFormatting.GRAY)).append(new StringTextComponent(ClientConstants.getModName(slab.getItem())).modifyStyle(s -> s.applyFormatting(TextFormatting.BLUE).setItalic(true))));
     }
 
     @Override
