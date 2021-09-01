@@ -33,14 +33,6 @@ public class ClientConstants {
     private static final TransformationMatrix TRANSFORMATION_2D = new TransformationMatrix(null, Vector3f.ZN.rotationDegrees(90), null, null);
     public static final int TINT_OFFSET = 1000;
 
-    public static String getModName(IForgeRegistryEntry<?> entry) {
-        ResourceLocation registryName = entry.getRegistryName();
-        String modId = registryName == null ? "minecraft" : registryName.getNamespace();
-        return ModList.get().getModContainerById(modId)
-                .map(mod -> mod.getModInfo().getDisplayName())
-                .orElseGet(() -> StringUtils.capitalize(modId));
-    }
-
     public static boolean isTransparent(BlockState state) {
         return !state.getMaterial().isOpaque() || !state.isSolid();
     }

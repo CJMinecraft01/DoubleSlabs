@@ -1,22 +1,17 @@
 package cjminecraft.doubleslabs.client.integration.top;
 
 import cjminecraft.doubleslabs.common.blocks.DynamicSlabBlock;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Function;
 
-import static cjminecraft.doubleslabs.client.ClientConstants.getModName;
+import static cjminecraft.doubleslabs.common.util.Utils.getModName;
 import static mcjty.theoneprobe.api.TextStyleClass.MODNAME;
 
 public class TOPDoubleSlabsProvider implements IBlockDisplayOverride, Function<ITheOneProbe, Void> {

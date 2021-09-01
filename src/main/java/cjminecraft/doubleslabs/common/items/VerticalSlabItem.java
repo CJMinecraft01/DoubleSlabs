@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.placement.PlacementHandler;
+import cjminecraft.doubleslabs.common.util.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
@@ -20,15 +21,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -54,7 +54,7 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         ItemStack slab = getStack(stack);
-        tooltip.add(new TranslationTextComponent("item.vertical_slab.tooltip").modifyStyle(s -> s.applyFormatting(TextFormatting.GRAY)).append(new StringTextComponent(ClientConstants.getModName(slab.getItem())).modifyStyle(s -> s.applyFormatting(TextFormatting.BLUE).setItalic(true))));
+        tooltip.add(new TranslationTextComponent("item.vertical_slab.tooltip").modifyStyle(s -> s.applyFormatting(TextFormatting.GRAY)).append(new StringTextComponent(Utils.getModName(slab.getItem())).modifyStyle(s -> s.applyFormatting(TextFormatting.BLUE).setItalic(true))));
     }
 
     @Override
