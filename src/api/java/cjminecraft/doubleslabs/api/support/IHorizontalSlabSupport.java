@@ -27,6 +27,10 @@ public interface IHorizontalSlabSupport extends ISlabSupport {
 
     SlabType getHalf(IBlockReader world, BlockPos pos, BlockState state);
 
-    BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half);
+    BlockState getStateForHalf(BlockState state, SlabType half);
+
+    default BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
+        return getStateForHalf(state, half);
+    }
 
 }

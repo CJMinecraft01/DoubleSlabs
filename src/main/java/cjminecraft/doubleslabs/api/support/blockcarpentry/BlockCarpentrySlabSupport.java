@@ -55,7 +55,7 @@ public class BlockCarpentrySlabSupport<T extends Enum<T> & IStringSerializable> 
     }
 
     @Override
-    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(BlockState state, SlabType half) {
         return state.with(FACING, half == SlabType.BOTTOM ? Direction.UP : Direction.DOWN);
     }
 

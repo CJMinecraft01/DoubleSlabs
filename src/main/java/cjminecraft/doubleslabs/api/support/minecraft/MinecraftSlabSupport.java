@@ -49,7 +49,7 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(BlockState state, SlabType half) {
         return state.with(BlockStateProperties.SLAB_TYPE, half);
     }
 

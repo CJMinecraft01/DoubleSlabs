@@ -77,7 +77,7 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
     }
 
     @Override
-    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(BlockState state, SlabType half) {
         if (half == SlabType.TOP)
             return getRaisedBlock(state.getBlock()).getDefaultState()
                     .with(CampfireBlock.FACING, state.get(CampfireBlock.FACING))

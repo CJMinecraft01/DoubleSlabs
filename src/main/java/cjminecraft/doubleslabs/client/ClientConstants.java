@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.client;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
-import cjminecraft.doubleslabs.api.support.ISlabSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.proxy.ClientProxy;
 import cjminecraft.doubleslabs.common.DoubleSlabs;
 import cjminecraft.doubleslabs.common.blocks.RaisedCampfireBlock;
@@ -13,18 +13,17 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientConstants {
 
@@ -77,40 +76,85 @@ public class ClientConstants {
         VERTICAL_SLAB_ITEM_MODELS.clear();
 
         ForgeRegistries.BLOCKS.forEach(block -> {
-            ISlabSupport support = SlabSupport.getHorizontalSlabSupport(block);
+            IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(block);
             if (support != null) {
                 boolean raisedCampfire = block instanceof RaisedCampfireBlock;
                 boolean uvlock = support.uvlock(block) && DSConfig.CLIENT.uvlock(block);
-                block.getStateContainer().getValidStates().forEach(state -> {
-                    ModelResourceLocation resourceLocation = BlockModelShapes.getModelLocation(state);
-                    try {
-                        Map<Direction, IBakedModel> map = Maps.newEnumMap(Direction.class);
-                        IUnbakedModel model = modelLoader.getUnbakedModel(resourceLocation);
-                        if (raisedCampfire) {
-                            map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
-                            map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
-                            map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
-                            map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
-                        } else {
-                            map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation(), uvlock, 1)));
-                            map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation(), uvlock, 1)));
-                            map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation(), uvlock, 1)));
-                            map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
-                                    new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation(), uvlock, 1)));
+                if (uvlock && !raisedCampfire) {
+                    BlockState doubleState = support.getStateForHalf(block.getDefaultState(), SlabType.DOUBLE);
+                    BlockState topState = support.getStateForHalf(block.getDefaultState(), SlabType.TOP);
+                    BlockState bottomState = support.getStateForHalf(block.getDefaultState(), SlabType.BOTTOM);
+
+                    ModelResourceLocation doubleLocation = BlockModelShapes.getModelLocation(doubleState);
+                    ModelResourceLocation halfLocation = BlockModelShapes.getModelLocation(topState);
+                    IUnbakedModel doubleModel = modelLoader.getUnbakedModel(doubleLocation);
+                    IUnbakedModel halfModel = modelLoader.getUnbakedModel(halfLocation);
+
+                    Map<Direction, IBakedModel> doubleMap = Maps.newEnumMap(Direction.class);
+                    Map<Direction, IBakedModel> topHalfMap = Maps.newEnumMap(Direction.class);
+                    Map<Direction, IBakedModel> bottomHalfMap = Maps.newEnumMap(Direction.class);
+
+                    IBakedModel doubleBaked = bake(modelLoader, doubleModel, doubleLocation, true,
+                            new Variant(doubleLocation, ModelRotation.X90_Y0.getRotation(), true, 1));
+                    doubleMap.put(Direction.NORTH, doubleBaked);
+                    doubleMap.put(Direction.EAST, doubleBaked);
+                    doubleMap.put(Direction.SOUTH, doubleBaked);
+                    doubleMap.put(Direction.WEST, doubleBaked);
+
+                    IBakedModel northBaked = bake(modelLoader, halfModel, halfLocation, true,
+                            new Variant(halfLocation, ModelRotation.X90_Y180.getRotation(), true, 1));
+                    IBakedModel eastBaked = bake(modelLoader, halfModel, halfLocation, true,
+                            new Variant(halfLocation, ModelRotation.X90_Y270.getRotation(), true, 1));
+                    IBakedModel southBaked = bake(modelLoader, halfModel, halfLocation, true,
+                            new Variant(halfLocation, ModelRotation.X90_Y0.getRotation(), true, 1));
+                    IBakedModel westBaked = bake(modelLoader, halfModel, halfLocation, true,
+                            new Variant(halfLocation, ModelRotation.X90_Y90.getRotation(), true, 1));
+
+                    topHalfMap.put(Direction.NORTH, northBaked);
+                    topHalfMap.put(Direction.EAST, eastBaked);
+                    topHalfMap.put(Direction.SOUTH, southBaked);
+                    topHalfMap.put(Direction.WEST, westBaked);
+
+                    bottomHalfMap.put(Direction.NORTH, southBaked);
+                    bottomHalfMap.put(Direction.EAST, westBaked);
+                    bottomHalfMap.put(Direction.SOUTH, northBaked);
+                    bottomHalfMap.put(Direction.WEST, eastBaked);
+
+                    VERTICAL_SLAB_MODELS.put(doubleState, doubleMap);
+                    VERTICAL_SLAB_MODELS.put(topState, topHalfMap);
+                    VERTICAL_SLAB_MODELS.put(bottomState, bottomHalfMap);
+                } else {
+                    block.getStateContainer().getValidStates().forEach(state -> {
+                        ModelResourceLocation resourceLocation = BlockModelShapes.getModelLocation(state);
+                        try {
+                            Map<Direction, IBakedModel> map = Maps.newEnumMap(Direction.class);
+                            IUnbakedModel model = modelLoader.getUnbakedModel(resourceLocation);
+                            if (raisedCampfire) {
+                                map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
+                                map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
+                                map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
+                                map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
+                            } else {
+                                map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation(), uvlock, 1)));
+                                map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation(), uvlock, 1)));
+                                map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation(), uvlock, 1)));
+                                map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation(), uvlock, 1)));
+                            }
+                            VERTICAL_SLAB_MODELS.put(state, map);
+                        } catch (Exception e) {
+                            DoubleSlabs.LOGGER.warn("Failed to generate vertical slab model for: {}", resourceLocation.toString());
+                            DoubleSlabs.LOGGER.catching(e);
                         }
-                        VERTICAL_SLAB_MODELS.put(state, map);
-                    } catch (Exception e) {
-                        DoubleSlabs.LOGGER.warn("Failed to generate vertical slab model for: {}", resourceLocation.toString());
-                        DoubleSlabs.LOGGER.catching(e);
-                    }
-                });
+                    });
+                }
             }
         });
 

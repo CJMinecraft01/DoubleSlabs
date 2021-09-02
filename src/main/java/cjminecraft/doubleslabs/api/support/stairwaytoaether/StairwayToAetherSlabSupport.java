@@ -108,7 +108,7 @@ public class StairwayToAetherSlabSupport<T extends Enum<T> & IStringSerializable
     }
 
     @Override
-    public BlockState getStateForHalf(IBlockReader world, BlockPos pos, BlockState state, SlabType half) {
+    public BlockState getStateForHalf(BlockState state, SlabType half) {
         return slab == null ? state : state.with(typeProperty, slabTypes[half == SlabType.TOP ? 0 : 1]);
     }
 }
