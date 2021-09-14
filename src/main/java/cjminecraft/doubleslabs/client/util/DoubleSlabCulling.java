@@ -220,7 +220,9 @@ public class DoubleSlabCulling {
 
         TileEntity tile = world.getTileEntity(pos);
 
-        assert tile instanceof SlabTileEntity;
+        if (!(tile instanceof SlabTileEntity))
+            return true;
+//        assert tile instanceof SlabTileEntity;
         SlabTileEntity slab = (SlabTileEntity) tile;
 
         if (state.getBlock().equals(DSBlocks.DOUBLE_SLAB.get())) {
