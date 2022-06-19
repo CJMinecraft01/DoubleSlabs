@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+    "id": "doubleslabs",
+    "version": "${version}",
+  
+    "name": "Double Slabs",
+    "description": "Allows different slab types to be placed on top of each other",
+    "authors": [
+      "CJMinecraft"
+    ],
+    "contact": {
+      "homepage": "https://www.curseforge.com/minecraft/mc-mods/double-slabs",
+      "sources": "https://github.com/CJMinecraft01/DoubleSlabs"
+    },
+  
+    "license": "GNU GPLv3",
+  
+    "environment": "*",
+    "entrypoints": {
+      "main": [
+        "cjminecraft.doubleslabs.fabric.DoubleSlabs"
+      ]
+    },
+    "mixins": [
+      "doubleslabs.mixins.json"
+    ],
+  
+    "depends": {
+      "fabricloader": ">=0.14",
+      "fabric": "*",
+      "minecraft": "1.19.x",
+      "java": ">=17"
+    }
+  }
+  
