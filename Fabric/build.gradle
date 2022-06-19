@@ -35,6 +35,7 @@ loom {
 
 processResources {
     from project(":Common").sourceSets.main.resources
+    from project(":Common").sourceSets.api.resources
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
@@ -44,6 +45,7 @@ processResources {
 
 tasks.withType(JavaCompile) {
     source(project(":Common").sourceSets.main.allSource)
+    source(project(":Common").sourceSets.api.allSource)
 }
 
 publishing {
