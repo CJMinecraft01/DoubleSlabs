@@ -26,8 +26,8 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -70,30 +70,23 @@ public class ClientProxy implements IProxy {
         }
     }
 
-    private void bakeModels(ModelBakeEvent event) {
-        ClientConstants.bakeVerticalSlabModels(event.getModelLoader());
+    private void bakeModels(ModelEvent.BakingCompleted event) {
+        ClientConstants.bakeVerticalSlabModels(event.getModelBakery());
 
-        replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModelRegistry());
-        replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModelRegistry());
+        replaceModel(new DoubleSlabBakedModel(), DSBlocks.DOUBLE_SLAB.get(), (model, state) -> {}, event.getModels());
+        replaceModel(VerticalSlabBakedModel.INSTANCE, DSBlocks.VERTICAL_SLAB.get(), VerticalSlabBakedModel.INSTANCE::addModel, event.getModels());
 
-        replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-        replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-//        ModList list = ModList.get();
-//        if (list.isLoaded("endergetic")) {
-//            replaceCampfireModel(DSBlocks.RAISED_ENDER_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-//        }
-//        if (list.isLoaded("byg")) {
-//            replaceCampfireModel(DSBlocks.RAISED_BORIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-//            replaceCampfireModel(DSBlocks.RAISED_CRYPTIC_CAMPFIRE.get(), event.getModelRegistry(), event.getModelLoader());
-//        }
+        replaceCampfireModel(DSBlocks.RAISED_CAMPFIRE.get(), event.getModels(), event.getModelBakery());
+        replaceCampfireModel(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), event.getModels(), event.getModelBakery());
 
         ModelResourceLocation verticalSlabItemResourceLocation = new ModelResourceLocation(DSItems.VERTICAL_SLAB.getId(), "inventory");
-        VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelRegistry().get(verticalSlabItemResourceLocation));
-        event.getModelRegistry().put(verticalSlabItemResourceLocation, VerticalSlabItemBakedModel.INSTANCE);
+        VerticalSlabItemBakedModel.INSTANCE = new VerticalSlabItemBakedModel(event.getModelManager().getModel(verticalSlabItemResourceLocation));
+        event.getModels().put(verticalSlabItemResourceLocation, VerticalSlabItemBakedModel.INSTANCE);
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
         DSKeyBindings.register();
+        // todo: fix
         ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.cutout());
 //        ModList list = ModList.get();
@@ -109,12 +102,12 @@ public class ClientProxy implements IProxy {
         MenuScreens.register(DSContainers.WRAPPED_CONTAINER.get(), WrappedScreen::new);
     }
 
-    private void registerBlockColours(final ColorHandlerEvent.Block event) {
-        event.getBlockColors().register(DSBlocks.DOUBLE_SLAB.get().getBlockColor(), DSBlocks.DOUBLE_SLAB.get());
-        event.getBlockColors().register(DSBlocks.VERTICAL_SLAB.get().getBlockColor(), DSBlocks.VERTICAL_SLAB.get());
+    private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
+        event.register(DSBlocks.DOUBLE_SLAB.get().getBlockColor(), DSBlocks.DOUBLE_SLAB.get());
+        event.register(DSBlocks.VERTICAL_SLAB.get().getBlockColor(), DSBlocks.VERTICAL_SLAB.get());
     }
 
-    private void registerItemColours(final ColorHandlerEvent.Item event) {
-        event.getItemColors().register(DSItems.VERTICAL_SLAB.get().getItemColor(), DSItems.VERTICAL_SLAB.get());
+    private void registerItemColours(final RegisterColorHandlersEvent.Item event) {
+        event.register(DSItems.VERTICAL_SLAB.get().getItemColor(), DSItems.VERTICAL_SLAB.get());
     }
 }
