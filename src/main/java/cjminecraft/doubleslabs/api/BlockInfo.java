@@ -122,7 +122,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundTag>, ICa
             ((IWorldWrapper<?>) this.world).setWorld(world);
         else if (this.tile != null || (this.support != null && this.state != null && this.support.requiresWrappedWorld(this.state)))
             this.world = world instanceof ServerLevel ? new ServerWorldWrapper((ServerLevel) world) : new WorldWrapper(world);
-        else
+        else if (world != null)
             this.world = world;
 
         if (this.world instanceof IWorldWrapper<?>) {
