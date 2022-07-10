@@ -94,8 +94,6 @@ public class ClientProxy implements IProxy {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         DSKeyBindings.register();
-        ItemBlockRenderTypes.setRenderLayer(DSBlocks.DOUBLE_SLAB.get(), layer -> true);
-        ItemBlockRenderTypes.setRenderLayer(DSBlocks.VERTICAL_SLAB.get(), layer -> true);
         ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_CAMPFIRE.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(DSBlocks.RAISED_SOUL_CAMPFIRE.get(), RenderType.cutout());
 //        ModList list = ModList.get();
