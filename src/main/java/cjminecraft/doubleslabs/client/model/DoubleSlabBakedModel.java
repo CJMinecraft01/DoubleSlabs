@@ -53,7 +53,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
                     BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
-                    if (model.getRenderTypes(doubleState, rand, ModelData.EMPTY).contains(renderType) || renderType == null) {
+                    if (renderType == null || model.getRenderTypes(doubleState, rand, ModelData.EMPTY).contains(renderType)) {
                         return model.getQuads(doubleState, side, rand, ModelData.EMPTY, renderType);
                     }
                     return Lists.newArrayList();
