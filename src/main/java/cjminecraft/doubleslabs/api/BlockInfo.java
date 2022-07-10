@@ -148,8 +148,10 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundTag>, ICa
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        if (nbt.contains("state"))
+        if (nbt.contains("state")) {
             this.state = NbtUtils.readBlockState(nbt.getCompound("state"));
+            this.support = SlabSupport.getSlabSupport(this.getWorld(), this.getPos(), this.state);
+        }
         if (nbt.contains("tile"))
             this.tile = BlockEntity.loadStatic(this.slab.getBlockPos(), this.state, nbt.getCompound("tile"));
         // If the world is not wrapped, then we should wrap the world
