@@ -410,16 +410,6 @@ public class DoubleSlabCulling {
             }
         }
 
-        IBlockInfo block = positive ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo();
-
-        if (block.getBlockState() != null) {
-            IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(world, pos, block.getBlockState());
-            if (horizontalSlabSupport != null) {
-                BlockState doubleState = horizontalSlabSupport.getStateForHalf(Minecraft.getInstance().level, pos, block.getBlockState(), SlabType.DOUBLE);
-                return Block.shouldRenderFace(doubleState, world, pos, direction, otherPos);
-            }
-        }
-
         return Block.shouldRenderFace(state, world, pos, direction, otherPos);
     }
 
