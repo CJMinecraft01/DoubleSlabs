@@ -5,7 +5,7 @@ function initializeCoreMod() {
                 'type': 'METHOD',
                 'class': 'net.minecraft.client.renderer.block.ModelBlockRenderer',
                 'methodName': 'tesselateWithAO',
-                'methodDesc': '(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLjava/util/Random;JILnet/minecraftforge/client/model/data/IModelData;)Z'
+                'methodDesc': '(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/IModelData;net/minecraft/client/renderer/RenderType;)Z'
             },
             'transformer': function (method) {
                 var ASM = Java.type('net.minecraftforge.coremod.api.ASMAPI');
@@ -32,10 +32,11 @@ function initializeCoreMod() {
                 newInstructions.add(new VarInsnNode(Opcodes.LLOAD, 9));
                 newInstructions.add(new VarInsnNode(Opcodes.ILOAD, 11));
                 newInstructions.add(new VarInsnNode(Opcodes.ALOAD, 12));
+                newInstructions.add(new VarInsnNode(Opcodes.ALOAD, 13));
                 newInstructions.add(ASM.buildMethodCall(
                     "cjminecraft/doubleslabs/mixin/ModelBlockRendererMixin",
                     "tesselateWithAO",
-                    "(Lnet/minecraft/client/renderer/block/ModelBlockRenderer;Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLjava/util/Random;JILnet/minecraftforge/client/model/data/IModelData;)Z",
+                    "(Lnet/minecraft/client/renderer/block/ModelBlockRenderer;Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/IModelData;net/minecraft/client/renderer/RenderType;)Z",
                     ASM.MethodType.STATIC));
                 newInstructions.add(new InsnNode(Opcodes.DUP));
                 newInstructions.add(new JumpInsnNode(Opcodes.IFEQ, escape));
@@ -52,7 +53,7 @@ function initializeCoreMod() {
                 'type': 'METHOD',
                 'class': 'net.minecraft.client.renderer.block.ModelBlockRenderer',
                 'methodName': 'tesselateWithoutAO',
-                'methodDesc': '(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLjava/util/Random;JILnet/minecraftforge/client/model/data/IModelData;)Z'
+                'methodDesc': '(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/IModelData;net/minecraft/client/renderer/RenderType;)Z'
             },
             'transformer': function (method) {
                 var ASM = Java.type('net.minecraftforge.coremod.api.ASMAPI');
@@ -79,10 +80,11 @@ function initializeCoreMod() {
                 newInstructions.add(new VarInsnNode(Opcodes.LLOAD, 9));
                 newInstructions.add(new VarInsnNode(Opcodes.ILOAD, 11));
                 newInstructions.add(new VarInsnNode(Opcodes.ALOAD, 12));
+                newInstructions.add(new VarInsnNode(Opcodes.ALOAD, 13));
                 newInstructions.add(ASM.buildMethodCall(
                     "cjminecraft/doubleslabs/mixin/ModelBlockRendererMixin",
                     "tesselateWithoutAO",
-                    "(Lnet/minecraft/client/renderer/block/ModelBlockRenderer;Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLjava/util/Random;JILnet/minecraftforge/client/model/data/IModelData;)Z",
+                    "(Lnet/minecraft/client/renderer/block/ModelBlockRenderer;Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/IModelData;net/minecraft/client/renderer/RenderType;)Z",
                     ASM.MethodType.STATIC));
                 newInstructions.add(new InsnNode(Opcodes.DUP));
                 newInstructions.add(new JumpInsnNode(Opcodes.IFEQ, escape));

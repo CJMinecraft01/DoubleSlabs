@@ -9,19 +9,20 @@ import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.BitSet;
@@ -33,7 +34,7 @@ public class ModelBlockRendererMixin {
 
     private static final Direction[] DIRECTIONS = Direction.values();
 
-    public static boolean tesselateWithAO(ModelBlockRenderer renderer, BlockAndTintGetter world, BakedModel model, BlockState state, BlockPos pos, PoseStack stack, VertexConsumer buffer, boolean checkSides, Random random, long rand, int combinedOverlay, IModelData modelData) {
+    public static boolean tesselateWithAO(ModelBlockRenderer renderer, BlockAndTintGetter world, BakedModel model, BlockState state, BlockPos pos, PoseStack stack, VertexConsumer buffer, boolean checkSides, RandomSource random, long rand, int combinedOverlay, ModelData modelData, RenderType renderType) {
         if (model instanceof DynamicSlabBakedModel) {
             boolean flag = false;
             float[] afloat = new float[DIRECTIONS.length * 2];
@@ -57,7 +58,7 @@ public class ModelBlockRendererMixin {
                 random.setSeed(rand);
 
                 if (doubleSlab) {
-                    List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
+                    List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
                     if (!list.isEmpty()) {
                         blockpos$mutableblockpos.setWithOffset(pos, direction);
                         if (!checkSides || DoubleSlabCulling.shouldDoubleSlabSideBeRendered(state, world, pos, direction)) {
@@ -67,8 +68,8 @@ public class ModelBlockRendererMixin {
                     }
                 } else {
                     if (renderPositive) {
-                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
-                        List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
+                        modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, true).build();
+                        List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
 
                         if (!list.isEmpty()) {
                             blockpos$mutableblockpos.setWithOffset(pos, direction);
@@ -80,14 +81,14 @@ public class ModelBlockRendererMixin {
                     }
                     if (renderNegative) {
                         List<BakedQuad> list;
-                        if (MinecraftForgeClient.getRenderType() == null && model instanceof VerticalSlabBakedModel) {
+                        if (renderType == null && model instanceof VerticalSlabBakedModel) {
                             // Handle the block breaking animation for a single vertical slab on the negative half
                             // We must flip the direction of the facing in order to get the correct half rendered
                             BlockState newState = state.setValue(VerticalSlabBlock.FACING, state.getValue(VerticalSlabBlock.FACING).getOpposite());
-                            list = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData);
+                            list = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData, renderType);
                         } else {
-                            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
-                            list = model.getQuads(state, direction, random, modelData);
+                            modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, false).build();
+                            list = model.getQuads(state, direction, random, modelData, renderType);
                         }
 
                         if (!list.isEmpty()) {
@@ -101,10 +102,10 @@ public class ModelBlockRendererMixin {
                 }
             }
 
-            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, null);
+            modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, null).build();
 
             random.setSeed(rand);
-            List<BakedQuad> list1 = model.getQuads(state, null, random, modelData);
+            List<BakedQuad> list1 = model.getQuads(state, null, random, modelData, renderType);
             if (!list1.isEmpty()) {
                 renderModelFaceAO(renderer, world, state, pos, stack, buffer, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, combinedOverlay);
                 flag = true;
@@ -115,7 +116,7 @@ public class ModelBlockRendererMixin {
         return false;
     }
 
-    public static boolean tesselateWithoutAO(ModelBlockRenderer renderer, BlockAndTintGetter world, BakedModel model, BlockState state, BlockPos pos, PoseStack stack, VertexConsumer buffer, boolean checkSides, Random random, long rand, int combinedLight, IModelData modelData) {
+    public static boolean tesselateWithoutAO(ModelBlockRenderer renderer, BlockAndTintGetter world, BakedModel model, BlockState state, BlockPos pos, PoseStack stack, VertexConsumer buffer, boolean checkSides, RandomSource random, long rand, int combinedLight, ModelData modelData, RenderType renderType) {
         if (model instanceof DynamicSlabBakedModel) {
             boolean flag = false;
             BitSet bitset = new BitSet(3);
@@ -137,7 +138,7 @@ public class ModelBlockRendererMixin {
                 random.setSeed(rand);
 
                 if (doubleSlab) {
-                    List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
+                    List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
                     if (!list.isEmpty()) {
                         blockpos$mutableblockpos.setWithOffset(pos, direction);
                         if (!checkSides || DoubleSlabCulling.shouldDoubleSlabSideBeRendered(state, world, pos, direction)) {
@@ -148,8 +149,8 @@ public class ModelBlockRendererMixin {
                     }
                 } else {
                     if (renderPositive) {
-                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, true);
-                        List<BakedQuad> list = model.getQuads(state, direction, random, modelData);
+                        modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, true).build();
+                        List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
                         if (!list.isEmpty()) {
                             blockpos$mutableblockpos.setWithOffset(pos, direction);
                             if (!checkSides || DoubleSlabCulling.shouldSideBeRendered(state, world, pos, direction, true)) {
@@ -160,16 +161,16 @@ public class ModelBlockRendererMixin {
                         }
                     }
                     if (renderNegative) {
-                        modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
+                        modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, false).build();
                         List<BakedQuad> list;
-                        if (MinecraftForgeClient.getRenderType() == null && model instanceof VerticalSlabBakedModel) {
+                        if (renderType == null && model instanceof VerticalSlabBakedModel) {
                             // Handle the block breaking animation for a single vertical slab on the negative half
                             // We must flip the direction of the facing in order to get the correct half rendered
                             BlockState newState = state.setValue(VerticalSlabBlock.FACING, state.getValue(VerticalSlabBlock.FACING).getOpposite());
-                            list = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData);
+                            list = ((VerticalSlabBakedModel) model).getModel(newState).getQuads(newState, direction, random, modelData, renderType);
                         } else {
-                            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
-                            list = model.getQuads(state, direction, random, modelData);
+                            modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, false).build();
+                            list = model.getQuads(state, direction, random, modelData, renderType);
                         }
 
                         if (!list.isEmpty()) {
@@ -184,10 +185,10 @@ public class ModelBlockRendererMixin {
                 }
             }
 
-            modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, null);
+            modelData = modelData.derive().with(DynamicSlabBakedModel.RENDER_POSITIVE, null).build();
 
             random.setSeed(rand);
-            List<BakedQuad> list1 = model.getQuads(state, null, random, modelData);
+            List<BakedQuad> list1 = model.getQuads(state, null, random, modelData, renderType);
             if (!list1.isEmpty()) {
                 renderModelFaceFlat(renderer, world, state, pos, -1, combinedLight, true, stack, buffer, list1, bitset);
                 flag = true;
