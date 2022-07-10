@@ -142,7 +142,7 @@ public class BlockInfo implements IBlockInfo, INBTSerializable<CompoundTag>, ICa
         if (this.state != null)
             nbt.put("state", NbtUtils.writeBlockState(this.state));
         if (this.tile != null)
-            nbt.put("tile", this.tile.saveWithoutMetadata());
+            nbt.put("tile", this.tile.saveWithId());
         return nbt;
     }
 
