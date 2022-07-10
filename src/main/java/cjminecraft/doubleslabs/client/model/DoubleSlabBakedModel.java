@@ -7,20 +7,18 @@ import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
@@ -28,10 +26,10 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        if (extraData.hasProperty(POSITIVE_BLOCK) && extraData.hasProperty(NEGATIVE_BLOCK)) {
-            IBlockInfo positiveBlock = extraData.getData(POSITIVE_BLOCK);
-            IBlockInfo negativeBlock = extraData.getData(NEGATIVE_BLOCK);
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType renderType) {
+        if (extraData.has(POSITIVE_BLOCK) && extraData.has(NEGATIVE_BLOCK)) {
+            IBlockInfo positiveBlock = extraData.get(POSITIVE_BLOCK);
+            IBlockInfo negativeBlock = extraData.get(NEGATIVE_BLOCK);
 
             assert positiveBlock != null;
             assert negativeBlock != null;
@@ -40,10 +38,10 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
             BlockState negativeState = negativeBlock.getBlockState();
 
             if (positiveState == null || negativeState == null)
-                return getFallbackModel().getQuads(state, side, rand, extraData);
+                return getFallbackModel().getQuads(state, side, rand, extraData, renderType);
 
-            boolean renderHalves = extraData.hasProperty(RENDER_POSITIVE) && extraData.getData(RENDER_POSITIVE) != null;
-            boolean renderPositive = renderHalves && extraData.getData(RENDER_POSITIVE);
+            boolean renderHalves = extraData.has(RENDER_POSITIVE) && extraData.get(RENDER_POSITIVE) != null;
+            boolean renderPositive = renderHalves && extraData.get(RENDER_POSITIVE);
 
             boolean topTransparent = ClientConstants.isTransparent(positiveState);
             boolean bottomTransparent = ClientConstants.isTransparent(negativeState);
@@ -54,9 +52,9 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                 IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
-                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null) {
-                        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
-                        return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
+                    BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
+                    if (model.getRenderTypes(doubleState, rand, ModelData.EMPTY).contains(renderType) || renderType == null) {
+                        return model.getQuads(doubleState, side, rand, ModelData.EMPTY, renderType);
                     }
                     return Lists.newArrayList();
                 }
@@ -64,24 +62,24 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             List<BakedQuad> quads = Lists.newArrayList();
 
-            if ((!renderHalves || renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
-                List<BakedQuad> topQuads = getQuadsForState(positiveBlock, side, rand);
+            if (!renderHalves || renderPositive) {
+                List<BakedQuad> topQuads = getQuadsForState(positiveBlock, side, rand, renderType);
                 if (shouldCull)
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                         topQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == Direction.DOWN);
                 quads.addAll(topQuads);
             }
-            if ((!renderHalves || !renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
-                List<BakedQuad> bottomQuads = getQuadsForState(negativeBlock, side, rand);
+            if (!renderHalves || !renderPositive) {
+                List<BakedQuad> bottomQuads = getQuadsForState(negativeBlock, side, rand, renderType);
                 if (shouldCull)
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
                         bottomQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == Direction.UP);
                 quads.addAll(bottomQuads);
             }
             return quads;
-        } else if (MinecraftForgeClient.getRenderType() == null) {
+        } else if (renderType == null) {
             // Rendering the break block animation
         }
-        return getFallbackModel().getQuads(state, side, rand, extraData);
+        return getFallbackModel().getQuads(state, side, rand, extraData, renderType);
     }
 }
