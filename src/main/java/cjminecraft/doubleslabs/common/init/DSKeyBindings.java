@@ -7,7 +7,7 @@ import cjminecraft.doubleslabs.common.network.packet.config.UpdateServerPlayerCo
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,9 +29,10 @@ public class DSKeyBindings {
         KEYBINDINGS.add(makeKeybind("toggleVerticalSlabPlacement", GLFW.GLFW_KEY_CAPS_LOCK, DSKeyBindings::toggleVerticalSlabPlacement));
     }
 
-    public static void register() {
+    @SubscribeEvent
+    public static void register(RegisterKeyMappingsEvent event) {
         for (Pair<KeyMapping, Runnable> keybind : KEYBINDINGS)
-            ClientRegistry.registerKeyBinding(keybind.getKey());
+            event.register(keybind.getKey());
     }
 
     private static Pair<KeyMapping, Runnable> makeKeybind(String name, int key, Runnable action) {
