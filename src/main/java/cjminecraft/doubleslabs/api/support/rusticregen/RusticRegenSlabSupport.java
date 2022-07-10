@@ -18,7 +18,7 @@ import net.minecraftforge.registries.ObjectHolder;
 //@SlabSupportProvider(modid = "rusticregen", priority = 0) todo complete?
 public class RusticRegenSlabSupport extends MinecraftSlabSupport {
 
-    @ObjectHolder("rusticregen:crossed_logs")
+    @ObjectHolder(registryName = "block", value ="rusticregen:crossed_logs")
     public static final Block CROSSED_LOGS = null;
 
     @Override
