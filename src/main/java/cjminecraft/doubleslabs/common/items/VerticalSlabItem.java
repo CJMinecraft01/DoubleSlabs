@@ -11,7 +11,7 @@ import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -47,7 +47,7 @@ public class VerticalSlabItem extends BlockItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
-        if (this.allowdedIn(tab)) {
+        if (this.allowedIn(tab)) {
             ForgeRegistries.ITEMS.forEach(item -> {
                 if (SlabSupport.isHorizontalSlab(item)) {
                     ItemStack stack = new ItemStack(this);
@@ -84,7 +84,7 @@ public class VerticalSlabItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        return new TranslatableComponent("item.vertical_slab.prefix", new TranslatableComponent(this.getDescriptionId(stack)));
+        return Component.translatable("item.vertical_slab.prefix", Component.translatable(this.getDescriptionId(stack)));
     }
 
     @OnlyIn(Dist.CLIENT)
