@@ -42,10 +42,12 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.IBlockRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -60,8 +62,8 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void initializeClient(Consumer<IBlockRenderProperties> consumer) {
-        consumer.accept(new IBlockRenderProperties() {
+    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
+        consumer.accept(new IClientBlockExtensions() {
             @Override
             public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
                 if (target.getType() == HitResult.Type.BLOCK) {
@@ -195,7 +197,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
                     }, buffer -> {
                         buffer.writeBlockPos(i.getPos());
                         buffer.writeBoolean(i.isPositive());
-                        buffer.writeResourceLocation(containerSupport.getContainer(i.getWorld(), pos, state).getRegistryName());
+                        buffer.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.CONTAINERS.getKey(containerSupport.getContainer(i.getWorld(), pos, state))));
                         containerSupport.writeExtraData(world, pos, state).accept(buffer);
                     });
                 }
