@@ -15,8 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -145,8 +144,8 @@ public class SlabTileEntity extends BlockEntity implements IStateContainer {
 
     @Nonnull
     @Override
-    public IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(DynamicSlabBakedModel.NEGATIVE_BLOCK, this.negativeBlockInfo).withInitial(DynamicSlabBakedModel.POSITIVE_BLOCK, this.positiveBlockInfo).build();
+    public ModelData getModelData() {
+        return ModelData.builder().with(DynamicSlabBakedModel.NEGATIVE_BLOCK, this.negativeBlockInfo).with(DynamicSlabBakedModel.POSITIVE_BLOCK, this.positiveBlockInfo).build();
     }
 
     @Override
