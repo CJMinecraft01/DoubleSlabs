@@ -36,8 +36,8 @@ public class ModSpecificDeferredRegister<T> {
     /**
      * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
      *
-     * @param name The new entry's name, it will automatically have the modid prefixed.
-     * @param sup  A factory for the new entry, it should return a new instance every time it is called.
+     * @param name          The new entry's name, it will automatically have the modid prefixed.
+     * @param sup           A factory for the new entry, it should return a new instance every time it is called.
      * @param requiredModid The modid of the mod required before registering this entry
      * @return A RegistryObject that will be updated with when the entries in the registry change.
      */
@@ -50,19 +50,17 @@ public class ModSpecificDeferredRegister<T> {
         return obj;
     }
 
-
     /**
      * Only used for custom registries to fill the forge registry held in this DeferredRegister.
      * <p>
-     * Calls {@link RegistryBuilder#setName} and {@link RegistryBuilder#setType} automatically.
+     * Calls {@link RegistryBuilder#setName} automatically.
      *
-     * @param base The base type to use in the created {@link IForgeRegistry}
-     * @param sup  Supplier of a RegistryBuilder that initializes a {@link IForgeRegistry} during the {@link NewRegistryEvent} event
+     * @param sup Supplier of a RegistryBuilder that initializes a {@link IForgeRegistry} during the {@link NewRegistryEvent} event
      * @return A supplier of the {@link IForgeRegistry} created by the builder.
      * Will always return null until after the {@link NewRegistryEvent} event fires.
      */
-    public <E extends IForgeRegistryEntry<E>> Supplier<IForgeRegistry<E>> makeRegistry(final Class<E> base, final Supplier<RegistryBuilder<E>> sup) {
-        return this.register.makeRegistry(base, sup);
+    public Supplier<IForgeRegistry<T>> makeRegistry(final Supplier<RegistryBuilder<T>> sup) {
+        return this.register.makeRegistry(sup);
     }
 
     /**
