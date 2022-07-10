@@ -13,7 +13,7 @@ public class PlayerEntityWrapper extends Player {
     private final Player player;
 
     public PlayerEntityWrapper(Player player, Level world) {
-        super(world, player.getOnPos(), player.yRotO, player.getGameProfile());
+        super(world, player.getOnPos(), player.yRotO, player.getGameProfile(), player.getProfilePublicKey());
 //        super(player.server, player.getServerWorld(), player.getGameProfile(), player.interactionManager);
         this.player = player;
         this.level = world;
