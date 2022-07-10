@@ -16,14 +16,15 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void renderBlockHighlight(DrawSelectionEvent.HighlightBlock event) {
+    public static void renderBlockHighlight(RenderHighlightEvent.Block event) {
         // Reference net.minecraft.client.renderer.WorldRenderer#drawSelectionBox
 
         BlockState state = Minecraft.getInstance().level.getBlockState(event.getTarget().getBlockPos());
@@ -115,25 +116,24 @@ public class ClientRenderHandler {
     private static String stateToString(@Nullable BlockState state) {
         if (state == null)
             return ChatFormatting.RED + "null";
-        return state.getBlock().getRegistryName().toString() + "[" + state.getValues().entrySet().stream().map(MAP_ENTRY_TO_STRING).collect(Collectors.joining(",")) + "]";
+        return Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(state.getBlock())) + "[" + state.getValues().entrySet().stream().map(MAP_ENTRY_TO_STRING).collect(Collectors.joining(",")) + "]";
     }
 
     private static String tileToString(@Nullable BlockEntity tile) {
         if (tile == null)
             return ChatFormatting.RED + "null";
         String data = tile.getTileData().toString();
-        return ForgeRegistries.BLOCK_ENTITIES.getKey(tile.getType()).toString() + data;
+        return Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITIES.getKey(tile.getType())) + data;
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void renderOverlayText(RenderGameOverlayEvent.Text event) {
+    public static void renderOverlayText(CustomizeGuiOverlayEvent.DebugText event) {
         if (Minecraft.getInstance().options.renderDebug) {
             if (Minecraft.getInstance().hitResult != null && Minecraft.getInstance().level != null && Minecraft.getInstance().hitResult.getType() == BlockHitResult.Type.BLOCK) {
                 BlockPos pos = ((BlockHitResult) Minecraft.getInstance().hitResult).getBlockPos();
                 BlockEntity tileEntity = Minecraft.getInstance().level.getBlockEntity(pos);
-                if (tileEntity instanceof SlabTileEntity) {
-                    SlabTileEntity tile = (SlabTileEntity) tileEntity;
+                if (tileEntity instanceof SlabTileEntity tile) {
                     event.getRight().add("");
                     event.getRight().add("Slab Types");
                     event.getRight().add("Positive Block: " + stateToString(tile.getPositiveBlockInfo().getBlockState()));
