@@ -104,8 +104,25 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         ).collect(Collectors.toList());
     }
 
+    private ChunkRenderTypeSet getRenderTypes(IBlockInfo block, @NotNull RandomSource rand) {
+        BlockState state = block.getBlockState();
+        if (state == null)
+            return ChunkRenderTypeSet.none();
+        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+        ModelData tileData = block.getBlockEntity() != null ? block.getBlockEntity().getModelData() : ModelData.EMPTY;
+        ModelData modelData = model.getModelData(block.getWorld(), block.getPos(), state, tileData);
+        return model.getRenderTypes(state, rand, modelData);
+    }
+
     @Override
     public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+        if (data.has(POSITIVE_BLOCK) && data.has(NEGATIVE_BLOCK)) {
+            IBlockInfo positiveBlock = data.get(POSITIVE_BLOCK);
+            IBlockInfo negativeBlock = data.get(NEGATIVE_BLOCK);
+            assert positiveBlock != null;
+            assert negativeBlock != null;
+            return ChunkRenderTypeSet.union(getRenderTypes(positiveBlock, rand), getRenderTypes(negativeBlock, rand));
+        }
         return ChunkRenderTypeSet.all();
     }
 }
