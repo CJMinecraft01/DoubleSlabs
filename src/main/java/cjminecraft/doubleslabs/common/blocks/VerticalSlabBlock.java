@@ -60,8 +60,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.IBlockRenderProperties;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -266,26 +265,26 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-        return getHalfState(world, pos, target.getLocation().x - pos.getX(), target.getLocation().z - pos.getZ()).map(i -> i.getBlockState().getPickBlock(target, i.getWorld(), pos, player)).orElse(ItemStack.EMPTY);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        return getHalfState(world, pos, target.getLocation().x - pos.getX(), target.getLocation().z - pos.getZ()).map(i -> i.getBlockState().getCloneItemStack(target, i.getWorld(), pos, player)).orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         if (willHarvest)
             return true;
         if (player.isCreative() && player.isCrouching() && state.getValue(DOUBLE)) {
             playerDestroy(world, player, pos, state, world.getBlockEntity(pos), ItemStack.EMPTY);
             return true;
         }
-        return super.removedByPlayer(state, world, pos, player, false, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, false, fluid);
     }
 
     @Override
     public boolean canHarvestBlock(BlockState state, BlockGetter world, BlockPos pos, Player player) {
         BlockHitResult rayTraceResult = RayTraceUtil.rayTrace(player);
         Vec3 hitVec = rayTraceResult.getLocation();
-        return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ()).map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), i.getPos(), player)).orElse(false);
+        return getHalfState(world, pos, hitVec.x - pos.getX(), hitVec.z - pos.getZ()).map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), i.getPos(), player)).orElseGet(() -> super.canHarvestBlock(state, world, pos, player));
     }
 
     @Override
@@ -294,7 +293,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         Vec3 hitVec = rayTraceResult.getType() == BlockHitResult.Type.BLOCK ? rayTraceResult.getLocation() : null;
         if (hitVec == null || te == null) {
             super.playerDestroy(world, player, pos, state, te, stack);
-            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
             world.removeBlockEntity(pos);
         } else {
             if (state.getValue(DOUBLE)) {
@@ -318,7 +317,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
                 blockToRemove.setBlockState(null);
 
-                world.setBlock(pos, state.setValue(DOUBLE, false), Constants.BlockFlags.DEFAULT);
+                world.setBlock(pos, state.setValue(DOUBLE, false), 3);
             } else {
                 SlabTileEntity tile = (SlabTileEntity) te;
                 boolean positive = tile.getPositiveBlockInfo().getBlockState() != null;
@@ -333,7 +332,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
                 blockToRemove.getBlockState().onRemove(blockToRemove.getWorld(), pos, Blocks.AIR.defaultBlockState(), false);
 
-                world.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
+                world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
                 world.removeBlockEntity(pos);
             }
         }

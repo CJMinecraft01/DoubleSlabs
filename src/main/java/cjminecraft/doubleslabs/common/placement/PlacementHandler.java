@@ -34,7 +34,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -91,7 +90,7 @@ public class PlacementHandler {
     private static boolean placeSlab(Level world, BlockPos pos, BlockState state, BlockPlaceContext context, Consumer<SlabTileEntity> setStates) {
         if (!context.canPlace())
             return false;
-        if (world.setBlock(pos, state, Constants.BlockFlags.DEFAULT_AND_RERENDER)) {
+        if (world.setBlock(pos, state, 11)) {
             BlockEntity tileEntity = world.getBlockEntity(pos);
             if (tileEntity instanceof SlabTileEntity) {
                 SlabTileEntity tile = (SlabTileEntity) tileEntity;

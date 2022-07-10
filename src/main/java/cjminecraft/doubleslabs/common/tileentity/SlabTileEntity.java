@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -42,10 +41,10 @@ public class SlabTileEntity extends BlockEntity implements IStateContainer {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.put("negativeBlock", this.negativeBlockInfo.serializeNBT());
         nbt.put("positiveBlock", this.positiveBlockInfo.serializeNBT());
-        return super.save(nbt);
     }
 
     @Override
@@ -68,7 +67,7 @@ public class SlabTileEntity extends BlockEntity implements IStateContainer {
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.serializeNBT());
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class SlabTileEntity extends BlockEntity implements IStateContainer {
         requestModelDataUpdate();
         if (this.level != null) {
             BlockState state = this.level.getBlockState(this.worldPosition);
-            this.level.sendBlockUpdated(this.worldPosition, state, state, Constants.BlockFlags.DEFAULT);
+            this.level.sendBlockUpdated(this.worldPosition, state, state, 3);
             this.level.getLightEngine().checkBlock(this.worldPosition);
         }
     }

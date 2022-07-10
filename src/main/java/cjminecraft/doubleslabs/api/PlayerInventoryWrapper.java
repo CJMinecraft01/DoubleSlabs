@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Inventory;
@@ -191,7 +192,7 @@ public class PlayerInventoryWrapper extends Inventory {
     }
 
     @Override
-    public boolean contains(Tag<Item> tag) {
+    public boolean contains(TagKey<Item> tag) {
         return this.inv.contains(tag);
     }
 

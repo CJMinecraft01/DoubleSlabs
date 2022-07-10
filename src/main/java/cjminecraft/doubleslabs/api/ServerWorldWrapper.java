@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public class ServerWorldWrapper extends ServerLevel implements IWorldWrapper<Ser
     private IStateContainer container;
 
     public ServerWorldWrapper(ServerLevel world) {
-        super(world.getServer(), Util.backgroundExecutor(), world.getServer().storageSource, (ServerLevelData) world.getLevelData(), world.dimension(), world.dimensionType(), new ChunkProgressListener() {
+        super(world.getServer(), Util.backgroundExecutor(), world.getServer().storageSource, (ServerLevelData) world.getLevelData(), world.dimension(), world.dimensionTypeRegistration(), new ChunkProgressListener() {
             @Override
             public void updateSpawnPos(ChunkPos pos) {
 

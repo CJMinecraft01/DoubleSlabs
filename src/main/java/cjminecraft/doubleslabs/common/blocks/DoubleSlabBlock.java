@@ -5,13 +5,9 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
-import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.container.WrappedContainer;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
-import com.mojang.math.Vector3d;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
@@ -47,8 +43,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.IBlockRenderProperties;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -89,6 +84,15 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
+    public boolean canHarvestBlock(BlockState state, BlockGetter world, BlockPos pos, Player player) {
+        BlockHitResult result = RayTraceUtil.rayTrace(player);
+        Vec3 hitVec = result.getLocation();
+        return getHalfState(world, pos, hitVec.y - pos.getY())
+                .map(i -> i.getBlockState().canHarvestBlock(i.getWorld(), pos, player))
+                .orElseGet(() -> super.canHarvestBlock(state, world, pos, player));
+    }
+
+    @Override
     public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
         return both(world, pos, i -> i.getBlockState().propagatesSkylightDown(i.getWorld(), pos));
     }
@@ -105,10 +109,9 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-        return getHalfState(world, pos, target.getLocation().y - pos.getY()).map(i -> i.getBlockState().getPickBlock(target, world, pos, player)).orElse(ItemStack.EMPTY);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        return getHalfState(level, pos, target.getLocation().y - pos.getY()).map(i -> i.getBlockState().getCloneItemStack(target, level, pos, player)).orElse(ItemStack.EMPTY);
     }
-
 
     @Override
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity entity, ItemStack stack) {
@@ -116,7 +119,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
         Vec3 hitVec = result.getType() == HitResult.Type.BLOCK ? result.getLocation() : null;
         if (hitVec == null || entity == null) {
             super.playerDestroy(world, player, pos, state, entity, stack);
-            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
             world.removeBlockEntity(pos);
         } else {
             SlabTileEntity tile = (SlabTileEntity) entity;
@@ -135,7 +138,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
             blockToRemove.getBlockState().onRemove(blockToRemove.getWorld(), pos, Blocks.AIR.defaultBlockState(), false);
 
-            world.setBlock(pos, remainingBlock.getBlockState(), Constants.BlockFlags.DEFAULT);
+            world.setBlock(pos, remainingBlock.getBlockState(), 3);
             if (remainingBlock.getBlockEntity() != null)
                 world.setBlockEntity(remainingBlock.getBlockEntity());
             else

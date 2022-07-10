@@ -43,16 +43,16 @@ public class ClientRenderHandler {
             // We are trying to render the block highlight for the double slab
             if (state.getBlock() == DSBlocks.DOUBLE_SLAB.get()) {
                 // Offset the position of the block for when we render
-                double x = (double) event.getTarget().getBlockPos().getX() - event.getInfo().getPosition().x;
-                double y = (double) event.getTarget().getBlockPos().getY() - event.getInfo().getPosition().y;
-                double z = (double) event.getTarget().getBlockPos().getZ() - event.getInfo().getPosition().z;
+                double x = (double) event.getTarget().getBlockPos().getX() - event.getCamera().getPosition().x;
+                double y = (double) event.getTarget().getBlockPos().getY() - event.getCamera().getPosition().y;
+                double z = (double) event.getTarget().getBlockPos().getZ() - event.getCamera().getPosition().z;
                 // Check if we are looking at the top slab or bottom slab
                 if (event.getTarget().getLocation().y - event.getTarget().getBlockPos().getY() > 0.5) {
                     // Draw the top slab bounding box
-                    LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y + 0.5f, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                    LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x, y + 0.5f, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                 } else {
                     // Draw the bottom slab bounding box
-                    LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 0.5f, z + 1, 0, 0, 0, 0.4f);
+                    LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 0.5f, z + 1, 0, 0, 0, 0.4f);
                 }
                 // Don't draw the default block highlight
                 event.setCanceled(true);
@@ -60,19 +60,19 @@ public class ClientRenderHandler {
 
             if (state.getBlock() == DSBlocks.VERTICAL_SLAB.get() && state.getValue(VerticalSlabBlock.DOUBLE)) {
                 // Offset the position of the block for when we render
-                double x = (double) event.getTarget().getBlockPos().getX() - event.getInfo().getPosition().x;
-                double y = (double) event.getTarget().getBlockPos().getY() - event.getInfo().getPosition().y;
-                double z = (double) event.getTarget().getBlockPos().getZ() - event.getInfo().getPosition().z;
+                double x = (double) event.getTarget().getBlockPos().getX() - event.getCamera().getPosition().x;
+                double y = (double) event.getTarget().getBlockPos().getY() - event.getCamera().getPosition().y;
+                double z = (double) event.getTarget().getBlockPos().getZ() - event.getCamera().getPosition().z;
 
                 switch (state.getValue(VerticalSlabBlock.FACING).getAxis()) {
                     case X:
                         // Check if we are looking at the top slab or bottom slab
                         if (event.getTarget().getLocation().x - event.getTarget().getBlockPos().getX() > 0.5) {
                             // Draw the top slab bounding box
-                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x + 0.5f, y, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x + 0.5f, y, z, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                         } else {
                             // Draw the bottom slab bounding box
-                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 0.5f, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x, y, z, x + 0.5f, y + 1, z + 1, 0, 0, 0, 0.4f);
                         }
                         // Don't draw the default block highlight
                         event.setCanceled(true);
@@ -81,10 +81,10 @@ public class ClientRenderHandler {
                         // Check if we are looking at the top slab or bottom slab
                         if (event.getTarget().getLocation().z - event.getTarget().getBlockPos().getZ() > 0.5) {
                             // Draw the top slab bounding box
-                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z + 0.5f, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x, y, z + 0.5f, x + 1, y + 1, z + 1, 0, 0, 0, 0.4f);
                         } else {
                             // Draw the bottom slab bounding box
-                            LevelRenderer.renderLineBox(event.getMatrix(), event.getBuffers().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 1, z + 0.5f, 0, 0, 0, 0.4f);
+                            LevelRenderer.renderLineBox(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), x, y, z, x + 1, y + 1, z + 0.5f, 0, 0, 0, 0.4f);
                         }
                         // Don't draw the default block highlight
                         event.setCanceled(true);

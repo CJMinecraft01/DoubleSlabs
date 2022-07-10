@@ -1,11 +1,14 @@
 package cjminecraft.doubleslabs.common.config;
 
+import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -13,6 +16,7 @@ import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -45,8 +49,7 @@ public class DSConfig {
                 return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                Tag<Item> tag = ItemTags.getAllTags().getTag(tagLocation);
-                return tag != null && tag.contains(item);
+                return ForgeRegistries.ITEMS.tags().getTag(ForgeRegistries.ITEMS.tags().createTagKey(tagLocation)).contains(item);
             }
             return entry.equals(item.getRegistryName().toString());
         });
@@ -60,8 +63,7 @@ public class DSConfig {
                 return true;
             if (entry.startsWith("#")) {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
-                Tag<Block> tag = BlockTags.getAllTags().getTag(tagLocation);
-                return tag != null && tag.contains(block);
+                return ForgeRegistries.BLOCKS.tags().getTag(ForgeRegistries.BLOCKS.tags().createTagKey(tagLocation)).contains(block);
             }
             return entry.equals(block.getRegistryName().toString());
         });
@@ -126,7 +128,8 @@ public class DSConfig {
         }
 
         public boolean isBlacklistedCraftingItem(Item item) {
-            return isItemPresent(verticalSlabCraftingBlacklist, item);
+            IHorizontalSlabSupport support = SlabSupport.getHorizontalSlabSupport(item);
+            return isItemPresent(verticalSlabCraftingBlacklist, item) || (support != null && !support.canCraft(item));
         }
     }
 

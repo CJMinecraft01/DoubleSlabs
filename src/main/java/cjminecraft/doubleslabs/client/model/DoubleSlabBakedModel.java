@@ -54,7 +54,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                 IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
-                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null) {
                         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
                         return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
                     }
@@ -64,14 +64,14 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
 
             List<BakedQuad> quads = Lists.newArrayList();
 
-            if ((!renderHalves || renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
                 List<BakedQuad> topQuads = getQuadsForState(positiveBlock, side, rand);
                 if (shouldCull)
                     if ((!bottomTransparent && !topTransparent) || (topTransparent && !bottomTransparent) || (topTransparent && bottomTransparent))
                         topQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == Direction.DOWN);
                 quads.addAll(topQuads);
             }
-            if ((!renderHalves || !renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || !renderPositive) && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
                 List<BakedQuad> bottomQuads = getQuadsForState(negativeBlock, side, rand);
                 if (shouldCull)
                     if ((!topTransparent && !bottomTransparent) || (bottomTransparent && !topTransparent) || (topTransparent && bottomTransparent))
@@ -79,7 +79,7 @@ public class DoubleSlabBakedModel extends DynamicSlabBakedModel {
                 quads.addAll(bottomQuads);
             }
             return quads;
-        } else if (MinecraftForgeClient.getRenderLayer() == null) {
+        } else if (MinecraftForgeClient.getRenderType() == null) {
             // Rendering the break block animation
         }
         return getFallbackModel().getQuads(state, side, rand, extraData);

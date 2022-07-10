@@ -20,9 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
@@ -54,7 +51,7 @@ public class ClientConstants {
         return VERTICAL_SLAB_ITEM_MODELS.getOrDefault(item, getFallbackModel());
     }
 
-    public static BakedModel bake(ModelLoader modelLoader, UnbakedModel baseModel, ResourceLocation location, boolean uvlock, ModelState transform) {
+    public static BakedModel bake(ModelBakery modelLoader, UnbakedModel baseModel, ResourceLocation location, boolean uvlock, ModelState transform) {
         if (baseModel instanceof MultiVariant) {
             MultiVariant model = (MultiVariant) baseModel;
             if (model.getVariants().isEmpty()) {
@@ -75,7 +72,7 @@ public class ClientConstants {
         }
     }
 
-    public static void bakeVerticalSlabModels(ModelLoader modelLoader) {
+    public static void bakeVerticalSlabModels(ModelBakery modelLoader) {
         VERTICAL_SLAB_MODELS.clear();
         VERTICAL_SLAB_ITEM_MODELS.clear();
 

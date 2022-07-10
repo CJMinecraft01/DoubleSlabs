@@ -5,7 +5,7 @@ import cjminecraft.doubleslabs.common.capability.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
 import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

@@ -1,83 +1,26 @@
 package cjminecraft.doubleslabs.common.util;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fmllegacy.RegistryObject;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryManager;
+import net.minecraftforge.registries.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 import java.util.function.Supplier;
 
-public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
-    private final Class<T> superType;
+public class ModSpecificDeferredRegister<T> {
+
+    private final DeferredRegister<T> register;
     private final String modid;
-    private final Map<RegistryObject<T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
-    private final Set<RegistryObject<T>> entriesView = Collections.unmodifiableSet(entries.keySet());
-    private IForgeRegistry<T> type;
-    private Supplier<RegistryBuilder<T>> registryFactory;
-    private boolean seenRegisterEvent = false;
-    private ModSpecificDeferredRegister(Class<T> base, String modid) {
-        this.superType = base;
+
+    public ModSpecificDeferredRegister(DeferredRegister<T> register, String modid) {
+        this.register = register;
         this.modid = modid;
     }
-    private ModSpecificDeferredRegister(IForgeRegistry<T> reg, String modid) {
-        this(reg.getRegistrySuperType(), modid);
-        this.type = reg;
-    }
-
-    /**
-     * Use for vanilla/forge registries. See example above.
-     */
-    public static <B extends IForgeRegistryEntry<B>> ModSpecificDeferredRegister<B> create(IForgeRegistry<B> reg, String modid) {
-        return new ModSpecificDeferredRegister<B>(reg, modid);
-    }
-
-    /**
-     * Use for custom registries that are made during the NewRegistry event.
-     */
-    public static <B extends IForgeRegistryEntry<B>> ModSpecificDeferredRegister<B> create(Class<B> base, String modid) {
-        return new ModSpecificDeferredRegister<B>(base, modid);
-    }
-
-    /**
-     * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
-     *
-     * @param name The new entry's name, it will automatically have the modid prefixed.
-     * @param sup  A factory for the new entry, it should return a new instance every time it is called.
-     * @param requiredModid The modid of the mod that should be loaded in order for this entry to be registered
-     * @return A RegistryObject that will be updated with when the entries in the registry change.
-     */
-    @SuppressWarnings("unchecked")
-    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup, final String requiredModid) {
-        if (seenRegisterEvent)
-            throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegistryEvent.Register has been fired.");
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(sup);
-        final ResourceLocation key = new ResourceLocation(modid, name);
-
-        RegistryObject<I> ret;
-        if (this.type != null)
-            ret = RegistryObject.of(key, this.type);
-        else if (this.superType != null)
-            ret = RegistryObject.of(key, this.superType, this.modid);
-        else
-            throw new IllegalStateException("Could not create RegistryObject in DeferredRegister");
-
-        if (!ModList.get().isLoaded(requiredModid))
-            return ret;
-
-        if (entries.putIfAbsent((RegistryObject<T>) ret, () -> sup.get().setRegistryName(key)) != null) {
-            throw new IllegalArgumentException("Duplicate registration " + name);
-        }
-
-        return ret;
-    }
 
     /**
      * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
@@ -86,46 +29,116 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
      * @param sup  A factory for the new entry, it should return a new instance every time it is called.
      * @return A RegistryObject that will be updated with when the entries in the registry change.
      */
-    @SuppressWarnings("unchecked")
     public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup) {
-        if (seenRegisterEvent)
-            throw new IllegalStateException("Cannot register new entries to DeferredRegister after RegistryEvent.Register has been fired.");
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(sup);
-        final ResourceLocation key = new ResourceLocation(modid, name);
-
-        RegistryObject<I> ret;
-        if (this.type != null)
-            ret = RegistryObject.of(key, this.type);
-        else if (this.superType != null)
-            ret = RegistryObject.of(key, this.superType, this.modid);
-        else
-            throw new IllegalStateException("Could not create RegistryObject in DeferredRegister");
-
-        if (entries.putIfAbsent((RegistryObject<T>) ret, () -> sup.get().setRegistryName(key)) != null) {
-            throw new IllegalArgumentException("Duplicate registration " + name);
-        }
-
-        return ret;
+        return this.register.register(name, sup);
     }
 
     /**
-     * For custom registries only, fills the {@link #registryFactory} to be called later see {@link #register(IEventBus)}
+     * Adds a new supplier to the list of entries to be registered, and returns a RegistryObject that will be populated with the created entry automatically.
+     *
+     * @param name The new entry's name, it will automatically have the modid prefixed.
+     * @param sup  A factory for the new entry, it should return a new instance every time it is called.
+     * @param requiredModid The modid of the mod required before registering this entry
+     * @return A RegistryObject that will be updated with when the entries in the registry change.
+     */
+    public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup, String requiredModid) {
+        RegistryObject<I> obj = this.register.register(name, sup);
+        if (!ModList.get().isLoaded(requiredModid)) {
+            // If the mod isn't loaded, remove the entry from the list of entries
+            this.register.getEntries().remove(obj);
+        }
+        return obj;
+    }
+
+
+    /**
+     * Only used for custom registries to fill the forge registry held in this DeferredRegister.
      * <p>
      * Calls {@link RegistryBuilder#setName} and {@link RegistryBuilder#setType} automatically.
      *
-     * @param name Path of the registry's {@link ResourceLocation}
-     * @param sup  Supplier of the RegistryBuilder that is called to fill {@link #type} during the NewRegistry event
+     * @param base The base type to use in the created {@link IForgeRegistry}
+     * @param sup  Supplier of a RegistryBuilder that initializes a {@link IForgeRegistry} during the {@link NewRegistryEvent} event
      * @return A supplier of the {@link IForgeRegistry} created by the builder.
+     * Will always return null until after the {@link NewRegistryEvent} event fires.
      */
-    public Supplier<IForgeRegistry<T>> makeRegistry(final String name, final Supplier<RegistryBuilder<T>> sup) {
-        if (this.superType == null)
-            throw new IllegalStateException("Cannot create a registry without specifying a base type");
-        if (this.type != null || this.registryFactory != null)
-            throw new IllegalStateException("Cannot create a registry for a type that already exists");
+    public <E extends IForgeRegistryEntry<E>> Supplier<IForgeRegistry<E>> makeRegistry(final Class<E> base, final Supplier<RegistryBuilder<E>> sup) {
+        return this.register.makeRegistry(base, sup);
+    }
 
-        this.registryFactory = () -> sup.get().setName(new ResourceLocation(modid, name)).setType(this.superType);
-        return () -> this.type;
+    /**
+     * Creates a tag key based on the current modid and provided path as the location and the registry name linked to this DeferredRegister.
+     * To control the namespace, use {@link #createTagKey(ResourceLocation)}.
+     *
+     * @throws IllegalStateException If the registry name was not set.
+     *                               Use the factories that take {@link DeferredRegister#create(ResourceLocation, String) a registry name} or {@link DeferredRegister#create(IForgeRegistry, String) forge registry}.
+     * @see #createTagKey(ResourceLocation)
+     * @see #createOptionalTagKey(String, Set)
+     */
+    @NotNull
+    public TagKey<T> createTagKey(@NotNull String path) {
+        return this.register.createTagKey(path);
+    }
+
+    /**
+     * Creates a tag key based on the provided resource location and the registry name linked to this DeferredRegister.
+     * To use the current modid as the namespace, use {@link #createTagKey(String)}.
+     *
+     * @throws IllegalStateException If the registry name was not set.
+     *                               Use the factories that take {@link DeferredRegister#create(ResourceLocation, String) a registry name} or {@link DeferredRegister#create(IForgeRegistry, String) forge registry}.
+     * @see #createTagKey(String)
+     * @see #createOptionalTagKey(ResourceLocation, Set)
+     */
+    @NotNull
+    public TagKey<T> createTagKey(@NotNull ResourceLocation location) {
+        return this.register.createTagKey(location);
+    }
+
+    /**
+     * Creates a tag key with the current modid and provided path that will use the set of defaults if the tag is not loaded from any datapacks.
+     * Useful on the client side when a server may not provide a specific tag.
+     * To control the namespace, use {@link #createOptionalTagKey(ResourceLocation, Set)}.
+     *
+     * @throws IllegalStateException If the registry name was not set.
+     *                               Use the factories that take {@link DeferredRegister#create(ResourceLocation, String) a registry name} or {@link DeferredRegister#create(IForgeRegistry, String) forge registry}.
+     * @see #createTagKey(String)
+     * @see #createTagKey(ResourceLocation)
+     * @see #createOptionalTagKey(ResourceLocation, Set)
+     * @see #addOptionalTagDefaults(TagKey, Set)
+     */
+    @NotNull
+    public TagKey<T> createOptionalTagKey(@NotNull String path, @NotNull Set<? extends Supplier<T>> defaults) {
+        return this.register.createOptionalTagKey(path, defaults);
+    }
+
+    /**
+     * Creates a tag key with the provided location that will use the set of defaults if the tag is not loaded from any datapacks.
+     * Useful on the client side when a server may not provide a specific tag.
+     * To use the current modid as the namespace, use {@link #createOptionalTagKey(String, Set)}.
+     *
+     * @throws IllegalStateException If the registry name was not set.
+     *                               Use the factories that take {@link DeferredRegister#create(ResourceLocation, String) a registry name} or {@link DeferredRegister#create(IForgeRegistry, String) forge registry}.
+     * @see #createTagKey(String)
+     * @see #createTagKey(ResourceLocation)
+     * @see #createOptionalTagKey(String, Set)
+     * @see #addOptionalTagDefaults(TagKey, Set)
+     */
+    @NotNull
+    public TagKey<T> createOptionalTagKey(@NotNull ResourceLocation location, @NotNull Set<? extends Supplier<T>> defaults) {
+        return this.register.createOptionalTagKey(location, defaults);
+    }
+
+    /**
+     * Adds defaults to an existing tag key.
+     * The set of defaults will be bound to the tag if the tag is not loaded from any datapacks.
+     * Useful on the client side when a server may not provide a specific tag.
+     *
+     * @throws IllegalStateException If the registry name was not set.
+     *                               Use the factories that take {@link DeferredRegister#create(ResourceLocation, String) a registry name} or {@link DeferredRegister#create(IForgeRegistry, String) forge registry}.
+     * @see #createOptionalTagKey(String, Set)
+     * @see #createOptionalTagKey(ResourceLocation, Set)
+     */
+    public void addOptionalTagDefaults(@NotNull TagKey<T> name, @NotNull Set<? extends Supplier<T>> defaults) {
+        this.register.addOptionalTagDefaults(name, defaults);
     }
 
     /**
@@ -135,61 +148,22 @@ public class ModSpecificDeferredRegister<T extends IForgeRegistryEntry<T>> {
      * @param bus The Mod Specific event bus.
      */
     public void register(IEventBus bus) {
-        bus.register(new ModSpecificDeferredRegister.EventDispatcher(this));
-        if (this.type == null && this.registryFactory != null) {
-            bus.addListener(this::createRegistry);
-        }
+        this.register.register(bus);
     }
 
     /**
      * @return The unmodifiable view of registered entries. Useful for bulk operations on all values.
      */
     public Collection<RegistryObject<T>> getEntries() {
-        return entriesView;
+        return this.register.getEntries();
     }
 
-    private void addEntries(RegistryEvent.Register<?> event) {
-        if (this.type == null && this.registryFactory == null) {
-            //If there is no type yet and we don't have a registry factory, attempt to capture the registry
-            //Note: This will only ever get run on the first registry event, as after that time,
-            // the type will no longer be null. This is needed here rather than during the NewRegistry event
-            // to ensure that mods can properly use deferred registers for custom registries added by other mods
-            captureRegistry();
-        }
-        if (this.type != null && event.getGenericType() == this.type.getRegistrySuperType()) {
-            this.seenRegisterEvent = true;
-            @SuppressWarnings("unchecked")
-            IForgeRegistry<T> reg = (IForgeRegistry<T>) event.getRegistry();
-            for (Map.Entry<RegistryObject<T>, Supplier<? extends T>> e : entries.entrySet()) {
-                reg.register(e.getValue().get());
-                e.getKey().updateReference(reg);
-            }
-        }
+    /**
+     * @return The registry name stored in this deferred register. Useful for creating new deferred registers based on an existing one.
+     */
+    @Nullable
+    public ResourceLocation getRegistryName() {
+        return this.register.getRegistryName();
     }
 
-    private void createRegistry(RegistryEvent.NewRegistry event) {
-        this.type = this.registryFactory.get().create();
-    }
-
-    private void captureRegistry() {
-        if (this.superType != null) {
-            this.type = RegistryManager.ACTIVE.getRegistry(this.superType);
-            if (this.type == null)
-                throw new IllegalStateException("Unable to find registry for type " + this.superType.getName() + " for modid \"" + modid + "\" after NewRegistry event");
-        } else
-            throw new IllegalStateException("Unable to find registry for mod \"" + modid + "\" No lookup criteria specified.");
-    }
-
-    public static class EventDispatcher {
-        private final ModSpecificDeferredRegister<?> register;
-
-        public EventDispatcher(final ModSpecificDeferredRegister<?> register) {
-            this.register = register;
-        }
-
-        @SubscribeEvent
-        public void handleEvent(RegistryEvent.Register<?> event) {
-            register.addEntries(event);
-        }
-    }
 }

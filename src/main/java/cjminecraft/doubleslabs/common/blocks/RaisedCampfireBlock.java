@@ -84,7 +84,7 @@ public class RaisedCampfireBlock extends CampfireBlock {
 
 
     @Override
-    public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-        return getParent().map(b -> b.getPickBlock(state, target, world, pos, player)).orElseGet(() -> super.getPickBlock(state, target, world, pos, player));
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+        return getParent().map(b -> b.getCloneItemStack(state, target, world, pos, player)).orElseGet(() -> super.getCloneItemStack(state, target, world, pos, player));
     }
 }

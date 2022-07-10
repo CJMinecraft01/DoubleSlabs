@@ -2,27 +2,28 @@ package cjminecraft.doubleslabs.api;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.TickList;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.entity.*;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.ticks.LevelTickAccess;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +41,7 @@ public class WorldWrapper extends Level implements IWorldWrapper<Level> {
     private boolean positive;
 
     public WorldWrapper(Level level) {
-        super((WritableLevelData) level.getLevelData(), level.dimension(), level.dimensionType(), level.getProfilerSupplier(), level.isClientSide, level.isDebug(), 0L);
+        super((WritableLevelData) level.getLevelData(), level.dimension(), level.dimensionTypeRegistration(), level.getProfilerSupplier(), level.isClientSide, level.isDebug(), 0L);
         this.world = level;
     }
 
@@ -217,11 +218,6 @@ public class WorldWrapper extends Level implements IWorldWrapper<Level> {
     }
 
     @Override
-    public TagContainer getTagManager() {
-        return this.world.getTagManager();
-    }
-
-    @Override
     protected LevelEntityGetter<Entity> getEntities() {
         return new LevelEntityGetter<>() {
             @Nullable
@@ -266,15 +262,14 @@ public class WorldWrapper extends Level implements IWorldWrapper<Level> {
     }
 
     @Override
-    public TickList<Block> getBlockTicks() {
+    public LevelTickAccess<Block> getBlockTicks() {
         return this.world.getBlockTicks();
     }
 
     @Override
-    public TickList<Fluid> getLiquidTicks() {
-        return this.world.getLiquidTicks();
+    public LevelTickAccess<Fluid> getFluidTicks() {
+        return this.world.getFluidTicks();
     }
-
     @Override
     public ChunkSource getChunkSource() {
         return this.world.getChunkSource();
@@ -306,7 +301,7 @@ public class WorldWrapper extends Level implements IWorldWrapper<Level> {
     }
 
     @Override
-    public Biome getUncachedNoiseBiome(int p_46809_, int p_46810_, int p_46811_) {
+    public Holder<Biome> getUncachedNoiseBiome(int p_46809_, int p_46810_, int p_46811_) {
         return this.world.getUncachedNoiseBiome(p_46809_, p_46810_, p_46811_);
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -51,6 +52,7 @@ public class DoubleSlabs {
         ContainerSupport.load();
 
         mod.addListener(this::commonSetup);
+        mod.addListener(this::registerCapabilities);
 
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
@@ -63,6 +65,10 @@ public class DoubleSlabs {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.registerPackets();
-        PlayerConfigCapability.register();
+
+    }
+
+    private void registerCapabilities(final RegisterCapabilitiesEvent event) {
+        PlayerConfigCapability.register(event);
     }
 }

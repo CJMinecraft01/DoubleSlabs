@@ -80,7 +80,7 @@ public class ModelBlockRendererMixin {
                     }
                     if (renderNegative) {
                         List<BakedQuad> list;
-                        if (MinecraftForgeClient.getRenderLayer() == null && model instanceof VerticalSlabBakedModel) {
+                        if (MinecraftForgeClient.getRenderType() == null && model instanceof VerticalSlabBakedModel) {
                             // Handle the block breaking animation for a single vertical slab on the negative half
                             // We must flip the direction of the facing in order to get the correct half rendered
                             BlockState newState = state.setValue(VerticalSlabBlock.FACING, state.getValue(VerticalSlabBlock.FACING).getOpposite());
@@ -162,7 +162,7 @@ public class ModelBlockRendererMixin {
                     if (renderNegative) {
                         modelData.setData(DynamicSlabBakedModel.RENDER_POSITIVE, false);
                         List<BakedQuad> list;
-                        if (MinecraftForgeClient.getRenderLayer() == null && model instanceof VerticalSlabBakedModel) {
+                        if (MinecraftForgeClient.getRenderType() == null && model instanceof VerticalSlabBakedModel) {
                             // Handle the block breaking animation for a single vertical slab on the negative half
                             // We must flip the direction of the facing in order to get the correct half rendered
                             BlockState newState = state.setValue(VerticalSlabBlock.FACING, state.getValue(VerticalSlabBlock.FACING).getOpposite());

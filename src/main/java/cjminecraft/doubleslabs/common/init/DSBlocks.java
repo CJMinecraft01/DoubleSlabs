@@ -13,12 +13,13 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class DSBlocks {
 
-    public static final ModSpecificDeferredRegister<Block> BLOCKS = ModSpecificDeferredRegister.create(ForgeRegistries.BLOCKS, DoubleSlabs.MODID);
+    public static final ModSpecificDeferredRegister<Block> BLOCKS = new ModSpecificDeferredRegister<>(DeferredRegister.create(ForgeRegistries.BLOCKS, DoubleSlabs.MODID), DoubleSlabs.MODID);
 
     public static final RegistryObject<DynamicSlabBlock> DOUBLE_SLAB = BLOCKS.register("double_slab", DoubleSlabBlock::new);
     public static final RegistryObject<DynamicSlabBlock> VERTICAL_SLAB = BLOCKS.register("vertical_slab", VerticalSlabBlock::new);

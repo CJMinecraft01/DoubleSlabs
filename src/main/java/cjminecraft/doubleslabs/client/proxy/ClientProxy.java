@@ -20,16 +20,14 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -64,7 +62,7 @@ public class ClientProxy implements IProxy {
 
     public static final Transformation RAISED_CAMPFIRE_TRANSFORM = new Transformation(new Vector3f(0, 0.5f, 0), null, null, null);
 
-    private void replaceCampfireModel(Block block, Map<ResourceLocation, BakedModel> registry, ModelLoader loader) {
+    private void replaceCampfireModel(Block block, Map<ResourceLocation, BakedModel> registry, ModelBakery loader) {
         for (BlockState state : block.getStateDefinition().getPossibleStates()) {
             ModelResourceLocation variantResourceLocation = BlockModelShaper.stateToModelLocation(state);
             UnbakedModel existingModel = loader.getModel(variantResourceLocation);

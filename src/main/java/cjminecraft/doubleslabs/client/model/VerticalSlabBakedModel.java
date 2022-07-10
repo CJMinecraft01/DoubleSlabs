@@ -68,7 +68,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                 IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
                 if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
                     BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
-                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null) {
+                    if (ItemBlockRenderTypes.canRenderInLayer(doubleState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null) {
                         BakedModel model = ClientConstants.getVerticalModel(doubleState, direction);
                         return model.getQuads(doubleState, side, rand, EmptyModelData.INSTANCE);
                     }
@@ -78,7 +78,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
 
             List<BakedQuad> quads = Lists.newArrayList();
 
-            if ((!renderHalves || renderPositive) && positiveState != null && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || renderPositive) && positiveState != null && (ItemBlockRenderTypes.canRenderInLayer(positiveState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
                 BakedModel model = !extraData.hasProperty(ROTATE_POSITIVE) || extraData.getData(ROTATE_POSITIVE) ? ClientConstants.getVerticalModel(positiveState, direction) : Minecraft.getInstance().getBlockRenderer().getBlockModel(positiveState);
                 List<BakedQuad> positiveQuads = getQuadsForState(positiveBlock, model, side, rand);
                 if (shouldCull)
@@ -86,7 +86,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                         positiveQuads.removeIf(bakedQuad -> bakedQuad.getDirection() == direction.getOpposite());
                 quads.addAll(positiveQuads);
             }
-            if ((!renderHalves || !renderPositive) && negativeState != null && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderLayer()) || MinecraftForgeClient.getRenderLayer() == null)) {
+            if ((!renderHalves || !renderPositive) && negativeState != null && (ItemBlockRenderTypes.canRenderInLayer(negativeState, MinecraftForgeClient.getRenderType()) || MinecraftForgeClient.getRenderType() == null)) {
                 BakedModel model = !extraData.hasProperty(ROTATE_NEGATIVE) || extraData.getData(ROTATE_NEGATIVE) ? ClientConstants.getVerticalModel(negativeState, direction) : Minecraft.getInstance().getBlockRenderer().getBlockModel(negativeState);
                 List<BakedQuad> negativeQuads = getQuadsForState(negativeBlock, model, side, rand);
                 if (shouldCull)
@@ -95,7 +95,7 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
                 quads.addAll(negativeQuads);
             }
             return quads;
-        } else if (MinecraftForgeClient.getRenderLayer() == null) {
+        } else if (MinecraftForgeClient.getRenderType() == null) {
             // Rendering the break block animation
             BakedModel model = this.models.get(state);
             if (model != null)

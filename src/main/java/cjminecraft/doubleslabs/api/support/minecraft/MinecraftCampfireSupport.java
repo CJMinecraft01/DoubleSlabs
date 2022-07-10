@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.Random;
 
@@ -79,7 +78,7 @@ public class MinecraftCampfireSupport implements IHorizontalSlabSupport {
                 BlockState newState = state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
 
                 if (!world.isClientSide()) {
-                    world.setBlock(pos, newState, Constants.BlockFlags.DEFAULT);
+                    world.setBlock(pos, newState, 3);
                     player.getItemInHand(hand).hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(hand));
                 }
 

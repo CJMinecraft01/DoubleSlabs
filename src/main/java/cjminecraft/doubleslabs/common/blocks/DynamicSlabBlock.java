@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
+import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -42,10 +43,11 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -211,7 +213,7 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
         if (state.getValue(WATERLOGGED))
-            world.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+            world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
     }
 
@@ -234,12 +236,6 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter world, BlockPos pos) {
         return 1F;
-    }
-
-    @Nullable
-    @Override
-    public ToolType getHarvestTool(BlockState state) {
-        return null;
     }
 
     //    @Override
@@ -270,14 +266,14 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         if (willHarvest)
             return true;
         if (player.isCreative() && player.isCrouching()) {
             playerDestroy(world, player, pos, state, world.getBlockEntity(pos), ItemStack.EMPTY);
             return true;
         }
-        return super.removedByPlayer(state, world, pos, player, false, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, false, fluid);
     }
 
     @Override
@@ -479,18 +475,18 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
             BlockPathTypes positiveBlockNodeType = null;
             BlockPathTypes negativeBlockNodeType = null;
             if (tile.getPositiveBlockInfo().getBlockState() != null)
-                positiveBlockNodeType = tile.getPositiveBlockInfo().getBlockState().getAiPathNodeType(tile.getPositiveBlockInfo().getWorld(), pos, entity);
+                positiveBlockNodeType = tile.getPositiveBlockInfo().getBlockState().getBlock().getAiPathNodeType(tile.getPositiveBlockInfo().getBlockState(), tile.getPositiveBlockInfo().getWorld(), pos, entity);
             if (positiveBlockNodeType != null)
                 return positiveBlockNodeType;
             if (tile.getNegativeBlockInfo().getBlockState() != null)
-                negativeBlockNodeType = tile.getNegativeBlockInfo().getBlockState().getAiPathNodeType(tile.getNegativeBlockInfo().getWorld(), pos, entity);
+                negativeBlockNodeType = tile.getNegativeBlockInfo().getBlockState().getBlock().getAiPathNodeType(tile.getNegativeBlockInfo().getBlockState(), tile.getNegativeBlockInfo().getWorld(), pos, entity);
             return negativeBlockNodeType;
         }).orElse(super.getAiPathNodeType(state, world, pos, entity));
     }
 
     @Override
-    public void catchFire(BlockState state, Level world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        runIfAvailable(world, pos, i -> i.getBlockState().catchFire(i.getWorld(), pos, face, igniter));
+    public void onCaughtFire(BlockState state, Level world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
+        runIfAvailable(world, pos, i -> i.getBlockState().onCaughtFire(i.getWorld(), pos, face, igniter));
     }
 
     @Override

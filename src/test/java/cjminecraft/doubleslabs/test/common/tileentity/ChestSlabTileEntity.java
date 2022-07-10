@@ -29,9 +29,9 @@ public class ChestSlabTileEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag save(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.put("inventory", this.getInventory().serializeNBT());
-        return super.save(nbt);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ChestSlabTileEntity extends BlockEntity {
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, serializeNBT());
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -29,7 +30,8 @@ public class SlabTileEntityRenderer implements BlockEntityRenderer<SlabTileEntit
     @Override
     public void render(SlabTileEntity slab, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         BlockPos pos = slab.getBlockPos();
-        RenderChunkRegion world = MinecraftForgeClient.getRegionRenderCache(slab.getLevel(), pos);
+        Level world = slab.getLevel();
+//        RenderChunkRegion world = MinecraftForgeClient.getRegionRenderCache(slab.getLevel(), pos);
         if (world == null)
             return;
         BlockState state = world.getBlockState(pos);
