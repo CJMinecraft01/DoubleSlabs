@@ -101,7 +101,8 @@ public class VerticalSlabBakedModel extends DynamicSlabBakedModel {
             if (model != null)
                 return model.getQuads(state, side, rand, extraData);
         }
-        return getFallbackModel().getQuads(state, side, rand, extraData);
+        return Lists.newArrayList();
+//        return getFallbackModel().getQuads(state, side, rand, extraData);
     }
 
     private final Map<BlockState, BakedModel> models = new HashMap<>();
