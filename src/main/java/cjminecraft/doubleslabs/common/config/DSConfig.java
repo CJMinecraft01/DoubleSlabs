@@ -5,10 +5,7 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagKey;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -42,7 +39,8 @@ public class DSConfig {
     }
 
     private static boolean isItemPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Item item) {
-        if (item.getRegistryName() == null)
+        ResourceLocation name = ForgeRegistries.ITEMS.getKey(item);
+        if (name == null)
             return false;
         return option.get().stream().anyMatch(entry -> {
             if (entry.startsWith("*"))
@@ -51,12 +49,13 @@ public class DSConfig {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 return ForgeRegistries.ITEMS.tags().getTag(ForgeRegistries.ITEMS.tags().createTagKey(tagLocation)).contains(item);
             }
-            return entry.equals(item.getRegistryName().toString());
+            return entry.equals(name.toString());
         });
     }
 
     private static boolean isBlockPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Block block) {
-        if (block.getRegistryName() == null)
+        ResourceLocation name = ForgeRegistries.BLOCKS.getKey(block);
+        if (name == null)
             return false;
         return option.get().stream().anyMatch(entry -> {
             if (entry.startsWith("*"))
@@ -65,7 +64,7 @@ public class DSConfig {
                 ResourceLocation tagLocation = new ResourceLocation(entry.substring(1));
                 return ForgeRegistries.BLOCKS.tags().getTag(ForgeRegistries.BLOCKS.tags().createTagKey(tagLocation)).contains(block);
             }
-            return entry.equals(block.getRegistryName().toString());
+            return entry.equals(name.toString());
         });
     }
 
