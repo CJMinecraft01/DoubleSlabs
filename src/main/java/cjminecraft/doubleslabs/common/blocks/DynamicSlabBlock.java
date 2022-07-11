@@ -4,20 +4,18 @@ import cjminecraft.doubleslabs.api.IBlockInfo;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.init.DSTiles;
 import cjminecraft.doubleslabs.common.tileentity.SlabTileEntity;
-import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -43,8 +41,6 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IPlantable;
@@ -54,7 +50,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
@@ -303,7 +298,7 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         super.randomTick(state, world, pos, random);
         runIfAvailable(world, pos, i -> {
             if (i.getBlockState().isRandomlyTicking())
@@ -314,7 +309,7 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         runIfAvailable(world, pos, i -> i.getBlockState().getBlock().animateTick(i.getBlockState(), i.getWorld(), pos, random));
     }
 
@@ -375,7 +370,7 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         runIfAvailable(world, pos, i -> i.getBlockState().tick(world, pos, random));
     }
 
@@ -431,8 +426,8 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     @Override
-    public int getExpDrop(BlockState state, LevelReader world, BlockPos pos, int fortune, int silktouch) {
-        return max(world, pos, i -> i.getBlockState().getExpDrop(i.getWorld(), pos, fortune, silktouch));
+    public int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+        return max(level, pos, i -> i.getBlockState().getExpDrop(i.getWorld(), randomSource, pos, fortuneLevel, silkTouchLevel));
     }
 
     @Override
@@ -470,18 +465,18 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
 
     @Nullable
     @Override
-    public BlockPathTypes getAiPathNodeType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
+    public BlockPathTypes getBlockPathType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
         return getTile(world, pos).map(tile -> {
             BlockPathTypes positiveBlockNodeType = null;
             BlockPathTypes negativeBlockNodeType = null;
             if (tile.getPositiveBlockInfo().getBlockState() != null)
-                positiveBlockNodeType = tile.getPositiveBlockInfo().getBlockState().getBlock().getAiPathNodeType(tile.getPositiveBlockInfo().getBlockState(), tile.getPositiveBlockInfo().getWorld(), pos, entity);
+                positiveBlockNodeType = tile.getPositiveBlockInfo().getBlockState().getBlock().getBlockPathType(tile.getPositiveBlockInfo().getBlockState(), tile.getPositiveBlockInfo().getWorld(), pos, entity);
             if (positiveBlockNodeType != null)
                 return positiveBlockNodeType;
             if (tile.getNegativeBlockInfo().getBlockState() != null)
-                negativeBlockNodeType = tile.getNegativeBlockInfo().getBlockState().getBlock().getAiPathNodeType(tile.getNegativeBlockInfo().getBlockState(), tile.getNegativeBlockInfo().getWorld(), pos, entity);
+                negativeBlockNodeType = tile.getNegativeBlockInfo().getBlockState().getBlock().getBlockPathType(tile.getNegativeBlockInfo().getBlockState(), tile.getNegativeBlockInfo().getWorld(), pos, entity);
             return negativeBlockNodeType;
-        }).orElse(super.getAiPathNodeType(state, world, pos, entity));
+        }).orElseGet(() -> super.getBlockPathType(state, world, pos, entity));
     }
 
     @Override
