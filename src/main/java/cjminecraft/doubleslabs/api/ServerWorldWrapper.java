@@ -26,8 +26,8 @@ public class ServerWorldWrapper extends ServerLevel implements IWorldWrapper<Ser
     private BlockPos pos;
     private IStateContainer container;
 
-    public ServerWorldWrapper(ServerLevel world) {
-        super(world.getServer(), Util.backgroundExecutor(), world.getServer().storageSource, (ServerLevelData) world.getLevelData(), world.dimension(), world.dimensionTypeRegistration(), new ChunkProgressListener() {
+    public ServerWorldWrapper(ServerLevel world) { // todo: check below
+        super(world.getServer(), Util.backgroundExecutor(), world.getServer().storageSource, (ServerLevelData) world.getLevelData(), world.dimension(), world.getServer().getWorldData().worldGenSettings().dimensions().get(world.dimension().location()), new ChunkProgressListener() {
             @Override
             public void updateSpawnPos(ChunkPos pos) {
 
@@ -47,7 +47,7 @@ public class ServerWorldWrapper extends ServerLevel implements IWorldWrapper<Ser
             public void stop() {
 
             }
-        }, world.getChunkSource().getGenerator(), world.isDebug(), world.getSeed(), Lists.newArrayList(), false);
+        }, world.isDebug(), world.getSeed(), Lists.newArrayList(), false);
         this.world = world;
         super.initCapabilities();
     }
