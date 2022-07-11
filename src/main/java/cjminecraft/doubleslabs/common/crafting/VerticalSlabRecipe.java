@@ -25,8 +25,8 @@ public record VerticalSlabRecipe(ResourceLocation id) implements CraftingRecipe 
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
-                if (!DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get())) {
-                    if (stack.getItem() == DSItems.VERTICAL_SLAB.get() && DSConfig.SERVER.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
+                if (!DSConfig.COMMON.isBlacklistedCraftingItem(stack.getItem()) && (SlabSupport.isHorizontalSlab(stack.getItem()) || stack.getItem() == DSItems.VERTICAL_SLAB.get())) {
+                    if (stack.getItem() == DSItems.VERTICAL_SLAB.get() && DSConfig.COMMON.isBlacklistedCraftingItem(VerticalSlabItem.getStack(stack).getItem()))
                         continue;
                     matches++;
                 } else
@@ -41,7 +41,7 @@ public record VerticalSlabRecipe(ResourceLocation id) implements CraftingRecipe 
         ItemStack stack = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack itemStack = inv.getItem(i);
-            if (!itemStack.isEmpty() && (SlabSupport.isHorizontalSlab(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB.get()) && !DSConfig.SERVER.isBlacklistedCraftingItem(stack.getItem())) {
+            if (!itemStack.isEmpty() && (SlabSupport.isHorizontalSlab(itemStack.getItem()) || itemStack.getItem() == DSItems.VERTICAL_SLAB.get()) && !DSConfig.COMMON.isBlacklistedCraftingItem(stack.getItem())) {
                 stack = itemStack;
                 break;
             }

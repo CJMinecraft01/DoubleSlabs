@@ -14,7 +14,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -89,7 +88,7 @@ public class SlabSupport {
     }
 
     public static boolean isHorizontalSlab(Block block) {
-        if (DSConfig.SERVER.isBlacklistedHorizontalSlab(block))
+        if (DSConfig.COMMON.isBlacklistedHorizontalSlab(block))
             return false;
         if (block instanceof IHorizontalSlabSupport)
             return true;
@@ -101,7 +100,7 @@ public class SlabSupport {
 
     @Nullable
     public static IHorizontalSlabSupport getHorizontalSlabSupport(Block block) {
-        if (DSConfig.SERVER.isBlacklistedHorizontalSlab(block))
+        if (DSConfig.COMMON.isBlacklistedHorizontalSlab(block))
             return null;
         if (block instanceof IHorizontalSlabSupport)
             return (IHorizontalSlabSupport) block;

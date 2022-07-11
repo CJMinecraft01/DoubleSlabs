@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -22,9 +21,9 @@ import java.util.List;
 public class DSConfig {
 
     public static final Client CLIENT;
-    public static final Server SERVER;
+    public static final Common COMMON;
     public static final ForgeConfigSpec CLIENT_SPEC;
-    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ForgeConfigSpec COMMON_SPEC;
 
     static {
         final Pair<Client, ForgeConfigSpec> specPair = new Builder().configure(Client::new);
@@ -33,9 +32,9 @@ public class DSConfig {
     }
 
     static {
-        final Pair<Server, ForgeConfigSpec> specPair = new Builder().configure(Server::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
+        final Pair<Common, ForgeConfigSpec> specPair = new Builder().configure(Common::new);
+        COMMON_SPEC = specPair.getRight();
+        COMMON = specPair.getLeft();
     }
 
     private static boolean isItemPresent(ForgeConfigSpec.ConfigValue<List<String>> option, Item item) {
@@ -68,7 +67,7 @@ public class DSConfig {
         });
     }
 
-    public static class Server {
+    public static class Common {
         public final ConfigValue<List<String>> slabBlacklist;
         public final ConfigValue<List<String>> verticalSlabBlacklist;
         public final BooleanValue replaceSameSlab;
@@ -76,7 +75,7 @@ public class DSConfig {
         public final ConfigValue<List<String>> verticalSlabCraftingBlacklist;
 //        public final BooleanValue disableVerticalSlabItems;
 
-        Server(Builder builder) {
+        Common(Builder builder) {
             builder.comment("General Configuration")
                     .push("general");
 

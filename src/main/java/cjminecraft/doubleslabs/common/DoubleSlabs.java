@@ -42,7 +42,8 @@ public class DoubleSlabs {
     };
 
     public DoubleSlabs() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DSConfig.SERVER_SPEC);
+        // changing SERVER to COMMON
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DSConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DSConfig.CLIENT_SPEC);
 
         IEventBus mod = FMLJavaModLoadingContext.get().getModEventBus();
