@@ -1,6 +1,8 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.SlabSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import com.google.common.collect.Lists;
@@ -12,7 +14,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
@@ -83,14 +87,14 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
         if (state == null)
             return Lists.newArrayList();
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        if (renderType == null || !model.getRenderTypes(state, rand, ModelData.EMPTY).contains(renderType))
-            return Lists.newArrayList();
         return getQuadsForState(block, model, side, rand, renderType);
     }
 
     protected List<BakedQuad> getQuadsForState(IBlockInfo block, BakedModel model, Direction side, RandomSource rand, RenderType renderType) {
         BlockState state = block.getBlockState();
         if (state == null)
+            return Lists.newArrayList();
+        if (renderType != null && !model.getRenderTypes(state, rand, ModelData.EMPTY).contains(renderType))
             return Lists.newArrayList();
         ModelData tileData = block.getBlockEntity() != null ? block.getBlockEntity().getModelData() : ModelData.EMPTY;
         ModelData modelData = model.getModelData(block.getWorld(), block.getPos(), state, tileData);
@@ -121,6 +125,20 @@ public abstract class DynamicSlabBakedModel implements IDynamicBakedModel {
             IBlockInfo negativeBlock = data.get(NEGATIVE_BLOCK);
             assert positiveBlock != null;
             assert negativeBlock != null;
+            BlockState positiveState = positiveBlock.getBlockState();
+            BlockState negativeState = negativeBlock.getBlockState();
+            // todo: there is an issue when we have double slabs of the same type
+            if (positiveState != null && negativeState != null) {
+                if (useDoubleSlabModel(positiveState, negativeState)) {
+                    IHorizontalSlabSupport horizontalSlabSupport = SlabSupport.getHorizontalSlabSupport(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState);
+                    if (horizontalSlabSupport != null && horizontalSlabSupport.useDoubleSlabModel(positiveState)) {
+                        BlockState doubleState = horizontalSlabSupport.getStateForHalf(positiveBlock.getWorld(), positiveBlock.getPos(), positiveState, SlabType.DOUBLE);
+                        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(doubleState);
+                        return model.getRenderTypes(doubleState, rand, ModelData.EMPTY);
+                    }
+                }
+            }
+            // this should be union
             return ChunkRenderTypeSet.union(getRenderTypes(positiveBlock, rand), getRenderTypes(negativeBlock, rand));
         }
         return ChunkRenderTypeSet.all();
