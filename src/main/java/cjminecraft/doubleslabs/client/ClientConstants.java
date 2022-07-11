@@ -61,14 +61,14 @@ public class ClientConstants {
 
                 for(Variant variant : model.getVariants()) {
 //                    IBakedModel ibakedmodel = modelLoader.getBakedModel(variant.getModelLocation(), new ModelTransformComposition(variant, transform, uvlock), modelLoader.getSpriteMap()::getSprite);
-                    BakedModel ibakedmodel = modelLoader.bake(variant.getModelLocation(), transform, modelLoader.getSpriteMap()::getSprite);
+                    BakedModel ibakedmodel = modelLoader.bake(variant.getModelLocation(), transform, modelLoader.getAtlasSet()::getSprite);
                     builder.add(ibakedmodel, variant.getWeight());
                 }
 
                 return builder.build();
             }
         } else {
-            return baseModel.bake(modelLoader, modelLoader.getSpriteMap()::getSprite, transform, location);
+            return baseModel.bake(modelLoader, modelLoader.getAtlasSet()::getSprite, transform, location);
         }
     }
 
@@ -118,7 +118,7 @@ public class ClientConstants {
         ForgeRegistries.ITEMS.forEach(item -> {
             if (SlabSupport.isHorizontalSlab(item)) {
                 boolean uvlock = item instanceof BlockItem ? DSConfig.CLIENT.uvlock(((BlockItem) item).getBlock()) : DSConfig.CLIENT.uvlock(item);
-                ModelResourceLocation resourceLocation = new ModelResourceLocation(Objects.requireNonNull(item.getRegistryName()), "inventory");
+                ModelResourceLocation resourceLocation = new ModelResourceLocation(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)), "inventory");
                 try {
                     UnbakedModel model = modelLoader.getModel(resourceLocation);
                     boolean is3d = (model instanceof BlockModel) && ((BlockModel) model).getGuiLight().lightLikeBlock();
