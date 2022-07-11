@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -89,7 +88,7 @@ public class ChestSlab extends SlabBlock implements IContainerSupport, EntityBlo
         return new MenuProvider() {
             @Override
             public Component getDisplayName() {
-                return new TranslatableComponent("gui.doubleslabstest.chest_slab");
+                return Component.translatable("gui.doubleslabstest.chest_slab");
             }
 
             @Override
