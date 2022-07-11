@@ -17,8 +17,6 @@ public class ClientProxy implements IProxy {
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(DSTBlocks.GLASS_SLAB.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(DSTBlocks.SLIME_SLAB.get(), RenderType.translucent());
         MenuScreens.register(DSTContainers.CHEST_SLAB.get(), ChestSlabScreen::new);
     }
 }
