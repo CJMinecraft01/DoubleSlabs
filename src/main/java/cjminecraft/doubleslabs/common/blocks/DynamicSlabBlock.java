@@ -60,7 +60,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
     }
 
     public static Optional<IBlockInfo> getAvailable(IBlockReader world, BlockPos pos) {
-        return getTile(world, pos).flatMap(tile -> Optional.of(tile.getPositiveBlockInfo().getBlockState() != null ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo()));
+        return getTile(world, pos).flatMap(tile -> Optional.of(tile.getPositiveBlockInfo().getBlockState() != null ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo())).filter(i -> i.getBlockState() != null);
     }
 
     public static int min(IBlockReader world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
