@@ -149,14 +149,14 @@ public class ClientConstants {
                                 map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
                                         new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation().compose(ClientProxy.RAISED_CAMPFIRE_TRANSFORM), uvlock, 1)));
                             } else {
-                                map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                        new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation(), uvlock, 1)));
-                                map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, uvlock,
-                                        new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation(), uvlock, 1)));
-                                map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, uvlock,
-                                        new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation(), uvlock, 1)));
-                                map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, uvlock,
-                                        new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation(), uvlock, 1)));
+                                map.put(Direction.NORTH, bake(modelLoader, model, resourceLocation, false,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y180.getRotation(), false, 1)));
+                                map.put(Direction.EAST, bake(modelLoader, model, resourceLocation, false,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y270.getRotation(), false, 1)));
+                                map.put(Direction.SOUTH, bake(modelLoader, model, resourceLocation, false,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y0.getRotation(), false, 1)));
+                                map.put(Direction.WEST, bake(modelLoader, model, resourceLocation, false,
+                                        new Variant(resourceLocation, ModelRotation.X90_Y90.getRotation(), false, 1)));
                             }
                             VERTICAL_SLAB_MODELS.put(state, map);
                         } catch (Exception e) {
