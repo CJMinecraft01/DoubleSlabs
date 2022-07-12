@@ -403,8 +403,9 @@ public class DoubleSlabCulling {
     }
 
     public static boolean shouldSideBeRendered(BlockState state, BlockState otherState, IBlockReader world, BlockPos pos, BlockPos otherPos, Direction direction) {
-        assert state != null;
-        assert otherState != null;
+        if (state == null || otherState == null) {
+            return true;
+        }
 
         if (state.isSideInvisible(otherState, direction)) {
             return false;
