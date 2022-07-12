@@ -79,6 +79,10 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
         return getTile(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
 
+    public static float maxFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter, float defaultValue) {
+        return getTile(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : defaultValue, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : defaultValue)).orElse((double) defaultValue).floatValue();
+    }
+
     public static float addFloat(IBlockReader world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
         return getTile(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0) + (tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
@@ -364,7 +368,7 @@ public class DynamicSlabBlock extends Block implements IWaterLoggable {
 
     @Override
     public float getSlipperiness(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
-        return maxFloat(world, pos, i -> i.getBlockState().getSlipperiness(i.getWorld(), pos, entity));
+        return maxFloat(world, pos, i -> i.getBlockState().getSlipperiness(i.getWorld(), pos, entity), 0.6f);
     }
 
     @Override
