@@ -26,7 +26,7 @@ public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     @Override
     public boolean isHorizontalSlab(Block block) {
-        return block instanceof SlabBlock;
+        return isValid(block.getDefaultState());
     }
 
     @Override
