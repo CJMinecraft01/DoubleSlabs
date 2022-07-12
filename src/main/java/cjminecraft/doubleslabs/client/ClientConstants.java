@@ -110,6 +110,16 @@ public class ClientConstants {
                     IBakedModel westBaked = bake(modelLoader, halfModel, halfLocation, true,
                             new Variant(halfLocation, ModelRotation.X90_Y90.getRotation(), true, 1));
 
+                    if (support.flipModelWhenVertical()) {
+                        IBakedModel temp = northBaked;
+                        northBaked = southBaked;
+                        southBaked = temp;
+
+                        temp = eastBaked;
+                        eastBaked = westBaked;
+                        westBaked = temp;
+                    }
+
                     topHalfMap.put(Direction.NORTH, northBaked);
                     topHalfMap.put(Direction.EAST, eastBaked);
                     topHalfMap.put(Direction.SOUTH, southBaked);

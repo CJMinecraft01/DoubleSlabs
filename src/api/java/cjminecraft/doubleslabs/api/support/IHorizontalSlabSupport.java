@@ -33,4 +33,8 @@ public interface IHorizontalSlabSupport extends ISlabSupport {
         return getStateForHalf(state, half);
     }
 
+    default boolean flipModelWhenVertical() {
+        return false;
+    }
+
 }
