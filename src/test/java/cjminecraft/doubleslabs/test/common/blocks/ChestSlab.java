@@ -64,7 +64,7 @@ public class ChestSlab extends SlabBlock implements IContainerSupport, EntityBlo
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide())
-            NetworkHooks.openGui((ServerPlayer) player, getNamedContainerProvider(world, pos, state, player, hand, hit), pos);
+            NetworkHooks.openScreen((ServerPlayer) player, getNamedContainerProvider(world, pos, state, player, hand, hit), pos);
         return InteractionResult.SUCCESS;
     }
 
