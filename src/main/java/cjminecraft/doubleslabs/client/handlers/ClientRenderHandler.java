@@ -122,8 +122,8 @@ public class ClientRenderHandler {
     private static String tileToString(@Nullable BlockEntity tile) {
         if (tile == null)
             return ChatFormatting.RED + "null";
-        String data = tile.getTileData().toString();
-        return Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITIES.getKey(tile.getType())) + data;
+        String data = tile.getPersistentData().toString();
+        return Objects.requireNonNull(ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(tile.getType())) + data;
     }
 
     @SubscribeEvent
