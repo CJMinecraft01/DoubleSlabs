@@ -38,7 +38,7 @@ public class WrappedContainer extends AbstractContainerMenu {
         this.positive = buffer.readBoolean();
         SlabTileEntity tile = ((SlabTileEntity)playerInventory.player.level.getBlockEntity(pos));
         this.world = this.positive ? tile.getPositiveBlockInfo().getWorld() : tile.getNegativeBlockInfo().getWorld();
-        this.wrapped = ForgeRegistries.CONTAINERS.getValue(buffer.readResourceLocation()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
+        this.wrapped = ForgeRegistries.MENU_TYPES.getValue(buffer.readResourceLocation()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
 //        this.wrapped = Registry.MENU.getByValue(buffer.readInt()).create(id, new PlayerInventoryWrapper(playerInventory, world), buffer);
     }
 
