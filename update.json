@@ -164,10 +164,21 @@
     "3.5.3": "=Fixed a slab culling issue\n+Added Spanish language",
     "3.5.4": "=Fixes",
     "3.5.5": "=Fix a server bootup crash",
-    "3.6.0": "=Fix item and block colours\n=API - override culling and uvlock\n+Add JEI support\n+Add The One Probe support\n+Add Quark slab support\n+Add Abnormals Core slab support\n+Add Infernal Expansion slab support"
+    "3.6.0": "=Fix item and block colours\n=API - override culling and uvlock\n+Add JEI support\n+Add The One Probe support\n+Add Quark slab support\n+Add Abnormals Core slab support\n+Add Infernal Expansion slab support",
+    "3.7.0": "+Added a new vertical slab placement method - ITEM. This is now the new default placement method. The ITEM placement method means vertical slabs are only placed when using a vertical slab item.\n+Added a tooltip to vertical slabs to indicate which mod the base slab originated from\n=Fixed a placement issue\n=Vertical slabs (from my mod) can now not be combined with horizontal slabs for more consistency\n=Fixed some issues",
+    "3.7.1": "=Improved vertical slab model baking by reducing the number of models baked, hopefully also reducing RAM usage",
+    "3.7.2": "=Fixed a crash",
+    "3.7.3": "=Fixed Issue #211 crash from culling\n=Fixed Issue #219 crash in vertical slab model\n=Fixed Issue #223 crash in getSoundType\n=Fixed Issue #225 crash in getSoundType of double slab\n=Fixed Issue #233 by changing default slipperiness value\n=Fixed Issue #214 by adding support to flip models\n=Fixed Issue #217 by ensuring blocks that have vertical slab models generated are exactly those that can be converted into vertical slabs\n+Fixed Issue #216 by adding LOTR mod support"
   },
   "1.17.1": {
     "4.0.0": "+Updated to 1.17!"
+  },
+  "1.18.2": {
+    "5.0.0": "+Updated to 1.18!"
+  },
+  "1.19": {
+    "6.0.0": "+Update to 1.19!",
+    "6.1.0": "=Fixed breaking changes in Forge 41.0.94"
   },
   "promos": {
     "1.12.2-latest": "0.12.2",
@@ -176,9 +187,13 @@
     "1.14.4-recommended": "1.12.0",
     "1.15.2-latest": "2.12.1",
     "1.15.2-recommended": "2.12.1",
-    "1.16.5-latest": "3.6.0",
-    "1.16.5-recommended": "3.6.0",
+    "1.16.5-latest": "3.7.3",
+    "1.16.5-recommended": "3.7.3",
     "1.17.1-latest": "4.0.0",
-    "1.17.1-recommended": "4.0.0"
+    "1.17.1-recommended": "4.0.0",
+    "1.18.2-latest": "5.0.0",
+    "1.18.2-recommended": "5.0.0",
+    "1.19-latest": "6.1.0",
+    "1.19-recommended": "6.1.0"
   }
 }
