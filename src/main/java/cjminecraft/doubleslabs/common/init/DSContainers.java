@@ -10,8 +10,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DSContainers {
 
-    public static final DeferredRegister<MenuType<?>> CONTAINER_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, DoubleSlabs.MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, DoubleSlabs.MODID);
 
-    public static final RegistryObject<MenuType<WrappedContainer>> WRAPPED_CONTAINER = CONTAINER_TYPES.register("wrapper", () -> IForgeMenuType.create(WrappedContainer::new));
+    public static final RegistryObject<MenuType<WrappedContainer>> WRAPPED_CONTAINER = MENU_TYPES.register("wrapper", () -> IForgeMenuType.create(WrappedContainer::new));
 
 }

@@ -59,7 +59,7 @@ public class DoubleSlabs {
         DSItems.ITEMS.register(mod);
         DSTiles.TILES.register(mod);
         DSRecipes.RECIPE_SERIALIZERS.register(mod);
-        DSContainers.CONTAINER_TYPES.register(mod);
+        DSContainers.MENU_TYPES.register(mod);
 
         PROXY.addListeners(mod, forge);
     }
