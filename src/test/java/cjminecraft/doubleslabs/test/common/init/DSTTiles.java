@@ -9,8 +9,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DSTTiles {
 
-    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, DoubleSlabsTest.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DoubleSlabsTest.MODID);
 
-    public static final RegistryObject<BlockEntityType<ChestSlabTileEntity>> CHEST = TILES.register("chest_slab", () -> BlockEntityType.Builder.of(ChestSlabTileEntity::new, DSTBlocks.CHEST_SLAB.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ChestSlabTileEntity>> CHEST = BLOCK_ENTITY_TYPES.register("chest_slab", () -> BlockEntityType.Builder.of(ChestSlabTileEntity::new, DSTBlocks.CHEST_SLAB.get()).build(null));
 
 }

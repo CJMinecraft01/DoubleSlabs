@@ -24,7 +24,7 @@ public class DoubleSlabsTest {
 
         DSTBlocks.BLOCKS.register(mod);
         DSTBlocks.ITEMS.register(mod);
-        DSTTiles.TILES.register(mod);
+        DSTTiles.BLOCK_ENTITY_TYPES.register(mod);
         DSTContainers.MENU_TYPES.register(mod);
 
         PROXY.addListeners(mod, forge);
