@@ -120,8 +120,8 @@ public class PlacementHandler {
     public static void onItemUse(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getItemStack().isEmpty()) {
             ItemStack stack = event.getItemStack();
-            Level world = event.getWorld();
-            Player player = event.getPlayer();
+            Level world = event.getLevel();
+            Player player = event.getEntity();
             InteractionHand hand = event.getHand();
             Direction face = event.getFace();
             BlockPos pos = event.getPos();
@@ -165,7 +165,7 @@ public class PlacementHandler {
                     if (!state.getValue(VerticalSlabBlock.DOUBLE) && face == state.getValue(VerticalSlabBlock.FACING).getOpposite()) {
                         BlockEntity tileEntity = world.getBlockEntity(pos);
                         // Check that the tile has been created and that the shift key isn't pressed and that we are clicking on the face that is inside of the block
-                        if (tileEntity instanceof SlabTileEntity && !event.getPlayer().isCrouching() && (face != state.getValue(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
+                        if (tileEntity instanceof SlabTileEntity && !event.getEntity().isCrouching() && (face != state.getValue(VerticalSlabBlock.FACING) || ((SlabTileEntity) tileEntity).getPositiveBlockInfo().getBlockState() == null)) {
 //                                if (!canPlace(tile.getPositiveState() != null ? tile.getPositiveWorld() : tile.getNegativeWorld(), pos, face, event.getPlayer(), event.getHand(), event.getItemStack(), event))
 //                                    return;
                             // The new state for the vertical slab with the double property set
@@ -212,7 +212,7 @@ public class PlacementHandler {
                         if (blockSupport == null)
                             return;
 
-                        face = blockSupport.getDirection(event.getWorld(), pos, state).getOpposite();
+                        face = blockSupport.getDirection(event.getLevel(), pos, state).getOpposite();
                     }
 
                     if (DSConfig.COMMON.isBlacklistedVerticalSlab(state.getBlock()))
@@ -224,7 +224,7 @@ public class PlacementHandler {
                     state = prepareState(state);
 
                     // Get the direction that the vertical slab block is facing
-                    Direction direction = blockSupport.getDirection(event.getWorld(), pos, state);
+                    Direction direction = blockSupport.getDirection(event.getLevel(), pos, state);
 
                     if (face == direction.getOpposite()) {
                         // Get the state for the vertical slab item using the direction of the already placed vertical slab
