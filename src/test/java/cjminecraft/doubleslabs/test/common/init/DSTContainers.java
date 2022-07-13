@@ -10,8 +10,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DSTContainers {
 
-    public static final DeferredRegister<MenuType<?>> CONTAINER_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, DoubleSlabsTest.MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, DoubleSlabsTest.MODID);
 
-    public static final RegistryObject<MenuType<ChestSlabContainer>> CHEST_SLAB = CONTAINER_TYPES.register("chest_slab", () -> IForgeMenuType.create(ChestSlabContainer::new));
+    public static final RegistryObject<MenuType<ChestSlabContainer>> CHEST_SLAB = MENU_TYPES.register("chest_slab", () -> IForgeMenuType.create(ChestSlabContainer::new));
 
 }
