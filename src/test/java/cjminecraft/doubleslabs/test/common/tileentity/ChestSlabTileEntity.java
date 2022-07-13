@@ -41,7 +41,7 @@ public class ChestSlabTileEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getTileData() {
+    public CompoundTag getPersistentData() {
         return this.serializeNBT();
     }
 
