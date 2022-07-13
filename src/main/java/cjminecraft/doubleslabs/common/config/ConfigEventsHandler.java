@@ -31,9 +31,9 @@ public class ConfigEventsHandler {
 
     @SubscribeEvent
     public static void onPlayerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
-        event.getPlayer().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> {
+        event.getEntity().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> {
             // Called server side, need to fetch player options
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getPlayer()), new RequestPlayerConfigPacket());
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new RequestPlayerConfigPacket());
         });
     }
 
