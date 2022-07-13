@@ -183,7 +183,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
             if (containerSupport != null) {
                 if (!world.isClientSide()) {
                     MenuProvider provider = containerSupport.getNamedContainerProvider(i.getWorld(), pos, i.getBlockState(), player, hand, hit);
-                    NetworkHooks.openGui((ServerPlayer) player, new MenuProvider() {
+                    NetworkHooks.openScreen((ServerPlayer) player, new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
                             return provider.getDisplayName();
@@ -197,7 +197,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
                     }, buffer -> {
                         buffer.writeBlockPos(i.getPos());
                         buffer.writeBoolean(i.isPositive());
-                        buffer.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.CONTAINERS.getKey(containerSupport.getContainer(i.getWorld(), pos, state))));
+                        buffer.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.MENU_TYPES.getKey(containerSupport.getContainer(i.getWorld(), pos, state))));
                         containerSupport.writeExtraData(world, pos, state).accept(buffer);
                     });
                 }
