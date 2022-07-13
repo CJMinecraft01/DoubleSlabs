@@ -70,7 +70,7 @@ public class SlabTileEntity extends BlockEntity implements IStateContainer {
     }
 
     @Override
-    public CompoundTag getTileData() {
+    public CompoundTag getPersistentData() {
         return this.serializeNBT();
     }
 
