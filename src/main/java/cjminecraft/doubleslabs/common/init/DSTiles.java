@@ -10,10 +10,10 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DSTiles {
 
-    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, DoubleSlabs.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DoubleSlabs.MODID);
 
-    public static final RegistryObject<BlockEntityType<SlabTileEntity>> DYNAMIC_SLAB = TILES.register("dynamic_slab", () -> BlockEntityType.Builder.of(SlabTileEntity::new, DSBlocks.DOUBLE_SLAB.get(), DSBlocks.VERTICAL_SLAB.get()).build(null));
+    public static final RegistryObject<BlockEntityType<SlabTileEntity>> DYNAMIC_SLAB = BLOCK_ENTITY_TYPES.register("dynamic_slab", () -> BlockEntityType.Builder.of(SlabTileEntity::new, DSBlocks.DOUBLE_SLAB.get(), DSBlocks.VERTICAL_SLAB.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<RaisedCampfireTileEntity>> CAMPFIRE = TILES.register("campfire", () -> BlockEntityType.Builder.of(RaisedCampfireTileEntity::new, DSBlocks.RAISED_CAMPFIRE.get(), DSBlocks.RAISED_SOUL_CAMPFIRE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<RaisedCampfireTileEntity>> CAMPFIRE = BLOCK_ENTITY_TYPES.register("campfire", () -> BlockEntityType.Builder.of(RaisedCampfireTileEntity::new, DSBlocks.RAISED_CAMPFIRE.get(), DSBlocks.RAISED_SOUL_CAMPFIRE.get()).build(null));
 
 }

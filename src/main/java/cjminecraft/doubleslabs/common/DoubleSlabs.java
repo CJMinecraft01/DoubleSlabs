@@ -57,7 +57,7 @@ public class DoubleSlabs {
 
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
-        DSTiles.TILES.register(mod);
+        DSTiles.BLOCK_ENTITY_TYPES.register(mod);
         DSRecipes.RECIPE_SERIALIZERS.register(mod);
         DSContainers.MENU_TYPES.register(mod);
 
