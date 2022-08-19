@@ -15,11 +15,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SlabBlockEntity extends BlockEntity implements IStateContainer {
-    protected final BlockInfo negativeBlockInfo;
-    protected final BlockInfo positiveBlockInfo;
+public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity implements IStateContainer {
+    protected final T negativeBlockInfo;
+    protected final T positiveBlockInfo;
 
-    public SlabBlockEntity(BlockPos pos, BlockState state, BlockInfo negativeBlockInfo, BlockInfo positiveBlockInfo) {
+    public SlabBlockEntity(BlockPos pos, BlockState state, T negativeBlockInfo, T positiveBlockInfo) {
         super(DSBlockEntities.DYNAMIC_SLAB.get(), pos, state);
         this.negativeBlockInfo = negativeBlockInfo;
         this.positiveBlockInfo = positiveBlockInfo;
@@ -110,12 +110,4 @@ public abstract class SlabBlockEntity extends BlockEntity implements IStateConta
             }
         }
     }
-
-    // todo: forge handle update tag
-    // todo: forge on data packet
-    // todo: forge persistent data
-    // todo: forge on load
-    // todo: forge on chunk unloaded
-    // todo: forge capabilities
-    // todo: forge get model data
 }

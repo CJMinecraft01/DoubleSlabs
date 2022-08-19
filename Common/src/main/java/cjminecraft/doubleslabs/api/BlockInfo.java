@@ -19,15 +19,15 @@ import java.util.Objects;
 
 public abstract class BlockInfo implements IBlockInfo {
 
-    private ISlabSupport support;
-    private BlockState state;
-    private BlockEntity blockEntity;
-    private Level level;
+    protected ISlabSupport support;
+    protected BlockState state;
+    protected BlockEntity blockEntity;
+    protected Level level;
 
-    private final SlabBlockEntity slab;
+    private final SlabBlockEntity<?> slab;
     private final boolean positive;
 
-    public BlockInfo(SlabBlockEntity slab, boolean positive) {
+    public BlockInfo(SlabBlockEntity<?> slab, boolean positive) {
         this.slab = slab;
         this.positive = positive;
     }
