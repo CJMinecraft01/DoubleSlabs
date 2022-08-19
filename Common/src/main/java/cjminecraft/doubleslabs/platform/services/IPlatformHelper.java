@@ -1,5 +1,7 @@
 package cjminecraft.doubleslabs.platform.services;
 
+import cjminecraft.doubleslabs.common.init.IBlockEntities;
+
 public interface IPlatformHelper {
 
     /**
@@ -23,4 +25,6 @@ public interface IPlatformHelper {
      * @return True if in a development environment, false otherwise.
      */
     boolean isDevelopmentEnvironment();
+
+    IBlockEntities getBlockEntities();
 }

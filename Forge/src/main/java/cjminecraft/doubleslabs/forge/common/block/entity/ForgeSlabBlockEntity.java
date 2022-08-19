@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.forge.common.block.entity;
 
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.forge.api.ForgeBlockInfo;
+import cjminecraft.doubleslabs.forge.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +25,7 @@ public class ForgeSlabBlockEntity extends SlabBlockEntity<ForgeBlockInfo> {
     // todo: forge get model data
 
     public ForgeSlabBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(DSBlockEntities.DYNAMIC_SLAB.get(), pos, state);
         this.negativeBlockInfo = new ForgeBlockInfo(this, false);
         this.positiveBlockInfo = new ForgeBlockInfo(this, true);
     }
