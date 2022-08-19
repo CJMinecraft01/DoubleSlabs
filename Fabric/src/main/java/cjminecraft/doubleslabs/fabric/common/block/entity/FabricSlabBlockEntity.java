@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.fabric.block.entity;
+package cjminecraft.doubleslabs.fabric.common.block.entity;
 
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.fabric.api.FabricBlockInfo;

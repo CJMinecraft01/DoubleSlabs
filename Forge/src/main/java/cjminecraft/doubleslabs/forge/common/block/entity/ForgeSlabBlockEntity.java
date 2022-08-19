@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.forge.block.entity;
+package cjminecraft.doubleslabs.forge.common.block.entity;
 
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.forge.api.ForgeBlockInfo;
