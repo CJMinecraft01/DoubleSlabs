@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity implements IStateContainer {
@@ -36,14 +37,14 @@ public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity i
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
+    protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("negativeBlock", this.negativeBlockInfo.serializeNBT());
         tag.put("positiveBlock", this.positiveBlockInfo.serializeNBT());
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         return saveWithFullMetadata();
     }
 
@@ -59,7 +60,7 @@ public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity i
     }
 
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@NotNull Level level) {
         if (level instanceof ILevelWrapper<?>)
             return;
         super.setLevel(level);
@@ -90,7 +91,9 @@ public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity i
     }
 
     @SuppressWarnings("unchecked")
-    public static <E extends SlabBlockEntity, A extends BlockEntity, B extends BlockEntity> void tick(Level world, BlockPos blockPos, BlockState blockState, E entity) {
+    public static <E extends SlabBlockEntity<?>, A extends BlockEntity, B extends BlockEntity> void tick(Level world, BlockPos blockPos, BlockState blockState, E entity) {
+        if (entity.getLevel() == null)
+            return;
         if (world != null) {
             if (entity.positiveBlockInfo.getBlockEntity() != null && entity.positiveBlockInfo.getBlockState() != null) {
                 BlockEntityTicker<A> ticker = (BlockEntityTicker<A>) entity.positiveBlockInfo.getBlockState().getTicker(entity.getLevel(), entity.positiveBlockInfo.getBlockEntity().getType());
