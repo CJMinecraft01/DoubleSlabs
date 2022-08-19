@@ -23,8 +23,10 @@ public class ForgeSlabBlockEntity extends SlabBlockEntity<ForgeBlockInfo> {
 
     // todo: forge get model data
 
-    public ForgeSlabBlockEntity(BlockPos pos, BlockState state, ForgeBlockInfo negativeBlockInfo, ForgeBlockInfo positiveBlockInfo) {
-        super(pos, state, negativeBlockInfo, positiveBlockInfo);
+    public ForgeSlabBlockEntity(BlockPos pos, BlockState state) {
+        super(pos, state);
+        this.negativeBlockInfo = new ForgeBlockInfo(this, false);
+        this.positiveBlockInfo = new ForgeBlockInfo(this, true);
     }
 
     @Override

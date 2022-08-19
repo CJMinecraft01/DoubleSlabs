@@ -3,7 +3,6 @@ package cjminecraft.doubleslabs.common.block.entity;
 import cjminecraft.doubleslabs.api.BlockInfo;
 import cjminecraft.doubleslabs.api.ILevelWrapper;
 import cjminecraft.doubleslabs.api.IStateContainer;
-import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -12,18 +11,17 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SlabBlockEntity<T extends BlockInfo> extends BlockEntity implements IStateContainer {
-    protected final T negativeBlockInfo;
-    protected final T positiveBlockInfo;
+    protected T negativeBlockInfo;
+    protected T positiveBlockInfo;
 
-    public SlabBlockEntity(BlockPos pos, BlockState state, T negativeBlockInfo, T positiveBlockInfo) {
-        super(DSBlockEntities.DYNAMIC_SLAB.get(), pos, state);
-        this.negativeBlockInfo = negativeBlockInfo;
-        this.positiveBlockInfo = positiveBlockInfo;
+    public SlabBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public abstract void markDirtyClient();
