@@ -22,7 +22,7 @@ public interface IBlockInfo {
     void setBlockEntity(@Nullable BlockEntity tile);
 
     @Nonnull
-    Level getWorld();
+    Level getLevel();
 
     boolean isPositive();
 
