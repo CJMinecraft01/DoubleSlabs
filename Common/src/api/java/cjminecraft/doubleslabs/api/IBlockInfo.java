@@ -42,4 +42,9 @@ public interface IBlockInfo {
     @Nullable
     ISlabSupport getSupport();
 
+    default Optional<ISlabSupport> support() {
+        ISlabSupport support = getSupport();
+        return support == null ? Optional.empty() : Optional.of(support);
+    }
+
 }
