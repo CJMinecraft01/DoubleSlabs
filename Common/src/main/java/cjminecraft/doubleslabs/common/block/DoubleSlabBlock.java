@@ -9,13 +9,16 @@ import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
 import cjminecraft.doubleslabs.platform.Services;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -108,7 +111,17 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
             if (containerSupport != null) {
                 if (!level.isClientSide()) {
                     MenuProvider provider = containerSupport.getNamedContainerProvider(i.getLevel(), pos, s, player, hand, hit);
-                    Services.PLATFORM.openScreen(player, provider, buffer -> {
+                    Services.PLATFORM.openScreen(player, new MenuProvider() {
+                        @Override
+                        public @NotNull Component getDisplayName() {
+                            return provider.getDisplayName();
+                        }
+
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
+                            return new WrappedContainer(windowId, inventory, player, provider, i);
+                        }
+                    }, buffer -> {
                         buffer.writeBlockPos(i.getPos());
                         buffer.writeBoolean(i.isPositive());
                         buffer.writeResourceLocation(Objects.requireNonNull(Services.PLATFORM.getMenuTypeName(containerSupport.getContainer(i.getLevel(), pos, s))));
