@@ -1,13 +1,18 @@
 package cjminecraft.doubleslabs.common.block;
 
+import cjminecraft.doubleslabs.api.ContainerSupport;
 import cjminecraft.doubleslabs.api.IBlockInfo;
+import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
+import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
+import cjminecraft.doubleslabs.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -22,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class DoubleSlabBlock extends DynamicSlabBlock {
@@ -94,8 +100,27 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (state.getBlock() != this)
             return InteractionResult.PASS;
-        return getHalfState(level, pos, hit.getLocation().y - pos.getY()).map(i -> {
-            // todo: container support
-        }).orElse(InteractionResult.PASS);
+        return getHalfState(level, pos, hit.getLocation().y - pos.getY()).flatMap(i -> i.blockState().map(s -> {
+            IContainerSupport containerSupport = ContainerSupport.getSupport(i.getLevel(), pos, s);
+            ISlabSupport slabSupport = SlabSupport.getSlabSupport(i.getLevel(), pos, s);
+            if (containerSupport != null) {
+                if (!level.isClientSide()) {
+                    MenuProvider provider = containerSupport.getNamedContainerProvider(i.getLevel(), pos, s, player, hand, hit);
+                    Services.PLATFORM.openScreen(player, provider, buffer -> {
+                        buffer.writeBlockPos(i.getPos());
+                        buffer.writeBoolean(i.isPositive());
+                        buffer.writeResourceLocation(Objects.requireNonNull(Services.PLATFORM.getMenuTypeName(containerSupport.getContainer(i.getLevel(), pos, s))));
+                        containerSupport.writeExtraData(i.getLevel(), pos, s).accept(buffer);
+                    });
+                }
+                return InteractionResult.SUCCESS;
+            } else {
+                try {
+                    return slabSupport == null ? s.use(i.getLevel(), player, hand, hit) : slabSupport.onBlockActivated(s, i.getLevel(), pos, player, hand, hit);
+                } catch (Exception e) {
+                    return InteractionResult.PASS;
+                }
+            }
+        })).orElse(InteractionResult.PASS);
     }
 }

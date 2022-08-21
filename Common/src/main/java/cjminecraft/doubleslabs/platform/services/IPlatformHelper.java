@@ -4,9 +4,14 @@ import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface IPlatformHelper {
 
@@ -35,6 +40,9 @@ public interface IPlatformHelper {
     List<IHorizontalSlabSupport> getHorizontalSlabSupports();
     List<IVerticalSlabSupport> getVerticalSlabSupports();
     List<IContainerSupport> getContainerSupports();
+
+    void openScreen(Player player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData);
+    ResourceLocation getMenuTypeName(MenuType<?> type);
 
     IBlockEntities getBlockEntities();
 
