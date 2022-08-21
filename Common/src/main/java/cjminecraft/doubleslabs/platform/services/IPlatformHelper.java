@@ -1,6 +1,12 @@
 package cjminecraft.doubleslabs.platform.services;
 
+import cjminecraft.doubleslabs.api.containers.IContainerSupport;
+import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
+import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
 
 public interface IPlatformHelper {
 
@@ -26,5 +32,11 @@ public interface IPlatformHelper {
      */
     boolean isDevelopmentEnvironment();
 
+    List<IHorizontalSlabSupport> getHorizontalSlabSupports();
+    List<IVerticalSlabSupport> getVerticalSlabSupports();
+    List<IContainerSupport> getContainerSupports();
+
     IBlockEntities getBlockEntities();
+
+    double getReachDistance(Player player);
 }

@@ -3,10 +3,7 @@ package cjminecraft.doubleslabs.api;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
-import cjminecraft.doubleslabs.common.DoubleSlabs;
-import cjminecraft.doubleslabs.common.config.DSConfig;
-import cjminecraft.doubleslabs.common.util.AnnotationUtil;
+import cjminecraft.doubleslabs.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -18,22 +15,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 import java.util.List;
 
 public class SlabSupport {
 
-    private static List<IVerticalSlabSupport> verticalSlabSupports;
-    private static List<IHorizontalSlabSupport> horizontalSlabSupports;
-
-    public static void load() {
-        // todo: change
-        verticalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IVerticalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.annotationData().getOrDefault("priority", 1000))));
-        horizontalSlabSupports = AnnotationUtil.getClassInstances(SlabSupportProvider.class, IHorizontalSlabSupport.class, AnnotationUtil.MODID_PREDICATE, Comparator.comparingInt(a -> ((int) a.annotationData().getOrDefault("priority", 1000))));
-
-        DoubleSlabs.LOGGER.info("Loaded %s vertical slab support classes", verticalSlabSupports.size());
-        DoubleSlabs.LOGGER.info("Loaded %s horizontal slab support classes", horizontalSlabSupports.size());
-    }
+    private static final List<IVerticalSlabSupport> verticalSlabSupports = Services.PLATFORM.getVerticalSlabSupports();
+    private static final List<IHorizontalSlabSupport> horizontalSlabSupports = Services.PLATFORM.getHorizontalSlabSupports();
 
     @Nullable
     public static IVerticalSlabSupport getVerticalSlabSupport(BlockGetter world, BlockPos pos, BlockState state) {

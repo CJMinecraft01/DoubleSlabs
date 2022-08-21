@@ -56,51 +56,51 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false));
     }
 
-    public static Optional<SlabBlockEntity<?>> getSlab(BlockGetter world, BlockPos pos) {
-        BlockEntity tile = world.getBlockEntity(pos);
-        return tile instanceof SlabBlockEntity<?> ? Optional.of((SlabBlockEntity<?>) tile) : Optional.empty();
+    public static Optional<SlabBlockEntity<?>> getSlab(BlockGetter level, BlockPos pos) {
+        BlockEntity slab = level.getBlockEntity(pos);
+        return slab instanceof SlabBlockEntity<?> ? Optional.of((SlabBlockEntity<?>) slab) : Optional.empty();
     }
 
-    public static Optional<IBlockInfo> getAvailable(BlockGetter world, BlockPos pos) {
-        return getSlab(world, pos).flatMap(tile -> Optional.of(tile.getPositiveBlockInfo().getBlockState() != null ? tile.getPositiveBlockInfo() : tile.getNegativeBlockInfo()));
+    public static Optional<IBlockInfo> getAvailable(BlockGetter level, BlockPos pos) {
+        return getSlab(level, pos).flatMap(slab -> Optional.of(slab.getPositiveBlockInfo().getBlockState() != null ? slab.getPositiveBlockInfo() : slab.getNegativeBlockInfo()));
     }
 
-    public static int min(BlockGetter world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
-        return getSlab(world, pos).map(tile -> Math.min(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getPositiveBlockInfo()) : Integer.MAX_VALUE, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0);
+    public static int min(BlockGetter level, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
+        return getSlab(level, pos).map(slab -> Math.min(slab.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(slab.getPositiveBlockInfo()) : Integer.MAX_VALUE, slab.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(slab.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0);
     }
 
-    public static float minFloat(BlockGetter world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
-        return getSlab(world, pos).map(tile -> Math.min(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : Integer.MAX_VALUE, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0D).floatValue();
+    public static float minFloat(BlockGetter level, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+        return getSlab(level, pos).map(slab -> Math.min(slab.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getPositiveBlockInfo()) : Integer.MAX_VALUE, slab.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getNegativeBlockInfo()) : Integer.MAX_VALUE)).orElse(0D).floatValue();
     }
 
-    public static int max(BlockGetter world, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
-        return getSlab(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getPositiveBlockInfo()) : 0, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(tile.getNegativeBlockInfo()) : 0)).orElse(0);
+    public static int max(BlockGetter level, BlockPos pos, ToIntFunction<IBlockInfo> converter) {
+        return getSlab(level, pos).map(slab -> Math.max(slab.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsInt(slab.getPositiveBlockInfo()) : 0, slab.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsInt(slab.getNegativeBlockInfo()) : 0)).orElse(0);
     }
 
-    public static float maxFloat(BlockGetter world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
-        return getSlab(world, pos).map(tile -> Math.max(tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0, tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
+    public static float maxFloat(BlockGetter level, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+        return getSlab(level, pos).map(slab -> Math.max(slab.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getPositiveBlockInfo()) : 0, slab.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
 
-    public static float addFloat(BlockGetter world, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
-        return getSlab(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getPositiveBlockInfo()) : 0) + (tile.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(tile.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
+    public static float addFloat(BlockGetter level, BlockPos pos, ToDoubleFunction<IBlockInfo> converter) {
+        return getSlab(level, pos).map(slab -> (slab.getPositiveBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getPositiveBlockInfo()) : 0) + (slab.getNegativeBlockInfo().getBlockState() != null ? converter.applyAsDouble(slab.getNegativeBlockInfo()) : 0)).orElse(0D).floatValue();
     }
 
-    public static void runIfAvailable(BlockGetter world, BlockPos pos, Consumer<IBlockInfo> consumer) {
-        getSlab(world, pos).map(tile -> {
-            if (tile.getPositiveBlockInfo().getBlockState() != null)
-                consumer.accept(tile.getPositiveBlockInfo());
-            if (tile.getNegativeBlockInfo().getBlockState() != null)
-                consumer.accept(tile.getNegativeBlockInfo());
+    public static void runIfAvailable(BlockGetter level, BlockPos pos, Consumer<IBlockInfo> consumer) {
+        getSlab(level, pos).map(slab -> {
+            if (slab.getPositiveBlockInfo().getBlockState() != null)
+                consumer.accept(slab.getPositiveBlockInfo());
+            if (slab.getNegativeBlockInfo().getBlockState() != null)
+                consumer.accept(slab.getNegativeBlockInfo());
             return null;
         });
     }
 
-    public static boolean both(BlockGetter world, BlockPos pos, Predicate<IBlockInfo> predicate) {
-        return getSlab(world, pos).map(tile -> tile.getPositiveBlockInfo().getBlockState() != null && tile.getNegativeBlockInfo().getBlockState() != null && predicate.test(tile.getPositiveBlockInfo()) && predicate.test(tile.getNegativeBlockInfo())).orElse(false);
+    public static boolean both(BlockGetter level, BlockPos pos, Predicate<IBlockInfo> predicate) {
+        return getSlab(level, pos).map(slab -> slab.getPositiveBlockInfo().getBlockState() != null && slab.getNegativeBlockInfo().getBlockState() != null && predicate.test(slab.getPositiveBlockInfo()) && predicate.test(slab.getNegativeBlockInfo())).orElse(false);
     }
 
-    public static boolean either(BlockGetter world, BlockPos pos, Predicate<IBlockInfo> predicate) {
-        return getSlab(world, pos).map(tile -> (tile.getPositiveBlockInfo().getBlockState() != null && predicate.test(tile.getPositiveBlockInfo())) || (tile.getNegativeBlockInfo().getBlockState() != null && predicate.test(tile.getNegativeBlockInfo()))).orElse(false);
+    public static boolean either(BlockGetter level, BlockPos pos, Predicate<IBlockInfo> predicate) {
+        return getSlab(level, pos).map(slab -> (slab.getPositiveBlockInfo().getBlockState() != null && predicate.test(slab.getPositiveBlockInfo())) || (slab.getNegativeBlockInfo().getBlockState() != null && predicate.test(slab.getNegativeBlockInfo()))).orElse(false);
     }
 
     @OnlyIn(Dist.CLIENT)
