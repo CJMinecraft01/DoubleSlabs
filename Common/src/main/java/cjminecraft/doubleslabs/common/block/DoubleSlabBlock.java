@@ -13,7 +13,9 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -97,7 +99,7 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
 
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull InteractionResult use(BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         if (state.getBlock() != this)
             return InteractionResult.PASS;
         return getHalfState(level, pos, hit.getLocation().y - pos.getY()).flatMap(i -> i.blockState().map(s -> {
@@ -123,4 +125,57 @@ public class DoubleSlabBlock extends DynamicSlabBlock {
             }
         })).orElse(InteractionResult.PASS);
     }
+
+    @Override
+    public void attack(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player) {
+        BlockHitResult result = RayTraceUtil.rayTrace(player);
+        getHalfState(level, pos, result.getLocation().y - pos.getY())
+                .ifPresent(i -> i.blockState().ifPresent(s -> s.attack(i.getLevel(), pos, player)));
+    }
+
+    @Override
+    public void fallOn(@NotNull Level level, @NotNull BlockState state, @NotNull BlockPos pos, @NotNull Entity entity, float fallDistance) {
+        getSlab(level, pos).map(SlabBlockEntity::getPositiveBlockInfo)
+                .filter(i -> i.getBlockState() != null)
+                .ifPresentOrElse(i -> i.getBlockState().getBlock().fallOn(i.getLevel(), i.getBlockState(), pos, entity, fallDistance),
+                        () -> super.fallOn(level, state, pos, entity, fallDistance));
+    }
+
+    @Override
+    public void updateEntityAfterFallOn(@NotNull BlockGetter level, Entity entity) {
+        BlockPos pos = new BlockPos(entity.position()).below();
+        if (level.getBlockState(pos).getBlock() == this) {
+            getSlab(level, pos).map(SlabBlockEntity::getPositiveBlockInfo)
+                    .filter(i -> i.getBlockState() != null)
+                    .ifPresentOrElse(i -> i.getBlockState().getBlock().updateEntityAfterFallOn(i.getLevel(), entity),
+                            () -> super.updateEntityAfterFallOn(level, entity));
+        }
+    }
+
+    @Override
+    public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
+        getSlab(level, pos).map(SlabBlockEntity::getPositiveBlockInfo)
+                .filter(i -> i.getBlockState() != null)
+                .ifPresent(i -> i.getBlockState().getBlock().stepOn(i.getLevel(), pos, i.getBlockState(), entity));
+    }
+
+    // todo: should display fluid overlay
+
+
+    @Override
+    public void entityInside(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
+        getSlab(level, pos).ifPresent(slab -> {
+            slab.getPositiveBlockInfo().blockState()
+                    .ifPresent(s -> s.entityInside(slab.getPositiveBlockInfo().getLevel(), pos, entity));
+            slab.getNegativeBlockInfo().blockState()
+                    .ifPresent(s -> s.entityInside(slab.getNegativeBlockInfo().getLevel(), pos, entity));
+        });
+    }
+
+    @Override
+    public void onProjectileHit(@NotNull Level level, @NotNull BlockState state, BlockHitResult hit, @NotNull Projectile projectile) {
+        getHalfState(level, hit.getBlockPos(), hit.getLocation().y).ifPresent(i -> i.blockState().ifPresent(s -> s.onProjectileHit(i.getLevel(), s, hit, projectile)));
+    }
+
+    // todo: get sound type
 }
