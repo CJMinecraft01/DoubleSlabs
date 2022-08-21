@@ -4,7 +4,9 @@ import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
+import cjminecraft.doubleslabs.common.init.IMenuTypes;
 import cjminecraft.doubleslabs.forge.common.init.DSBlockEntities;
+import cjminecraft.doubleslabs.forge.common.init.DSMenuTypes;
 import cjminecraft.doubleslabs.forge.common.init.DSRegistries;
 import cjminecraft.doubleslabs.platform.services.IRegistryHelper;
 import net.minecraftforge.fml.ModList;
@@ -33,5 +35,10 @@ public class ForgeRegistryHelper implements IRegistryHelper {
     @Override
     public IBlockEntities getBlockEntities() {
         return DSBlockEntities.INSTANCE;
+    }
+
+    @Override
+    public IMenuTypes getMenuTypes() {
+        return DSMenuTypes.INSTANCE;
     }
 }

@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.forge;
 
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.forge.common.init.DSBlockEntities;
+import cjminecraft.doubleslabs.forge.common.init.DSMenuTypes;
 import cjminecraft.doubleslabs.forge.common.init.DSRegistries;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -18,5 +19,6 @@ public class DoubleSlabs {
         DSRegistries.CONTAINER_SUPPORTS.register(mod);
 
         DSBlockEntities.BLOCK_ENTITY_TYPES.register(mod);
+        DSMenuTypes.MENU_TYPES.register(mod);
     }
 }

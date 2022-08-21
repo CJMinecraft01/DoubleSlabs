@@ -261,8 +261,8 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
                         }
 
                         @Override
-                        public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
-                            return new WrappedMenu(windowId, inventory, player, provider, i);
+                        public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory inventory, @NotNull Player player) {
+                            return Services.REGISTRIES.getMenuTypes().createWrappedMenu(windowId, inventory, player, provider, i);
                         }
                     }, buffer -> {
                         buffer.writeBlockPos(i.getPos());
