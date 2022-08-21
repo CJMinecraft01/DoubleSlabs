@@ -6,13 +6,48 @@ import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.forge.common.init.*;
 import cjminecraft.doubleslabs.platform.services.IRegistryHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.Objects;
 
 public class ForgeRegistryHelper implements IRegistryHelper {
+
+    @Override
+    public ResourceLocation getKey(Item item) {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
+
+    @Override
+    public ResourceLocation getKey(Block block) {
+        return ForgeRegistries.BLOCKS.getKey(block);
+    }
+
+    @Override
+    public TagKey<Item> getItemTag(ResourceLocation location) {
+        return ForgeRegistries.ITEMS.tags().createTagKey(location);
+    }
+
+    @Override
+    public TagKey<Block> getBlockTag(ResourceLocation location) {
+        return ForgeRegistries.BLOCKS.tags().createTagKey(location);
+    }
+
+    @Override
+    public boolean isIn(TagKey<Item> tag, Item item) {
+        return ForgeRegistries.ITEMS.tags().getTag(tag).contains(item);
+    }
+
+    @Override
+    public boolean isIn(TagKey<Block> tag, Block block) {
+        return ForgeRegistries.BLOCKS.tags().getTag(tag).contains(block);
+    }
 
     @Override
     public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {

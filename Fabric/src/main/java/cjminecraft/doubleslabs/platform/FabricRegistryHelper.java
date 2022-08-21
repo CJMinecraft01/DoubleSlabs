@@ -6,12 +6,48 @@ import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.*;
 import cjminecraft.doubleslabs.fabric.common.init.*;
 import cjminecraft.doubleslabs.platform.services.IRegistryHelper;
+import net.fabricmc.fabric.api.tag.convention.v1.TagUtil;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 import java.util.Map;
 
 public class FabricRegistryHelper implements IRegistryHelper {
+
+    @Override
+    public ResourceLocation getKey(Item item) {
+        return Registry.ITEM.getKey(item);
+    }
+
+    @Override
+    public ResourceLocation getKey(Block block) {
+        return Registry.BLOCK.getKey(block);
+    }
+
+    @Override
+    public TagKey<Item> getItemTag(ResourceLocation location) {
+        return TagKey.create(Registry.ITEM_REGISTRY, location);
+    }
+
+    @Override
+    public TagKey<Block> getBlockTag(ResourceLocation location) {
+        return TagKey.create(Registry.BLOCK_REGISTRY, location);
+    }
+
+    @Override
+    public boolean isIn(TagKey<Item> tag, Item item) {
+        return TagUtil.isIn(tag, item);
+    }
+
+    @Override
+    public boolean isIn(TagKey<Block> tag, Block block) {
+        return TagUtil.isIn(tag, block);
+    }
 
     @Override
     public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {

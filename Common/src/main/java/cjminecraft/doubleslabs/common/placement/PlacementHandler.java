@@ -331,7 +331,7 @@ public class PlacementHandler {
                     BlockEntity blockEntity = level.getBlockEntity(pos);
                     if (blockEntity instanceof SlabBlockEntity<?> slab && !player.isCrouching() && (face != state.getValue(VerticalSlabBlock.FACING) || ((SlabBlockEntity<?>) blockEntity).getPositiveBlockInfo().getBlockState() == null)) {
                         FluidState fluidstate = level.getFluidState(pos);
-                        BlockState newState = state.setValue(VerticalSlabBlock.DOUBLE, true).setValue(VerticalSlabBlock.WATERLOGGED, fluidstate.getType() == Fluids.WATER && VerticalSlabBlock.either(level, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getlevel(), i.getPos(), i.getBlockState())));
+                        BlockState newState = state.setValue(VerticalSlabBlock.DOUBLE, true).setValue(VerticalSlabBlock.WATERLOGGED, fluidstate.getType() == Fluids.WATER && VerticalSlabBlock.either(level, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getLevel(), i.getPos(), i.getBlockState())));
                         BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, slab.getPositiveBlockInfo().getBlockState() != null ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
                         if (DSConfig.COMMON.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
