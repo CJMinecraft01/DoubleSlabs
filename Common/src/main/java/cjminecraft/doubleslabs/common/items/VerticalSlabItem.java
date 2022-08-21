@@ -12,10 +12,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import org.jetbrains.annotations.NotNull;
 
-public class VerticalSlabItem extends BlockItem {
+public abstract class VerticalSlabItem extends BlockItem {
     public VerticalSlabItem() {
-        super(Services.REGISTRIES.getBlocks().getVerticalSlabBlock(), new Properties().tab(DoubleSlabs.TAB));
+        super(Services.REGISTRIES.getBlocks().getVerticalSlabBlock(), new Properties().tab(Services.REGISTRIES.getTabs().getVerticalSlabsTab()));
     }
 
     public static ItemStack setStack(ItemStack stack, ItemStack toSet) {
@@ -30,23 +31,8 @@ public class VerticalSlabItem extends BlockItem {
         return ItemStack.of(nbt);
     }
 
-    // todo: fill item category
-
-//    @Override
-//    @OnlyIn(Dist.CLIENT)
-//    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
-//        if (this.allowedIn(tab)) {
-//            ForgeRegistries.ITEMS.forEach(item -> {
-//                if (SlabSupport.isHorizontalSlab(item)) {
-//                    ItemStack stack = new ItemStack(this);
-//                    items.add(setStack(stack, item.getDefaultInstance()));
-//                }
-//            });
-//        }
-//    }
-
     @Override
-    protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
+    protected boolean placeBlock(@NotNull BlockPlaceContext context, @NotNull BlockState state) {
         boolean result = super.placeBlock(context, state);
         if (context.getPlayer() != null) {
             VerticalSlabBlock.getSlab(context.getLevel(), context.getClickedPos()).ifPresent(tile -> {
@@ -66,12 +52,12 @@ public class VerticalSlabItem extends BlockItem {
     }
 
     @Override
-    public String getDescriptionId(ItemStack stack) {
+    public @NotNull String getDescriptionId(@NotNull ItemStack stack) {
         return getStack(stack).getDescriptionId();
     }
 
     @Override
-    public Component getName(ItemStack stack) {
+    public @NotNull Component getName(@NotNull ItemStack stack) {
         return Component.translatable("item.vertical_slab.prefix", Component.translatable(this.getDescriptionId(stack)));
     }
 
