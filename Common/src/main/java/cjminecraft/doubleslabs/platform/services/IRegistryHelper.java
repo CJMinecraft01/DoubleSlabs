@@ -3,9 +3,7 @@ package cjminecraft.doubleslabs.platform.services;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.common.init.IBlockEntities;
-import cjminecraft.doubleslabs.common.init.IBlocks;
-import cjminecraft.doubleslabs.common.init.IMenuTypes;
+import cjminecraft.doubleslabs.common.init.*;
 
 import java.util.List;
 
@@ -18,5 +16,7 @@ public interface IRegistryHelper {
     IBlockEntities getBlockEntities();
     IMenuTypes getMenuTypes();
     IBlocks getBlocks();
+    IItems getItems();
+    ITabs getTabs();
 
 }

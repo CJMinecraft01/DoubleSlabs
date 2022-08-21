@@ -120,7 +120,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
     @Override
     public @NotNull Item asItem() {
-        return DSItems.VERTICAL_SLAB.get();
+        return Services.REGISTRIES.getItems().getVerticalSlabItem();
     }
 
     @Override
