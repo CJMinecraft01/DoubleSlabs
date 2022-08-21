@@ -104,7 +104,7 @@ public class PlacementHandler {
     }
 
     private static boolean shouldPlaceVerticalSlab(Player player, Direction face) {
-        if (DSConfig.COMMON.disableVerticalSlabPlacement.get())
+        if (DSConfig.Common.disableVerticalSlabPlacement)
             return false;
         IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
 
@@ -158,7 +158,7 @@ public class PlacementHandler {
                             BlockState newState = state.setValue(VerticalSlabBlock.DOUBLE, true);
                             // Get the correct slab state for the vertical slab
                             BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, ((SlabBlockEntity<?>) blockEntity).getPositiveBlockInfo().getBlockState() != null ? face.getOpposite() : face, verticalSlabItemSupport);
-                            if (DSConfig.COMMON.isBlacklistedVerticalSlab(slabState.getBlock()))
+                            if (DSConfig.Common.isBlacklistedVerticalSlab(slabState.getBlock()))
                                 return;
 
                             if (!offset && activateBlock(level, pos, player, hand, cancel))
@@ -195,7 +195,7 @@ public class PlacementHandler {
                         face = blockSupport.getDirection(level, pos, state).getOpposite();
                     }
 
-                    if (DSConfig.COMMON.isBlacklistedVerticalSlab(state.getBlock()))
+                    if (DSConfig.Common.isBlacklistedVerticalSlab(state.getBlock()))
                         return;
 
                     if (!offset && activateBlock(level, pos, player, hand, cancel))
@@ -209,7 +209,7 @@ public class PlacementHandler {
                     if (face == direction.getOpposite()) {
                         // Get the state for the vertical slab item using the direction of the already placed vertical slab
                         BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, direction.getOpposite(), verticalSlabItemSupport);
-                        if (DSConfig.COMMON.isBlacklistedVerticalSlab(slabState.getBlock()))
+                        if (DSConfig.Common.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
                         // Create the state for the vertical slab
                         BlockState newState = Services.REGISTRIES.getBlocks().getVerticalSlabBlock().defaultBlockState().setValue(VerticalSlabBlock.FACING, direction).setValue(VerticalSlabBlock.DOUBLE, true);
@@ -238,7 +238,7 @@ public class PlacementHandler {
                     if (verticalSlabSupport != null) {
                         // If so try and combine a regular horizontal slab with a vertical slab
 
-                        if (DSConfig.COMMON.isBlacklistedVerticalSlab(state.getBlock()))
+                        if (DSConfig.Common.isBlacklistedVerticalSlab(state.getBlock()))
                             return;
 
                         // Get the direction of the vertical slab
@@ -280,7 +280,7 @@ public class PlacementHandler {
                         if (verticalSlabSupport != null) {
                             // The offset block is a vertical slab from another mod so we should try to combine them with a regular slab
 
-                            if (DSConfig.COMMON.isBlacklistedVerticalSlab(newState.getBlock()))
+                            if (DSConfig.Common.isBlacklistedVerticalSlab(newState.getBlock()))
                                 return;
 
                             newState = prepareState(newState);
@@ -303,7 +303,7 @@ public class PlacementHandler {
                                 return;
 
                             BlockState slabState = getStateFromSupport(level, newPos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
-                            if (DSConfig.COMMON.isBlacklistedVerticalSlab(slabState.getBlock()))
+                            if (DSConfig.Common.isBlacklistedVerticalSlab(slabState.getBlock()))
                                 return;
 
                             if (activateBlock(level, newPos, player, hand, cancel))
@@ -333,7 +333,7 @@ public class PlacementHandler {
                         FluidState fluidstate = level.getFluidState(pos);
                         BlockState newState = state.setValue(VerticalSlabBlock.DOUBLE, true).setValue(VerticalSlabBlock.WATERLOGGED, fluidstate.getType() == Fluids.WATER && VerticalSlabBlock.either(level, pos, i -> i.getSupport() != null && i.getSupport().waterloggableWhenDouble(i.getLevel(), i.getPos(), i.getBlockState())));
                         BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, slab.getPositiveBlockInfo().getBlockState() != null ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
-                        if (DSConfig.COMMON.isBlacklistedVerticalSlab(slabState.getBlock()))
+                        if (DSConfig.Common.isBlacklistedVerticalSlab(slabState.getBlock()))
                             return;
 
                         if (placeSlab(level, pos, newState, context, t -> {
@@ -350,14 +350,14 @@ public class PlacementHandler {
                 if (horizontalSlabSupport == null)
                     return;
 
-                if (DSConfig.COMMON.isBlacklistedHorizontalSlab(state.getBlock()))
+                if (DSConfig.Common.isBlacklistedHorizontalSlab(state.getBlock()))
                     return;
 
                 SlabType half = horizontalSlabSupport.getHalf(level, pos, state);
                 if (half == SlabType.DOUBLE)
                     return;
 
-                if (!DSConfig.COMMON.replaceSameSlab.get() && horizontalSlabItemSupport.equals(horizontalSlabSupport) && horizontalSlabSupport.areSame(level, pos, state, stack))
+                if (!DSConfig.Common.replaceSameSlab && horizontalSlabItemSupport.equals(horizontalSlabSupport) && horizontalSlabSupport.areSame(level, pos, state, stack))
                     return;
 
                 if ((face == Direction.UP && half == SlabType.BOTTOM) || (face == Direction.DOWN && half == SlabType.TOP)) {
@@ -365,7 +365,7 @@ public class PlacementHandler {
                     if (!offset && activateBlock(level, pos, player, hand, cancel))
                         return;
                     BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, half == SlabType.BOTTOM ? SlabType.TOP : SlabType.BOTTOM, horizontalSlabItemSupport);
-                    if (DSConfig.COMMON.isBlacklistedHorizontalSlab(slabState.getBlock()))
+                    if (DSConfig.Common.isBlacklistedHorizontalSlab(slabState.getBlock()))
                         return;
 
                     FluidState fluidstate = level.getFluidState(pos);
