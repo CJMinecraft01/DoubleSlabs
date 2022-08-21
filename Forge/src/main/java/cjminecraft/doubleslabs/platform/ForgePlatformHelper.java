@@ -67,11 +67,6 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public IBlockEntities getBlockEntities() {
-        return DSBlockEntities.INSTANCE;
-    }
-
-    @Override
     public double getReachDistance(Player player) {
         return player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
     }

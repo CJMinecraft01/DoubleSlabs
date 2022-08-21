@@ -86,11 +86,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public IBlockEntities getBlockEntities() {
-        return DSBlockEntities.INSTANCE;
-    }
-
-    @Override
     public double getReachDistance(Player player) {
         return player.isCreative() ? 5 : 4.5; // todo: account for reach distance
     }

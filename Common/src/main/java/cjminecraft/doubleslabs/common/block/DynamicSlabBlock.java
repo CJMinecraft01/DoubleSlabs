@@ -150,13 +150,13 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return Services.PLATFORM.getBlockEntities().createSlabBlockEntity(pos, state);
+        return Services.REGISTRIES.getBlockEntities().createSlabBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
-        return createTickerHelper(type, Services.PLATFORM.getBlockEntities().dynamicSlab(), SlabBlockEntity::tick);
+        return createTickerHelper(type, Services.REGISTRIES.getBlockEntities().dynamicSlab(), SlabBlockEntity::tick);
     }
 
     @Override

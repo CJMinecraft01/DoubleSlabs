@@ -44,7 +44,5 @@ public interface IPlatformHelper {
     void openScreen(Player player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData);
     ResourceLocation getMenuTypeName(MenuType<?> type);
 
-    IBlockEntities getBlockEntities();
-
     double getReachDistance(Player player);
 }
