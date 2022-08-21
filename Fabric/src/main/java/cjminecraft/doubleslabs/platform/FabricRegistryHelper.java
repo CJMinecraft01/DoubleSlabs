@@ -4,7 +4,9 @@ import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
+import cjminecraft.doubleslabs.common.init.IMenuTypes;
 import cjminecraft.doubleslabs.fabric.common.init.DSBlockEntities;
+import cjminecraft.doubleslabs.fabric.common.init.DSMenuTypes;
 import cjminecraft.doubleslabs.fabric.common.init.DSRegistries;
 import cjminecraft.doubleslabs.platform.services.IRegistryHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -32,5 +34,10 @@ public class FabricRegistryHelper implements IRegistryHelper {
     @Override
     public IBlockEntities getBlockEntities() {
         return DSBlockEntities.INSTANCE;
+    }
+
+    @Override
+    public IMenuTypes getMenuTypes() {
+        return DSMenuTypes.INSTANCE;
     }
 }
