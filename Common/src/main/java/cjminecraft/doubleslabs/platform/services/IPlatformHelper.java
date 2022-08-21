@@ -37,10 +37,6 @@ public interface IPlatformHelper {
      */
     boolean isDevelopmentEnvironment();
 
-    List<IHorizontalSlabSupport> getHorizontalSlabSupports();
-    List<IVerticalSlabSupport> getVerticalSlabSupports();
-    List<IContainerSupport> getContainerSupports();
-
     void openScreen(Player player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData);
     ResourceLocation getMenuTypeName(MenuType<?> type);
 

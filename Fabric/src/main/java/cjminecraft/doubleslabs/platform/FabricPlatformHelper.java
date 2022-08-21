@@ -43,21 +43,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {
-        return DSRegistries.HORIZONTAL_SLAB_SUPPORTS.entrySet().stream().filter(e -> isModLoaded(e.getKey().location().getNamespace())).map(Map.Entry::getValue).toList();
-    }
-
-    @Override
-    public List<IVerticalSlabSupport> getVerticalSlabSupports() {
-        return DSRegistries.VERTICAL_SLAB_SUPPORTS.entrySet().stream().filter(e -> isModLoaded(e.getKey().location().getNamespace())).map(Map.Entry::getValue).toList();
-    }
-
-    @Override
-    public List<IContainerSupport> getContainerSupports() {
-        return DSRegistries.CONTAINER_SUPPORTS.entrySet().stream().filter(e -> isModLoaded(e.getKey().location().getNamespace())).map(Map.Entry::getValue).toList();
-    }
-
-    @Override
     public void openScreen(Player player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData) {
         player.openMenu(new ExtendedScreenHandlerFactory() {
             @Override

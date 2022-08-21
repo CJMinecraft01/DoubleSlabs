@@ -42,21 +42,6 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {
-        return DSRegistries.HORIZONTAL_SLAB_SUPPORTS.getEntries().stream().filter(o -> isModLoaded(Objects.requireNonNull(o.getKey()).location().getNamespace())).map(RegistryObject::get).toList();
-    }
-
-    @Override
-    public List<IVerticalSlabSupport> getVerticalSlabSupports() {
-        return DSRegistries.VERTICAL_SLAB_SUPPORTS.getEntries().stream().filter(o -> isModLoaded(Objects.requireNonNull(o.getKey()).location().getNamespace())).map(RegistryObject::get).toList();
-    }
-
-    @Override
-    public List<IContainerSupport> getContainerSupports() {
-        return DSRegistries.CONTAINER_SUPPORTS.getEntries().stream().filter(o -> isModLoaded(Objects.requireNonNull(o.getKey()).location().getNamespace())).map(RegistryObject::get).toList();
-    }
-
-    @Override
     public void openScreen(Player player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData) {
         NetworkHooks.openScreen((ServerPlayer) player, provider, extraData);
     }

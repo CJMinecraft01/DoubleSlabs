@@ -19,8 +19,8 @@ import java.util.List;
 
 public class SlabSupport {
 
-    private static final List<IVerticalSlabSupport> verticalSlabSupports = Services.PLATFORM.getVerticalSlabSupports();
-    private static final List<IHorizontalSlabSupport> horizontalSlabSupports = Services.PLATFORM.getHorizontalSlabSupports();
+    private static final List<IVerticalSlabSupport> verticalSlabSupports = Services.REGISTRIES.getVerticalSlabSupports();
+    private static final List<IHorizontalSlabSupport> horizontalSlabSupports = Services.REGISTRIES.getHorizontalSlabSupports();
 
     @Nullable
     public static IVerticalSlabSupport getVerticalSlabSupport(BlockGetter world, BlockPos pos, BlockState state) {

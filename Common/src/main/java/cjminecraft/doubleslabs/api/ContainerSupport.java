@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ContainerSupport {
 
-    private static final List<IContainerSupport> containerSupports = Services.PLATFORM.getContainerSupports();
+    private static final List<IContainerSupport> containerSupports = Services.REGISTRIES.getContainerSupports();
 
     public static IContainerSupport getSupport(Level world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof IContainerSupport && ((IContainerSupport) state.getBlock()).hasSupport(world, pos, state))
