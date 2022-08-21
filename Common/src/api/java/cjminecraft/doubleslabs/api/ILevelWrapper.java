@@ -20,7 +20,7 @@ public interface ILevelWrapper<W extends Level> {
         return (W) this;
     }
 
-    Level getWorld();
+    Level getLevel();
 
-    void setWorld(Level world);
+    void setLevel(Level level);
 }

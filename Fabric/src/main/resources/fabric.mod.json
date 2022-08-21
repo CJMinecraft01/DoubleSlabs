@@ -24,6 +24,7 @@
     "mixins": [
       "doubleslabs.mixins.json"
     ],
+    "accessWidener" : "doubleslabs.accesswidener",
   
     "depends": {
       "fabricloader": ">=0.14",

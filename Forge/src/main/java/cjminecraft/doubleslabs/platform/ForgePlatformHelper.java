@@ -1,27 +1,20 @@
 package cjminecraft.doubleslabs.platform;
 
-import cjminecraft.doubleslabs.api.containers.IContainerSupport;
-import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.common.init.IBlockEntities;
-import cjminecraft.doubleslabs.forge.common.init.DSBlockEntities;
-import cjminecraft.doubleslabs.forge.common.init.DSRegistries;
 import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ForgePlatformHelper implements IPlatformHelper {
@@ -54,5 +47,10 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public double getReachDistance(Player player) {
         return player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
+    }
+
+    @Override
+    public LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server) {
+        return server.storageSource;
     }
 }

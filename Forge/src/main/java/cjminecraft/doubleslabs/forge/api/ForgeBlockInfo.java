@@ -6,6 +6,7 @@ import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -20,9 +21,8 @@ public class ForgeBlockInfo extends BlockInfo implements INBTSerializable<Compou
     }
 
     @Override
-    public ILevelWrapper<?> createWrappedLevel(Level level) {
-        // todo
-        return null;
+    public void loadBlockEntity(BlockEntity blockEntity) {
+        blockEntity.onLoad();
     }
 
     public void onLoad() {

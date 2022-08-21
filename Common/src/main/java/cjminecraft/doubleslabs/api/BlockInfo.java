@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.api;
 
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
-import cjminecraft.doubleslabs.platform.Services;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -120,7 +119,7 @@ public abstract class BlockInfo implements IBlockInfo {
 
     public void setLevel(Level level) {
         if (this.level != null && this.level instanceof ILevelWrapper<?>)
-            ((ILevelWrapper<?>) this.level).setWorld(level);
+            ((ILevelWrapper<?>) this.level).setLevel(level);
         else if (this.blockEntity != null || (this.support != null && this.state != null && this.support.requiresWrappedWorld(this.state)))
             this.level = (Level) createWrappedLevel(level);
         else if (level != null)
@@ -170,15 +169,13 @@ public abstract class BlockInfo implements IBlockInfo {
         return blockEntity != null && blockEntity.triggerEvent(pA, pB);
     }
 
-    public abstract ILevelWrapper<?> createWrappedLevel(Level level);
-
-    public void loadBlockEntity(BlockEntity blockEntity) {
-        // todo: change for forge
+    public ILevelWrapper<?> createWrappedLevel(Level level) {
+        return level instanceof ServerLevel ? new ServerLevelWrapper((ServerLevel) level) : new LevelWrapper(level);
     }
 
-    // todo: onLoad for forge
-    // todo: onChunkUnloaded for forge
-    // todo: capabilities for forge
+    public void loadBlockEntity(BlockEntity blockEntity) {
+
+    }
 
     @Override
     public boolean equals(Object o) {

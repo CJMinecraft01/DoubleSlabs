@@ -6,9 +6,11 @@ import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.storage.LevelStorageSource;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -41,4 +43,6 @@ public interface IPlatformHelper {
     ResourceLocation getMenuTypeName(MenuType<?> type);
 
     double getReachDistance(Player player);
+
+    LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server);
 }

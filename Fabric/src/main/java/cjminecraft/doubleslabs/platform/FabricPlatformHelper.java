@@ -1,11 +1,5 @@
 package cjminecraft.doubleslabs.platform;
 
-import cjminecraft.doubleslabs.api.containers.IContainerSupport;
-import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
-import cjminecraft.doubleslabs.common.init.IBlockEntities;
-import cjminecraft.doubleslabs.fabric.common.init.DSBlockEntities;
-import cjminecraft.doubleslabs.fabric.common.init.DSRegistries;
 import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,16 +7,16 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class FabricPlatformHelper implements IPlatformHelper {
@@ -73,5 +67,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public double getReachDistance(Player player) {
         return player.isCreative() ? 5 : 4.5; // todo: account for reach distance
+    }
+
+    @Override
+    public LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server) {
+        return server.storageSource;
     }
 }
