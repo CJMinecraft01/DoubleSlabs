@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.common.items;
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
+import cjminecraft.doubleslabs.common.placement.PlacementHandler;
 import cjminecraft.doubleslabs.platform.Services;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
