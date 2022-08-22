@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.api.support.minecraft;
 
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.api.support.SlabSupportProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
 
-@SlabSupportProvider
 public class MinecraftSlabSupport implements IHorizontalSlabSupport {
 
     private boolean isValid(BlockState state) {
