@@ -11,11 +11,15 @@ public class DSItems implements IItems {
 
     public static final DSItems INSTANCE = new DSItems();
 
-    public static final VerticalSlabItem VERTICAL_SLAB = Registry.register(
-            Registry.ITEM,
-            new ResourceLocation(Constants.MODID, "vertical_slab"),
-            new FabricVerticalSlabItem()
-    );
+    public static VerticalSlabItem VERTICAL_SLAB;
+
+    public static void register() {
+        VERTICAL_SLAB = Registry.register(
+                Registry.ITEM,
+                new ResourceLocation(Constants.MODID, "vertical_slab"),
+                new FabricVerticalSlabItem()
+        );
+    }
 
     @Override
     public VerticalSlabItem getVerticalSlabItem() {

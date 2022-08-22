@@ -18,11 +18,15 @@ public class DSMenuTypes implements IMenuTypes {
 
     public static final DSMenuTypes INSTANCE = new DSMenuTypes();
 
-    public static final MenuType<FabricWrappedMenu> WRAPPED = Registry.register(
-            Registry.MENU,
-            new ResourceLocation(Constants.MODID, "wrapper"),
-            new ExtendedScreenHandlerType<>(FabricWrappedMenu::new)
-    );
+    public static MenuType<FabricWrappedMenu> WRAPPED;
+
+    public static void register() {
+        WRAPPED = Registry.register(
+                Registry.MENU,
+                new ResourceLocation(Constants.MODID, "wrapper"),
+                new ExtendedScreenHandlerType<>(FabricWrappedMenu::new)
+        );
+    }
 
     @Override
     public MenuType<? extends WrappedMenu> getWrappedMenu() {

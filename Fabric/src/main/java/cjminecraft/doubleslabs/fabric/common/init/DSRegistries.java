@@ -10,8 +10,15 @@ import net.minecraft.resources.ResourceLocation;
 
 public class DSRegistries {
 
-    public static final WritableRegistry<IHorizontalSlabSupport> HORIZONTAL_SLAB_SUPPORTS = FabricRegistryBuilder.createSimple(IHorizontalSlabSupport.class, new ResourceLocation(Constants.MODID, "horizontal_slab_support")).buildAndRegister();
-    public static final WritableRegistry<IVerticalSlabSupport> VERTICAL_SLAB_SUPPORTS = FabricRegistryBuilder.createSimple(IVerticalSlabSupport.class, new ResourceLocation(Constants.MODID, "vertical_slab_support")).buildAndRegister();
-    public static final WritableRegistry<IContainerSupport> CONTAINER_SUPPORTS = FabricRegistryBuilder.createSimple(IContainerSupport.class, new ResourceLocation(Constants.MODID, "container_support")).buildAndRegister();
+    public static WritableRegistry<IHorizontalSlabSupport> HORIZONTAL_SLAB_SUPPORTS;
+    public static WritableRegistry<IVerticalSlabSupport> VERTICAL_SLAB_SUPPORTS;
+    public static WritableRegistry<IContainerSupport> CONTAINER_SUPPORTS;
+
+    public static void register() {
+        HORIZONTAL_SLAB_SUPPORTS = FabricRegistryBuilder.createSimple(IHorizontalSlabSupport.class, new ResourceLocation(Constants.MODID, "horizontal_slab_support")).buildAndRegister();
+        VERTICAL_SLAB_SUPPORTS = FabricRegistryBuilder.createSimple(IVerticalSlabSupport.class, new ResourceLocation(Constants.MODID, "vertical_slab_support")).buildAndRegister();
+        FabricRegistryBuilder.createSimple(IContainerSupport.class, new ResourceLocation(Constants.MODID, "container_support")).buildAndRegister();
+
+    }
 
 }

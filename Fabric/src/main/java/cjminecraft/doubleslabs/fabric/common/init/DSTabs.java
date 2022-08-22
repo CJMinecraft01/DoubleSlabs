@@ -13,14 +13,18 @@ public class DSTabs implements ITabs {
 
     public static final DSTabs INSTANCE = new DSTabs();
 
-    public static final CreativeModeTab VERTICAL_SLABS = FabricItemGroupBuilder.build(
-            new ResourceLocation(Constants.MODID, "vertical_slabs"),
-            () -> {
-                ItemStack stack = new ItemStack(DSItems.VERTICAL_SLAB);
-                stack.addTagElement("item", Items.STONE_BRICK_SLAB.getDefaultInstance().save(new CompoundTag()));
-                return stack;
-            }
-    );
+    public static CreativeModeTab VERTICAL_SLABS;
+
+    public static void register() {
+        VERTICAL_SLABS = FabricItemGroupBuilder.build(
+                new ResourceLocation(Constants.MODID, "vertical_slabs"),
+                () -> {
+                    ItemStack stack = new ItemStack(DSItems.VERTICAL_SLAB);
+                    stack.addTagElement("item", Items.STONE_BRICK_SLAB.getDefaultInstance().save(new CompoundTag()));
+                    return stack;
+                }
+        );
+    }
 
     @Override
     public CreativeModeTab getVerticalSlabsTab() {

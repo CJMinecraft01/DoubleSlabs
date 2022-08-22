@@ -17,11 +17,15 @@ public class DSBlockEntities implements IBlockEntities {
     public static final IBlockEntities INSTANCE = new DSBlockEntities();
 
     // todo: change leaves to slab types
-    public static final BlockEntityType<FabricSlabBlockEntity> DYNAMIC_SLAB = Registry.register(
-            Registry.BLOCK_ENTITY_TYPE,
-            new ResourceLocation(Constants.MODID, "dynamic_slab"),
-            FabricBlockEntityTypeBuilder.create(FabricSlabBlockEntity::new, Blocks.ACACIA_LEAVES).build()
-    );
+    public static BlockEntityType<FabricSlabBlockEntity> DYNAMIC_SLAB;
+
+    public static void register() {
+        DYNAMIC_SLAB = Registry.register(
+                Registry.BLOCK_ENTITY_TYPE,
+                new ResourceLocation(Constants.MODID, "dynamic_slab"),
+                FabricBlockEntityTypeBuilder.create(FabricSlabBlockEntity::new, Blocks.ACACIA_LEAVES).build()
+        );
+    }
 
     @Override
     public BlockEntityType<? extends SlabBlockEntity<?>> dynamicSlab() {

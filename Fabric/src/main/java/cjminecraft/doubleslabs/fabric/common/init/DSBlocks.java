@@ -12,17 +12,22 @@ public class DSBlocks implements IBlocks {
 
     public static final DSBlocks INSTANCE = new DSBlocks();
 
-    public static final DynamicSlabBlock DOUBLE_SLAB = Registry.register(
-            Registry.BLOCK,
-            new ResourceLocation(Constants.MODID, "double_slab"),
-            new DoubleSlabBlock()
-    );
+    public static DynamicSlabBlock DOUBLE_SLAB;
 
-    public static final DynamicSlabBlock VERTICAL_SLAB = Registry.register(
-            Registry.BLOCK,
-            new ResourceLocation(Constants.MODID, "vertical_slab"),
-            new VerticalSlabBlock()
-    );
+    public static DynamicSlabBlock VERTICAL_SLAB;
+
+    public static void register() {
+        DOUBLE_SLAB = Registry.register(
+                Registry.BLOCK,
+                new ResourceLocation(Constants.MODID, "double_slab"),
+                new DoubleSlabBlock()
+        );
+        VERTICAL_SLAB = Registry.register(
+                Registry.BLOCK,
+                new ResourceLocation(Constants.MODID, "vertical_slab"),
+                new VerticalSlabBlock()
+        );
+    }
 
     @Override
     public DynamicSlabBlock getDoubleSlabBlock() {
