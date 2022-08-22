@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.platform.services;
 import cjminecraft.doubleslabs.api.containers.IContainerSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
+import cjminecraft.doubleslabs.common.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.init.IBlockEntities;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -45,4 +46,6 @@ public interface IPlatformHelper {
     double getReachDistance(Player player);
 
     LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server);
+
+    IPlayerConfig getPlayerConfig(Player player);
 }

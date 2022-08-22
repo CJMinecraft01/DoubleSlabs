@@ -2,7 +2,9 @@ package cjminecraft.doubleslabs.forge;
 
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
+import cjminecraft.doubleslabs.forge.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.forge.common.init.*;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -21,9 +23,15 @@ public class DoubleSlabs {
         DSRegistries.VERTICAL_SLAB_SUPPORTS.register(mod);
         DSRegistries.CONTAINER_SUPPORTS.register(mod);
 
+        mod.addListener(this::registerCapabilities);
+
         DSBlockEntities.BLOCK_ENTITY_TYPES.register(mod);
         DSMenuTypes.MENU_TYPES.register(mod);
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
+    }
+
+    private void registerCapabilities(final RegisterCapabilitiesEvent event) {
+        PlayerConfigCapability.register(event);
     }
 }

@@ -1,5 +1,7 @@
 package cjminecraft.doubleslabs.platform;
 
+import cjminecraft.doubleslabs.common.config.IPlayerConfig;
+import cjminecraft.doubleslabs.fabric.api.extensions.IPlayerExtensions;
 import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -53,7 +56,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
             @Nullable
             @Override
-            public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+            public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
                 return provider.createMenu(i, inventory, player);
             }
         });
@@ -72,5 +75,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server) {
         return server.storageSource;
+    }
+
+    @Override
+    public IPlayerConfig getPlayerConfig(Player player) {
+        return ((IPlayerExtensions) player).getPlayerConfig();
     }
 }

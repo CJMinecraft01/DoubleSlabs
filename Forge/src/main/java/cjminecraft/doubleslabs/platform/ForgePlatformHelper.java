@@ -1,5 +1,8 @@
 package cjminecraft.doubleslabs.platform;
 
+import cjminecraft.doubleslabs.common.config.IPlayerConfig;
+import cjminecraft.doubleslabs.common.config.PlayerConfig;
+import cjminecraft.doubleslabs.forge.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -52,5 +55,10 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public LevelStorageSource.LevelStorageAccess getStorageFromServer(MinecraftServer server) {
         return server.storageSource;
+    }
+
+    @Override
+    public IPlayerConfig getPlayerConfig(Player player) {
+        return player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElseGet(PlayerConfig::new);
     }
 }

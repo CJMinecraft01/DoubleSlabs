@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.common.block.DoubleSlabBlock;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
 import cjminecraft.doubleslabs.common.config.DSConfig;
+import cjminecraft.doubleslabs.common.config.IPlayerConfig;
 import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.util.DoubleSlabPlaceContext;
 import cjminecraft.doubleslabs.common.util.RayTraceUtil;
@@ -103,11 +104,8 @@ public class PlacementHandler {
     private static boolean shouldPlaceVerticalSlab(Player player, Direction face) {
         if (DSConfig.COMMON.disableVerticalSlabPlacement.get())
             return false;
-        // todo: player config
-//        IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
-//
-//        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
-        return false;
+        IPlayerConfig config = Services.PLATFORM.getPlayerConfig(player);
+        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
     }
     
     public static InteractionResult onItemUse(Level level, Player player, Direction face, BlockPos pos, ItemStack originalStack, InteractionHand hand) {
