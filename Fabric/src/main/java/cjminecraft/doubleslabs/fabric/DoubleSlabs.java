@@ -15,6 +15,7 @@ public class DoubleSlabs implements ModInitializer {
         ModLoadingContext.registerConfig(Constants.MODID, ModConfig.Type.COMMON, DSConfig.COMMON_SPEC);
 
         DSRegistries.register();
+        DSSupports.register();
 
         DSBlocks.register();
         DSItems.register();
