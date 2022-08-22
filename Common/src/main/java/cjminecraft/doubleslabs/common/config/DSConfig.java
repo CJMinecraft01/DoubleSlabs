@@ -2,9 +2,6 @@ package cjminecraft.doubleslabs.common.config;
 
 import cjminecraft.doubleslabs.api.SlabSupport;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
-import cjminecraft.doubleslabs.common.config.api.BooleanValue;
-import cjminecraft.doubleslabs.common.config.api.ConfigValue;
-import cjminecraft.doubleslabs.common.config.api.EnumValue;
 import cjminecraft.doubleslabs.common.placement.VerticalSlabPlacementMethod;
 import cjminecraft.doubleslabs.platform.Services;
 import com.google.common.collect.Lists;
