@@ -1,2 +1,2 @@
-accessWidener	v1	doubleslabs
+accessWidener	v1	named
 accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
