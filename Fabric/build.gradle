@@ -26,6 +26,8 @@ dependencies {
     implementation project(":Common")
     implementation project(":Common").sourceSets.api.output
 
+    implementation 'com.electronwill.night-config:core:3.6.5'
+    implementation 'com.electronwill.night-config:toml:3.6.5'
     modImplementation "curse.maven:forge-config-api-port-fabric-547434:3946675"
 }
 

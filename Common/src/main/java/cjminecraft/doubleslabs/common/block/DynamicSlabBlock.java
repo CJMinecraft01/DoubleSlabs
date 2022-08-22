@@ -34,8 +34,6 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,50 +99,6 @@ public class DynamicSlabBlock extends BaseEntityBlock implements SimpleWaterlogg
 
     public static boolean either(BlockGetter level, BlockPos pos, Predicate<IBlockInfo> predicate) {
         return getSlab(level, pos).map(slab -> (slab.getPositiveBlockInfo().getBlockState() != null && predicate.test(slab.getPositiveBlockInfo())) || (slab.getNegativeBlockInfo().getBlockState() != null && predicate.test(slab.getNegativeBlockInfo()))).orElse(false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean crack(ClientLevel level, BlockState actualState, BlockState state, BlockPos pos, Direction direction, ParticleEngine manager) {
-        if (state.getRenderShape() != RenderShape.INVISIBLE) {
-            int i = pos.getX();
-            int j = pos.getY();
-            int k = pos.getZ();
-            AABB aabb = actualState.getShape(level, pos).bounds();
-            double d0 = (double) i + level.random.nextDouble() * (aabb.maxX - aabb.minX - (double) 0.2F) + (double) 0.1F + aabb.minX;
-            double d1 = (double) j + level.random.nextDouble() * (aabb.maxY - aabb.minY - (double) 0.2F) + (double) 0.1F + aabb.minY;
-            double d2 = (double) k + level.random.nextDouble() * (aabb.maxZ - aabb.minZ - (double) 0.2F) + (double) 0.1F + aabb.minZ;
-            if (direction == Direction.DOWN) {
-                d1 = (double) j + aabb.minY - (double) 0.1F;
-            }
-
-            if (direction == Direction.UP) {
-                d1 = (double) j + aabb.maxY + (double) 0.1F;
-            }
-
-            if (direction == Direction.NORTH) {
-                d2 = (double) k + aabb.minZ - (double) 0.1F;
-            }
-
-            if (direction == Direction.SOUTH) {
-                d2 = (double) k + aabb.maxZ + (double) 0.1F;
-            }
-
-            if (direction == Direction.WEST) {
-                d0 = (double) i + aabb.minX - (double) 0.1F;
-            }
-
-            if (direction == Direction.EAST) {
-                d0 = (double) i + aabb.maxX + (double) 0.1F;
-            }
-
-            Particle particle = manager.createParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), d0, d1, d2, 0.0D, 0.0D, 0.0D);
-            if (particle != null) {
-                particle = particle.setPower(0.2F).scale(0.6F);
-                manager.add(particle);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Nullable
