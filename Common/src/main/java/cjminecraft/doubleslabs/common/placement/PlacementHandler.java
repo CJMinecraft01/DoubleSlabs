@@ -6,9 +6,6 @@ import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
 import cjminecraft.doubleslabs.common.block.DoubleSlabBlock;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.SlabBlockEntity;
-import cjminecraft.doubleslabs.common.capability.config.IPlayerConfig;
-import cjminecraft.doubleslabs.common.capability.config.PlayerConfig;
-import cjminecraft.doubleslabs.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.items.VerticalSlabItem;
 import cjminecraft.doubleslabs.common.util.DoubleSlabPlaceContext;
@@ -38,7 +35,9 @@ import java.util.function.Consumer;
 public class PlacementHandler {
 
     private static boolean activateBlock(Level level, BlockPos pos, Player player, InteractionHand hand) {
-        boolean useItem = !player.getMainHandItem().doesSneakBypassUse(level, pos, player) || !player.getOffhandItem().doesSneakBypassUse(level, pos, player);
+//        boolean useItem = !player.getMainHandItem().doesSneakBypassUse(level, pos, player) || !player.getOffhandItem().doesSneakBypassUse(level, pos, player);
+        // todo: use the above version
+        boolean useItem = true;
         boolean flag = player.isSecondaryUseActive() && useItem;
         if (!flag) {
             InteractionResult result = level.getBlockState(pos).use(level, player, hand, RayTraceUtil.rayTrace(player).withPosition(pos));
@@ -104,9 +103,11 @@ public class PlacementHandler {
     private static boolean shouldPlaceVerticalSlab(Player player, Direction face) {
         if (DSConfig.COMMON.disableVerticalSlabPlacement.get())
             return false;
-        IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
-
-        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
+        // todo: player config
+//        IPlayerConfig config = player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).orElse(new PlayerConfig());
+//
+//        return config.getVerticalSlabPlacementMethod().shouldPlace(player, face, config.placeVerticalSlabs());
+        return false;
     }
     
     public static InteractionResult onItemUse(Level level, Player player, Direction face, BlockPos pos, ItemStack originalStack, InteractionHand hand) {
@@ -242,7 +243,7 @@ public class PlacementHandler {
                         if (face == direction) {
                             state = prepareState(state);
 
-                            if (activateBlock(level, pos, player, hand, cancel))
+                            if (activateBlock(level, pos, player, hand))
                                 return InteractionResult.PASS;
 
                             BlockState slabState = getStateFromSupport(level, pos, player, hand, stack, SlabType.BOTTOM, horizontalSlabItemSupport);
@@ -254,16 +255,10 @@ public class PlacementHandler {
                         }
                     }
 
-//                    if (activateBlock(level, pos, player, hand, cancel))
-//                        return;
-
                     BlockPos newPos = pos.relative(face);
                     BlockState newState = level.getBlockState(newPos);
 
                     offset = true;
-
-//                    if (!canPlace(level, newPos, face, player, hand, stack, cancel, false))
-//                        return;
 
                     verticalSlab = newState.getBlock() == Services.REGISTRIES.getBlocks().getVerticalSlabBlock() && !newState.getValue(VerticalSlabBlock.DOUBLE);
 
