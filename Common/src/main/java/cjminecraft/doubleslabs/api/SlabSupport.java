@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.api;
 import cjminecraft.doubleslabs.api.support.IHorizontalSlabSupport;
 import cjminecraft.doubleslabs.api.support.ISlabSupport;
 import cjminecraft.doubleslabs.api.support.IVerticalSlabSupport;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;

@@ -1,18 +1,20 @@
 package cjminecraft.doubleslabs.forge;
 
 import cjminecraft.doubleslabs.common.Constants;
-import cjminecraft.doubleslabs.forge.common.config.DSForgeConfig;
+import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.forge.common.init.*;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Constants.MODID)
 public class DoubleSlabs {
     
     public DoubleSlabs() {
-        DSForgeConfig.registerConfigs();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DSConfig.CLIENT_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DSConfig.COMMON_SPEC);
 
         IEventBus mod = FMLJavaModLoadingContext.get().getModEventBus();
         DSRegistries.HORIZONTAL_SLAB_SUPPORTS.register(mod);
@@ -23,7 +25,5 @@ public class DoubleSlabs {
         DSMenuTypes.MENU_TYPES.register(mod);
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
-
-        mod.addListener(DSForgeConfig::onFileChange);
     }
 }
