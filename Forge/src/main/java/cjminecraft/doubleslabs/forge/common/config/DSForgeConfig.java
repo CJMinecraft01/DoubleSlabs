@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,6 +23,15 @@ public class DSForgeConfig {
     public static void registerConfigs() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT.spec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON.spec);
+    }
+
+    public static void onFileChange(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getModId().equals(Constants.MODID)) {
+            switch (event.getConfig().getType()) {
+                case CLIENT -> CLIENT.onFileChanged();
+                case COMMON -> COMMON.onFileChanged();
+            }
+        }
     }
 
     private static class ForgeConfig {
@@ -52,6 +62,16 @@ public class DSForgeConfig {
                 builder.pop();
             });
             this.spec = builder.build();
+        }
+
+        public void onFileChanged() {
+            values.forEach((field, value) -> {
+                try {
+                    field.set(null, value.get());
+                } catch (IllegalAccessException ignored) {
+                    Constants.LOG.warn("Unable to update config option %s".formatted(field.getName()));
+                }
+            });
         }
     }
 }

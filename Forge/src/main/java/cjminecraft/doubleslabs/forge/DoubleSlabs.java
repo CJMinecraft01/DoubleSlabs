@@ -23,5 +23,7 @@ public class DoubleSlabs {
         DSMenuTypes.MENU_TYPES.register(mod);
         DSBlocks.BLOCKS.register(mod);
         DSItems.ITEMS.register(mod);
+
+        mod.addListener(DSForgeConfig::onFileChange);
     }
 }
