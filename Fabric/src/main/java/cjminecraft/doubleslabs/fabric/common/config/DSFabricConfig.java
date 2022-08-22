@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.common.config.Option;
 import com.google.common.collect.Maps;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,7 +28,8 @@ public class DSFabricConfig {
     public static final FabricConfig COMMON = new FabricConfig(DSConfig.Common.class, FabricLoader.getInstance().getConfigDir().resolve("doubleslabs-common.cfg"));
 
     public static void loadConfigs() {
-        CLIENT.load();
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+            CLIENT.load();
         COMMON.load();
     }
 
