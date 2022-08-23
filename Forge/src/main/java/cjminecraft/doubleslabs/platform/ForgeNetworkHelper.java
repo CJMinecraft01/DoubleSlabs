@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.forge.common.network.ForgeNetworkContext;
 import cjminecraft.doubleslabs.platform.services.INetworkHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
@@ -58,5 +59,10 @@ public class ForgeNetworkHelper implements INetworkHelper {
     @Override
     public <MSG> void sendToLevelClients(Level level, MSG msg) {
         INSTANCE.send(PacketDistributor.DIMENSION.with(level::dimension), msg);
+    }
+
+    @Override
+    public <MSG> void sendToPlayer(ServerPlayer player, MSG msg) {
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
 }

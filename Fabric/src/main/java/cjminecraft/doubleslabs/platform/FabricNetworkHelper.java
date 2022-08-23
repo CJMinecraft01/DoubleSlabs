@@ -12,6 +12,8 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -81,6 +83,18 @@ public class FabricNetworkHelper implements INetworkHelper {
             buf.writeInt(handler.id);
             handler.encode(msg, buf);
             Objects.requireNonNull(level.getServer()).getPlayerList().broadcastAll(ServerPlayNetworking.createS2CPacket(CHANNEL_NAME, buf));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <MSG> void sendToPlayer(ServerPlayer player, MSG msg) {
+        MessageHandler<MSG> handler = (MessageHandler<MSG>) handlers.get(msg.getClass());
+        if (handler != null) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeInt(handler.id);
+            handler.encode(msg, buf);
+            ServerPlayNetworking.send(player, CHANNEL_NAME, buf);
         }
     }
 
