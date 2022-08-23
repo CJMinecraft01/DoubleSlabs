@@ -1,2 +1,3 @@
 accessWidener	v1	named
 accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+accessible field net/minecraft/client/resources/model/ModelBakery atlasSet Lnet/minecraft/client/renderer/texture/AtlasSet;

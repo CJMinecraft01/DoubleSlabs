@@ -32,4 +32,7 @@ public interface IRegistryHelper {
     boolean isIn(TagKey<Item> tag, Item item);
     boolean isIn(TagKey<Block> tag, Block block);
 
+    Iterable<Block> getAllBlocks();
+    Iterable<Item> getAllItems();
+
 }

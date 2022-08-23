@@ -50,6 +50,16 @@ public class FabricRegistryHelper implements IRegistryHelper {
     }
 
     @Override
+    public Iterable<Block> getAllBlocks() {
+        return Registry.BLOCK;
+    }
+
+    @Override
+    public Iterable<Item> getAllItems() {
+        return Registry.ITEM;
+    }
+
+    @Override
     public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {
         return DSRegistries.HORIZONTAL_SLAB_SUPPORTS.entrySet().stream().filter(e -> FabricLoader.getInstance().isModLoaded(e.getKey().location().getNamespace())).map(Map.Entry::getValue).toList();
     }

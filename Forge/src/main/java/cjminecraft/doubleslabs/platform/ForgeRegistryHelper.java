@@ -50,6 +50,16 @@ public class ForgeRegistryHelper implements IRegistryHelper {
     }
 
     @Override
+    public Iterable<Block> getAllBlocks() {
+        return ForgeRegistries.BLOCKS;
+    }
+
+    @Override
+    public Iterable<Item> getAllItems() {
+        return ForgeRegistries.ITEMS;
+    }
+
+    @Override
     public List<IHorizontalSlabSupport> getHorizontalSlabSupports() {
         return DSRegistries.HORIZONTAL_SLAB_SUPPORTS.getEntries().stream().filter(o -> ModList.get().isLoaded(Objects.requireNonNull(o.getKey()).location().getNamespace())).map(RegistryObject::get).toList();
     }
