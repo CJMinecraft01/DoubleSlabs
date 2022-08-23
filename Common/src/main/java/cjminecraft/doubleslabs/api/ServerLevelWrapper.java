@@ -156,8 +156,7 @@ public class ServerLevelWrapper extends ServerLevel implements ILevelWrapper<Ser
                 this.container.getPositiveBlockInfo().setBlockState(state);
             else
                 this.container.getNegativeBlockInfo().setBlockState(state);
-            // fix copper slab changing over time not updating the client
-            // todo
+            // todo fix copper slab changing over time not updating the client
 //            if (state.getBlock() instanceof ChangeOverTimeBlock<?>)
 //                PacketHandler.INSTANCE.send(PacketDistributor.DIMENSION.with(this.level::dimension), new UpdateSlabPacket(pos, this.positive, state));
             return true;
