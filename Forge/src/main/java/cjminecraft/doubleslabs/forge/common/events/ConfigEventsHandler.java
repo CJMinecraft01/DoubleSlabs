@@ -1,13 +1,24 @@
 package cjminecraft.doubleslabs.forge.common.events;
 
 import cjminecraft.doubleslabs.common.Constants;
+import cjminecraft.doubleslabs.common.config.DSConfig;
+import cjminecraft.doubleslabs.common.network.packet.config.RequestPlayerConfigPacket;
+import cjminecraft.doubleslabs.common.network.packet.config.UpdateServerPlayerConfigPacket;
 import cjminecraft.doubleslabs.forge.common.capability.config.PlayerConfigCapability;
 import cjminecraft.doubleslabs.forge.common.capability.config.PlayerConfigContainer;
+import cjminecraft.doubleslabs.platform.Services;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = Constants.MODID)
 public class ConfigEventsHandler {
@@ -18,6 +29,27 @@ public class ConfigEventsHandler {
             event.addCapability(PlayerConfigCapability.PLAYER_CONFIG_RESOURCE_LOCATION, new PlayerConfigContainer());
     }
 
-    // todo: player config packets
+    @SubscribeEvent
+    public static void onPlayerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
+        event.getEntity().getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> {
+            // Called server side, need to fetch player options
+            Services.NETWORK.sendToPlayer((ServerPlayer) event.getEntity(), new RequestPlayerConfigPacket());
+        });
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void onFileChange(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getModId().equals(Constants.MODID) && event.getConfig().getType() == ModConfig.Type.CLIENT) {
+            if (Minecraft.getInstance().player == null)
+                return;
+            Minecraft.getInstance().player.getCapability(PlayerConfigCapability.PLAYER_CONFIG).ifPresent(config -> {
+                if (config.getVerticalSlabPlacementMethod() != DSConfig.CLIENT.verticalSlabPlacementMethod.get()) {
+                    // Config has changed, update the server
+                    config.setVerticalSlabPlacementMethod(DSConfig.CLIENT.verticalSlabPlacementMethod.get());
+                    Services.NETWORK.sendToServer(new UpdateServerPlayerConfigPacket(config));
+                }
+            });
+        }
+    }
 
 }
