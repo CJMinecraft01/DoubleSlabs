@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.api;
 
+import cjminecraft.doubleslabs.common.network.packet.modelrefresh.UpdateSlabPacket;
 import cjminecraft.doubleslabs.platform.Services;
 import com.google.common.collect.Lists;
 import net.minecraft.Util;
@@ -9,6 +10,7 @@ import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ChangeOverTimeBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -156,9 +158,8 @@ public class ServerLevelWrapper extends ServerLevel implements ILevelWrapper<Ser
                 this.container.getPositiveBlockInfo().setBlockState(state);
             else
                 this.container.getNegativeBlockInfo().setBlockState(state);
-            // todo fix copper slab changing over time not updating the client
-//            if (state.getBlock() instanceof ChangeOverTimeBlock<?>)
-//                PacketHandler.INSTANCE.send(PacketDistributor.DIMENSION.with(this.level::dimension), new UpdateSlabPacket(pos, this.positive, state));
+            if (state.getBlock() instanceof ChangeOverTimeBlock<?>)
+                Services.NETWORK.sendToLevelClients(this.level, new UpdateSlabPacket(pos, this.positive, state));
             return true;
         } else {
             return super.setBlock(pos, state, flags, height);
