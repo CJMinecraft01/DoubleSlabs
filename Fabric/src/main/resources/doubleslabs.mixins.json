@@ -4,10 +4,12 @@
   "package": "cjminecraft.doubleslabs.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerManagerMixin",
-    "PlayerMixin"
+    "PlayerListMixin",
+    "PlayerMixin",
+    "ServerPlayerGameModeMixin"
   ],
   "client": [
+    "MultiPlayerGameModeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
