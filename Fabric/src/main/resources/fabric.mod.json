@@ -19,6 +19,9 @@
     "entrypoints": {
       "main": [
         "cjminecraft.doubleslabs.fabric.DoubleSlabs"
+      ],
+      "client": [
+        "cjminecraft.doubleslabs.fabric.client.DoubleSlabsClient"
       ]
     },
     "mixins": [
