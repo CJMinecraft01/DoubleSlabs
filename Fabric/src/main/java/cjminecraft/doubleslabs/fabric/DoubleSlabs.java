@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.fabric;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.config.DSConfig;
 import cjminecraft.doubleslabs.fabric.common.init.*;
+import cjminecraft.doubleslabs.platform.Services;
 import net.fabricmc.api.ModInitializer;
 import net.minecraftforge.api.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -22,5 +23,7 @@ public class DoubleSlabs implements ModInitializer {
         DSBlockEntities.register();
         DSMenuTypes.register();
         DSTabs.register();
+
+        Services.NETWORK.init();
     }
 }
