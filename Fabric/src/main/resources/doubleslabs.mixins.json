@@ -4,6 +4,7 @@
   "package": "cjminecraft.doubleslabs.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "PlayerManagerMixin",
     "PlayerMixin"
   ],
   "client": [
