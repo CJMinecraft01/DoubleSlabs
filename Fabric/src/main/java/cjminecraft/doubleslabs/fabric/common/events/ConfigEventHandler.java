@@ -8,12 +8,8 @@ import cjminecraft.doubleslabs.common.network.packet.config.UpdateServerPlayerCo
 import cjminecraft.doubleslabs.platform.Services;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraftforge.api.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.config.ModConfig;
 
