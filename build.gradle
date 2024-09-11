@@ -1,0 +1,18 @@
+plugins {
+    // see https://fabricmc.net/develop/ for new versions
+    id 'fabric-loom' version '1.7-SNAPSHOT' apply false
+    // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
+    id 'net.neoforged.moddev' version '1.0.19' apply false
+    // see https://plugins.gradle.org/plugin/com.matyrobbrt.mc.registrationutils for new versions
+    id 'com.matyrobbrt.mc.registrationutils' version '1.21.0-0.2.1'
+}
+
+registrationUtils {
+    group 'cjminecraft.doubleslabs.registration'
+    projects {
+        Common { type 'common'; project ':common' }
+        Fabric { type 'fabric'; project ':fabric' }
+//        Forge { type 'forge' }
+        NeoForge { type 'neoforge'; project ':neoforge' }
+    }
+}
