@@ -5,13 +5,11 @@ import cjminecraft.doubleslabs.api.IDoubleSlabsPlugin;
 import cjminecraft.doubleslabs.common.platform.services.IPlatformPluginHelper;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.ModFileScanData;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,7 @@ public class NeoForgePluginHelper implements IPlatformPluginHelper {
                 Class<?> asmClass = Class.forName(className);
                 Class<? extends T> asmInstanceClass = asmClass.asSubclass(instance);
                 Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
-                return (T) constructor.newInstance();
+                return constructor.newInstance();
             } catch (ReflectiveOperationException | LinkageError e) {
                 LOGGER.error("Failed to load: {}", className, e);
 

@@ -29,7 +29,7 @@ public class FabricPluginHelper implements IPlatformPluginHelper {
 
         return pluginContainers.stream().<T>mapMulti(((entrypointContainer, consumer) -> {
             try {
-                T entrypoint = entrypointContainer.getEntrypoint();;
+                T entrypoint = entrypointContainer.getEntrypoint();
                 consumer.accept(entrypoint);
             } catch (EntrypointException e) {
                 String modName;

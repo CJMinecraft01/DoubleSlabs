@@ -41,7 +41,7 @@ public class ForgePluginHelper implements IPlatformPluginHelper {
                 Class<?> asmClass = Class.forName(className);
                 Class<? extends T> asmInstanceClass = asmClass.asSubclass(instance);
                 Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
-                return (T) constructor.newInstance();
+                return constructor.newInstance();
             } catch (ReflectiveOperationException | LinkageError e) {
                 LOGGER.error("Failed to load: {}", className, e);
 
