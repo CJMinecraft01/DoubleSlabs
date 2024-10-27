@@ -1,26 +1,16 @@
 package cjminecraft.doubleslabs.neoforge.platform;
 
 import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformPluginHelper;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
 
-    @Override
-    public String getPlatformName() {
-
-        return "NeoForge";
-    }
+    private final IPlatformPluginHelper pluginHelper = new NeoForgePluginHelper();
 
     @Override
-    public boolean isModLoaded(String modId) {
-
-        return ModList.get().isLoaded(modId);
-    }
-
-    @Override
-    public boolean isDevelopmentEnvironment() {
-
-        return !FMLLoader.isProduction();
+    public IPlatformPluginHelper getPluginHelper() {
+        return pluginHelper;
     }
 }

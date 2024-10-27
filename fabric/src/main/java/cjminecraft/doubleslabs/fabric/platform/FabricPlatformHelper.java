@@ -1,24 +1,14 @@
 package cjminecraft.doubleslabs.fabric.platform;
 
 import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
-import net.fabricmc.loader.api.FabricLoader;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformPluginHelper;
 
 public class FabricPlatformHelper implements IPlatformHelper {
 
-    @Override
-    public String getPlatformName() {
-        return "Fabric";
-    }
+    private final IPlatformPluginHelper pluginHelper = new FabricPluginHelper();
 
     @Override
-    public boolean isModLoaded(String modId) {
-
-        return FabricLoader.getInstance().isModLoaded(modId);
-    }
-
-    @Override
-    public boolean isDevelopmentEnvironment() {
-
-        return FabricLoader.getInstance().isDevelopmentEnvironment();
+    public IPlatformPluginHelper getPluginHelper() {
+        return pluginHelper;
     }
 }
