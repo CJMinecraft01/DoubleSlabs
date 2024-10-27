@@ -1,6 +1,6 @@
-package cjminecraft.doubleslabs;
+package cjminecraft.doubleslabs.common;
 
-import cjminecraft.doubleslabs.platform.Services;
+import cjminecraft.doubleslabs.common.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
 

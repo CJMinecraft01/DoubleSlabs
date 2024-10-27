@@ -1,7 +1,7 @@
-package cjminecraft.doubleslabs.platform;
+package cjminecraft.doubleslabs.common.platform;
 
-import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
-import cjminecraft.doubleslabs.Constants;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
+import cjminecraft.doubleslabs.common.Constants;
 
 import java.util.ServiceLoader;
 

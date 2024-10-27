@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.platform.services;
+package cjminecraft.doubleslabs.common.platform.services;
 
 public interface IPlatformHelper {
 

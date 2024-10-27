@@ -1,6 +1,6 @@
-package cjminecraft.doubleslabs.platform;
+package cjminecraft.doubleslabs.forge.platform;
 
-import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 

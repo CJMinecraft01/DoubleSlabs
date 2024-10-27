@@ -1,6 +1,6 @@
-package cjminecraft.doubleslabs.platform;
+package cjminecraft.doubleslabs.fabric.platform;
 
-import cjminecraft.doubleslabs.platform.services.IPlatformHelper;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricPlatformHelper implements IPlatformHelper {

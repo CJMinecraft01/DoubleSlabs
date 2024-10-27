@@ -1,5 +1,7 @@
-package cjminecraft.doubleslabs;
+package cjminecraft.doubleslabs.fabric;
 
+import cjminecraft.doubleslabs.common.CommonClass;
+import cjminecraft.doubleslabs.common.Constants;
 import net.fabricmc.api.ModInitializer;
 
 public class DoubleSlabs implements ModInitializer {

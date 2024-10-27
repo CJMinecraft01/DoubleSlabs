@@ -16,7 +16,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-          "cjminecraft.doubleslabs.DoubleSlabs"
+            "cjminecraft.doubleslabs.fabric.DoubleSlabs"
         ]
     },
     "mixins": [

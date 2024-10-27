@@ -1,6 +1,8 @@
-package cjminecraft.doubleslabs;
+package cjminecraft.doubleslabs.neoforge;
 
 
+import cjminecraft.doubleslabs.common.CommonClass;
+import cjminecraft.doubleslabs.common.Constants;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 

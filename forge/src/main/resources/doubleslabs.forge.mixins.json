@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "cjminecraft.doubleslabs.mixin",
+  "package": "cjminecraft.doubleslabs.forge.mixin",
   "compatibilityLevel": "JAVA_18",
   "mixins": [],
   "client": [
