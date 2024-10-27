@@ -2,8 +2,7 @@ package cjminecraft.doubleslabs.common;
 
 import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
 import com.google.common.base.Preconditions;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class Internal {
 
