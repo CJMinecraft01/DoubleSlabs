@@ -5,9 +5,12 @@ import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
 import cjminecraft.doubleslabs.common.platform.Services;
 import cjminecraft.doubleslabs.library.load.PluginLoader;
 import com.google.common.base.Preconditions;
+import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Internal {
 
@@ -24,7 +27,7 @@ public class Internal {
 
         Constants.LOG.info("Detected {} plugins: {}",
                 plugins.size(),
-                Arrays.toString(plugins.stream().map(IDoubleSlabsPlugin::getPluginId).toArray()));
+                LogUtils.defer(() -> plugins.stream().map(IDoubleSlabsPlugin::getPluginId).map(ResourceLocation::toString).collect(Collectors.joining(", "))));
 
         slabHelper = PluginLoader.registerSlabHelpers(plugins);
     }
