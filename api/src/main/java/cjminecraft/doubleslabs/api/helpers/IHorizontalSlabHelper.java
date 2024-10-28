@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.level.block.state.properties.Half;
 
 public interface IHorizontalSlabHelper {
 
@@ -27,8 +27,8 @@ public interface IHorizontalSlabHelper {
         return isHorizontalSlab(stack.getItem());
     }
 
-    SlabType getHalf(BlockGetter level, BlockPos pos, BlockState state);
+    Half getHalf(BlockGetter level, BlockPos pos, BlockState state);
 
-    BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, SlabType half);
+    BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half);
 
 }

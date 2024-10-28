@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 
 public class MinecraftSlabHelper implements IHorizontalSlabHelper {
@@ -17,12 +18,16 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
     }
 
     @Override
-    public SlabType getHalf(BlockGetter level, BlockPos pos, BlockState state) {
-        return state.getValue(BlockStateProperties.SLAB_TYPE);
+    public Half getHalf(BlockGetter level, BlockPos pos, BlockState state) {
+        return switch (state.getValue(BlockStateProperties.SLAB_TYPE)) {
+            case BOTTOM -> Half.BOTTOM;
+            case TOP -> Half.TOP;
+            case DOUBLE -> throw new RuntimeException("Cannot get the half for a double slab");
+        };
     }
 
     @Override
-    public BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, SlabType half) {
-        return state.setValue(BlockStateProperties.SLAB_TYPE, half);
+    public BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half) {
+        return state.setValue(BlockStateProperties.SLAB_TYPE, half == Half.TOP ? SlabType.TOP : SlabType.BOTTOM);
     }
 }
