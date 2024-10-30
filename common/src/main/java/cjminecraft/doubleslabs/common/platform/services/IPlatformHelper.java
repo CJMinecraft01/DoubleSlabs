@@ -4,4 +4,6 @@ public interface IPlatformHelper {
 
     IPlatformPluginHelper getPluginHelper();
 
+    IPlatformBlockFactory getBlockFactory();
+
 }
