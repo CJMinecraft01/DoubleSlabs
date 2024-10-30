@@ -13,8 +13,24 @@ public interface ISlabHelper {
 
     Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(ItemStack stack);
 
-    boolean isHorizontalSlab(Item item);
+    Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(Block block);
 
-    boolean isHorizontalSlab(Block block);
+    Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(Item item);
+
+    default boolean isHorizontalSlab(BlockState state) {
+        return getHorizontalSlabHelper(state).isPresent();
+    }
+
+    default boolean isHorizontalSlab(ItemStack stack) {
+        return getHorizontalSlabHelper(stack).isPresent();
+    }
+
+    default boolean isHorizontalSlab(Item item) {
+        return getHorizontalSlabHelper(item).isPresent();
+    }
+
+    default boolean isHorizontalSlab(Block block) {
+        return getHorizontalSlabHelper(block).isPresent();
+    }
 
 }

@@ -39,12 +39,14 @@ public class SlabHelper implements ISlabHelper {
         return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(stack)).findFirst();
     }
 
-    public boolean isHorizontalSlab(Item item) {
-        return horizontalSlabHelpers.stream().anyMatch(helper -> helper.isHorizontalSlab(item));
+    @Override
+    public Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(Block block) {
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(block)).findFirst();
     }
 
-    public boolean isHorizontalSlab(Block block) {
-        return horizontalSlabHelpers.stream().anyMatch(helper -> helper.isHorizontalSlab(block));
+    @Override
+    public Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(Item item) {
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(item)).findFirst();
     }
 
 }
