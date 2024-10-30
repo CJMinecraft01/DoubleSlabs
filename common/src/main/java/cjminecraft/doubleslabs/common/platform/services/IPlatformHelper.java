@@ -6,4 +6,6 @@ public interface IPlatformHelper {
 
     IPlatformBlockFactory getBlockFactory();
 
+    IPlatformBlockEntityFactory getBlockEntityFactory();
+
 }
