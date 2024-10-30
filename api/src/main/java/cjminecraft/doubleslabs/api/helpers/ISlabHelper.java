@@ -33,4 +33,6 @@ public interface ISlabHelper {
         return getHorizontalSlabHelper(block).isPresent();
     }
 
+    boolean areSameTypeOfSlab(BlockState state, IHorizontalSlabHelper stateSlabHelper, ItemStack stack, IHorizontalSlabHelper stackSlabHelper);
+
 }

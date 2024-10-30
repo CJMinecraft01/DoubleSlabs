@@ -49,4 +49,8 @@ public class SlabHelper implements ISlabHelper {
         return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(item)).findFirst();
     }
 
+    @Override
+    public boolean areSameTypeOfSlab(BlockState state, IHorizontalSlabHelper stateSlabHelper, ItemStack stack, IHorizontalSlabHelper stackSlabHelper) {
+        return stateSlabHelper == stackSlabHelper && stackSlabHelper.areSameTypeOfSlab(state, stack);
+    }
 }
