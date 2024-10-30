@@ -24,23 +24,23 @@ public class SlabHelper implements ISlabHelper {
         horizontalSlabHelpers.add(helper);
     }
 
-    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(BlockGetter level, BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(level, pos, state)) {
+    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(BlockState state) {
+        if (state.getBlock() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(state)) {
             return helper;
         }
 
-        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(level, pos, state)).findFirst().orElse(null);
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(state)).findFirst().orElse(null);
     }
 
-    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(ItemStack stack, Player player, InteractionHand hand) {
-        if (stack.getItem() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(stack, player, hand)) {
+    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(ItemStack stack) {
+        if (stack.getItem() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(stack)) {
             return helper;
         }
-        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof IHorizontalSlabHelper support && support.isHorizontalSlab(stack, player, hand)) {
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof IHorizontalSlabHelper support && support.isHorizontalSlab(stack)) {
             return support;
         }
 
-        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(stack, player, hand)).findFirst().orElse(null);
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(stack)).findFirst().orElse(null);
     }
 
     public boolean isHorizontalSlab(Item item) {

@@ -1,8 +1,6 @@
 package cjminecraft.doubleslabs.api.helpers;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,11 +17,11 @@ public interface IHorizontalSlabHelper {
 
     boolean isHorizontalSlab(Block block);
 
-    default boolean isHorizontalSlab(BlockGetter level, BlockPos pos, BlockState state) {
+    default boolean isHorizontalSlab(BlockState state) {
         return isHorizontalSlab(state.getBlock());
     }
 
-    default boolean isHorizontalSlab(ItemStack stack, Player player, InteractionHand hand) {
+    default boolean isHorizontalSlab(ItemStack stack) {
         return isHorizontalSlab(stack.getItem());
     }
 
