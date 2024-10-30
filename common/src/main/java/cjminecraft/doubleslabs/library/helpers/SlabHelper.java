@@ -2,19 +2,15 @@ package cjminecraft.doubleslabs.library.helpers;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SlabHelper implements ISlabHelper {
 
@@ -24,23 +20,23 @@ public class SlabHelper implements ISlabHelper {
         horizontalSlabHelpers.add(helper);
     }
 
-    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(BlockState state) {
+    public Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(BlockState state) {
         if (state.getBlock() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(state)) {
-            return helper;
+            return Optional.of(helper);
         }
 
-        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(state)).findFirst().orElse(null);
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(state)).findFirst();
     }
 
-    public @Nullable IHorizontalSlabHelper getHorizontalSlabHelper(ItemStack stack) {
+    public Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(ItemStack stack) {
         if (stack.getItem() instanceof IHorizontalSlabHelper helper && helper.isHorizontalSlab(stack)) {
-            return helper;
+            return Optional.of(helper);
         }
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof IHorizontalSlabHelper support && support.isHorizontalSlab(stack)) {
-            return support;
+            return Optional.of(support);
         }
 
-        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(stack)).findFirst().orElse(null);
+        return horizontalSlabHelpers.stream().filter(helper -> helper.isHorizontalSlab(stack)).findFirst();
     }
 
     public boolean isHorizontalSlab(Item item) {
