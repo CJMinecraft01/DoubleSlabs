@@ -1,5 +1,9 @@
 package cjminecraft.doubleslabs.common.block;
 
-public abstract class DynamicDoubleSlabBlock extends DynamicSlabBlock {
+public class DynamicDoubleSlabBlock extends DynamicSlabBlock {
     // Anything specific to horizontal double slabs should go here
+
+    public DynamicDoubleSlabBlock(Properties properties) {
+        super(properties);
+    }
 }
