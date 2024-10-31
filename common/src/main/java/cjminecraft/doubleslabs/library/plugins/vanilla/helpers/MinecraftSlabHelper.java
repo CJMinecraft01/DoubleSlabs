@@ -1,10 +1,7 @@
 package cjminecraft.doubleslabs.library.plugins.vanilla.helpers;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
-import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
@@ -32,15 +29,5 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
     @Override
     public BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half) {
         return state.setValue(BlockStateProperties.SLAB_TYPE, half == Half.TOP ? SlabType.TOP : SlabType.BOTTOM);
-    }
-
-    @Override
-    public boolean areSameTypeOfSlab(BlockState state, ItemStack stack) {
-        Preconditions.checkState(isHorizontalSlab(state), "Given state must be a slab");
-        Preconditions.checkState(isHorizontalSlab(stack), "Given stack must be a slab");
-
-        SlabBlock slabFromItemStack = (SlabBlock) ((BlockItem) stack.getItem()).getBlock();
-
-        return state.is(slabFromItemStack);
     }
 }
