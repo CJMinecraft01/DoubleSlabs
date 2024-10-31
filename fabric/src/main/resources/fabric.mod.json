@@ -16,7 +16,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "cjminecraft.doubleslabs.fabric.DoubleSlabs"
+            "cjminecraft.doubleslabs.fabric.common.DoubleSlabs"
         ],
         "doubleslabs_plugin": [
             "cjminecraft.doubleslabs.library.plugins.vanilla.VanillaPlugin"
