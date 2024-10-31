@@ -6,7 +6,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class DynamicSlabBlock extends BaseEntityBlock {
     public static final MapCodec<DynamicSlabBlock> CODEC = simpleCodec(DynamicSlabBlock::new);

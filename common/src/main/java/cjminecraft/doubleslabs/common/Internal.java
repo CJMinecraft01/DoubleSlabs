@@ -7,7 +7,8 @@ import cjminecraft.doubleslabs.library.load.PluginLoader;
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -4,7 +4,8 @@ import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class SlabStateContainer implements ISlabStateContainer {
 
