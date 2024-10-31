@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.properties.Half;
 
 import javax.annotation.Nullable;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,6 +43,11 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
         negativeBlockInfo.callOnBlockState(consumer);
     }
 
+    public void callOnBlockStates(BiConsumer<Half, BlockState> consumer) {
+        positiveBlockInfo.callOnBlockState(state -> consumer.accept(Half.TOP, state));
+        negativeBlockInfo.callOnBlockState(state -> consumer.accept(Half.BOTTOM, state));
+    }
+
     public void callOnBlockState(Half half, Consumer<BlockState> consumer) {
         switch (half) {
             case TOP -> positiveBlockInfo.callOnBlockState(consumer);
@@ -59,6 +65,11 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
     public void callOnBlockEntities(Consumer<BlockEntity> consumer) {
         positiveBlockInfo.callOnBlockEntity(consumer);
         negativeBlockInfo.callOnBlockEntity(consumer);
+    }
+
+    public void callOnBlockEntities(BiConsumer<Half, BlockEntity> consumer) {
+        positiveBlockInfo.callOnBlockEntity(blockEntity -> consumer.accept(Half.TOP, blockEntity));
+        negativeBlockInfo.callOnBlockEntity(blockEntity -> consumer.accept(Half.BOTTOM, blockEntity));
     }
 
     public void callOnBlockEntity(Half half, Consumer<BlockEntity> consumer) {
