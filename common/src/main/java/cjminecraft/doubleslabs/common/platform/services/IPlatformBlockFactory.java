@@ -1,9 +1,9 @@
 package cjminecraft.doubleslabs.common.platform.services;
 
-import cjminecraft.doubleslabs.common.block.DynamicDoubleSlabBlock;
+import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 
 public interface IPlatformBlockFactory {
 
-    DynamicDoubleSlabBlock createDynamicDoubleSlabBlock();
+    MixedDoubleSlabBlock createMixedDoubleSlabBlock();
 
 }
