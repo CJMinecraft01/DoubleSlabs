@@ -4,10 +4,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
+
+import javax.annotation.Nullable;
 
 public interface IHorizontalSlabHelper {
 
@@ -31,6 +34,12 @@ public interface IHorizontalSlabHelper {
 
     default boolean areSameTypeOfSlab(BlockState state, ItemStack stack) {
         return stack.getItem() instanceof BlockItem blockItem && state.is(blockItem.getBlock());
+    }
+
+    @Nullable
+    default BlockState getStateFromStack(ItemStack stack, BlockPlaceContext blockPlaceContext) {
+        return stack.getItem() instanceof BlockItem blockItem ?
+                blockItem.getBlock().getStateForPlacement(blockPlaceContext) : null;
     }
 
 }
