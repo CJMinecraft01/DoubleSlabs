@@ -3,6 +3,11 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
+var dependencyProjects = Arrays.asList(
+        project(":common"),
+        project(":api"),
+)
+
 neoForge {
     version = neoforge_version
     // Automatically enable neoforge AccessTransformers if the file exists
@@ -32,6 +37,9 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
+            for (dependencyProject in dependencyProjects) {
+                sourceSet dependencyProject.sourceSets.main
+            }
         }
     }
 }
