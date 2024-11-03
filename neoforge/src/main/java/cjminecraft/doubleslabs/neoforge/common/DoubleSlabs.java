@@ -9,7 +9,7 @@ import net.neoforged.fml.common.Mod;
 @Mod(Constants.MOD_ID)
 public class DoubleSlabs {
 
-    public DoubleSlabs(IEventBus eventBus) {
+    public DoubleSlabs(IEventBus modBus) {
         Internal.initialise();
         DSInit.loadClasses();
     }
