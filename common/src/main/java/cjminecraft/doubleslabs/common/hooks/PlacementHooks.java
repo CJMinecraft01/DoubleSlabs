@@ -6,8 +6,11 @@ import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -15,9 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
@@ -130,6 +135,17 @@ public class PlacementHooks {
             return Optional.empty();
         }
 
+        if (player instanceof ServerPlayer) {
+            CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, slabPos, itemInHand);
+        }
+
+        SoundType soundType = slabToPlaceState.getSoundType();
+        level.playSound(player, slabPos, soundType.getPlaceSound(), SoundSource.BLOCKS,
+                (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
+        level.gameEvent(GameEvent.BLOCK_PLACE, slabPos, GameEvent.Context.of(player, slabToPlaceState));
+
+        itemInHand.shrink(1);
+
         Optional<? extends DynamicSlabBlockEntity<?>> optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos,
                 DSBlockEntities.DYNAMIC_SLAB.get());
 
@@ -138,7 +154,7 @@ public class PlacementHooks {
             dynamicSlabBlockEntity.setBlockEntity(slabBlockHalf, existingBlockEntity);
             dynamicSlabBlockEntity.setBlockState(slabToPlaceHalf, slabToPlaceState);
 
-            return ItemInteractionResult.SUCCESS;
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
         });
     }
 
