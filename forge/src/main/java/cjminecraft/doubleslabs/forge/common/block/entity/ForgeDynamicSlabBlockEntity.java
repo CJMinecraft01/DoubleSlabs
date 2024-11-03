@@ -1,10 +1,12 @@
 package cjminecraft.doubleslabs.forge.common.block.entity;
 
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
+import cjminecraft.doubleslabs.forge.client.model.ForgeDynamicSlabBakedModel;
 import cjminecraft.doubleslabs.forge.common.state.ForgeSlabStateContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
@@ -33,5 +35,10 @@ public class ForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<ForgeSla
         LazyOptional<T> negativeCapability = negativeBlockStateContainer.getCapability(cap);
         LazyOptional<T> positiveCapability = positiveBlockStateContainer.getCapability(cap);
         return negativeCapability.isPresent() ? negativeCapability : positiveCapability;
+    }
+
+    @Override
+    public @NotNull ModelData getModelData() {
+        return ModelData.builder().with(ForgeDynamicSlabBakedModel.DYNAMIC_SLAB_STATE_CONTAINER, this).build();
     }
 }

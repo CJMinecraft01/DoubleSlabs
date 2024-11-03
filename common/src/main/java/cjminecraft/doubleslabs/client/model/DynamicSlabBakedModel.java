@@ -8,7 +8,7 @@ import net.minecraft.client.resources.model.BakedModel;
 
 public abstract class DynamicSlabBakedModel implements BakedModel {
 
-    private static BakedModel getFallbackModel() {
+    protected static BakedModel getFallbackModel() {
         return Minecraft.getInstance().getModelManager().getMissingModel();
     }
 
