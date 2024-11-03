@@ -21,8 +21,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> extends BlockEntity {
-    protected final S negativeBlockInfo = createBlockStateContainer();
-    protected final S positiveBlockInfo = createBlockStateContainer();
+    protected final S negativeBlockStateContainer = createBlockStateContainer();
+    protected final S positiveBlockStateContainer = createBlockStateContainer();
 
     public DynamicSlabBlockEntity(BlockPos pos, BlockState blockState) {
         super(DSBlockEntities.DYNAMIC_SLAB.get(), pos, blockState);
@@ -32,83 +32,83 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
 
     public void setBlockState(Half half, BlockState state) {
         switch (half) {
-            case TOP -> positiveBlockInfo.setBlockState(state);
-            case BOTTOM -> negativeBlockInfo.setBlockState(state);
+            case TOP -> positiveBlockStateContainer.setBlockState(state);
+            case BOTTOM -> negativeBlockStateContainer.setBlockState(state);
         }
     }
 
     public void setBlockEntity(Half half, @Nullable BlockEntity blockEntity) {
         switch (half) {
-            case TOP -> positiveBlockInfo.setBlockEntity(blockEntity);
-            case BOTTOM -> negativeBlockInfo.setBlockEntity(blockEntity);
+            case TOP -> positiveBlockStateContainer.setBlockEntity(blockEntity);
+            case BOTTOM -> negativeBlockStateContainer.setBlockEntity(blockEntity);
         }
     }
 
     public void callOnBlockStates(Consumer<BlockState> consumer) {
-        positiveBlockInfo.callOnBlockState(consumer);
-        negativeBlockInfo.callOnBlockState(consumer);
+        positiveBlockStateContainer.callOnBlockState(consumer);
+        negativeBlockStateContainer.callOnBlockState(consumer);
     }
 
     public void callOnBlockStates(BiConsumer<Half, BlockState> consumer) {
-        positiveBlockInfo.callOnBlockState(state -> consumer.accept(Half.TOP, state));
-        negativeBlockInfo.callOnBlockState(state -> consumer.accept(Half.BOTTOM, state));
+        positiveBlockStateContainer.callOnBlockState(state -> consumer.accept(Half.TOP, state));
+        negativeBlockStateContainer.callOnBlockState(state -> consumer.accept(Half.BOTTOM, state));
     }
 
     public void callOnBlockState(Half half, Consumer<BlockState> consumer) {
         switch (half) {
-            case TOP -> positiveBlockInfo.callOnBlockState(consumer);
-            case BOTTOM -> negativeBlockInfo.callOnBlockState(consumer);
+            case TOP -> positiveBlockStateContainer.callOnBlockState(consumer);
+            case BOTTOM -> negativeBlockStateContainer.callOnBlockState(consumer);
         }
     }
 
     public <T> T callOnBlockState(Half half, Function<BlockState, T> function, Supplier<T> orElse) {
         return switch (half) {
-            case TOP -> positiveBlockInfo.callOnBlockState(function, orElse);
-            case BOTTOM -> negativeBlockInfo.callOnBlockState(function, orElse);
+            case TOP -> positiveBlockStateContainer.callOnBlockState(function, orElse);
+            case BOTTOM -> negativeBlockStateContainer.callOnBlockState(function, orElse);
         };
     }
 
     public void callOnBlockEntities(Consumer<BlockEntity> consumer) {
-        positiveBlockInfo.callOnBlockEntity(consumer);
-        negativeBlockInfo.callOnBlockEntity(consumer);
+        positiveBlockStateContainer.callOnBlockEntity(consumer);
+        negativeBlockStateContainer.callOnBlockEntity(consumer);
     }
 
     public void callOnBlockEntities(BiConsumer<Half, BlockEntity> consumer) {
-        positiveBlockInfo.callOnBlockEntity(blockEntity -> consumer.accept(Half.TOP, blockEntity));
-        negativeBlockInfo.callOnBlockEntity(blockEntity -> consumer.accept(Half.BOTTOM, blockEntity));
+        positiveBlockStateContainer.callOnBlockEntity(blockEntity -> consumer.accept(Half.TOP, blockEntity));
+        negativeBlockStateContainer.callOnBlockEntity(blockEntity -> consumer.accept(Half.BOTTOM, blockEntity));
     }
 
     public void callOnBlockEntity(Half half, Consumer<BlockEntity> consumer) {
         switch (half) {
-            case TOP -> positiveBlockInfo.callOnBlockEntity(consumer);
-            case BOTTOM -> negativeBlockInfo.callOnBlockEntity(consumer);
+            case TOP -> positiveBlockStateContainer.callOnBlockEntity(consumer);
+            case BOTTOM -> negativeBlockStateContainer.callOnBlockEntity(consumer);
         }
     }
 
     public <T> T callOnBlockEntity(Half half, Function<BlockEntity, T> function, Supplier<T> orElse) {
         return switch (half) {
-            case TOP -> positiveBlockInfo.callOnBlockEntity(function, orElse);
-            case BOTTOM -> negativeBlockInfo.callOnBlockEntity(function, orElse);
+            case TOP -> positiveBlockStateContainer.callOnBlockEntity(function, orElse);
+            case BOTTOM -> negativeBlockStateContainer.callOnBlockEntity(function, orElse);
         };
     }
 
     @Override
     public void setLevel(Level level) {
         super.setLevel(level);
-        positiveBlockInfo.setLevel(level);
-        negativeBlockInfo.setLevel(level);
+        positiveBlockStateContainer.setLevel(level);
+        negativeBlockStateContainer.setLevel(level);
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("positive", positiveBlockInfo.serialize(registries));
-        tag.put("negative", negativeBlockInfo.serialize(registries));
+        tag.put("positive", positiveBlockStateContainer.serialize(registries));
+        tag.put("negative", negativeBlockStateContainer.serialize(registries));
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        positiveBlockInfo.deserialize(tag.getCompound("positive"), registries);
-        negativeBlockInfo.deserialize(tag.getCompound("negative"), registries);
+        positiveBlockStateContainer.deserialize(tag.getCompound("positive"), registries);
+        negativeBlockStateContainer.deserialize(tag.getCompound("negative"), registries);
     }
 
     @Override
