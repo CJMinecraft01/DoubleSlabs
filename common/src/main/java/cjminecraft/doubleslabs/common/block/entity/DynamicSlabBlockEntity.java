@@ -3,6 +3,12 @@ package cjminecraft.doubleslabs.common.block.entity;
 import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
@@ -84,5 +90,34 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
             case TOP -> positiveBlockInfo.callOnBlockEntity(function, orElse);
             case BOTTOM -> negativeBlockInfo.callOnBlockEntity(function, orElse);
         };
+    }
+
+    @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        positiveBlockInfo.setLevel(level);
+        negativeBlockInfo.setLevel(level);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("positive", positiveBlockInfo.serialize(registries));
+        tag.put("negative", negativeBlockInfo.serialize(registries));
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        positiveBlockInfo.deserialize(tag.getCompound("positive"), registries);
+        negativeBlockInfo.deserialize(tag.getCompound("negative"), registries);
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 }

@@ -12,7 +12,7 @@ public class NeoForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<SlabS
 
     @Override
     protected SlabStateContainer createBlockStateContainer() {
-        return new SlabStateContainer();
+        return new SlabStateContainer(worldPosition);
     }
 
 }
