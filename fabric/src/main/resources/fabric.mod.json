@@ -18,6 +18,9 @@
         "main": [
             "cjminecraft.doubleslabs.fabric.common.DoubleSlabs"
         ],
+        "client": [
+            "cjminecraft.doubleslabs.fabric.client.DoubleSlabsClient"
+        ],
         "doubleslabs_plugin": [
             "cjminecraft.doubleslabs.library.plugins.vanilla.VanillaPlugin"
         ]
