@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.common.block.entity;
 
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> extends BlockEntity {
+public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> extends BlockEntity implements IDynamicSlabStateContainer {
     protected final S negativeBlockStateContainer = createBlockStateContainer();
     protected final S positiveBlockStateContainer = createBlockStateContainer();
 
