@@ -5,10 +5,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 
 import javax.annotation.Nullable;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Optional;
+import java.util.function.*;
 
 public interface IDynamicSlabStateContainer {
 
@@ -32,6 +30,17 @@ public interface IDynamicSlabStateContainer {
 
     default void runOnBlockStates(BiConsumer<Half, BlockState> consumer) {
         runOnStateContainers((half, container) -> container.runOnBlockState(state -> consumer.accept(half, state)));
+    }
+
+    default <T> Optional<T> reduceOnBlockStates(Function<BlockState, T> consumer, BiFunction<T, T, T> reducer) {
+        Optional<T> resultTop = callOnBlockState(Half.TOP, consumer);
+        Optional<T> resultBottom = callOnBlockState(Half.BOTTOM, consumer);
+
+        if (resultTop.isPresent() && resultBottom.isPresent()) {
+            return Optional.of(reducer.apply(resultTop.get(), resultBottom.get()));
+        }
+
+        return resultTop.or(() -> resultBottom);
     }
 
     default void runOnBlockState(Half half, Consumer<BlockState> consumer) {
