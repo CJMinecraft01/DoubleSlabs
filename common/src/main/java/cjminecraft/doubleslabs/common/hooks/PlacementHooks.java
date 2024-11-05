@@ -2,8 +2,8 @@ package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.Internal;
-import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -146,7 +146,7 @@ public class PlacementHooks {
 
         itemInHand.shrink(1);
 
-        Optional<? extends DynamicSlabBlockEntity<?>> optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos,
+        Optional<? extends IDynamicSlabStateContainer> optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos,
                 DSBlockEntities.DYNAMIC_SLAB.get());
 
         return optionalDynamicSlabBlockEntity.map(dynamicSlabBlockEntity -> {
