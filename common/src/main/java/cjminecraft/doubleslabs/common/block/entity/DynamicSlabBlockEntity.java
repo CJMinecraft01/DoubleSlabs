@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> extends BlockEntity implements IDynamicSlabStateContainer {
     protected final S negativeBlockStateContainer = createBlockStateContainer();
@@ -45,51 +44,39 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
         }
     }
 
-    public void callOnBlockStates(Consumer<BlockState> consumer) {
-        positiveBlockStateContainer.callOnBlockState(consumer);
-        negativeBlockStateContainer.callOnBlockState(consumer);
-    }
-
-    public void callOnBlockStates(BiConsumer<Half, BlockState> consumer) {
-        positiveBlockStateContainer.callOnBlockState(state -> consumer.accept(Half.TOP, state));
-        negativeBlockStateContainer.callOnBlockState(state -> consumer.accept(Half.BOTTOM, state));
-    }
-
-    public void callOnBlockState(Half half, Consumer<BlockState> consumer) {
-        switch (half) {
-            case TOP -> positiveBlockStateContainer.callOnBlockState(consumer);
-            case BOTTOM -> negativeBlockStateContainer.callOnBlockState(consumer);
-        }
-    }
-
-    public <T> T callOnBlockState(Half half, Function<BlockState, T> function, Supplier<T> orElse) {
+    @Override
+    public ISlabStateContainer getStateContainer(Half half) {
         return switch (half) {
-            case TOP -> positiveBlockStateContainer.callOnBlockState(function, orElse);
-            case BOTTOM -> negativeBlockStateContainer.callOnBlockState(function, orElse);
+            case TOP -> positiveBlockStateContainer;
+            case BOTTOM -> negativeBlockStateContainer;
         };
     }
 
-    public void callOnBlockEntities(Consumer<BlockEntity> consumer) {
-        positiveBlockStateContainer.callOnBlockEntity(consumer);
-        negativeBlockStateContainer.callOnBlockEntity(consumer);
+    @Override
+    public void runOnStateContainers(Consumer<ISlabStateContainer> consumer) {
+        consumer.accept(positiveBlockStateContainer);
+        consumer.accept(negativeBlockStateContainer);
     }
 
-    public void callOnBlockEntities(BiConsumer<Half, BlockEntity> consumer) {
-        positiveBlockStateContainer.callOnBlockEntity(blockEntity -> consumer.accept(Half.TOP, blockEntity));
-        negativeBlockStateContainer.callOnBlockEntity(blockEntity -> consumer.accept(Half.BOTTOM, blockEntity));
+    @Override
+    public void runOnStateContainers(BiConsumer<Half, ISlabStateContainer> consumer) {
+        consumer.accept(Half.TOP, positiveBlockStateContainer);
+        consumer.accept(Half.BOTTOM, negativeBlockStateContainer);
     }
 
-    public void callOnBlockEntity(Half half, Consumer<BlockEntity> consumer) {
+    @Override
+    public void runOnStateContainer(Half half, Consumer<ISlabStateContainer> consumer) {
         switch (half) {
-            case TOP -> positiveBlockStateContainer.callOnBlockEntity(consumer);
-            case BOTTOM -> negativeBlockStateContainer.callOnBlockEntity(consumer);
+            case TOP -> consumer.accept(positiveBlockStateContainer);
+            case BOTTOM -> consumer.accept(negativeBlockStateContainer);
         }
     }
 
-    public <T> T callOnBlockEntity(Half half, Function<BlockEntity, T> function, Supplier<T> orElse) {
+    @Override
+    public <T> T callOnStateContainer(Half half, Function<ISlabStateContainer, T> consumer) {
         return switch (half) {
-            case TOP -> positiveBlockStateContainer.callOnBlockEntity(function, orElse);
-            case BOTTOM -> negativeBlockStateContainer.callOnBlockEntity(function, orElse);
+            case TOP -> consumer.apply(positiveBlockStateContainer);
+            case BOTTOM -> consumer.apply(negativeBlockStateContainer);
         };
     }
 

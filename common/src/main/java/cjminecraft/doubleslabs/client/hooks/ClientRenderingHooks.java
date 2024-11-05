@@ -33,9 +33,9 @@ public class ClientRenderingHooks {
             if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlabBlockEntity) {
                 text.add("");
                 text.add(ChatFormatting.UNDERLINE + "Dynamic Slab Types");
-                dynamicSlabBlockEntity.callOnBlockStates((half, state) -> addBlockStateToDebugScreenOverlay(half,
+                dynamicSlabBlockEntity.runOnBlockStates((half, state) -> addBlockStateToDebugScreenOverlay(half,
                         state, text));
-                dynamicSlabBlockEntity.callOnBlockEntities((half, entity) -> addBlockEntityToDebugScreenOverlay(half,
+                dynamicSlabBlockEntity.runOnBlockEntities((half, entity) -> addBlockEntityToDebugScreenOverlay(half,
                         entity, text));
             }
         }

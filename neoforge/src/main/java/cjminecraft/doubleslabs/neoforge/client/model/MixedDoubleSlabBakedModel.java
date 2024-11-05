@@ -35,7 +35,7 @@ public class MixedDoubleSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
 
         List<BakedQuad> quads = new ArrayList<>();
 
-        stateContainer.callOnBlockStates(slabState -> quads.addAll(blockRenderDispatcher.getBlockModel(slabState).getQuads(slabState, side, rand, data, renderType)));
+        stateContainer.runOnBlockStates(slabState -> quads.addAll(blockRenderDispatcher.getBlockModel(slabState).getQuads(slabState, side, rand, data, renderType)));
 
         return quads;
     }

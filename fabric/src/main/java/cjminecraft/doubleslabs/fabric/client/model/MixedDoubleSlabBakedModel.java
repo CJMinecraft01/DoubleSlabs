@@ -46,7 +46,7 @@ public class MixedDoubleSlabBakedModel extends DynamicSlabBakedModel implements 
         if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlabBlockEntity) {
             final BlockRenderDispatcher blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
 
-            dynamicSlabBlockEntity.callOnBlockStates(slabState -> blockRenderDispatcher.getBlockModel(slabState).emitBlockQuads(blockView, slabState, pos, randomSupplier, context));
+            dynamicSlabBlockEntity.runOnBlockStates(slabState -> blockRenderDispatcher.getBlockModel(slabState).emitBlockQuads(blockView, slabState, pos, randomSupplier, context));
         }
     }
 }

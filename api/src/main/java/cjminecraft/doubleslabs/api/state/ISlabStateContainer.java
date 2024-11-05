@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,7 +30,7 @@ public interface ISlabStateContainer {
         return !getBlockState().isAir();
     }
 
-    default void callOnBlockState(Consumer<BlockState> consumer) {
+    default void runOnBlockState(Consumer<BlockState> consumer) {
         if (hasBlockState()) {
             consumer.accept(getBlockState());
         }
@@ -37,6 +38,10 @@ public interface ISlabStateContainer {
 
     default <T> T callOnBlockState(Function<BlockState, T> function, Supplier<T> orElse) {
         return hasBlockState() ? function.apply(getBlockState()) : orElse.get();
+    }
+
+    default <T> Optional<T> callOnBlockState(Function<BlockState, T> function) {
+        return hasBlockState() ? Optional.of(function.apply(getBlockState())) : Optional.empty();
     }
 
     @Nullable
@@ -48,7 +53,7 @@ public interface ISlabStateContainer {
         return getBlockEntity() != null;
     }
 
-    default void callOnBlockEntity(Consumer<BlockEntity> consumer) {
+    default void runOnBlockEntity(Consumer<BlockEntity> consumer) {
         if (hasBlockEntity()) {
             consumer.accept(getBlockEntity());
         }
@@ -56,6 +61,10 @@ public interface ISlabStateContainer {
 
     default <T> T callOnBlockEntity(Function<BlockEntity, T> function, Supplier<T> orElse) {
         return hasBlockEntity() ? function.apply(getBlockEntity()) : orElse.get();
+    }
+
+    default <T> Optional<T> callOnBlockEntity(Function<BlockEntity, T> function) {
+        return hasBlockEntity() ? Optional.of(function.apply(getBlockEntity())) : Optional.empty();
     }
 
     BlockPos getBlockPos();
@@ -71,8 +80,8 @@ public interface ISlabStateContainer {
 
     default CompoundTag serialize(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        callOnBlockState(state -> tag.put("state", NbtUtils.writeBlockState(state)));
-        callOnBlockEntity(blockEntity -> tag.put("blockEntity", blockEntity.saveWithId(registries)));
+        runOnBlockState(state -> tag.put("state", NbtUtils.writeBlockState(state)));
+        runOnBlockEntity(blockEntity -> tag.put("blockEntity", blockEntity.saveWithId(registries)));
         return tag;
     }
 

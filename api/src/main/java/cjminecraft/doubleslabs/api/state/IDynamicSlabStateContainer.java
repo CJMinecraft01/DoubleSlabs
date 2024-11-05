@@ -16,20 +16,47 @@ public interface IDynamicSlabStateContainer {
 
     void setBlockEntity(Half half, @Nullable BlockEntity blockEntity);
 
-    void callOnBlockStates(Consumer<BlockState> consumer);
+    ISlabStateContainer getStateContainer(Half half);
 
-    void callOnBlockStates(BiConsumer<Half, BlockState> consumer);
+    void runOnStateContainers(Consumer<ISlabStateContainer> consumer);
 
-    void callOnBlockState(Half half, Consumer<BlockState> consumer);
+    void runOnStateContainers(BiConsumer<Half, ISlabStateContainer> consumer);
 
-    <T> T callOnBlockState(Half half, Function<BlockState, T> function, Supplier<T> orElse);
+    void runOnStateContainer(Half half, Consumer<ISlabStateContainer> consumer);
 
-    void callOnBlockEntities(Consumer<BlockEntity> consumer);
+    <T> T callOnStateContainer(Half half, Function<ISlabStateContainer, T> consumer);
 
-    void callOnBlockEntities(BiConsumer<Half, BlockEntity> consumer);
+    default void runOnBlockStates(Consumer<BlockState> consumer) {
+        runOnStateContainers(container -> container.runOnBlockState(consumer));
+    }
 
-    void callOnBlockEntity(Half half, Consumer<BlockEntity> consumer);
+    default void runOnBlockStates(BiConsumer<Half, BlockState> consumer) {
+        runOnStateContainers((half, container) -> container.runOnBlockState(state -> consumer.accept(half, state)));
+    }
 
-    <T> T callOnBlockEntity(Half half, Function<BlockEntity, T> function, Supplier<T> orElse);
+    default void runOnBlockState(Half half, Consumer<BlockState> consumer) {
+        runOnStateContainer(half, container -> container.runOnBlockState(consumer));
+    }
+
+    default <T> T callOnBlockState(Half half, Function<BlockState, T> function, Supplier<T> orElse) {
+        return callOnStateContainer(half, container -> container.callOnBlockState(function, orElse));
+    }
+
+    default void runOnBlockEntities(Consumer<BlockEntity> consumer) {
+        runOnStateContainers(container -> container.runOnBlockEntity(consumer));
+    }
+
+    default void runOnBlockEntities(BiConsumer<Half, BlockEntity> consumer) {
+        runOnStateContainers((half, container) -> container.runOnBlockEntity(blockEntity -> consumer.accept(half,
+                blockEntity)));
+    }
+
+    default void runOnBlockEntity(Half half, Consumer<BlockEntity> consumer) {
+        runOnStateContainer(half, container -> container.runOnBlockEntity(consumer));
+    }
+
+    default <T> T callOnBlockEntity(Half half, Function<BlockEntity, T> function, Supplier<T> orElse) {
+        return callOnStateContainer(half, container -> container.callOnBlockEntity(function, orElse));
+    }
 
 }
