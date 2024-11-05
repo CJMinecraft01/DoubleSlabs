@@ -42,6 +42,10 @@ public interface IDynamicSlabStateContainer {
         return callOnStateContainer(half, container -> container.callOnBlockState(function, orElse));
     }
 
+    default <T> Optional<T> callOnBlockState(Half half, Function<BlockState, T> function) {
+        return callOnStateContainer(half, container -> container.callOnBlockState(function));
+    }
+
     default void runOnBlockEntities(Consumer<BlockEntity> consumer) {
         runOnStateContainers(container -> container.runOnBlockEntity(consumer));
     }
@@ -57,6 +61,10 @@ public interface IDynamicSlabStateContainer {
 
     default <T> T callOnBlockEntity(Half half, Function<BlockEntity, T> function, Supplier<T> orElse) {
         return callOnStateContainer(half, container -> container.callOnBlockEntity(function, orElse));
+    }
+
+    default <T> Optional<T> callOnBlockEntity(Half half, Function<BlockEntity, T> function) {
+        return callOnStateContainer(half, container -> container.callOnBlockEntity(function));
     }
 
 }
