@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.fabric.mixin;
+package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSBlocks;

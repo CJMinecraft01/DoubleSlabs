@@ -9,8 +9,8 @@
     "ServerPlayerGameModeMixin"
   ],
   "client": [
-    "DebugScreenOverlayMixin",
-    "MultiPlayerGameModeMixin"
+    "client.DebugScreenOverlayMixin",
+    "client.MultiPlayerGameModeMixin"
   ],
   "server": [],
   "injectors": {

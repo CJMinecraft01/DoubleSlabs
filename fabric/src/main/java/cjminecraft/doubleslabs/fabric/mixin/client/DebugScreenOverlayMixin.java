@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.fabric.mixin;
+package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
