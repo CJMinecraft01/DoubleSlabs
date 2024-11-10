@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.common.hooks;
 
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.core.BlockPos;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -24,13 +24,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
-
-    protected static Half getOpposite(Half half) {
-        return switch (half) {
-            case TOP -> Half.BOTTOM;
-            case BOTTOM -> Half.TOP;
-        };
-    }
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
         final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
@@ -93,7 +86,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
         } else {
-            Half halfToKeep = getOpposite(halfToRemove);
+            Half halfToKeep = halfToRemove.getOpposite();
 
             container.runOnStateContainer(halfToRemove, slabContainer -> {
                 if (!slabContainer.hasBlockState()) {

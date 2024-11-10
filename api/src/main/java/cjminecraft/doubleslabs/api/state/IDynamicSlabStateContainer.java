@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.api.state;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Half;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

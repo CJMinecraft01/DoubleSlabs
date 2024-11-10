@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.client.hooks;
 
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import com.google.common.base.Preconditions;
 import net.minecraft.ChatFormatting;
@@ -8,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -42,7 +42,7 @@ public class ClientRenderingHooks {
     }
 
     private static String getHalfPrefix(Half half) {
-        return ChatFormatting.ITALIC + half.getSerializedName() + ChatFormatting.RESET + ": ";
+        return ChatFormatting.ITALIC + half.toString() + ChatFormatting.RESET + ": ";
     }
 
     private static void addBlockStateToDebugScreenOverlay(Half half, BlockState state, List<String> text) {

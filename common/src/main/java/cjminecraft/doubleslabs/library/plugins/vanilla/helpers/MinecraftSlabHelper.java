@@ -1,13 +1,13 @@
 package cjminecraft.doubleslabs.library.plugins.vanilla.helpers;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
+import cjminecraft.doubleslabs.api.state.Half;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 
 public class MinecraftSlabHelper implements IHorizontalSlabHelper {

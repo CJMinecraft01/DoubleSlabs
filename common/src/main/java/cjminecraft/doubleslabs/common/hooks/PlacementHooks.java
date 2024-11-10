@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 

@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.common.block.entity;
 
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
@@ -12,7 +13,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Half;
 
 import javax.annotation.Nullable;
 
