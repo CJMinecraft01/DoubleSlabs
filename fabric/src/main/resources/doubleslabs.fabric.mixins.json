@@ -5,10 +5,12 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ItemStackMixin"
+    "ItemStackMixin",
+    "ServerPlayerGameModeMixin"
   ],
   "client": [
-    "DebugScreenOverlayMixin"
+    "DebugScreenOverlayMixin",
+    "MultiPlayerGameModeMixin"
   ],
   "server": [],
   "injectors": {
