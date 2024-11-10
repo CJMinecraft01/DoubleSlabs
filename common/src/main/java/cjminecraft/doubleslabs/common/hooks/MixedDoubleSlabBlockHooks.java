@@ -22,6 +22,13 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
             return null;
         }
 
+        final BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+
+        // If the hit block pos is not the same block as the slab then we cannot get the half
+        if (!slabPos.equals(hitPos)) {
+            return null;
+        }
+
         final Vec3 hitLocation = hitResult.getLocation();
         final double hitOffset = hitLocation.y - slabPos.getY();
         return hitOffset > 0.5 ? Half.TOP : Half.BOTTOM;
