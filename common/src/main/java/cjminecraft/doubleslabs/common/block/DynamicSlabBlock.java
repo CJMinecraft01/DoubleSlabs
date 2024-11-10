@@ -1,14 +1,18 @@
 package cjminecraft.doubleslabs.common.block;
 
+import cjminecraft.doubleslabs.common.hooks.DynamicSlabHooks;
 import cjminecraft.doubleslabs.common.platform.Services;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class DynamicSlabBlock extends BaseEntityBlock {
     public static final MapCodec<DynamicSlabBlock> CODEC = simpleCodec(DynamicSlabBlock::new);
@@ -33,5 +37,10 @@ public class DynamicSlabBlock extends BaseEntityBlock {
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return DynamicSlabHooks.getDrops(params);
     }
 }
