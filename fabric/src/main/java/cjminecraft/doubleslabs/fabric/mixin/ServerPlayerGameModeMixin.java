@@ -19,7 +19,7 @@ public class ServerPlayerGameModeMixin {
     @Shadow @Final protected ServerPlayer player;
 
     @Redirect(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
-    private boolean destroyBlock$doubleslabs(ServerLevel level, BlockPos pos, boolean isMoving) {
+    private boolean destroyBlock$removeBlock$doubleslabs(ServerLevel level, BlockPos pos, boolean isMoving) {
         BlockState state = level.getBlockState(pos);
 
         if (state.is(DSBlocks.MIXED_SLAB.get())) {

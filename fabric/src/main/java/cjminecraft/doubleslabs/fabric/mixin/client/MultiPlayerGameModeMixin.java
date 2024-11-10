@@ -22,7 +22,7 @@ public class MultiPlayerGameModeMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Redirect(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private boolean destroyBlock$doubleslabs(Level level, BlockPos pos, BlockState newState, int flags) {
+    private boolean destroyBlock$setBlock$doubleslabs(Level level, BlockPos pos, BlockState newState, int flags) {
         BlockState state = level.getBlockState(pos);
 
         if (state.is(DSBlocks.MIXED_SLAB.get())) {
