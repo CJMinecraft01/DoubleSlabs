@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.forge.common.hooks;
+package cjminecraft.doubleslabs.forge.client.hooks;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;

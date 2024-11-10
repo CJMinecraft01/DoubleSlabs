@@ -1,4 +1,4 @@
-package cjminecraft.doubleslabs.neoforge.common.hooks;
+package cjminecraft.doubleslabs.neoforge.client.hooks;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
 import net.neoforged.bus.api.SubscribeEvent;
