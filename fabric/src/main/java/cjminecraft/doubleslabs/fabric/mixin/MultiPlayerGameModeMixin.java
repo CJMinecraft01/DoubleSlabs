@@ -25,7 +25,7 @@ public class MultiPlayerGameModeMixin {
     private boolean destroyBlock$doubleslabs(Level level, BlockPos pos, BlockState newState, int flags) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(DSBlocks.DOUBLE_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLAB.get())) {
             assert minecraft.player != null;
             return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, minecraft.player, level.getFluidState(pos), false);
         }

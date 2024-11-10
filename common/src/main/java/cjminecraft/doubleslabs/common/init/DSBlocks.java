@@ -12,7 +12,7 @@ public class DSBlocks {
 
     private static final RegistrationProvider<Block> PROVIDER = RegistrationProvider.get(Registries.BLOCK, Constants.MOD_ID);
 
-    public static final RegistryObject<Block, MixedDoubleSlabBlock> DOUBLE_SLAB = PROVIDER.register("double_slab",
+    public static final RegistryObject<Block, MixedDoubleSlabBlock> MIXED_SLAB = PROVIDER.register("double_slab",
             () -> Services.PLATFORM.getBlockFactory().createMixedDoubleSlabBlock());
 
     public static void loadClass() {
