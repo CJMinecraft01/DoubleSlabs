@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
-        final BlockHitResult hitResult = RayCastHelper.getLookingAtBlock(player);
+        final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
 
         if (hitResult.getType() != BlockHitResult.Type.BLOCK) {
             return null;
