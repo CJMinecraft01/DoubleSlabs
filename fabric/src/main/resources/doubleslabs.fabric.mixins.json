@@ -10,6 +10,7 @@
   ],
   "client": [
     "client.DebugScreenOverlayMixin",
+    "client.LevelRendererMixin",
     "client.MultiPlayerGameModeMixin"
   ],
   "server": [],
