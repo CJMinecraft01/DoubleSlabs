@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.forge.common.block;
 
 import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
+import cjminecraft.doubleslabs.forge.client.block.MixedDoubleSlabClientBlockExtensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -10,6 +11,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
+
+import java.util.function.Consumer;
 
 public class ForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     public ForgeMixedDoubleSlabBlock(Properties properties) {
@@ -24,5 +28,10 @@ public class ForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         return MixedDoubleSlabBlockHooks.getCloneItemStack(level, pos, target);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
+        consumer.accept(MixedDoubleSlabClientBlockExtensions.INSTANCE);
     }
 }

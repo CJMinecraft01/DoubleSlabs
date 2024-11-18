@@ -22,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
@@ -47,6 +48,16 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
 
         return getHalfFromHitResult(hitResult, slabPos);
+    }
+
+    protected static void runOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Consumer<BlockState> consumer) {
+        @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
+
+        if (slabHalf == null) {
+            return;
+        }
+
+        runOnBlockState(blockGetter, pos, slabHalf, consumer);
     }
 
     protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Function<BlockState, T> function) {

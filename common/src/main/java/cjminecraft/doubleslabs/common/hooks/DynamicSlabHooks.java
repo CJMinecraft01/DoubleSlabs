@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DynamicSlabHooks {
@@ -27,6 +28,11 @@ public class DynamicSlabHooks {
     protected static Optional<Float> minFromBlockState(BlockGetter blockGetter, BlockPos pos, Function<BlockState,
             Float> function) {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Math::min));
+    }
+
+    protected static void runOnBlockState(BlockGetter blockGetter, BlockPos pos, Half slabHalf,
+                                                      Consumer<BlockState> consumer) {
+        getDynamicSlabStateContainer(blockGetter, pos).ifPresent(container -> container.runOnBlockState(slabHalf, consumer));
     }
 
     protected static <T> Optional<T> callOnBlockState(BlockGetter blockGetter, BlockPos pos, Half slabHalf,

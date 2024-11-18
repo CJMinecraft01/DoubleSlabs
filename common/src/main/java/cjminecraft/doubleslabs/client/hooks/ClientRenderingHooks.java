@@ -8,12 +8,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -98,6 +104,44 @@ public class ClientRenderingHooks {
             text.add(getHalfPrefix(half) + ChatFormatting.RED + "null");
         } else {
             text.add(getHalfPrefix(half) + BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntity.getType()));
+        }
+    }
+
+    public static void crackParticle(BlockPos pos, BlockState state, Direction side, ClientLevel level, ParticleEngine particleEngine) {
+        if (state.getRenderShape() != RenderShape.INVISIBLE && state.shouldSpawnTerrainParticles()) {
+            int i = pos.getX();
+            int j = pos.getY();
+            int k = pos.getZ();
+
+            AABB aabb = state.getShape(level, pos).bounds();
+            double d0 = (double)i + level.random.nextDouble() * (aabb.maxX - aabb.minX - 0.2F) + 0.1F + aabb.minX;
+            double d1 = (double)j + level.random.nextDouble() * (aabb.maxY - aabb.minY - 0.2F) + 0.1F + aabb.minY;
+            double d2 = (double)k + level.random.nextDouble() * (aabb.maxZ - aabb.minZ - 0.2F) + 0.1F + aabb.minZ;
+            if (side == Direction.DOWN) {
+                d1 = (double)j + aabb.minY - 0.1F;
+            }
+
+            if (side == Direction.UP) {
+                d1 = (double)j + aabb.maxY + 0.1F;
+            }
+
+            if (side == Direction.NORTH) {
+                d2 = (double)k + aabb.minZ - 0.1F;
+            }
+
+            if (side == Direction.SOUTH) {
+                d2 = (double)k + aabb.maxZ + 0.1F;
+            }
+
+            if (side == Direction.WEST) {
+                d0 = (double)i + aabb.minX - 0.1F;
+            }
+
+            if (side == Direction.EAST) {
+                d0 = (double)i + aabb.maxX + 0.1F;
+            }
+
+            particleEngine.add(new TerrainParticle(level, d0, d1, d2, 0.0, 0.0, 0.0, state, pos).setPower(0.2F).scale(0.6F));
         }
     }
 
