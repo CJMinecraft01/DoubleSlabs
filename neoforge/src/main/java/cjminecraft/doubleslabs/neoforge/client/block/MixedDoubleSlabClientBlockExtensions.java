@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.neoforge.client.block;
 import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -21,7 +22,6 @@ public class MixedDoubleSlabClientBlockExtensions implements IClientBlockExtensi
 
         final BlockHitResult hitResult = (BlockHitResult) target;
 
-        MixedDoubleSlabBlockClientHooks.addHitEffects((ClientLevel) level, hitResult.getBlockPos(), hitResult, hitResult.getDirection(), manager);
-        return true;
+        return MixedDoubleSlabBlockClientHooks.addHitEffects((ClientLevel) level, hitResult.getBlockPos(), hitResult, hitResult.getDirection(), manager);
     }
 }

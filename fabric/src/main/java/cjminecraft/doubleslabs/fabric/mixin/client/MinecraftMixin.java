@@ -25,14 +25,17 @@ public class MinecraftMixin {
     @Redirect(method = "continueAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleEngine;crack(Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;)V"))
     private void continueAttack$crack$doubleslabs(ParticleEngine instance, BlockPos pos, Direction direction) {
         assert level != null;
+        assert hitResult != null;
 
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
-            assert hitResult != null;
+        boolean overridden = false;
 
-            MixedDoubleSlabBlockClientHooks.addHitEffects(level, pos, hitResult, direction, instance);
-        } else {
+        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+            overridden = MixedDoubleSlabBlockClientHooks.addHitEffects(level, pos, hitResult, direction, instance);
+        }
+
+        if (!overridden) {
             instance.crack(pos, direction);
         }
     }

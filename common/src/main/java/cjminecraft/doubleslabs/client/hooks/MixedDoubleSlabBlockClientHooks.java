@@ -9,9 +9,11 @@ import net.minecraft.world.phys.HitResult;
 
 public class MixedDoubleSlabBlockClientHooks extends MixedDoubleSlabBlockHooks {
 
-    public static void addHitEffects(ClientLevel clientLevel, BlockPos slabPos, HitResult hitResult, Direction direction, ParticleEngine particleEngine) {
-        runOnLookingAtBlockState(clientLevel, slabPos, hitResult,
-                state -> ClientRenderingHooks.crackParticle(slabPos, state, direction, clientLevel, particleEngine));
+    public static boolean addHitEffects(ClientLevel clientLevel, BlockPos slabPos, HitResult hitResult, Direction direction, ParticleEngine particleEngine) {
+        return callOnLookingAtBlockState(clientLevel, slabPos, hitResult, state -> {
+            ClientRenderingHooks.crackParticle(slabPos, state, direction, clientLevel, particleEngine);
+            return true;
+        }).orElse(false);
     }
 
 }
