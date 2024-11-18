@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,9 +26,7 @@ import java.util.function.Function;
 
 public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
 
-    protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
-        final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
-
+    protected static @Nullable Half getHalfFromHitResult(final HitResult hitResult, final BlockPos slabPos) {
         if (hitResult.getType() != BlockHitResult.Type.BLOCK) {
             return null;
         }
@@ -44,8 +43,23 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         return hitOffset > 0.5 ? Half.TOP : Half.BOTTOM;
     }
 
-    protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, Player player,
-                                                               Function<BlockState, T> function) {
+    protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
+        final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+
+        return getHalfFromHitResult(hitResult, slabPos);
+    }
+
+    protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Function<BlockState, T> function) {
+        @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
+
+        if (slabHalf == null) {
+            return Optional.empty();
+        }
+
+        return callOnBlockState(blockGetter, pos, slabHalf, function);
+    }
+
+    protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, Player player, Function<BlockState, T> function) {
         @Nullable Half slabHalf = getHalfFromLookingAtBlock(player, pos);
 
         if (slabHalf == null) {
@@ -56,8 +70,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
     }
 
     public static Optional<Float> getDestroyProgress(Player player, BlockGetter blockGetter, BlockPos pos) {
-        return callOnLookingAtBlockState(blockGetter, pos, player, state -> state.getDestroyProgress(player, blockGetter, pos))
-                .or(() -> minFromBlockState(blockGetter, pos, state -> state.getDestroyProgress(player, blockGetter, pos)));
+        return callOnLookingAtBlockState(blockGetter, pos, player, state -> state.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, state -> state.getDestroyProgress(player, blockGetter, pos)));
     }
 
     // The result of removeBlock is whether the block is considered to have been removed.
@@ -122,6 +135,11 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
                 }
             });
         }
+    }
+
+    public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, HitResult hitResult) {
+        return callOnLookingAtBlockState(level, pos, hitResult, state -> state.getBlock().getCloneItemStack(level, pos, state))
+                .orElse(ItemStack.EMPTY);
     }
 
 }
