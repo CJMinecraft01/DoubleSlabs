@@ -18,6 +18,7 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         super(properties);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.getDestroyProgress(player, level, pos)
