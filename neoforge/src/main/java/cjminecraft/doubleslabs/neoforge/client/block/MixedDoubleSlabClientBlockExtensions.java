@@ -24,4 +24,9 @@ public class MixedDoubleSlabClientBlockExtensions implements IClientBlockExtensi
 
         return MixedDoubleSlabBlockClientHooks.addHitEffects((ClientLevel) level, hitResult.getBlockPos(), hitResult, hitResult.getDirection(), manager);
     }
+
+    @Override
+    public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine manager) {
+        return MixedDoubleSlabBlockClientHooks.addDestroyEffects(level, pos, manager);
+    }
 }
