@@ -44,4 +44,12 @@ public class NeoForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
             return true;
         }).orElse(false);
     }
+
+    @Override
+    public boolean addRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity) {
+        return MixedDoubleSlabBlockHooks.getParticleForTopSlab(level, pos).map(particle -> {
+            level.addParticle(particle, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
+            return true;
+        }).orElse(false);
+    }
 }
