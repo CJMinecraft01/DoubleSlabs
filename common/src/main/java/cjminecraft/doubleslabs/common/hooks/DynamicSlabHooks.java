@@ -40,6 +40,10 @@ public class DynamicSlabHooks {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.callOnBlockState(slabHalf, function));
     }
 
+    protected static boolean requireBothStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, Boolean> function) {
+        return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalAnd)).orElse(false);
+    }
+
     public static List<ItemStack> getDrops(LootParams.Builder params) {
         List<ItemStack> drops = new ArrayList<>();
 

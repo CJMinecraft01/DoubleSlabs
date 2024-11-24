@@ -180,4 +180,8 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         return callOnBlockState(blockGetter, pos, Half.TOP, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
+    public static boolean propagatesSkylightDown(BlockGetter blockGetter, BlockPos pos) {
+        return requireBothStates(blockGetter, pos, state -> state.propagatesSkylightDown(blockGetter, pos));
+    }
+
 }

@@ -34,4 +34,9 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return super.getCloneItemStack(level, pos, state);
     }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+        return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
+    }
 }
