@@ -4,6 +4,8 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -172,6 +174,10 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         }
 
         return Optional.empty();
+    }
+
+    public static Optional<BlockParticleOption> getParticleForTopSlab(BlockGetter blockGetter, BlockPos pos) {
+        return callOnBlockState(blockGetter, pos, Half.TOP, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
 }

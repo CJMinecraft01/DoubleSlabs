@@ -3,7 +3,9 @@ package cjminecraft.doubleslabs.neoforge.common.block;
 import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,5 +35,13 @@ public class NeoForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return MixedDoubleSlabBlockHooks.getSoundType(level, pos, entity)
                 .orElseGet(() -> super.getSoundType(state, level, pos, entity));
+    }
+
+    @Override
+    public boolean addLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2, LivingEntity entity, int numberOfParticles) {
+        return MixedDoubleSlabBlockHooks.getParticleForTopSlab(level, pos).map(particle -> {
+            level.sendParticles(particle, entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0, 0.0, 0.0, 0.15F);
+            return true;
+        }).orElse(false);
     }
 }
