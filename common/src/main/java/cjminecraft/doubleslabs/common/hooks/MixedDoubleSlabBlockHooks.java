@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -12,7 +13,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -151,6 +154,24 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
     public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, HitResult hitResult) {
         return callOnLookingAtBlockState(level, pos, hitResult, state -> state.getBlock().getCloneItemStack(level, pos, state))
                 .orElse(ItemStack.EMPTY);
+    }
+
+    public static Optional<SoundType> getSoundType(BlockGetter blockGetter, BlockPos pos, @Nullable Entity entity) {
+        if (entity instanceof Player player) {
+            // We first assume that we are destroying a block and so get the state based on what the player is looking at
+            Optional<SoundType> destroyBlockSound = callOnLookingAtBlockState(blockGetter, pos, player, BlockBehaviour.BlockStateBase::getSoundType);
+            if (destroyBlockSound.isPresent()) {
+                return destroyBlockSound;
+            }
+            // If the player is not looking at this slab block then treat it like all other entities
+        }
+
+        // If we have an entity, get the sound type for the top slab
+        if (entity != null) {
+            return callOnBlockState(blockGetter, pos, Half.TOP, BlockBehaviour.BlockStateBase::getSoundType);
+        }
+
+        return Optional.empty();
     }
 
 }

@@ -3,13 +3,16 @@ package cjminecraft.doubleslabs.neoforge.common.block;
 import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 
 public class NeoForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     public NeoForgeMixedDoubleSlabBlock(Properties properties) {
@@ -24,5 +27,11 @@ public class NeoForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         return MixedDoubleSlabBlockHooks.getCloneItemStack(level, pos, target);
+    }
+
+    @Override
+    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return MixedDoubleSlabBlockHooks.getSoundType(level, pos, entity)
+                .orElseGet(() -> super.getSoundType(state, level, pos, entity));
     }
 }

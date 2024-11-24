@@ -4,14 +4,17 @@ import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.forge.client.block.MixedDoubleSlabClientBlockExtensions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -33,5 +36,11 @@ public class ForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     @Override
     public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
         consumer.accept(MixedDoubleSlabClientBlockExtensions.INSTANCE);
+    }
+
+    @Override
+    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return MixedDoubleSlabBlockHooks.getSoundType(level, pos, entity)
+                .orElseGet(() -> super.getSoundType(state, level, pos, entity));
     }
 }
