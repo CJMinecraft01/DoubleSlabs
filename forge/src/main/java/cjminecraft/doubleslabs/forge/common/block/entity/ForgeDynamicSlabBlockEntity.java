@@ -20,7 +20,7 @@ public class ForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<ForgeSla
 
     @Override
     protected ForgeSlabStateContainer createBlockStateContainer() {
-        return new ForgeSlabStateContainer(worldPosition);
+        return new ForgeSlabStateContainer(this, worldPosition);
     }
 
     @Override

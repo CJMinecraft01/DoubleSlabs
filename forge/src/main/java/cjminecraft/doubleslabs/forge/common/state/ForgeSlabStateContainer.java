@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.forge.common.state;
 
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.library.state.SlabStateContainer;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
@@ -12,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class ForgeSlabStateContainer extends SlabStateContainer implements ICapabilityProvider {
-    public ForgeSlabStateContainer(BlockPos pos) {
-        super(pos);
+    public ForgeSlabStateContainer(IDynamicSlabStateContainer parentContainer, BlockPos pos) {
+        super(parentContainer, pos);
     }
 
     @Override

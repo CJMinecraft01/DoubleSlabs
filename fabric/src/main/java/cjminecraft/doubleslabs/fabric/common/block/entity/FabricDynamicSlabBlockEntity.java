@@ -12,6 +12,6 @@ public class FabricDynamicSlabBlockEntity extends DynamicSlabBlockEntity<SlabSta
 
     @Override
     protected SlabStateContainer createBlockStateContainer() {
-        return new SlabStateContainer(worldPosition);
+        return new SlabStateContainer(this, worldPosition);
     }
 }
