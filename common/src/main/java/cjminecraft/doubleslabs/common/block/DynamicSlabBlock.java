@@ -36,6 +36,7 @@ public class DynamicSlabBlock extends BaseEntityBlock {
         return CODEC;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
