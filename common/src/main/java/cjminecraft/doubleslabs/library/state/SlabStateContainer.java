@@ -33,6 +33,7 @@ public class SlabStateContainer implements ISlabStateContainer {
     @Override
     public void setBlockState(BlockState state) {
         this.blockState = state;
+        this.parentContainer.markDirty();
     }
 
     @Override
