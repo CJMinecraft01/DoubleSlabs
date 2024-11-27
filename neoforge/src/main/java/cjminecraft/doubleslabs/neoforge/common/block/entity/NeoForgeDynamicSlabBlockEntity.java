@@ -18,6 +18,12 @@ public class NeoForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<SlabS
     }
 
     @Override
+    public void markDirty() {
+        super.markDirty();
+        requestModelDataUpdate();
+    }
+
+    @Override
     public ModelData getModelData() {
         return ModelData.builder().with(NeoForgeDynamicSlabBakedModel.DYNAMIC_SLAB_STATE_CONTAINER, this).build();
     }

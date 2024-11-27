@@ -30,6 +30,15 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
 
     protected abstract S createBlockStateContainer();
 
+    @Override
+    public void markDirty() {
+        if (this.level != null) {
+            BlockState state = this.level.getBlockState(this.worldPosition);
+            this.level.sendBlockUpdated(this.worldPosition, state, state, 3);
+            this.level.getLightEngine().checkBlock(this.worldPosition);
+        }
+    }
+
     public void setBlockState(Half half, BlockState state) {
         switch (half) {
             case TOP -> positiveBlockStateContainer.setBlockState(state);

@@ -9,6 +9,8 @@ import java.util.function.*;
 
 public interface IDynamicSlabStateContainer {
 
+    void markDirty();
+
     void setBlockState(Half half, BlockState state);
 
     void setBlockEntity(Half half, @Nullable BlockEntity blockEntity);

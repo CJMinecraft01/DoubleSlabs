@@ -24,6 +24,12 @@ public class ForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<ForgeSla
     }
 
     @Override
+    public void markDirty() {
+        requestModelDataUpdate();
+        super.markDirty();
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         LazyOptional<T> negativeCapability = negativeBlockStateContainer.getCapability(cap, side);
         LazyOptional<T> positiveCapability = positiveBlockStateContainer.getCapability(cap, side);
