@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.block;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -38,5 +39,12 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     @Override
     protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
+    }
+
+    @Override
+    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        if (!MixedDoubleSlabBlockHooks.fallOn(level, pos, entity, fallDistance)) {
+            super.fallOn(level, state, pos, entity, fallDistance);
+        }
     }
 }

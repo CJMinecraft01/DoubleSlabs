@@ -184,4 +184,11 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         return requireBothStates(blockGetter, pos, state -> state.propagatesSkylightDown(blockGetter, pos));
     }
 
+    public static boolean fallOn(Level level, BlockPos pos, Entity entity, float fallDistance) {
+        return callOnBlockState(level, pos, Half.TOP, state -> {
+            state.getBlock().fallOn(level, state, pos, entity, fallDistance);
+            return true;
+        }).orElse(false);
+    }
+
 }
