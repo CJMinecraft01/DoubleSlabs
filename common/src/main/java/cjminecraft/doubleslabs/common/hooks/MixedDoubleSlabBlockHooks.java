@@ -204,4 +204,11 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
         }).orElse(false);
     }
 
+    public static boolean stepOn(Level level, BlockPos pos, Entity entity) {
+        return callOnBlockState(level, pos, Half.TOP, state -> {
+            state.getBlock().stepOn(level, pos, state, entity);
+            return true;
+        }).orElse(false);
+    }
+
 }
