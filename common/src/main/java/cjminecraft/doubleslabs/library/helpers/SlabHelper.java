@@ -2,22 +2,28 @@ package cjminecraft.doubleslabs.library.helpers;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.helpers.ISlabHelper;
+import cjminecraft.doubleslabs.api.helpers.ITickingSlabHelper;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class SlabHelper implements ISlabHelper {
 
     private final List<IHorizontalSlabHelper> horizontalSlabHelpers = new ArrayList<>();
+    private final Map<Block, ITickingSlabHelper> tickingSlabHelpers = new IdentityHashMap<>();
 
     public void addHorizontalSlabSupport(IHorizontalSlabHelper helper) {
         horizontalSlabHelpers.add(helper);
+    }
+
+    public void registerTickingSlabHelper(ITickingSlabHelper helper, Block... blocks) {
+        for (Block block : blocks) {
+            tickingSlabHelpers.put(block, helper);
+        }
     }
 
     public Optional<IHorizontalSlabHelper> getHorizontalSlabHelper(BlockState state) {
@@ -52,5 +58,10 @@ public class SlabHelper implements ISlabHelper {
     @Override
     public boolean areSameTypeOfSlab(BlockState state, IHorizontalSlabHelper stateSlabHelper, ItemStack stack, IHorizontalSlabHelper stackSlabHelper) {
         return stateSlabHelper == stackSlabHelper && stackSlabHelper.areSameTypeOfSlab(state, stack);
+    }
+
+    @Override
+    public Optional<ITickingSlabHelper> getTickingSlabHelper(Block block) {
+        return tickingSlabHelpers.containsKey(block) ? Optional.of(tickingSlabHelpers.get(block)) : Optional.empty();
     }
 }
