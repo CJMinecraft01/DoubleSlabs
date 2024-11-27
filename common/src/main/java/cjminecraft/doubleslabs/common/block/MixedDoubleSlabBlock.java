@@ -47,4 +47,11 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
             super.fallOn(level, state, pos, entity, fallDistance);
         }
     }
+
+    @Override
+    public void updateEntityAfterFallOn(BlockGetter level, Entity entity) {
+        if (!MixedDoubleSlabBlockHooks.updateEntityAfterFallOn(level, entity)) {
+            super.updateEntityAfterFallOn(level, entity);
+        }
+    }
 }
