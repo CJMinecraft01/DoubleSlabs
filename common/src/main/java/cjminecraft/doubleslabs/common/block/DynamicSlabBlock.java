@@ -4,6 +4,8 @@ import cjminecraft.doubleslabs.common.hooks.DynamicSlabHooks;
 import cjminecraft.doubleslabs.common.platform.Services;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -42,5 +44,15 @@ public class DynamicSlabBlock extends BaseEntityBlock {
     @Override
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         return DynamicSlabHooks.getDrops(params);
+    }
+
+    @Override
+    protected boolean isRandomlyTicking(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        DynamicSlabHooks.randomTick(level, pos, random);
     }
 }

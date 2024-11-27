@@ -2,9 +2,12 @@ package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -67,6 +70,17 @@ public class DynamicSlabHooks {
         }
 
         return drops;
+    }
+
+    public static void randomTick(ServerLevel serverLevel, BlockPos pos, RandomSource random) {
+        getDynamicSlabStateContainer(serverLevel, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
+            BlockState state = stateContainer.getBlockState();
+            Internal.getSlabHelper().getTickingSlabHelper(state.getBlock()).ifPresent(helper -> {
+                if (helper.isRandomlyTicking(state)) {
+                    helper.randomTick(stateContainer, serverLevel, pos, random);
+                }
+            });
+        }));
     }
 
 }
