@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class MixedDoubleSlabBlockHooks extends DynamicSlabHooks {
+public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
 
     protected static @Nullable Half getHalfFromHitResult(final HitResult hitResult, final BlockPos slabPos) {
         if (hitResult.getType() != BlockHitResult.Type.BLOCK) {

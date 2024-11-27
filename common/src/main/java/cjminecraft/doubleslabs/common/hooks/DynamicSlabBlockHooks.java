@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DynamicSlabHooks {
+public class DynamicSlabBlockHooks {
 
     protected static Optional<? extends IDynamicSlabStateContainer> getDynamicSlabStateContainer(BlockGetter blockGetter, BlockPos pos) {
         return blockGetter.getBlockEntity(pos, DSBlockEntities.DYNAMIC_SLAB.get());
