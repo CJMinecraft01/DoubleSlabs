@@ -3,9 +3,10 @@ package cjminecraft.doubleslabs.library.plugins.vanilla.helpers;
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.state.Half;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
@@ -14,7 +15,17 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
 
     @Override
     public boolean isHorizontalSlab(Block block) {
-        return block instanceof SlabBlock;
+        return isHorizontalSlab(block.defaultBlockState());
+    }
+
+    @Override
+    public boolean isHorizontalSlab(BlockState state) {
+        return state.hasProperty(BlockStateProperties.SLAB_TYPE);
+    }
+
+    @Override
+    public boolean isHorizontalSlab(Item item) {
+        return item instanceof BlockItem blockItem && isHorizontalSlab(blockItem.getBlock().defaultBlockState());
     }
 
     @Override
