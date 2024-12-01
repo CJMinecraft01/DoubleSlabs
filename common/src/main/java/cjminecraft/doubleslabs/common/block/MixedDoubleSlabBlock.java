@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -31,11 +30,6 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     @Override
     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         MixedDoubleSlabBlockHooks.playerDestroy(player, level, pos, state, blockEntity, tool);
-    }
-
-    @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
-        return super.getCloneItemStack(level, pos, state);
     }
 
     @Override
