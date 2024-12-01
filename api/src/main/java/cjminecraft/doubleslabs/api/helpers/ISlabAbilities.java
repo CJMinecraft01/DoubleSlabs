@@ -10,6 +10,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface ISlabAbilities {
 
+    default void scheduleTick(Level level, BlockPos pos, int delay) {
+        level.scheduleTick(pos, level.getBlockState(pos).getBlock(), delay);
+    }
+
     default boolean isRandomlyTicking(BlockState state) {
         return false;
     }
