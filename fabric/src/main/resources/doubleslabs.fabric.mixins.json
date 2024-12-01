@@ -12,6 +12,7 @@
     "ServerPlayerGameModeMixin"
   ],
   "client": [
+    "client.AbstractBlockRenderContextAccessor",
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",

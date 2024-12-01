@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,7 +36,13 @@ public class MixedDoubleSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
 
         List<BakedQuad> quads = new ArrayList<>();
 
-        stateContainer.runOnBlockStates(slabState -> quads.addAll(blockRenderDispatcher.getBlockModel(slabState).getQuads(slabState, side, rand, data, renderType)));
+        stateContainer.runOnBlockStates(slabState -> {
+            final BakedModel model = blockRenderDispatcher.getBlockModel(slabState);
+
+            if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
+                quads.addAll(model.getQuads(slabState, side, rand, data, renderType));
+            }
+        });
 
         return quads;
     }

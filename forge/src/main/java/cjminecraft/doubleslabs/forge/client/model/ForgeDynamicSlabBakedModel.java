@@ -4,20 +4,21 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
 
@@ -36,5 +37,23 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
                         DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
 
         return model.getParticleIcon(ModelData.EMPTY);
+    }
+
+    @Override
+    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+        if (data.has(DYNAMIC_SLAB_STATE_CONTAINER)) {
+            final IDynamicSlabStateContainer stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
+            final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
+
+            Set<RenderType> renderTypes = new HashSet<>();
+            stateContainer.runOnBlockStates(slabState -> {
+                final BakedModel model = renderDispatcher.getBlockModel(slabState);
+                renderTypes.addAll(model.getRenderTypes(state, rand, data).asList());
+            });
+
+            return ChunkRenderTypeSet.of(renderTypes);
+        }
+
+        return ChunkRenderTypeSet.all();
     }
 }
