@@ -26,4 +26,8 @@ public interface ISlabAbilities {
 
     }
 
+    default void tick(ISlabStateContainer stateContainer, ServerLevel level, BlockPos pos, RandomSource random) {
+
+    }
+
 }

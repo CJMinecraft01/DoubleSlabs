@@ -93,4 +93,12 @@ public class DynamicSlabBlockHooks {
         }));
     }
 
+    public static void tick(ServerLevel level, BlockPos pos, RandomSource random) {
+        getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
+            BlockState state = stateContainer.getBlockState();
+            Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
+                    abilities.tick(stateContainer, level, pos, random));
+        }));
+    }
+
 }

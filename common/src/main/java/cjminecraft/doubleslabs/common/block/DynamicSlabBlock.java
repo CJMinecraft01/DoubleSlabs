@@ -63,4 +63,9 @@ public class DynamicSlabBlock extends BaseEntityBlock {
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
         DynamicSlabBlockHooks.neighborChanged(level, pos, neighborBlock, neighborPos, movedByPiston);
     }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        DynamicSlabBlockHooks.tick(level, pos, random);
+    }
 }
