@@ -8,6 +8,7 @@ import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -104,6 +105,10 @@ public class DynamicSlabBlockHooks {
             Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
                     abilities.tick(stateContainer, level, pos, random));
         }));
+    }
+
+    public static void entityInside(Level level, BlockPos pos, Entity entity) {
+        getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnBlockStates(state -> state.entityInside(level, pos, entity)));
     }
 
 }
