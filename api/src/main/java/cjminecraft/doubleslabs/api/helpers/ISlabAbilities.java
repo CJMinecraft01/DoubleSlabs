@@ -8,8 +8,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface ISlabAbilities {
 
-    boolean isRandomlyTicking(BlockState state);
+    default boolean isRandomlyTicking(BlockState state) {
+        return false;
+    }
 
-    void randomTick(ISlabStateContainer stateContainer, ServerLevel level, BlockPos pos, RandomSource random);
+    default void randomTick(ISlabStateContainer stateContainer, ServerLevel level, BlockPos pos, RandomSource random) {
+
+    }
 
 }
