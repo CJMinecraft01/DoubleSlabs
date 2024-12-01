@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -43,6 +44,10 @@ public class DynamicSlabBlockHooks {
     protected static <T> Optional<T> callOnBlockState(BlockGetter blockGetter, BlockPos pos, Half slabHalf,
                                                       Function<BlockState, T> function) {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.callOnBlockState(slabHalf, function));
+    }
+
+    protected static <T> Optional<T> reduceOnBlockStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, T> function, BiFunction<T, T, T> reducer) {
+        return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, reducer));
     }
 
     protected static boolean requireBothStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, Boolean> function) {

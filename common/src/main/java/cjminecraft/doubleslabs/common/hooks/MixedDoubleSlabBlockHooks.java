@@ -23,6 +23,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -209,6 +212,10 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
             state.getBlock().stepOn(level, pos, state, entity);
             return true;
         }).orElse(false);
+    }
+
+    public static Optional<VoxelShape> getCollisionShape(BlockGetter blockGetter, BlockPos pos, CollisionContext context) {
+        return reduceOnBlockStates(blockGetter, pos, state -> state.getCollisionShape(blockGetter, pos, context), Shapes::or);
     }
 
 }

@@ -10,6 +10,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class MixedDoubleSlabBlock extends DynamicSlabBlock {
@@ -60,5 +62,10 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         if (!MixedDoubleSlabBlockHooks.stepOn(level, pos, entity)) {
             super.stepOn(level, pos, state, entity);
         }
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return MixedDoubleSlabBlockHooks.getCollisionShape(level, pos, context).orElseGet(() -> super.getCollisionShape(state, level, pos, context));
     }
 }
