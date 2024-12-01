@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.library.load.registration;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
-import cjminecraft.doubleslabs.api.helpers.ITickingSlabHelper;
+import cjminecraft.doubleslabs.api.helpers.ISlabAbilities;
 import cjminecraft.doubleslabs.api.registration.ISlabHelperRegistration;
 import cjminecraft.doubleslabs.library.helpers.SlabHelper;
 import net.minecraft.world.level.block.Block;
@@ -20,7 +20,7 @@ public class SlabHelperRegistration implements ISlabHelperRegistration {
     }
 
     @Override
-    public void registerTickingSlabHelper(ITickingSlabHelper helper, Block... blocks) {
-        slabHelper.registerTickingSlabHelper(helper, blocks);
+    public void registerSlabAbilities(ISlabAbilities abilities, Block... blocks) {
+        slabHelper.registerSlabAbilities(abilities, blocks);
     }
 }

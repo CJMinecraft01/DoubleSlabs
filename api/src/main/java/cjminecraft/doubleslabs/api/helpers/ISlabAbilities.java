@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
-public interface ITickingSlabHelper {
+public interface ISlabAbilities {
 
     boolean isRandomlyTicking(BlockState state);
 

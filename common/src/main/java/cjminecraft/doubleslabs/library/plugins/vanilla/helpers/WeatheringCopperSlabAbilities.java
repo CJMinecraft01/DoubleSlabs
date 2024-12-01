@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.library.plugins.vanilla.helpers;
 
-import cjminecraft.doubleslabs.api.helpers.ITickingSlabHelper;
+import cjminecraft.doubleslabs.api.helpers.ISlabAbilities;
 import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperSlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class WeatheringCopperTickingSlabHelper implements ITickingSlabHelper {
+public class WeatheringCopperSlabAbilities implements ISlabAbilities {
     @Override
     public boolean isRandomlyTicking(BlockState state) {
         return WeatheringCopper.getNext(state.getBlock()).isPresent();

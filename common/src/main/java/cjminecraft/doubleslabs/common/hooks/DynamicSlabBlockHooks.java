@@ -75,9 +75,9 @@ public class DynamicSlabBlockHooks {
     public static void randomTick(ServerLevel serverLevel, BlockPos pos, RandomSource random) {
         getDynamicSlabStateContainer(serverLevel, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
             BlockState state = stateContainer.getBlockState();
-            Internal.getSlabHelper().getTickingSlabHelper(state.getBlock()).ifPresent(helper -> {
-                if (helper.isRandomlyTicking(state)) {
-                    helper.randomTick(stateContainer, serverLevel, pos, random);
+            Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities -> {
+                if (abilities.isRandomlyTicking(state)) {
+                    abilities.randomTick(stateContainer, serverLevel, pos, random);
                 }
             });
         }));

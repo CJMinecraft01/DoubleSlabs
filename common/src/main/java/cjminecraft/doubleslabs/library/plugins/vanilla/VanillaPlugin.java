@@ -5,7 +5,7 @@ import cjminecraft.doubleslabs.api.IDoubleSlabsPlugin;
 import cjminecraft.doubleslabs.api.registration.ISlabHelperRegistration;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.library.plugins.vanilla.helpers.MinecraftSlabHelper;
-import cjminecraft.doubleslabs.library.plugins.vanilla.helpers.WeatheringCopperTickingSlabHelper;
+import cjminecraft.doubleslabs.library.plugins.vanilla.helpers.WeatheringCopperSlabAbilities;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 
@@ -20,7 +20,7 @@ public class VanillaPlugin implements IDoubleSlabsPlugin {
     public void registerSlabHelpers(ISlabHelperRegistration registration) {
         registration.addHorizontalHelper(new MinecraftSlabHelper());
 
-        registration.registerTickingSlabHelper(new WeatheringCopperTickingSlabHelper(),
+        registration.registerSlabAbilities(new WeatheringCopperSlabAbilities(),
                 Blocks.CUT_COPPER_SLAB,
                 Blocks.EXPOSED_CUT_COPPER_SLAB,
                 Blocks.WEATHERED_CUT_COPPER_SLAB,
