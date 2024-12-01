@@ -8,6 +8,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 public class FabricBlockFactory implements IPlatformBlockFactory {
     @Override
     public MixedDoubleSlabBlock createMixedDoubleSlabBlock() {
-        return new FabricMixedDoubleSlabBlock(BlockBehaviour.Properties.of());
+        return new FabricMixedDoubleSlabBlock(BlockBehaviour.Properties.of().noOcclusion());
     }
 }
