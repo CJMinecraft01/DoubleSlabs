@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -80,6 +82,14 @@ public class DynamicSlabBlockHooks {
                     abilities.randomTick(stateContainer, serverLevel, pos, random);
                 }
             });
+        }));
+    }
+
+    public static void neighborChanged(Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+        getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
+            BlockState state = stateContainer.getBlockState();
+            Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
+                    abilities.neighborChanged(stateContainer, level, pos, neighborBlock, neighborPos, movedByPiston));
         }));
     }
 
