@@ -129,7 +129,7 @@ public class PlacementHooks {
 
         @Nullable BlockEntity existingBlockEntity = level.getBlockEntity(slabPos);
 
-        BlockState dynamicDoubleSlabState = DSBlocks.MIXED_SLAB.get().defaultBlockState();
+        BlockState dynamicDoubleSlabState = DSBlocks.MIXED_SLAB.defaultBlockState();
 
         if (!level.setBlock(slabPos, dynamicDoubleSlabState, 3)) {
             return Optional.empty();
@@ -147,7 +147,7 @@ public class PlacementHooks {
         itemInHand.shrink(1);
 
         Optional<? extends IDynamicSlabStateContainer> optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos,
-                DSBlockEntities.DYNAMIC_SLAB.get());
+                DSBlockEntities.DYNAMIC_SLAB);
 
         return optionalDynamicSlabBlockEntity.map(dynamicSlabBlockEntity -> {
             dynamicSlabBlockEntity.setBlockState(slabBlockHalf, slabBlockState);

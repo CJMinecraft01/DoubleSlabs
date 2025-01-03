@@ -34,6 +34,6 @@ public class DoubleSlabsClient implements ClientModInitializer {
     }
 
     private void registerBlockColours() {
-        ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB.get());
+        ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB);
     }
 }

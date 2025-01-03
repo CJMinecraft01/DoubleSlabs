@@ -19,7 +19,7 @@ public class LivingEntityMixin {
     private <T extends ParticleOptions> int checkFallDamage$sendParticles$doubleSlabs(ServerLevel instance, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed, @Local(ordinal = 0, argsOnly = true) BlockPos pos) {
         ParticleOptions particle = type;
         if (type instanceof BlockParticleOption blockParticleOption) {
-            if (blockParticleOption.getState().is(DSBlocks.MIXED_SLAB.get())) {
+            if (blockParticleOption.getState().is(DSBlocks.MIXED_SLAB)) {
                 particle = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
             }
         }

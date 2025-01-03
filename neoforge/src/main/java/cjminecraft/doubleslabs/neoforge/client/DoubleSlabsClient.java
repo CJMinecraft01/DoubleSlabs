@@ -31,11 +31,11 @@ public class DoubleSlabsClient {
     }
 
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
-        event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSBlocks.MIXED_SLAB.get());
+        event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSBlocks.MIXED_SLAB);
     }
 
     private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
-        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB.get());
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB);
     }
 
 }

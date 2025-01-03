@@ -22,7 +22,7 @@ public class ServerPlayerGameModeMixin {
     private boolean destroyBlock$removeBlock$doubleslabs(ServerLevel level, BlockPos pos, boolean isMoving) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLAB)) {
             return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), !player.isCreative());
         }
 

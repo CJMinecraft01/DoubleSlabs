@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.forge.common;
 
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.Internal;
-import cjminecraft.doubleslabs.common.init.DSInit;
 import cjminecraft.doubleslabs.forge.client.DoubleSlabsClient;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,9 +15,9 @@ public class DoubleSlabs {
     public DoubleSlabs() {
         IEventBus mod = FMLJavaModLoadingContext.get().getModEventBus();
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> DoubleSlabsClient.addListeners(mod));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DoubleSlabsClient.addListeners(mod));
 
+        DSForgeInit.register(mod);
         Internal.initialise();
-        DSInit.loadClasses();
     }
 }

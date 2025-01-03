@@ -25,7 +25,7 @@ public class DoubleSlabsClient {
     }
 
     private static void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
-        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB.get());
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB);
     }
 
 }

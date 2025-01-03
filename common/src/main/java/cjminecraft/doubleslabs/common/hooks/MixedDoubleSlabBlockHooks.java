@@ -114,7 +114,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         @Nullable Half halfToRemove = getHalfFromLookingAtBlock(player, pos);
 
         if (halfToRemove == null || !(blockEntity instanceof IDynamicSlabStateContainer container)) {
-            player.awardStat(Stats.BLOCK_MINED.get(DSBlocks.MIXED_SLAB.get()));
+            player.awardStat(Stats.BLOCK_MINED.get(DSBlocks.MIXED_SLAB));
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
         } else {
@@ -197,7 +197,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     public static boolean updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
         BlockPos pos = entity.blockPosition().below();
 
-        if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLAB.get())) {
+        if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLAB)) {
             return false;
         }
 

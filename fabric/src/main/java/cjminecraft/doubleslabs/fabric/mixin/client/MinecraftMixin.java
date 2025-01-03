@@ -31,7 +31,7 @@ public class MinecraftMixin {
 
         boolean overridden = false;
 
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLAB)) {
             overridden = MixedDoubleSlabBlockClientHooks.addHitEffects(level, pos, hitResult, direction, instance);
         }
 

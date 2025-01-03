@@ -18,7 +18,7 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
     private void renderHitOutline$doubleslabs(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLAB)) {
             if (ClientRenderingHooks.renderBlockHighlight(poseStack, camX, camY, camZ, () -> consumer)) {
                 ci.cancel();
             }

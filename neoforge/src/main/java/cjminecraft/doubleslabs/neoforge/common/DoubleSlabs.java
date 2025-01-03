@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.neoforge.common;
 
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.Internal;
-import cjminecraft.doubleslabs.common.init.DSInit;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 
@@ -10,7 +9,7 @@ import net.neoforged.fml.common.Mod;
 public class DoubleSlabs {
 
     public DoubleSlabs(IEventBus modBus) {
+        DSNeoForgeInit.register(modBus);
         Internal.initialise();
-        DSInit.loadClasses();
     }
 }

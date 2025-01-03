@@ -22,7 +22,7 @@ public class EntityMixin {
 
     @Redirect(method = "playStepSound", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getSoundType()Lnet/minecraft/world/level/block/SoundType;"))
     private SoundType playStepSound$getSoundType$doubleslabs(BlockState instance, BlockPos pos) {
-        if (instance.is(DSBlocks.MIXED_SLAB.get())) {
+        if (instance.is(DSBlocks.MIXED_SLAB)) {
             return MixedDoubleSlabBlockHooks.getSoundType(level, pos, (Entity) (Object) this).orElseGet(instance::getSoundType);
         }
         return instance.getSoundType();
@@ -31,7 +31,7 @@ public class EntityMixin {
     @Redirect(method = "spawnSprintParticle", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"))
     private void spawnSprintParticle$addParticle$doubleSlabs(Level instance, ParticleOptions type, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, @Local(ordinal = 0) BlockPos pos) {
         if (type instanceof BlockParticleOption blockParticleOption) {
-            if (blockParticleOption.getState().is(DSBlocks.MIXED_SLAB.get())) {
+            if (blockParticleOption.getState().is(DSBlocks.MIXED_SLAB)) {
                 type = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
             }
         }

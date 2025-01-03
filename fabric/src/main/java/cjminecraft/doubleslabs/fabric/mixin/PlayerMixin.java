@@ -22,7 +22,7 @@ public abstract class PlayerMixin {
 
     @Unique
     private SoundType getSoundType(BlockState state, BlockPos pos, Player player) {
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLAB)) {
             return MixedDoubleSlabBlockHooks.getSoundType(player.level(), pos, player).orElseGet(state::getSoundType);
         }
         return state.getSoundType();
