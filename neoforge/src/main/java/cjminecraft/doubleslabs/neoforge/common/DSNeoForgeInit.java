@@ -16,11 +16,11 @@ public class DSNeoForgeInit {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.createBlocks(Constants.MOD_ID);
 
-    public static final DeferredHolder<Block, MixedDoubleSlabBlock> MIXED_SLAB_BLOCK = BLOCKS.register("double_slab", () -> DSBlocks.MIXED_SLAB);
+    public static final DeferredHolder<Block, MixedDoubleSlabBlock> MIXED_SLAB_BLOCK = BLOCKS.register(DSBlocks.MIXED_SLAB_ID.getPath(), () -> DSBlocks.MIXED_SLAB);
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID);
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("dynamic_slab", () -> DSBlockEntities.DYNAMIC_SLAB);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(DSBlockEntities.DYNAMIC_SLAB_ID.getPath(), () -> DSBlockEntities.DYNAMIC_SLAB);
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

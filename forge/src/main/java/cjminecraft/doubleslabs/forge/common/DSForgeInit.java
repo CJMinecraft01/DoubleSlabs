@@ -16,11 +16,11 @@ public class DSForgeInit {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Constants.MOD_ID);
 
-    public static final RegistryObject<MixedDoubleSlabBlock> MIXED_SLAB_BLOCK = BLOCKS.register("double_slab", () -> DSBlocks.MIXED_SLAB);
+    public static final RegistryObject<MixedDoubleSlabBlock> MIXED_SLAB_BLOCK = BLOCKS.register(DSBlocks.MIXED_SLAB_ID.getPath(), () -> DSBlocks.MIXED_SLAB);
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Constants.MOD_ID);
 
-    public static final RegistryObject<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("dynamic_slab", () -> DSBlockEntities.DYNAMIC_SLAB);
+    public static final RegistryObject<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(DSBlockEntities.DYNAMIC_SLAB_ID.getPath(), () -> DSBlockEntities.DYNAMIC_SLAB);
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

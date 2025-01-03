@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class ForgeBlockFactory implements IPlatformBlockFactory {
     @Override
-    public MixedDoubleSlabBlock createMixedDoubleSlabBlock() {
-        return new ForgeMixedDoubleSlabBlock(BlockBehaviour.Properties.of().noOcclusion());
+    public MixedDoubleSlabBlock createMixedDoubleSlabBlock(BlockBehaviour.Properties properties) {
+        return new ForgeMixedDoubleSlabBlock(properties);
     }
 }
