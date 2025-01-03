@@ -13,7 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public class PlacementHooks {
 
-    public static Optional<ItemInteractionResult> useItemOnBlock(UseOnContext context) {
+    public static Optional<InteractionResult> useItemOnBlock(UseOnContext context) {
         @Nullable Player player = context.getPlayer();
         if (player == null) {
             return Optional.empty();
@@ -53,13 +53,13 @@ public class PlacementHooks {
         return useItemOnBlock(level, clickedState, clickedPos, clickedFace, player, itemInHand, hand, blockHitResult);
     }
 
-    private static Optional<ItemInteractionResult> useItemOnBlock(final Level level,
-                                                                  final BlockState clickedBlockState,
-                                                                  final BlockPos clickedPos,
-                                                                  final Direction clickedFace, final Player player,
-                                                                  final ItemStack itemInHand,
-                                                                  final InteractionHand hand,
-                                                                  final BlockHitResult blockHitResult) {
+    private static Optional<InteractionResult> useItemOnBlock(final Level level,
+                                                              final BlockState clickedBlockState,
+                                                              final BlockPos clickedPos,
+                                                              final Direction clickedFace, final Player player,
+                                                              final ItemStack itemInHand,
+                                                              final InteractionHand hand,
+                                                              final BlockHitResult blockHitResult) {
         final ISlabHelper slabHelper = Internal.getSlabHelper();
 
         Optional<IHorizontalSlabHelper> optionalItemInHandSlabHelper = slabHelper.getHorizontalSlabHelper(itemInHand);
@@ -99,7 +99,7 @@ public class PlacementHooks {
         return Optional.empty();
     }
 
-    private static Optional<ItemInteractionResult> tryCombineHorizontalSlabs(final Level level,
+    private static Optional<InteractionResult> tryCombineHorizontalSlabs(final Level level,
                                                                              final BlockState slabBlockState,
                                                                              final BlockPos slabPos,
                                                                              final Player player,
@@ -154,7 +154,7 @@ public class PlacementHooks {
             dynamicSlabBlockEntity.setBlockEntity(slabBlockHalf, existingBlockEntity);
             dynamicSlabBlockEntity.setBlockState(slabToPlaceHalf, slabToPlaceState);
 
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         });
     }
 

@@ -7,6 +7,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
+
+import javax.annotation.Nullable;
 
 public interface ISlabAbilities {
 
@@ -22,7 +25,7 @@ public interface ISlabAbilities {
 
     }
 
-    default void neighborChanged(ISlabStateContainer stateContainer, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+    default void neighborChanged(ISlabStateContainer stateContainer, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
 
     }
 

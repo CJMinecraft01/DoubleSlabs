@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.forge.common.hooks;
 
 import cjminecraft.doubleslabs.common.hooks.PlacementHooks;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,10 +17,10 @@ public class PlacementEvents {
         UseOnContext context = new UseOnContext(event.getLevel(), event.getEntity(), event.getHand(),
                 event.getItemStack(), event.getHitVec());
 
-        Optional<ItemInteractionResult> result = PlacementHooks.useItemOnBlock(context);
+        Optional<InteractionResult> result = PlacementHooks.useItemOnBlock(context);
         if (result.isPresent()) {
             event.setCanceled(true);
-            event.setCancellationResult(result.get().result());
+            event.setCancellationResult(result.get());
         }
     }
 

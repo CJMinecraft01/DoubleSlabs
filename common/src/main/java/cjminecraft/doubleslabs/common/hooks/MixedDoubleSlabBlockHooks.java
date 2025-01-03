@@ -183,8 +183,9 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnBlockState(blockGetter, pos, Half.TOP, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
+    // TODO: FIX
     public static boolean propagatesSkylightDown(BlockGetter blockGetter, BlockPos pos) {
-        return requireBothStates(blockGetter, pos, state -> state.propagatesSkylightDown(blockGetter, pos));
+        return requireBothStates(blockGetter, pos, BlockBehaviour.BlockStateBase::propagatesSkylightDown);
     }
 
     public static boolean fallOn(Level level, BlockPos pos, Entity entity, float fallDistance) {
@@ -194,7 +195,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         }).orElse(false);
     }
 
-    public static boolean updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
+    public static boolean updateEntityMovementAfterFallOn(BlockGetter blockGetter, Entity entity) {
         BlockPos pos = entity.blockPosition().below();
 
         if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLAB)) {
@@ -202,7 +203,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         }
 
         return callOnBlockState(blockGetter, pos, Half.TOP, state -> {
-            state.getBlock().updateEntityAfterFallOn(blockGetter, entity);
+            state.getBlock().updateEntityMovementAfterFallOn(blockGetter, entity);
             return true;
         }).orElse(false);
     }

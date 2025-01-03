@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LevelRendererMixin {
 
     @Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
-    private void renderHitOutline$doubleslabs(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
+    private void renderHitOutline$doubleslabs(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, int colour, CallbackInfo ci) {
         if (state.is(DSBlocks.MIXED_SLAB)) {
             if (ClientRenderingHooks.renderBlockHighlight(poseStack, camX, camY, camZ, () -> consumer)) {
                 ci.cancel();

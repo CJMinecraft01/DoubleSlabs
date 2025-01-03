@@ -20,7 +20,6 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         super(properties);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.getDestroyProgress(player, level, pos)
@@ -32,10 +31,11 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         MixedDoubleSlabBlockHooks.playerDestroy(player, level, pos, state, blockEntity, tool);
     }
 
-    @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
-        return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
-    }
+    // TODO: Fix light propagating through
+//    @Override
+//    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+//        return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
+//    }
 
     @Override
     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
@@ -45,9 +45,9 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    public void updateEntityAfterFallOn(BlockGetter level, Entity entity) {
-        if (!MixedDoubleSlabBlockHooks.updateEntityAfterFallOn(level, entity)) {
-            super.updateEntityAfterFallOn(level, entity);
+    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
+        if (!MixedDoubleSlabBlockHooks.updateEntityMovementAfterFallOn(level, entity)) {
+            super.updateEntityMovementAfterFallOn(level, entity);
         }
     }
 
