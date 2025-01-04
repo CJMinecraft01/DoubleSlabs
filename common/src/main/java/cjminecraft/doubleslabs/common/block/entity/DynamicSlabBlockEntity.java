@@ -25,7 +25,7 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
     protected final S positiveBlockStateContainer = createBlockStateContainer();
 
     public DynamicSlabBlockEntity(BlockPos pos, BlockState blockState) {
-        super(DSBlockEntities.DYNAMIC_SLAB, pos, blockState);
+        super(DSBlockEntities.DYNAMIC_SLAB.get(), pos, blockState);
     }
 
     protected abstract S createBlockStateContainer();

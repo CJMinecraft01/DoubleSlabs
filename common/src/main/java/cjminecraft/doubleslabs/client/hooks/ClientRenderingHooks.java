@@ -49,7 +49,7 @@ public class ClientRenderingHooks {
         final BlockState state = minecraft.level.getBlockState(hitResult.getBlockPos());
 
         // TODO: It may be better to use the shapes of each half instead of manually defining a box
-        if (state.is(DSBlocks.MIXED_SLAB)) {
+        if (state.is(DSBlocks.MIXED_SLAB.get())) {
             // Offset the position of the block for when we render
             final double x = hitResult.getBlockPos().getX() - camX;
             double y = hitResult.getBlockPos().getY() - camY;

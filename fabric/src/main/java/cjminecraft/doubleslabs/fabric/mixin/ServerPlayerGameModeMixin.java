@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +22,7 @@ public class ServerPlayerGameModeMixin {
     private boolean destroyBlock$removeBlock$doubleslabs(ServerLevel level, BlockPos pos, boolean isMoving) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(DSBlocks.MIXED_SLAB)) {
+        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
             return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), !player.isCreative());
         }
 

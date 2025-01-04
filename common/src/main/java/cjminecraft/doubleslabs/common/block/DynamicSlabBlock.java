@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.common.block;
 
 import cjminecraft.doubleslabs.common.hooks.DynamicSlabBlockHooks;
-import cjminecraft.doubleslabs.common.platform.Services;
+import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +32,7 @@ public class DynamicSlabBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return Services.PLATFORM.getBlockEntityFactory().createDynamicSlabBlockEntity(pos, state);
+        return DSBlockEntities.DYNAMIC_SLAB.get().create(pos, state);
     }
 
     @Override

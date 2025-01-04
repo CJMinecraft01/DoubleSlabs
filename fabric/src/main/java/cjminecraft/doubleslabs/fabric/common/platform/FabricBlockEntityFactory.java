@@ -1,15 +1,15 @@
 package cjminecraft.doubleslabs.fabric.common.platform;
 
-import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
-import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.platform.services.IPlatformBlockEntityFactory;
-import cjminecraft.doubleslabs.fabric.common.block.entity.FabricDynamicSlabBlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlockEntities;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.util.function.Supplier;
 
 public class FabricBlockEntityFactory implements IPlatformBlockEntityFactory {
     @Override
-    public DynamicSlabBlockEntity<? extends ISlabStateContainer> createDynamicSlabBlockEntity(BlockPos pos, BlockState state) {
-        return new FabricDynamicSlabBlockEntity(pos, state);
+    public Supplier<BlockEntityType<? extends IDynamicSlabStateContainer>> getDynamicSlabBlockEntity() {
+        return () -> DSFabricBlockEntities.DYNAMIC_SLAB;
     }
 }

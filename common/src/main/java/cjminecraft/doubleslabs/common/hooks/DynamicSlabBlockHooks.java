@@ -31,7 +31,7 @@ import java.util.function.Function;
 public class DynamicSlabBlockHooks {
 
     protected static Optional<? extends IDynamicSlabStateContainer> getDynamicSlabStateContainer(BlockGetter blockGetter, BlockPos pos) {
-        return blockGetter.getBlockEntity(pos, DSBlockEntities.DYNAMIC_SLAB);
+        return blockGetter.getBlockEntity(pos, DSBlockEntities.DYNAMIC_SLAB.get());
     }
 
     protected static Optional<Float> minFromBlockState(BlockGetter blockGetter, BlockPos pos, Function<BlockState,

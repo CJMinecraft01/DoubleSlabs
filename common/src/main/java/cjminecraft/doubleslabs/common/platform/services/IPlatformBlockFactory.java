@@ -1,10 +1,11 @@
 package cjminecraft.doubleslabs.common.platform.services;
 
 import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+
+import java.util.function.Supplier;
 
 public interface IPlatformBlockFactory {
 
-    MixedDoubleSlabBlock createMixedDoubleSlabBlock(BlockBehaviour.Properties properties);
+    Supplier<MixedDoubleSlabBlock> getMixedSlabBlock();
 
 }

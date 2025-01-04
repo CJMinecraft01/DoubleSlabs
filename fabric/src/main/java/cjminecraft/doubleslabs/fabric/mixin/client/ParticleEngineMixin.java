@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
@@ -24,7 +24,7 @@ public class ParticleEngineMixin {
             return;
         }
 
-        if (state.is(DSBlocks.MIXED_SLAB)) {
+        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
             if (MixedDoubleSlabBlockClientHooks.addDestroyEffects(level, pos, (ParticleEngine) (Object) this)) {
                 ci.cancel();
             }

@@ -2,9 +2,9 @@ package cjminecraft.doubleslabs.neoforge.client;
 
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.common.Constants;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockExtensions;
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
+import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -31,11 +31,11 @@ public class DoubleSlabsClient {
     }
 
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
-        event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSBlocks.MIXED_SLAB);
+        event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.MIXED_SLAB);
     }
 
     private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
-        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB);
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.MIXED_SLAB.get());
     }
 
 }

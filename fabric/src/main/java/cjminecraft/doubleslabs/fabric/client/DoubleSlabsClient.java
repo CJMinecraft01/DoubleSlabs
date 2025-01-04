@@ -2,8 +2,8 @@ package cjminecraft.doubleslabs.fabric.client;
 
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.common.Constants;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.fabric.client.model.MixedDoubleSlabBakedModel;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
@@ -34,6 +34,6 @@ public class DoubleSlabsClient implements ClientModInitializer {
     }
 
     private void registerBlockColours() {
-        ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSBlocks.MIXED_SLAB);
+        ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSFabricBlocks.MIXED_SLAB);
     }
 }

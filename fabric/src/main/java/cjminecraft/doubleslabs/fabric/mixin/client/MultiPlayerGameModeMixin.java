@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
-import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -25,7 +25,7 @@ public class MultiPlayerGameModeMixin {
     private boolean destroyBlock$setBlock$doubleslabs(Level level, BlockPos pos, BlockState newState, int flags) {
         BlockState state = level.getBlockState(pos);
 
-        if (state.is(DSBlocks.MIXED_SLAB)) {
+        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
             assert minecraft.player != null;
             return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, minecraft.player, level.getFluidState(pos), false);
         }

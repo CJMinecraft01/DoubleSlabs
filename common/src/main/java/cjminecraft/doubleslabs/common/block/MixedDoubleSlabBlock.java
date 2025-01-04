@@ -58,8 +58,9 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         }
     }
 
-    @Override
-    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return MixedDoubleSlabBlockHooks.getCollisionShape(level, pos, context).orElseGet(() -> super.getCollisionShape(state, level, pos, context));
-    }
+    // TODO: Fix collision shape
+//    @Override
+//    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+//        return MixedDoubleSlabBlockHooks.getCollisionShape(level, pos, context).orElseGet(() -> super.getCollisionShape(state, level, pos, context));
+//    }
 }

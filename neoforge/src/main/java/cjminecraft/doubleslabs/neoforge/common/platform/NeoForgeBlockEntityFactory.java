@@ -1,15 +1,15 @@
 package cjminecraft.doubleslabs.neoforge.common.platform;
 
-import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
-import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.platform.services.IPlatformBlockEntityFactory;
-import cjminecraft.doubleslabs.neoforge.common.block.entity.NeoForgeDynamicSlabBlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
+import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlockEntities;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.util.function.Supplier;
 
 public class NeoForgeBlockEntityFactory implements IPlatformBlockEntityFactory {
     @Override
-    public DynamicSlabBlockEntity<? extends ISlabStateContainer> createDynamicSlabBlockEntity(BlockPos pos, BlockState state) {
-        return new NeoForgeDynamicSlabBlockEntity(pos, state);
+    public Supplier<BlockEntityType<? extends IDynamicSlabStateContainer>> getDynamicSlabBlockEntity() {
+        return DSNeoForgeBlockEntities.DYNAMIC_SLAB_BLOCK_ENTITY;
     }
 }
