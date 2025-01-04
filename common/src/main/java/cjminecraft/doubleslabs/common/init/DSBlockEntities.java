@@ -13,6 +13,7 @@ public class DSBlockEntities {
 
     public static final ResourceLocation DYNAMIC_SLAB_ID = id("dynamic_slab");
 
-    public static final Supplier<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB = Services.PLATFORM.getBlockEntityFactory().getDynamicSlabBlockEntity();
+    // We have to wrap the supplier to ensure class loading gets the dynamic slab supplier
+    public static final Supplier<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB = () -> Services.PLATFORM.getBlockEntityFactory().getDynamicSlabBlockEntity().get();
 
 }
