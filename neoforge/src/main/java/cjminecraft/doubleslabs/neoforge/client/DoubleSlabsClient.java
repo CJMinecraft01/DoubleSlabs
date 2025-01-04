@@ -6,7 +6,6 @@ import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockE
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -14,11 +13,12 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
+import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
+
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class DoubleSlabsClient {
 
-    private static final ModelResourceLocation DOUBLE_SLABS_MODEL =
-            new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "double_slab"), "");
+    private static final ModelResourceLocation DOUBLE_SLABS_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
 
     public DoubleSlabsClient(IEventBus modBus) {
         modBus.addListener(this::bakeModels);

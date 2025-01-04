@@ -1,19 +1,18 @@
 package cjminecraft.doubleslabs.fabric.client;
 
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
-import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.fabric.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
+
+import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
 
 public class DoubleSlabsClient implements ClientModInitializer {
 
-    private static final ModelResourceLocation DOUBLE_SLABS_MODEL =
-            new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "double_slab"), "");
+    private static final ModelResourceLocation MIXED_SLAB_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
 
     @Override
     public void onInitializeClient() {
@@ -25,7 +24,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
         pluginContext.modifyModelAfterBake().register((original, context) -> {
             final ModelResourceLocation location = context.topLevelId();
 
-            if (location != null && location.equals(DOUBLE_SLABS_MODEL)) {
+            if (location != null && location.equals(MIXED_SLAB_MODEL)) {
                 return new MixedDoubleSlabBakedModel();
             } else {
                 return original;

@@ -1,19 +1,18 @@
 package cjminecraft.doubleslabs.forge.client;
 
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
-import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.forge.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlocks;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 
+import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
+
 public class DoubleSlabsClient {
 
-    private static final ModelResourceLocation DOUBLE_SLABS_MODEL =
-            new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "double_slab"), "");
+    private static final ModelResourceLocation DOUBLE_SLABS_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
 
     public static void addListeners(IEventBus mod) {
         mod.addListener(DoubleSlabsClient::bakeModels);
