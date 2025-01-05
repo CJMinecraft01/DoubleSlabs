@@ -4,7 +4,7 @@ import cjminecraft.doubleslabs.common.block.MixedDoubleSlabBlock;
 
 import java.util.function.Supplier;
 
-public interface IPlatformBlockFactory {
+public interface IPlatformBlocks {
 
     Supplier<MixedDoubleSlabBlock> getMixedSlabBlock();
 

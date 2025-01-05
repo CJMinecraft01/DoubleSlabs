@@ -4,8 +4,8 @@ public interface IPlatformHelper {
 
     IPlatformPluginHelper getPluginHelper();
 
-    IPlatformBlockFactory getBlockFactory();
+    IPlatformBlocks getBlocks();
 
-    IPlatformBlockEntityFactory getBlockEntityFactory();
+    IPlatformBlockEntities getBlockEntities();
 
 }

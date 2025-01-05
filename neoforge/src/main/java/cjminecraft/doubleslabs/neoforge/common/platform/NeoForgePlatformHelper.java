@@ -1,15 +1,15 @@
 package cjminecraft.doubleslabs.neoforge.common.platform;
 
-import cjminecraft.doubleslabs.common.platform.services.IPlatformBlockEntityFactory;
-import cjminecraft.doubleslabs.common.platform.services.IPlatformBlockFactory;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformBlockEntities;
+import cjminecraft.doubleslabs.common.platform.services.IPlatformBlocks;
 import cjminecraft.doubleslabs.common.platform.services.IPlatformHelper;
 import cjminecraft.doubleslabs.common.platform.services.IPlatformPluginHelper;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
 
     private final IPlatformPluginHelper pluginHelper = new NeoForgePluginHelper();
-    private final IPlatformBlockFactory blockFactory = new NeoForgeBlockFactory();
-    private final IPlatformBlockEntityFactory blockEntityFactory = new NeoForgeBlockEntityFactory();
+    private final IPlatformBlocks blocks = new NeoForgeBlocks();
+    private final IPlatformBlockEntities blockEntities = new NeoForgeBlockEntities();
 
     @Override
     public IPlatformPluginHelper getPluginHelper() {
@@ -17,12 +17,12 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public IPlatformBlockFactory getBlockFactory() {
-        return blockFactory;
+    public IPlatformBlocks getBlocks() {
+        return blocks;
     }
 
     @Override
-    public IPlatformBlockEntityFactory getBlockEntityFactory() {
-        return blockEntityFactory;
+    public IPlatformBlockEntities getBlockEntities() {
+        return blockEntities;
     }
 }

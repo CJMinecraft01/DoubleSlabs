@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.function.Supplier;
 
-public interface IPlatformBlockEntityFactory {
+public interface IPlatformBlockEntities {
 
     Supplier<BlockEntityType<? extends IDynamicSlabStateContainer>> getDynamicSlabBlockEntity();
 
