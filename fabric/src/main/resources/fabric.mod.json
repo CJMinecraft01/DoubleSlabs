@@ -8,8 +8,7 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "sources": "https://github.com/CJMinecraft01/DoubleSlabs"
     },
     "license": "${license}",
     "environment": "*",
@@ -33,6 +32,7 @@
         "fabric-api": "*",
         "minecraft": "${minecraft_version}",
         "java": ">=${java_version}"
-    }
+    },
+    "accessWidener": "${mod_id}.accesswidener"
 }
   
