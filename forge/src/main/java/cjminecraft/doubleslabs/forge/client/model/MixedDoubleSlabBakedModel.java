@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.forge.client.model;
 
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -34,11 +35,14 @@ public class MixedDoubleSlabBakedModel extends ForgeDynamicSlabBakedModel {
 
         final var quads = new ArrayList<BakedQuad>();
 
-        stateContainer.runOnBlockStates(slabState -> {
+        stateContainer.runOnBlockStates((half, slabState) -> {
             final var model = blockRenderDispatcher.getBlockModel(slabState);
 
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
-                quads.addAll(model.getQuads(slabState, side, rand, data, renderType));
+                final var modelQuads = model.getQuads(slabState, side, rand, data, renderType);
+                final var directionToCull = half == Half.TOP ? Direction.DOWN : Direction.UP;
+
+                quads.addAll(modelQuads.stream().filter(quad -> quad.getDirection() != directionToCull).toList());
             }
         });
 
