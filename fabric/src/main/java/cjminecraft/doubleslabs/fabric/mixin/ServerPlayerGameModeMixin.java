@@ -22,7 +22,9 @@ public class ServerPlayerGameModeMixin {
         final var state = level.getBlockState(pos);
 
         if (state.is(DSFabricBlocks.MIXED_SLAB)) {
-            return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), !player.isCreative());
+            if (MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), !player.isCreative())) {
+                return true;
+            }
         }
 
         return level.removeBlock(pos, isMoving);

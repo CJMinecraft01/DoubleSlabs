@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -91,7 +92,6 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnLookingAtBlockState(blockGetter, pos, player, state -> state.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, state -> state.getDestroyProgress(player, blockGetter, pos)));
     }
 
-    // The result of removeBlock is whether the block is considered to have been removed.
     public static boolean removeBlock(BlockState state, Level level, BlockPos pos, Player player, FluidState fluidState, boolean willHarvest) {
         // If we will harvest the block then destroy the block using player destroy
         if (willHarvest) {
@@ -105,8 +105,8 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
             return true;
         }
 
-        // Default behaviour
-        return level.isClientSide() ? level.setBlock(pos, fluidState.createLegacyBlock(), 11) : level.removeBlock(pos, false);
+        // Return false to signify that we want to call the super method
+        return false;
     }
 
     public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {

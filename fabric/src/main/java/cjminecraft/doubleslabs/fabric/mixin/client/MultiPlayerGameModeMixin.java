@@ -27,7 +27,9 @@ public class MultiPlayerGameModeMixin {
 
         if (state.is(DSFabricBlocks.MIXED_SLAB)) {
             assert minecraft.player != null;
-            return MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, minecraft.player, level.getFluidState(pos), false);
+            if (MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, minecraft.player, level.getFluidState(pos), false)) {
+                return true;
+            }
         }
 
         return level.setBlock(pos, newState, flags);
