@@ -9,11 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
-import java.lang.reflect.Constructor;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ForgePluginHelper implements IPlatformPluginHelper {
@@ -26,10 +24,10 @@ public class ForgePluginHelper implements IPlatformPluginHelper {
     }
 
     public static <T> List<T> getInstances(Class<?> annotation, Class<T> instance) {
-        Type type = Type.getType(annotation);
-        List<ModFileScanData> scanData = ModList.get().getAllScanData();
+        final var type = Type.getType(annotation);
+        final var scanData = ModList.get().getAllScanData();
 
-        Set<String> pluginClassNames = new LinkedHashSet<>();
+        final var pluginClassNames = new LinkedHashSet<String>();
 
         scanData.stream().map(datum -> datum.getAnnotations().stream()
                 .filter(a -> Objects.equals(a.annotationType(), type))
@@ -38,9 +36,9 @@ public class ForgePluginHelper implements IPlatformPluginHelper {
 
         return pluginClassNames.stream().map(className -> {
             try {
-                Class<?> asmClass = Class.forName(className);
-                Class<? extends T> asmInstanceClass = asmClass.asSubclass(instance);
-                Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
+                final var asmClass = Class.forName(className);
+                final var asmInstanceClass = asmClass.asSubclass(instance);
+                final var constructor = asmInstanceClass.getDeclaredConstructor();
                 return constructor.newInstance();
             } catch (ReflectiveOperationException | LinkageError e) {
                 LOGGER.error("Failed to load: {}", className, e);

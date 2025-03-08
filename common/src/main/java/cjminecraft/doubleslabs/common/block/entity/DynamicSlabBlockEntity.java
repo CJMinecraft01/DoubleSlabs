@@ -33,7 +33,7 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
     @Override
     public void markDirty() {
         if (this.level != null) {
-            BlockState state = this.level.getBlockState(this.worldPosition);
+            final var state = this.level.getBlockState(this.worldPosition);
             this.level.sendBlockUpdated(this.worldPosition, state, state, 3);
             this.level.getLightEngine().checkBlock(this.worldPosition);
         }

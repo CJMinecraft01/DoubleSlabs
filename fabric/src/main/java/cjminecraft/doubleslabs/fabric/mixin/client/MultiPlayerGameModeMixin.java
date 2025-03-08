@@ -23,7 +23,7 @@ public class MultiPlayerGameModeMixin {
 
     @Redirect(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean destroyBlock$setBlock$doubleslabs(Level level, BlockPos pos, BlockState newState, int flags) {
-        BlockState state = level.getBlockState(pos);
+        final var state = level.getBlockState(pos);
 
         if (state.is(DSFabricBlocks.MIXED_SLAB)) {
             assert minecraft.player != null;

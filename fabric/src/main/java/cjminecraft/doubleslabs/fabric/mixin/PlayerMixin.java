@@ -30,12 +30,12 @@ public abstract class PlayerMixin {
 
     @Inject(method = "playStepSound", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;playCombinationStepSounds(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;)V"), cancellable = true)
     private void playStepSound$playCombinationStepSounds(BlockPos pos, BlockState state, CallbackInfo ci, @Local(ordinal = 1) BlockPos blockPos, @Local(ordinal = 1) BlockState blockState) {
-        Player player = (Player) (Object) this;
+        final var player = (Player) (Object) this;
 
-        SoundType primarySoundType = getSoundType(blockState, blockPos, player);
+        final var primarySoundType = getSoundType(blockState, blockPos, player);
         playSound(primarySoundType.getStepSound(), primarySoundType.getVolume() * 0.15F, primarySoundType.getPitch());
 
-        SoundType secondarySoundType = getSoundType(state, pos, player);
+        final var secondarySoundType = getSoundType(state, pos, player);
         playSound(secondarySoundType.getStepSound(), secondarySoundType.getVolume() * 0.05F, secondarySoundType.getPitch() * 0.8F);
 
         ci.cancel();
@@ -43,9 +43,9 @@ public abstract class PlayerMixin {
 
     @Inject(method = "playStepSound", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;playMuffledStepSound(Lnet/minecraft/world/level/block/state/BlockState;)V"), cancellable = true)
     private void playStepSound$playCombinationStepSounds(BlockPos pos, BlockState state, CallbackInfo ci) {
-        Player player = (Player) (Object) this;
+        final var player = (Player) (Object) this;
 
-        SoundType soundType = getSoundType(state, pos, player);
+        final var soundType = getSoundType(state, pos, player);
         playSound(soundType.getStepSound(), soundType.getVolume() * 0.05F, soundType.getPitch() * 0.8F);
 
         ci.cancel();

@@ -31,15 +31,15 @@ public class ForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<ForgeSla
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        LazyOptional<T> negativeCapability = negativeBlockStateContainer.getCapability(cap, side);
-        LazyOptional<T> positiveCapability = positiveBlockStateContainer.getCapability(cap, side);
+        final var negativeCapability = negativeBlockStateContainer.getCapability(cap, side);
+        final var positiveCapability = positiveBlockStateContainer.getCapability(cap, side);
         return negativeCapability.isPresent() ? negativeCapability : positiveCapability;
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        LazyOptional<T> negativeCapability = negativeBlockStateContainer.getCapability(cap);
-        LazyOptional<T> positiveCapability = positiveBlockStateContainer.getCapability(cap);
+        final var negativeCapability = negativeBlockStateContainer.getCapability(cap);
+        final var positiveCapability = positiveBlockStateContainer.getCapability(cap);
         return negativeCapability.isPresent() ? negativeCapability : positiveCapability;
     }
 

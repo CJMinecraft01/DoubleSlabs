@@ -3,9 +3,7 @@ package cjminecraft.doubleslabs.neoforge.client.model;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,12 +30,12 @@ public class MixedDoubleSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
             return getFallbackModel().getQuads(state, side, rand, data, renderType);
         }
 
-        final BlockRenderDispatcher blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
+        final var blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
 
-        List<BakedQuad> quads = new ArrayList<>();
+        final var quads = new ArrayList<BakedQuad>();
 
         stateContainer.runOnBlockStates(slabState -> {
-            final BakedModel model = blockRenderDispatcher.getBlockModel(slabState);
+            final var model = blockRenderDispatcher.getBlockModel(slabState);
 
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
                 quads.addAll(model.getQuads(slabState, side, rand, data, renderType));

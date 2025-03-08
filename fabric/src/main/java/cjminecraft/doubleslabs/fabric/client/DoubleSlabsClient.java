@@ -22,7 +22,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
 
     private void modifyModels(ModelLoadingPlugin.Context pluginContext) {
         pluginContext.modifyModelAfterBake().register((original, context) -> {
-            final ModelResourceLocation location = context.topLevelId();
+            final var location = context.topLevelId();
 
             if (location != null && location.equals(MIXED_SLAB_MODEL)) {
                 return new MixedDoubleSlabBakedModel();

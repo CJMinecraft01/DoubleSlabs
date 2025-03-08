@@ -31,7 +31,7 @@ public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedMode
 
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        final BakedModel model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
+        final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
                 Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.TOP,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
                         DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
@@ -42,12 +42,12 @@ public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedMode
     @Override
     public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
         if (data.has(DYNAMIC_SLAB_STATE_CONTAINER)) {
-            final IDynamicSlabStateContainer stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
-            final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
+            final var stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
+            final var renderDispatcher = Minecraft.getInstance().getBlockRenderer();
 
-            Set<RenderType> renderTypes = new HashSet<>();
+            final var renderTypes = new HashSet<RenderType>();
             stateContainer.runOnBlockStates(slabState -> {
-                final BakedModel model = renderDispatcher.getBlockModel(slabState);
+                final var model = renderDispatcher.getBlockModel(slabState);
                 renderTypes.addAll(model.getRenderTypes(state, rand, data).asList());
             });
 

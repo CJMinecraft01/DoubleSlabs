@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -58,18 +57,18 @@ public class DynamicSlabBlockHooks {
     }
 
     public static List<ItemStack> getDrops(LootParams.Builder params) {
-        List<ItemStack> drops = new ArrayList<>();
+        final var drops = new ArrayList<ItemStack>();
 
-        BlockEntity blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
+        final var blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlab) {
             dynamicSlab.runOnStateContainers(container -> {
                 if (!container.hasBlockState()) {
                     return;
                 }
 
-                BlockState slabState = container.getBlockState();
+                final var slabState = container.getBlockState();
 
-                LootParams.Builder slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
+                var slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
 
                 if (container.hasBlockEntity()) {
                     slabParams = slabParams.withParameter(LootContextParams.BLOCK_ENTITY, Objects.requireNonNull(container.getBlockEntity()));
@@ -84,7 +83,7 @@ public class DynamicSlabBlockHooks {
 
     public static void randomTick(ServerLevel serverLevel, BlockPos pos, RandomSource random) {
         getDynamicSlabStateContainer(serverLevel, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
-            BlockState state = stateContainer.getBlockState();
+            final var state = stateContainer.getBlockState();
             Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities -> {
                 if (abilities.isRandomlyTicking(state)) {
                     abilities.randomTick(stateContainer, serverLevel, pos, random);
@@ -95,7 +94,7 @@ public class DynamicSlabBlockHooks {
 
     public static void neighborChanged(Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
         getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
-            BlockState state = stateContainer.getBlockState();
+            final var state = stateContainer.getBlockState();
             Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
                     abilities.neighborChanged(stateContainer, level, pos, neighborBlock, orientation, movedByPiston));
         }));
@@ -103,7 +102,7 @@ public class DynamicSlabBlockHooks {
 
     public static void tick(ServerLevel level, BlockPos pos, RandomSource random) {
         getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
-            BlockState state = stateContainer.getBlockState();
+            final var state = stateContainer.getBlockState();
             Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
                     abilities.tick(stateContainer, level, pos, random));
         }));

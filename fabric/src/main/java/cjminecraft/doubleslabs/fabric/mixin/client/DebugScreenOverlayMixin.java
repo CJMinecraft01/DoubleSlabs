@@ -14,7 +14,7 @@ public class DebugScreenOverlayMixin {
 
     @Inject(method = "getSystemInformation", at = @At("RETURN"), cancellable = true)
     private void getSystemInformation$doubleslabs(CallbackInfoReturnable<List<String>> cir) {
-        List<String> text = cir.getReturnValue();
+        final var text = cir.getReturnValue();
         ClientRenderingHooks.addTextToDebugScreenOverlay(text);
         cir.setReturnValue(text);
     }

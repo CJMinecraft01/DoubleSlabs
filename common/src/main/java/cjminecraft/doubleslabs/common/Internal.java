@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class Internal {
@@ -24,7 +23,7 @@ public class Internal {
     }
 
     public static void initialise() {
-        List<IDoubleSlabsPlugin> plugins = Services.PLATFORM.getPluginHelper().getPlugins();
+        final var plugins = Services.PLATFORM.getPluginHelper().getPlugins();
 
         Constants.LOG.info("Detected {} plugins: {}",
                 plugins.size(),

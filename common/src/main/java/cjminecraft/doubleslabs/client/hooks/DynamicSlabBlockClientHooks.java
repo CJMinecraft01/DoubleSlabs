@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.common.hooks.DynamicSlabBlockHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.color.block.BlockColors;
 
 public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
 
@@ -15,7 +14,7 @@ public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
                 return -1;
             }
 
-            final BlockColors blockColours = Minecraft.getInstance().getBlockColors();
+            final var blockColours = Minecraft.getInstance().getBlockColors();
 
             return getDynamicSlabStateContainer(level, pos).flatMap(container -> {
                 if (tintIndex > ClientConstants.TINT_OFFSET) {

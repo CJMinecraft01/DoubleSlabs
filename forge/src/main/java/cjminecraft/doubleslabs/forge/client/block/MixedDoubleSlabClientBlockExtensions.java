@@ -20,7 +20,7 @@ public class MixedDoubleSlabClientBlockExtensions implements IClientBlockExtensi
             return false;
         }
 
-        final BlockHitResult hitResult = (BlockHitResult) target;
+        final var hitResult = (BlockHitResult) target;
 
         return MixedDoubleSlabBlockClientHooks.addHitEffects((ClientLevel) level, hitResult.getBlockPos(), hitResult, hitResult.getDirection(), manager);
     }

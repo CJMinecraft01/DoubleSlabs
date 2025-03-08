@@ -9,14 +9,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
-
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 
     @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
     private void useOn$doubleslabs(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
-        Optional<InteractionResult> itemInteractionResult = PlacementHooks.useItemOnBlock(context);
+        final var itemInteractionResult = PlacementHooks.useItemOnBlock(context);
         itemInteractionResult.ifPresent(cir::setReturnValue);
     }
 

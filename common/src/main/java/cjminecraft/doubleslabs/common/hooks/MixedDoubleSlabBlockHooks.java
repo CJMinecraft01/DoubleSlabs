@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -40,26 +39,26 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
             return null;
         }
 
-        final BlockPos hitPos = ((BlockHitResult) hitResult).getBlockPos();
+        final var hitPos = ((BlockHitResult) hitResult).getBlockPos();
 
         // If the hit block pos is not the same block as the slab then we cannot get the half
         if (!slabPos.equals(hitPos)) {
             return null;
         }
 
-        final Vec3 hitLocation = hitResult.getLocation();
-        final double hitOffset = hitLocation.y - slabPos.getY();
+        final var hitLocation = hitResult.getLocation();
+        final var hitOffset = hitLocation.y - slabPos.getY();
         return hitOffset > 0.5 ? Half.TOP : Half.BOTTOM;
     }
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
-        final HitResult hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+        final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
 
         return getHalfFromHitResult(hitResult, slabPos);
     }
 
     protected static void runOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Consumer<BlockState> consumer) {
-        @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
+        final @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
 
         if (slabHalf == null) {
             return;
@@ -69,7 +68,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Function<BlockState, T> function) {
-        @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
+        final @Nullable Half slabHalf = getHalfFromHitResult(hitResult, pos);
 
         if (slabHalf == null) {
             return Optional.empty();
@@ -79,7 +78,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     protected static <T> Optional<T> callOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, Player player, Function<BlockState, T> function) {
-        @Nullable Half slabHalf = getHalfFromLookingAtBlock(player, pos);
+        final @Nullable Half slabHalf = getHalfFromLookingAtBlock(player, pos);
 
         if (slabHalf == null) {
             return Optional.empty();
@@ -111,21 +110,21 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        @Nullable Half halfToRemove = getHalfFromLookingAtBlock(player, pos);
+        final @Nullable Half halfToRemove = getHalfFromLookingAtBlock(player, pos);
 
         if (halfToRemove == null || !(blockEntity instanceof IDynamicSlabStateContainer container)) {
             player.awardStat(Stats.BLOCK_MINED.get(DSBlocks.MIXED_SLAB.get()));
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
         } else {
-            Half halfToKeep = halfToRemove.getOpposite();
+            final var halfToKeep = halfToRemove.getOpposite();
 
             container.runOnStateContainer(halfToRemove, slabContainer -> {
                 if (!slabContainer.hasBlockState()) {
                     return;
                 }
 
-                final BlockState slabState = slabContainer.getBlockState();
+                final var slabState = slabContainer.getBlockState();
 
                 player.awardStat(Stats.BLOCK_MINED.get(slabState.getBlock()));
                 level.levelEvent(2001, pos, Block.getId(slabState));
@@ -143,7 +142,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
                     return;
                 }
 
-                final BlockState slabState = slabContainer.getBlockState();
+                final var slabState = slabContainer.getBlockState();
 
                 level.setBlock(pos, slabState, level.isClientSide() ? 11 : 3);
 
@@ -164,7 +163,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     public static Optional<SoundType> getSoundType(BlockGetter blockGetter, BlockPos pos, @Nullable Entity entity) {
         if (entity instanceof Player player) {
             // We first assume that we are destroying a block and so get the state based on what the player is looking at
-            Optional<SoundType> destroyBlockSound = callOnLookingAtBlockState(blockGetter, pos, player, BlockBehaviour.BlockStateBase::getSoundType);
+            final var destroyBlockSound = callOnLookingAtBlockState(blockGetter, pos, player, BlockBehaviour.BlockStateBase::getSoundType);
             if (destroyBlockSound.isPresent()) {
                 return destroyBlockSound;
             }
@@ -196,7 +195,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static boolean updateEntityMovementAfterFallOn(BlockGetter blockGetter, Entity entity) {
-        BlockPos pos = entity.blockPosition().below();
+        final var pos = entity.blockPosition().below();
 
         if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLAB.get())) {
             return false;

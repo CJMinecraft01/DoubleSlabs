@@ -1,14 +1,12 @@
 package cjminecraft.doubleslabs.api.state;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -79,7 +77,7 @@ public interface ISlabStateContainer {
     }
 
     default CompoundTag serialize(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
+        final var tag = new CompoundTag();
         runOnBlockState(state -> tag.put("state", NbtUtils.writeBlockState(state)));
         runOnBlockEntity(blockEntity -> tag.put("blockEntity", blockEntity.saveWithId(registries)));
         return tag;
@@ -87,14 +85,13 @@ public interface ISlabStateContainer {
 
     default void deserialize(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.contains("state")) {
-            HolderGetter<Block> blockGetter = hasLevel() ?
+            final var blockGetter = hasLevel() ?
                     Objects.requireNonNull(getLevel()).holderLookup(Registries.BLOCK) :
                     BuiltInRegistries.BLOCK;
             setBlockState(NbtUtils.readBlockState(blockGetter, tag.getCompound("state")));
         }
         if (tag.contains("blockEntity")) {
-            setBlockEntity(BlockEntity.loadStatic(getBlockPos(), getBlockState(), tag.getCompound("blockEntity"),
-                    registries));
+            setBlockEntity(BlockEntity.loadStatic(getBlockPos(), getBlockState(), tag.getCompound("blockEntity"), registries));
         }
     }
 

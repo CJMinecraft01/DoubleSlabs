@@ -5,10 +5,8 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +29,7 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        final BakedModel model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
+        final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
                 Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.TOP,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
                         DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
@@ -42,12 +40,12 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
     @Override
     public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
         if (data.has(DYNAMIC_SLAB_STATE_CONTAINER)) {
-            final IDynamicSlabStateContainer stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
-            final BlockRenderDispatcher renderDispatcher = Minecraft.getInstance().getBlockRenderer();
+            final var stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
+            final var renderDispatcher = Minecraft.getInstance().getBlockRenderer();
 
-            Set<RenderType> renderTypes = new HashSet<>();
+            final var renderTypes = new HashSet<RenderType>();
             stateContainer.runOnBlockStates(slabState -> {
-                final BakedModel model = renderDispatcher.getBlockModel(slabState);
+                final var model = renderDispatcher.getBlockModel(slabState);
                 renderTypes.addAll(model.getRenderTypes(state, rand, data).asList());
             });
 

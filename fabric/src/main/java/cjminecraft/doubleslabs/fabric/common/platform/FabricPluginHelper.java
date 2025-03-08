@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.common.platform.services.IPlatformPluginHelper;
 import net.fabricmc.loader.api.EntrypointException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,12 +23,12 @@ public class FabricPluginHelper implements IPlatformPluginHelper {
 
     @SuppressWarnings("SameParameterValue")
     private static <T> List<T> getInstances(String entrypointContainerKey, Class<T> instanceClass) {
-        FabricLoader fabricLoader = FabricLoader.getInstance();
-        List<EntrypointContainer<T>> pluginContainers = fabricLoader.getEntrypointContainers(entrypointContainerKey, instanceClass);
+        final var fabricLoader = FabricLoader.getInstance();
+        final var pluginContainers = fabricLoader.getEntrypointContainers(entrypointContainerKey, instanceClass);
 
         return pluginContainers.stream().<T>mapMulti(((entrypointContainer, consumer) -> {
             try {
-                T entrypoint = entrypointContainer.getEntrypoint();
+                final var entrypoint = entrypointContainer.getEntrypoint();
                 consumer.accept(entrypoint);
             } catch (EntrypointException e) {
                 String modName;

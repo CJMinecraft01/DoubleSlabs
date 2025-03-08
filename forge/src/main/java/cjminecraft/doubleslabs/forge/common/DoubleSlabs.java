@@ -6,7 +6,6 @@ import cjminecraft.doubleslabs.forge.client.DoubleSlabsClient;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlockEntities;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlocks;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -15,7 +14,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class DoubleSlabs {
 
     public DoubleSlabs(FMLJavaModLoadingContext context) {
-        IEventBus modBus = context.getModEventBus();
+        final var modBus = context.getModEventBus();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DoubleSlabsClient.addListeners(modBus));
 

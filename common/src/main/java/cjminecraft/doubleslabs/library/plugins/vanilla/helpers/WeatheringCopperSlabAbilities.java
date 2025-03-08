@@ -18,11 +18,11 @@ public class WeatheringCopperSlabAbilities implements ISlabAbilities {
 
     @Override
     public void randomTick(ISlabStateContainer stateContainer, ServerLevel level, BlockPos pos, RandomSource random) {
-        BlockState originalState = stateContainer.getBlockState();
+        final var originalState = stateContainer.getBlockState();
 
         Preconditions.checkState(originalState.getBlock() instanceof WeatheringCopperSlabBlock);
 
-        WeatheringCopperSlabBlock block = (WeatheringCopperSlabBlock) originalState.getBlock();
+        final var block = (WeatheringCopperSlabBlock) originalState.getBlock();
 
         if (random.nextFloat() < 0.05688889F) {
             block.getNextState(originalState, level, pos, random).ifPresent(stateContainer::setBlockState);
