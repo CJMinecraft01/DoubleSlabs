@@ -144,7 +144,9 @@ public class PlacementHooks {
                 (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
         level.gameEvent(GameEvent.BLOCK_PLACE, slabPos, GameEvent.Context.of(player, slabToPlaceState));
 
-        itemInHand.shrink(1);
+        if (!player.isCreative()) {
+            itemInHand.shrink(1);
+        }
 
         Optional<? extends IDynamicSlabStateContainer> optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos,
                 DSBlockEntities.DYNAMIC_SLAB.get());
