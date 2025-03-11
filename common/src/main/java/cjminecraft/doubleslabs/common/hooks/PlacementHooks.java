@@ -15,7 +15,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,33 +26,31 @@ import java.util.Optional;
 
 public class PlacementHooks {
 
-    public static Optional<InteractionResult> useItemOnBlock(UseOnContext context) {
-        final @Nullable Player player = context.getPlayer();
+    public static Optional<InteractionResult> useItemOnBlock(final @Nullable Player player,
+                                                             final Level level,
+                                                             final InteractionHand hand,
+                                                             final BlockHitResult hitResult) {
         if (player == null) {
             return Optional.empty();
         }
 
-        final var itemInHand = context.getItemInHand();
+        final var itemInHand = player.getItemInHand(hand);
         if (itemInHand.isEmpty()) {
             return Optional.empty();
         }
 
-        final var level = context.getLevel();
-        final var clickedPos = context.getClickedPos();
-        final var clickedFace = context.getClickedFace();
+        final var clickedPos = hitResult.getBlockPos();
+        final var clickedFace = hitResult.getDirection();
         final var clickedState = level.getBlockState(clickedPos);
 
-        final var hand = context.getHand();
-
-        final var blockHitResult = context.getHitResult();
-
-        return useItemOnBlock(level, clickedState, clickedPos, clickedFace, player, itemInHand, hand, blockHitResult);
+        return useItemOnBlock(level, clickedState, clickedPos, clickedFace, player, itemInHand, hand, hitResult);
     }
 
     private static Optional<InteractionResult> useItemOnBlock(final Level level,
                                                               final BlockState clickedBlockState,
                                                               final BlockPos clickedPos,
-                                                              final Direction clickedFace, final Player player,
+                                                              final Direction clickedFace,
+                                                              final Player player,
                                                               final ItemStack itemInHand,
                                                               final InteractionHand hand,
                                                               final BlockHitResult blockHitResult) {
