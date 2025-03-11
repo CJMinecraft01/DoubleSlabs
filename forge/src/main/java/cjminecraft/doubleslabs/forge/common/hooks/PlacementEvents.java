@@ -11,10 +11,8 @@ public class PlacementEvents {
 
     @SubscribeEvent
     public static void rightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        final var context = new UseOnContext(event.getLevel(), event.getEntity(), event.getHand(),
-                event.getItemStack(), event.getHitVec());
+        final var result = PlacementHooks.useItemOnBlock(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
 
-        final var result = PlacementHooks.useItemOnBlock(context);
         if (result.isPresent()) {
             event.setCanceled(true);
             event.setCancellationResult(result.get());

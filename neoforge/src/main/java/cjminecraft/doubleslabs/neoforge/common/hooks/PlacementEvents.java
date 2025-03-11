@@ -12,7 +12,8 @@ public class PlacementEvents {
     public static void useItemOnBlock(UseItemOnBlockEvent event) {
         // We only want to handle when we are about to place a block
         if (event.getUsePhase() == UseItemOnBlockEvent.UsePhase.ITEM_AFTER_BLOCK) {
-            final var result = PlacementHooks.useItemOnBlock(event.getUseOnContext());
+            final var result = PlacementHooks.useItemOnBlock(event.getPlayer(), event.getLevel(), event.getHand(), event.getUseOnContext().getHitResult());
+
             if (result.isPresent()) {
                 event.setCanceled(true);
                 event.setCancellationResult(result.get());
