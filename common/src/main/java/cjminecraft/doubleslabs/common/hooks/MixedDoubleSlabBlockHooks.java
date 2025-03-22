@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -56,6 +55,15 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
 
         return getHalfFromHitResult(hitResult, slabPos);
+    }
+
+    private static Half getHalfFromPlayerUsingCollision(final Player player, final VoxelShape collisionShape, final BlockPos slabPos) {
+        final var clipStart = player.getEyePosition();
+        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(player.blockInteractionRange()));
+
+        final var hitResult = Objects.requireNonNull(collisionShape.clip(clipStart, clipEnd, slabPos));
+
+        return Objects.requireNonNull(getHalfFromHitResult(hitResult, slabPos));
     }
 
     protected static void runOnLookingAtBlockState(BlockGetter blockGetter, BlockPos pos, HitResult hitResult, Consumer<BlockState> consumer) {
@@ -110,9 +118,12 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        final @Nullable Half halfToRemove = getHalfFromLookingAtBlock(player, pos);
+        // The block has been destroyed at this point so the raytrace results will be incorrect
+        // Hence we use the block pos and eye pos to work out which half we are looking at
 
-        if (halfToRemove == null || !(blockEntity instanceof IDynamicSlabStateContainer container)) {
+        final var halfToRemove = getHalfFromPlayerUsingCollision(player, state.getCollisionShape(level, pos), pos);
+
+        if (!(blockEntity instanceof IDynamicSlabStateContainer container)) {
             player.awardStat(Stats.BLOCK_MINED.get(DSBlocks.MIXED_SLAB.get()));
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
