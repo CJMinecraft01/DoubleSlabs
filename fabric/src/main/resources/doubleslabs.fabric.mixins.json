@@ -7,15 +7,13 @@
   "mixins": [
     "EntityMixin",
     "LivingEntityMixin",
-    "PlayerMixin",
-    "ServerPlayerGameModeMixin"
+    "PlayerMixin"
   ],
   "client": [
     "client.AbstractBlockRenderContextAccessor",
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
-    "client.MultiPlayerGameModeMixin",
     "client.ParticleEngineMixin"
   ],
   "server": [],
