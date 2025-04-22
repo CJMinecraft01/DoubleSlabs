@@ -69,6 +69,11 @@ public class PlacementHooks {
             if (clickedFace.getAxis().isVertical() && optionalClickedBlockSlabHelper.isPresent()) {
                 final var clickedBlockSlabHelper = optionalClickedBlockSlabHelper.get();
 
+                // If we are clicking on the top or bottom of a double slab, use default behaviour
+                if (clickedBlockSlabHelper.isDoubleSlab(level, clickedPos, clickedBlockState)) {
+                    return Optional.empty();
+                }
+
                 final var half = clickedBlockSlabHelper.getHalf(level, clickedPos, clickedBlockState);
                 // Check that the side clicked is the side that would place the slab within the same block
                 if ((half == Half.BOTTOM && clickedFace == Direction.UP) || (half == Half.TOP && clickedFace == Direction.DOWN)) {
@@ -101,6 +106,11 @@ public class PlacementHooks {
                                                                          final IHorizontalSlabHelper slabBlockHelper,
                                                                          final IHorizontalSlabHelper slabItemHelper) {
         final var slabHelper = Internal.getSlabHelper();
+
+        // If the slab block is a double slab then ignore
+        if (slabBlockHelper.isDoubleSlab(level, slabPos, slabBlockState)) {
+            return Optional.empty();
+        }
 
         // If the slab item and slab block are the same type of slab then use the default behaviour
         if (slabHelper.areSameTypeOfSlab(slabBlockState, slabBlockHelper, itemInHand, slabItemHelper)) {
