@@ -38,6 +38,11 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
     }
 
     @Override
+    public boolean isDoubleSlab(BlockGetter level, BlockPos pos, BlockState state) {
+        return state.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.DOUBLE;
+    }
+
+    @Override
     public BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half) {
         return state.setValue(BlockStateProperties.SLAB_TYPE, half == Half.TOP ? SlabType.TOP : SlabType.BOTTOM);
     }
