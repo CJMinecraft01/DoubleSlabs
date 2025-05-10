@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.fabric.common.hooks;
 
+import cjminecraft.doubleslabs.common.hooks.DoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -23,7 +24,7 @@ public class SlabBreakingEvents {
             return willHarvest || !MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), false);
         }
 
-        return true;
+        return !DoubleSlabBlockHooks.trySeparateDoubleSlab(player, level);
     }
 
 }
