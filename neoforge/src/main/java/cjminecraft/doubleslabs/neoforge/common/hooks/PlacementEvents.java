@@ -1,6 +1,8 @@
 package cjminecraft.doubleslabs.neoforge.common.hooks;
 
 import cjminecraft.doubleslabs.common.hooks.PlacementHooks;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;

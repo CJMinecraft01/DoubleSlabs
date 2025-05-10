@@ -13,13 +13,9 @@ import static cjminecraft.doubleslabs.common.Constants.id;
 
 public class DSBlocks {
 
-    private static BlockBehaviour.Properties withId(BlockBehaviour.Properties properties, ResourceLocation id) {
-        return properties.setId(ResourceKey.create(Registries.BLOCK, id));
-    }
-
     public static final ResourceLocation MIXED_SLAB_ID = id("mixed_slab");
 
-    public static final BlockBehaviour.Properties MIXED_SLAB_PROPERTIES = withId(BlockBehaviour.Properties.of(), MIXED_SLAB_ID);
+    public static final BlockBehaviour.Properties MIXED_SLAB_PROPERTIES = BlockBehaviour.Properties.of();
 
     // We have to wrap the supplier to ensure class loading gets the mixed slab supplier
     public static final Supplier<MixedDoubleSlabBlock> MIXED_SLAB = () -> Services.PLATFORM.getBlocks().getMixedSlabBlock();

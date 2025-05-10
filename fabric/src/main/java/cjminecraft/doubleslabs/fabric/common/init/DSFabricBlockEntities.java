@@ -12,7 +12,7 @@ import static cjminecraft.doubleslabs.common.init.DSBlockEntities.*;
 
 public class DSFabricBlockEntities {
 
-    public static final BlockEntityType<? extends IDynamicSlabStateContainer> DYNAMIC_SLAB = new BlockEntityType<>(FabricDynamicSlabBlockEntity::new, Set.of(DSFabricBlocks.MIXED_SLAB));
+    public static final BlockEntityType<? extends IDynamicSlabStateContainer> DYNAMIC_SLAB = BlockEntityType.Builder.of(FabricDynamicSlabBlockEntity::new, DSFabricBlocks.MIXED_SLAB).build(null);
 
     public static void register() {
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, DYNAMIC_SLAB_ID, DYNAMIC_SLAB);

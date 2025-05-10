@@ -87,7 +87,7 @@ public interface ISlabStateContainer {
         if (tag.contains("state")) {
             final var blockGetter = hasLevel() ?
                     Objects.requireNonNull(getLevel()).holderLookup(Registries.BLOCK) :
-                    BuiltInRegistries.BLOCK;
+                    BuiltInRegistries.BLOCK.asLookup();
             setBlockState(NbtUtils.readBlockState(blockGetter, tag.getCompound("state")));
         }
         if (tag.contains("blockEntity")) {

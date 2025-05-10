@@ -14,11 +14,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -92,11 +90,11 @@ public class DynamicSlabBlockHooks {
         }));
     }
 
-    public static void neighborChanged(Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+    public static void neighborChanged(Level level, BlockPos pos, Block neighborBlock, boolean movedByPiston) {
         getDynamicSlabStateContainer(level, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
             final var state = stateContainer.getBlockState();
             Internal.getSlabHelper().getSlabAbilities(state.getBlock()).ifPresent(abilities ->
-                    abilities.neighborChanged(stateContainer, level, pos, neighborBlock, orientation, movedByPiston));
+                    abilities.neighborChanged(stateContainer, level, pos, neighborBlock, movedByPiston));
         }));
     }
 

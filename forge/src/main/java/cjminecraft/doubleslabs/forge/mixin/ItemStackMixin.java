@@ -16,7 +16,7 @@ public class ItemStackMixin {
     public void useOn(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         final var result = PlacementHooks.useItemOnBlock(context.getPlayer(), context.getLevel(), context.getHand(), context.getHitResult());
 
-        result.ifPresent(cir::setReturnValue);
+        result.ifPresent(itemInteractionResult -> cir.setReturnValue(itemInteractionResult.result()));
     }
 
 }

@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -58,7 +58,7 @@ public class ClientRenderingHooks {
                 y += 0.5;
             }
 
-            ShapeRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 1, y + 0.5, z + 1, 0, 0, 0, 0.4f);
+            LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 1, y + 0.5, z + 1, 0, 0, 0, 0.4f);
             return true;
         }
 

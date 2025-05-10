@@ -16,6 +16,6 @@ public class DSNeoForgeBlockEntities {
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID);
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(DYNAMIC_SLAB_ID.getPath(), () -> new BlockEntityType<>(NeoForgeDynamicSlabBlockEntity::new, Set.of(DSNeoForgeBlocks.MIXED_SLAB.get())));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(DYNAMIC_SLAB_ID.getPath(), () -> BlockEntityType.Builder.of(NeoForgeDynamicSlabBlockEntity::new, DSNeoForgeBlocks.MIXED_SLAB.get()).build(null));
 
 }

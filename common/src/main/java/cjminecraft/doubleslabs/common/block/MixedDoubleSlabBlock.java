@@ -43,9 +43,9 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
-        if (!MixedDoubleSlabBlockHooks.updateEntityMovementAfterFallOn(level, entity)) {
-            super.updateEntityMovementAfterFallOn(level, entity);
+    public void updateEntityAfterFallOn(BlockGetter level, Entity entity) {
+        if (!MixedDoubleSlabBlockHooks.updateEntityAfterFallOn(level, entity)) {
+            super.updateEntityAfterFallOn(level, entity);
         }
     }
 
@@ -54,6 +54,11 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
         if (!MixedDoubleSlabBlockHooks.stepOn(level, pos, entity)) {
             super.stepOn(level, pos, state, entity);
         }
+    }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+        return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
     }
 
     // TODO: Fix collision shape

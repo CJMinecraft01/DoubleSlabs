@@ -16,6 +16,6 @@ public class DSForgeBlockEntities {
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Constants.MOD_ID);
 
-    public static final RegistryObject<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB = BLOCK_ENTITY_TYPES.register(DYNAMIC_SLAB_ID.getPath(), () -> new BlockEntityType<>(ForgeDynamicSlabBlockEntity::new, Set.of(DSForgeBlocks.MIXED_SLAB.get())));
+    public static final RegistryObject<BlockEntityType<? extends IDynamicSlabStateContainer>> DYNAMIC_SLAB = BLOCK_ENTITY_TYPES.register(DYNAMIC_SLAB_ID.getPath(), () -> BlockEntityType.Builder.of(ForgeDynamicSlabBlockEntity::new, DSForgeBlocks.MIXED_SLAB.get()).build(null));
 
 }
