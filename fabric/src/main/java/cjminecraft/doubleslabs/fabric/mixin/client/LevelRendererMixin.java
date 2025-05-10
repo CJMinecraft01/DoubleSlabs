@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
-import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -18,10 +17,8 @@ public class LevelRendererMixin {
 
     @Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
     private void renderHitOutline$doubleslabs(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
-        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
-            if (ClientRenderingHooks.renderBlockHighlight(poseStack, camX, camY, camZ, () -> consumer)) {
-                ci.cancel();
-            }
+        if (ClientRenderingHooks.renderBlockHighlight(poseStack, camX, camY, camZ, () -> consumer)) {
+            ci.cancel();
         }
     }
 
