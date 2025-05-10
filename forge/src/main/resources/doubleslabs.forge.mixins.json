@@ -3,7 +3,9 @@
   "minVersion": "0.8",
   "package": "cjminecraft.doubleslabs.forge.mixin",
   "compatibilityLevel": "JAVA_18",
-  "mixins": [],
+  "mixins": [
+    "ItemStackMixin"
+  ],
   "client": [
   ],
   "server": [],

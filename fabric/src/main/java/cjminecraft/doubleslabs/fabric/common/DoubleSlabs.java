@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.fabric.common;
 
 import cjminecraft.doubleslabs.common.Internal;
-import cjminecraft.doubleslabs.fabric.common.hooks.PlacementEvents;
 import cjminecraft.doubleslabs.fabric.common.hooks.SlabBreakingEvents;
 import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlockEntities;
 import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
@@ -14,7 +13,6 @@ public class DoubleSlabs implements ModInitializer {
         DSFabricBlocks.register();
         DSFabricBlockEntities.register();
 
-        PlacementEvents.registerEvents();
         SlabBreakingEvents.registerEvents();
 
         Internal.initialise();
