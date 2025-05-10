@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
+import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.google.common.base.Preconditions;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,6 +37,7 @@ public class ClientRenderingHooks {
             return false;
         }
 
+        final var level = minecraft.level;
         final var player = minecraft.player;
 
         // Only show the half slab highlight if we are in survival or if sneaking in creative
@@ -44,10 +47,10 @@ public class ClientRenderingHooks {
 
         final var hitResult = (BlockHitResult) minecraft.hitResult;
 
-        final var state = minecraft.level.getBlockState(hitResult.getBlockPos());
+        final var state = level.getBlockState(hitResult.getBlockPos());
 
         // TODO: It may be better to use the shapes of each half instead of manually defining a box
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (isDoubleSlab(level, hitResult.getBlockPos(), state)) {
             // Offset the position of the block for when we render
             final var x = hitResult.getBlockPos().getX() - camX;
             var y = hitResult.getBlockPos().getY() - camY;
@@ -63,6 +66,15 @@ public class ClientRenderingHooks {
         }
 
         return false;
+    }
+
+    private static boolean isDoubleSlab(final Level level, final BlockPos pos, final BlockState state) {
+        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+            return true;
+        }
+
+        final var slabHelper = Internal.getSlabHelper().getHorizontalSlabHelper(state);
+        return slabHelper.isPresent() && slabHelper.get().isDoubleSlab(level, pos, state);
     }
 
     public static void addTextToDebugScreenOverlay(List<String> text) {
