@@ -207,7 +207,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     public static boolean updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
         final var pos = entity.blockPosition().below();
 
-        if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLAB.get())) {
+        if (!blockGetter.getBlockState(pos).is(DSBlocks.MIXED_SLABS)) {
             return false;
         }
 

@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin.client;
 
 import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
-import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -30,7 +30,7 @@ public class MinecraftMixin {
 
         var overridden = false;
 
-        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
+        if (state.is(DSBlocks.MIXED_SLABS)) {
             overridden = MixedDoubleSlabBlockClientHooks.addHitEffects(level, pos, hitResult, direction, instance);
         }
 

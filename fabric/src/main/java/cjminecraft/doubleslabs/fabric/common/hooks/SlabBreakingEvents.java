@@ -2,7 +2,7 @@ package cjminecraft.doubleslabs.fabric.common.hooks;
 
 import cjminecraft.doubleslabs.common.hooks.DoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
-import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +18,7 @@ public class SlabBreakingEvents {
     }
 
     private static boolean breakBlock(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        if (state.is(DSFabricBlocks.MIXED_SLAB)) {
+        if (state.is(DSBlocks.MIXED_SLABS)) {
             final var willHarvest = !player.isCreative() && player.hasCorrectToolForDrops(state);
 
             return willHarvest || !MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), false);

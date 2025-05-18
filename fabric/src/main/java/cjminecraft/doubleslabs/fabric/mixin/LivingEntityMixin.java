@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
-import cjminecraft.doubleslabs.fabric.common.init.DSFabricBlocks;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -19,7 +19,7 @@ public class LivingEntityMixin {
     private <T extends ParticleOptions> int checkFallDamage$sendParticles$doubleSlabs(ServerLevel instance, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed, @Local(ordinal = 0, argsOnly = true) BlockPos pos) {
         ParticleOptions particle = type;
         if (type instanceof BlockParticleOption blockParticleOption) {
-            if (blockParticleOption.getState().is(DSFabricBlocks.MIXED_SLAB)) {
+            if (blockParticleOption.getState().is(DSBlocks.MIXED_SLABS)) {
                 particle = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
             }
         }

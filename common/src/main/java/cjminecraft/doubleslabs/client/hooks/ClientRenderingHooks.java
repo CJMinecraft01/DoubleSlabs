@@ -69,7 +69,7 @@ public class ClientRenderingHooks {
     }
 
     private static boolean isDoubleSlab(final Level level, final BlockPos pos, final BlockState state) {
-        if (state.is(DSBlocks.MIXED_SLAB.get())) {
+        if (state.is(DSBlocks.MIXED_SLABS)) {
             return true;
         }
 
