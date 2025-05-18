@@ -9,10 +9,12 @@ import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
+import static cjminecraft.doubleslabs.common.init.DSBlocks.TRANSPARENT_MIXED_SLAB_ID;
 
 public class DoubleSlabsClient {
 
-    private static final ModelResourceLocation DOUBLE_SLABS_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation MIXED_SLAB_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation TRANSPARENT_MIXED_SLAB_MODEL = new ModelResourceLocation(TRANSPARENT_MIXED_SLAB_ID, "");
 
     public static void addListeners(IEventBus mod) {
         mod.addListener(DoubleSlabsClient::bakeModels);
@@ -20,11 +22,13 @@ public class DoubleSlabsClient {
     }
 
     private static void bakeModels(final ModelEvent.ModifyBakingResult event) {
-        event.getModels().put(DOUBLE_SLABS_MODEL, new MixedDoubleSlabBakedModel());
+        event.getModels().put(MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
+        event.getModels().put(TRANSPARENT_MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
     }
 
     private static void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSForgeBlocks.MIXED_SLAB.get());
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSForgeBlocks.TRANSPARENT_MIXED_SLAB.get());
     }
 
 }

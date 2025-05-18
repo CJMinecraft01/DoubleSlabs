@@ -9,10 +9,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 
 import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
+import static cjminecraft.doubleslabs.common.init.DSBlocks.TRANSPARENT_MIXED_SLAB_ID;
 
 public class DoubleSlabsClient implements ClientModInitializer {
 
     private static final ModelResourceLocation MIXED_SLAB_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation TRANSPARENT_MIXED_SLAB_MODEL = new ModelResourceLocation(TRANSPARENT_MIXED_SLAB_ID, "");
 
     @Override
     public void onInitializeClient() {
@@ -24,7 +26,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
         pluginContext.modifyModelAfterBake().register((original, context) -> {
             final var location = context.topLevelId();
 
-            if (location != null && location.equals(MIXED_SLAB_MODEL)) {
+            if (location != null && (location.equals(MIXED_SLAB_MODEL) || location.equals(TRANSPARENT_MIXED_SLAB_MODEL))) {
                 return new MixedDoubleSlabBakedModel();
             } else {
                 return original;
@@ -34,5 +36,6 @@ public class DoubleSlabsClient implements ClientModInitializer {
 
     private void registerBlockColours() {
         ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSFabricBlocks.MIXED_SLAB);
+        ColorProviderRegistry.BLOCK.register(DynamicSlabBlockClientHooks.getBlockColour(), DSFabricBlocks.TRANSPARENT_MIXED_SLAB);
     }
 }

@@ -14,11 +14,13 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
+import static cjminecraft.doubleslabs.common.init.DSBlocks.TRANSPARENT_MIXED_SLAB_ID;
 
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class DoubleSlabsClient {
 
-    private static final ModelResourceLocation DOUBLE_SLABS_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation MIXED_SLAB_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation TRANSPARENT_MIXED_SLAB_MODEL = new ModelResourceLocation(TRANSPARENT_MIXED_SLAB_ID, "");
 
     public DoubleSlabsClient(IEventBus modBus) {
         modBus.addListener(this::bakeModels);
@@ -27,15 +29,18 @@ public class DoubleSlabsClient {
     }
 
     private void bakeModels(final ModelEvent.ModifyBakingResult event) {
-        event.getModels().put(DOUBLE_SLABS_MODEL, new MixedDoubleSlabBakedModel());
+        event.getModels().put(MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
+        event.getModels().put(TRANSPARENT_MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
     }
 
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
         event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.MIXED_SLAB);
+        event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB);
     }
 
     private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.MIXED_SLAB.get());
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB.get());
     }
 
 }
