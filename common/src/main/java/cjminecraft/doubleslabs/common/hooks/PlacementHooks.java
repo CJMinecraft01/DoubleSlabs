@@ -129,9 +129,12 @@ public class PlacementHooks {
 
         final var slabToPlaceState = slabItemHelper.getStateForHalf(level, slabPos, stateFromSlabItem, slabToPlaceHalf);
 
+        final var bothSlabsOcclude = slabToPlaceState.canOcclude() && slabBlockState.canOcclude();
+
         final @Nullable BlockEntity existingBlockEntity = level.getBlockEntity(slabPos);
 
-        final var dynamicDoubleSlabState = DSBlocks.MIXED_SLAB.get().defaultBlockState();
+        final var dynamicDoubleSlabState = (bothSlabsOcclude ? DSBlocks.MIXED_SLAB.get() : DSBlocks.TRANSPARENT_MIXED_SLAB.get())
+                .defaultBlockState();
 
         if (!level.setBlock(slabPos, dynamicDoubleSlabState, 3)) {
             return Optional.empty();
