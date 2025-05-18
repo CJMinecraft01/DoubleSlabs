@@ -17,7 +17,7 @@ public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
             final var blockColours = Minecraft.getInstance().getBlockColors();
 
             return getDynamicSlabStateContainer(level, pos).flatMap(container -> {
-                if (tintIndex > ClientConstants.TINT_OFFSET) {
+                if (tintIndex >= ClientConstants.TINT_OFFSET) {
                     return container.callOnBlockState(Half.TOP, slabState ->
                             blockColours.getColor(slabState, level, pos, tintIndex - ClientConstants.TINT_OFFSET));
                 }
