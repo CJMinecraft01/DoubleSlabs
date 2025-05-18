@@ -1,5 +1,3 @@
 accessWidener v2 named
 
-accessible class net/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier
-accessible method net/minecraft/world/level/block/entity/BlockEntityType <init> (Lnet/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier;Ljava/util/Set;)V
 accessible method net/minecraft/world/item/context/UseOnContext getHitResult ()Lnet/minecraft/world/phys/BlockHitResult;
