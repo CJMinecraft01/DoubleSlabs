@@ -15,5 +15,6 @@ public class DSForgeBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Constants.MOD_ID);
 
     public static final RegistryObject<MixedDoubleSlabBlock> MIXED_SLAB = BLOCKS.register(MIXED_SLAB_ID.getPath(), () -> new ForgeMixedDoubleSlabBlock(MIXED_SLAB_PROPERTIES));
+    public static final RegistryObject<MixedDoubleSlabBlock> TRANSPARENT_MIXED_SLAB = BLOCKS.register(TRANSPARENT_MIXED_SLAB_ID.getPath(), () -> new ForgeMixedDoubleSlabBlock(TRANSPARENT_MIXED_SLAB_PROPERTIES));
 
 }

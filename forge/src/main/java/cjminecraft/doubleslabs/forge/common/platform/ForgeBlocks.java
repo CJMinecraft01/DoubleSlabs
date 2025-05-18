@@ -9,4 +9,9 @@ public class ForgeBlocks implements IPlatformBlocks {
     public MixedDoubleSlabBlock getMixedSlabBlock() {
         return DSForgeBlocks.MIXED_SLAB.get();
     }
+
+    @Override
+    public MixedDoubleSlabBlock getTransparentMixedSlabBlock() {
+        return DSForgeBlocks.TRANSPARENT_MIXED_SLAB.get();
+    }
 }

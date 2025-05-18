@@ -6,4 +6,6 @@ public interface IPlatformBlocks {
 
     MixedDoubleSlabBlock getMixedSlabBlock();
 
+    MixedDoubleSlabBlock getTransparentMixedSlabBlock();
+
 }

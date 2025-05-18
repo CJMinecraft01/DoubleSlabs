@@ -9,4 +9,9 @@ public class FabricBlocks implements IPlatformBlocks {
     public MixedDoubleSlabBlock getMixedSlabBlock() {
         return DSFabricBlocks.MIXED_SLAB;
     }
+
+    @Override
+    public MixedDoubleSlabBlock getTransparentMixedSlabBlock() {
+        return DSFabricBlocks.TRANSPARENT_MIXED_SLAB;
+    }
 }

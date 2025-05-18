@@ -9,4 +9,9 @@ public class NeoForgeBlocks implements IPlatformBlocks {
     public MixedDoubleSlabBlock getMixedSlabBlock() {
         return DSNeoForgeBlocks.MIXED_SLAB.get();
     }
+
+    @Override
+    public MixedDoubleSlabBlock getTransparentMixedSlabBlock() {
+        return DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB.get();
+    }
 }

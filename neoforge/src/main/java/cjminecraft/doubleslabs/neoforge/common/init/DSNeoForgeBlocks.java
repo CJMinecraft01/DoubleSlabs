@@ -14,5 +14,6 @@ public class DSNeoForgeBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.createBlocks(Constants.MOD_ID);
 
     public static final DeferredHolder<Block, MixedDoubleSlabBlock> MIXED_SLAB = BLOCKS.register(MIXED_SLAB_ID.getPath(), () -> new NeoForgeMixedDoubleSlabBlock(MIXED_SLAB_PROPERTIES));
+    public static final DeferredHolder<Block, MixedDoubleSlabBlock> TRANSPARENT_MIXED_SLAB = BLOCKS.register(TRANSPARENT_MIXED_SLAB_ID.getPath(), () -> new NeoForgeMixedDoubleSlabBlock(TRANSPARENT_MIXED_SLAB_PROPERTIES));
 
 }
