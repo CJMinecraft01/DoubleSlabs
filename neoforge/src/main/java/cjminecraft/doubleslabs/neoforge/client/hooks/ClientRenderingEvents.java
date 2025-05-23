@@ -2,12 +2,13 @@ package cjminecraft.doubleslabs.neoforge.client.hooks;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
 import net.minecraft.client.renderer.RenderType;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class ClientRenderingEvents {
 
     @SubscribeEvent
