@@ -34,8 +34,8 @@ public interface IDynamicSlabStateContainer {
     }
 
     default <T> Optional<T> reduceOnBlockStates(Function<BlockState, T> consumer, BiFunction<T, T, T> reducer) {
-        final var resultTop = callOnBlockState(Half.TOP, consumer);
-        final var resultBottom = callOnBlockState(Half.BOTTOM, consumer);
+        final var resultTop = callOnBlockState(Half.POSITIVE, consumer);
+        final var resultBottom = callOnBlockState(Half.NEGATIVE, consumer);
 
         if (resultTop.isPresent() && resultBottom.isPresent()) {
             return Optional.of(reducer.apply(resultTop.get(), resultBottom.get()));

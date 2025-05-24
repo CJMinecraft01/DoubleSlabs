@@ -1,8 +1,8 @@
 package cjminecraft.doubleslabs.api.state;
 
 public enum Half {
-    TOP("top"),
-    BOTTOM("bottom");
+    POSITIVE("positive"),
+    NEGATIVE("negative");
 
     private final String name;
 
@@ -17,8 +17,8 @@ public enum Half {
 
     public Half getOpposite() {
         return switch (this) {
-            case TOP -> BOTTOM;
-            case BOTTOM -> TOP;
+            case POSITIVE -> NEGATIVE;
+            case NEGATIVE -> POSITIVE;
         };
     }
 }

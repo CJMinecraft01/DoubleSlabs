@@ -48,7 +48,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
 
         final var hitLocation = hitResult.getLocation();
         final var hitOffset = hitLocation.y - slabPos.getY();
-        return hitOffset > 0.5 ? Half.TOP : Half.BOTTOM;
+        return hitOffset > 0.5 ? Half.POSITIVE : Half.NEGATIVE;
     }
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
@@ -182,14 +182,14 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
 
         // If we have an entity, get the sound type for the top slab
         if (entity != null) {
-            return callOnBlockState(blockGetter, pos, Half.TOP, BlockBehaviour.BlockStateBase::getSoundType);
+            return callOnBlockState(blockGetter, pos, Half.POSITIVE, BlockBehaviour.BlockStateBase::getSoundType);
         }
 
         return Optional.empty();
     }
 
     public static Optional<BlockParticleOption> getParticleForTopSlab(BlockGetter blockGetter, BlockPos pos) {
-        return callOnBlockState(blockGetter, pos, Half.TOP, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
+        return callOnBlockState(blockGetter, pos, Half.POSITIVE, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
     public static boolean propagatesSkylightDown(BlockGetter blockGetter, BlockPos pos) {
@@ -197,7 +197,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static boolean fallOn(Level level, BlockPos pos, Entity entity, float fallDistance) {
-        return callOnBlockState(level, pos, Half.TOP, state -> {
+        return callOnBlockState(level, pos, Half.POSITIVE, state -> {
             state.getBlock().fallOn(level, state, pos, entity, fallDistance);
             return true;
         }).orElse(false);
@@ -210,14 +210,14 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
             return false;
         }
 
-        return callOnBlockState(blockGetter, pos, Half.TOP, state -> {
+        return callOnBlockState(blockGetter, pos, Half.POSITIVE, state -> {
             state.getBlock().updateEntityAfterFallOn(blockGetter, entity);
             return true;
         }).orElse(false);
     }
 
     public static boolean stepOn(Level level, BlockPos pos, Entity entity) {
-        return callOnBlockState(level, pos, Half.TOP, state -> {
+        return callOnBlockState(level, pos, Half.POSITIVE, state -> {
             state.getBlock().stepOn(level, pos, state, entity);
             return true;
         }).orElse(false);

@@ -30,7 +30,7 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
-                Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.TOP,
+                Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.POSITIVE,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
                         DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
 

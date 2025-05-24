@@ -31,10 +31,10 @@ public class MixedDoubleSlabBlockClientHooks extends MixedDoubleSlabBlockHooks {
 
     public static Function<BakedQuad, BakedQuad> withCorrectTint(Half half) {
         return switch (half) {
-            case TOP -> (quad) -> quad.isTinted() ?
+            case POSITIVE -> (quad) -> quad.isTinted() ?
                     new BakedQuad(quad.getVertices(), quad.getTintIndex() + ClientConstants.TINT_OFFSET, quad.getDirection(), quad.getSprite(), quad.isShade())
                     : quad;
-            case BOTTOM -> (quad) -> quad;
+            case NEGATIVE -> (quad) -> quad;
         };
     }
 

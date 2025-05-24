@@ -18,10 +18,10 @@ public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
 
             return getDynamicSlabStateContainer(level, pos).flatMap(container -> {
                 if (tintIndex >= ClientConstants.TINT_OFFSET) {
-                    return container.callOnBlockState(Half.TOP, slabState ->
+                    return container.callOnBlockState(Half.POSITIVE, slabState ->
                             blockColours.getColor(slabState, level, pos, tintIndex - ClientConstants.TINT_OFFSET));
                 }
-                return container.callOnBlockState(Half.BOTTOM, slabState ->
+                return container.callOnBlockState(Half.NEGATIVE, slabState ->
                                 blockColours.getColor(slabState, level, pos, tintIndex));
             }).orElse(-1);
         };

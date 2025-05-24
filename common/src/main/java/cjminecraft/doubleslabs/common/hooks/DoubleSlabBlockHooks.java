@@ -53,13 +53,13 @@ public class DoubleSlabBlockHooks {
 
         // 1. If we click on the UP or DOWN face of a slab, then we remove the top or bottom and keep the other
         if (clickedSide.getAxis().isVertical()) {
-            return separateDoubleSlab(level, player, clickedSlabHelper, clickedState, clickedPos, clickedSide == Direction.UP ? Half.TOP : Half.BOTTOM);
+            return separateDoubleSlab(level, player, clickedSlabHelper, clickedState, clickedPos, clickedSide == Direction.UP ? Half.POSITIVE : Half.NEGATIVE);
         }
 
         // 2. Otherwise, we use the hit vec to know if we are hitting the top or bottom slab
         final var normalizedHitY = hitResult.getLocation().y - clickedPos.getY();
 
-        return separateDoubleSlab(level, player, clickedSlabHelper, clickedState, clickedPos, normalizedHitY > 0.5f ? Half.TOP : Half.BOTTOM);
+        return separateDoubleSlab(level, player, clickedSlabHelper, clickedState, clickedPos, normalizedHitY > 0.5f ? Half.POSITIVE : Half.NEGATIVE);
     }
 
     private static boolean separateDoubleSlab(final Level level, final Player player, final IHorizontalSlabHelper slabHelper, final BlockState slabBlockState, final BlockPos slabPos, final Half halfToRemove) {

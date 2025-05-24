@@ -44,7 +44,7 @@ public class MixedDoubleSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
 
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
                 final var modelQuads = model.getQuads(slabState, side, rand, data, renderType);
-                final var directionToCull = half == Half.TOP ? Direction.DOWN : Direction.UP;
+                final var directionToCull = half == Half.POSITIVE ? Direction.DOWN : Direction.UP;
 
                 quads.addAll(modelQuads.stream().filter(quad -> shouldNotCull || quad.getDirection() != directionToCull)
                         .map(MixedDoubleSlabBlockClientHooks.withCorrectTint(half)).toList());

@@ -76,7 +76,7 @@ public class PlacementHooks {
 
                 final var half = clickedBlockSlabHelper.getHalf(level, clickedPos, clickedBlockState);
                 // Check that the side clicked is the side that would place the slab within the same block
-                if ((half == Half.BOTTOM && clickedFace == Direction.UP) || (half == Half.TOP && clickedFace == Direction.DOWN)) {
+                if ((half == Half.NEGATIVE && clickedFace == Direction.UP) || (half == Half.POSITIVE && clickedFace == Direction.DOWN)) {
                     return tryCombineHorizontalSlabs(level, clickedBlockState, clickedPos, player, itemInHand, hand,
                             blockHitResult, clickedBlockSlabHelper, itemInHandSlabHelper);
                 }
@@ -125,7 +125,7 @@ public class PlacementHooks {
         }
 
         final var slabBlockHalf = slabBlockHelper.getHalf(level, slabPos, slabBlockState);
-        final var slabToPlaceHalf = slabBlockHalf == Half.TOP ? Half.BOTTOM : Half.TOP;
+        final var slabToPlaceHalf = slabBlockHalf == Half.POSITIVE ? Half.NEGATIVE : Half.POSITIVE;
 
         final var slabToPlaceState = slabItemHelper.getStateForHalf(level, slabPos, stateFromSlabItem, slabToPlaceHalf);
 
