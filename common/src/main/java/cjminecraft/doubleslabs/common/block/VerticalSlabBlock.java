@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.common.block;
 
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
+import cjminecraft.doubleslabs.common.init.DSItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
@@ -35,6 +36,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AXIS, TYPE);
+    }
+
+    @Override
+    public Item asItem() {
+        return DSItems.VERTICAL_SLAB.get();
     }
 
     @Override
