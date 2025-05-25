@@ -41,6 +41,7 @@ public class DoubleSlabsClient {
     private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.MIXED_SLAB.get());
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB.get());
+        event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.VERTICAL_SLAB.get());
     }
 
 }
