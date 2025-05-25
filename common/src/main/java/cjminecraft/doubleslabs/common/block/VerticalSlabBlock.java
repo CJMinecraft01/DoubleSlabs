@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.common.block;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -96,5 +97,25 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
         return this.defaultBlockState()
                 .setValue(AXIS, clickedFace.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X)
                 .setValue(TYPE, positionAlongAxis < 0 ? VerticalSlabType.NEGATIVE : VerticalSlabType.POSITIVE);
+    }
+
+    @Override
+    protected boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+        final var heldItem = context.getItemInHand();
+        final var slabType = state.getValue(TYPE);
+
+        if (slabType == VerticalSlabType.DOUBLE || !heldItem.is(this.asItem())) {
+            return false;
+        }
+
+        if (!context.replacingClickedOnBlock()) {
+            return true;
+        }
+
+        final var axis = state.getValue(AXIS);
+        final var slabFacingDirection = Direction.fromAxisAndDirection(axis, slabType.toAxisDirection());
+
+        // Only allow replacing the vertical slab if the side clicked is opposite to the side the slab is facing
+        return slabFacingDirection == context.getClickedFace().getOpposite();
     }
 }
