@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.common.block;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 public class VerticalSlabBlock extends DynamicSlabBlock {
     // Anything specific to vertical slabs should go here
@@ -49,5 +51,50 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
             case NEGATIVE -> axis == Direction.Axis.X ? X_NEGATIVE_AABB : Z_NEGATIVE_AABB;
             case DOUBLE -> Shapes.block();
         };
+    }
+
+    @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        final var clickedPos = context.getClickedPos();
+        final var clickedState = context.getLevel().getBlockState(clickedPos);
+
+        // If the clicked block is a vertical slab then we are trying to combine two vertical slabs
+        if (clickedState.is(this)) {
+            return clickedState.setValue(TYPE, VerticalSlabType.DOUBLE);
+        }
+
+        final var clickedFace = context.getClickedFace();
+        final var clickLocation = context.getClickLocation();
+        final var locationRelativeToCenter = clickLocation.subtract(clickedPos.getCenter());
+
+        // If the clicked face is either UP or DOWN then we divide the face into four quadrants that determine the axis and type
+        if (clickedFace.getAxis().isVertical()) {
+            // For the x and z dimensions, we will have a value between -0.5 and 0.5 which we can use to determine the angle
+            // around the center which gives us which direction to face
+            final var angle = Math.toDegrees(Math.atan2(locationRelativeToCenter.x, locationRelativeToCenter.z));
+            final var direction = Direction.fromYRot(-angle);
+
+            return this.defaultBlockState()
+                    .setValue(AXIS, direction.getAxis())
+                    .setValue(TYPE, VerticalSlabType.fromAxisDirection(direction.getAxisDirection()));
+        }
+
+        // If we clicked on the side of a face, then we divide the face into three quadrants
+        // The middle quadrant is placing the slab aligned with the clicked block, the other two place it tangentially
+
+        // This ranges between -0.5 and 0.5
+        final var positionAlongAxis = clickedFace.getAxis() == Direction.Axis.X ? locationRelativeToCenter.z : locationRelativeToCenter.x;
+
+        // If we are in the middle quadrant, place aligned with the clicked block
+        if (-0.25 < positionAlongAxis && positionAlongAxis < 0.25) {
+            return this.defaultBlockState()
+                    .setValue(AXIS, clickedFace.getAxis())
+                    .setValue(TYPE, VerticalSlabType.fromAxisDirection(clickedFace.getAxisDirection().opposite()));
+        }
+
+        // Otherwise we place tangentially
+        return this.defaultBlockState()
+                .setValue(AXIS, clickedFace.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X)
+                .setValue(TYPE, positionAlongAxis < 0 ? VerticalSlabType.NEGATIVE : VerticalSlabType.POSITIVE);
     }
 }
