@@ -1,17 +1,27 @@
 package cjminecraft.doubleslabs.common.block;
 
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class VerticalSlabBlock extends DynamicSlabBlock {
     // Anything specific to vertical slabs should go here
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     public static final EnumProperty<VerticalSlabType> TYPE = EnumProperty.create("type", VerticalSlabType.class);
+
+    public static final VoxelShape X_POSITIVE_AABB = Block.box(8.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    public static final VoxelShape X_NEGATIVE_AABB = Block.box(0.0D, 0.0D, 0.0D, 8.0D, 16.0D, 16.0D);
+    public static final VoxelShape Z_POSITIVE_AABB = Block.box(0.0D, 0.0D, 8.0D, 16.0D, 16.0D, 16.0D);
+    public static final VoxelShape Z_NEGATIVE_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 8.0D);
 
     public VerticalSlabBlock(Properties properties) {
         super(properties);
@@ -22,5 +32,17 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AXIS, TYPE);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        final var axis = state.getValue(AXIS);
+        final var slabType = state.getValue(TYPE);
+
+        return switch (slabType) {
+            case POSITIVE -> axis == Direction.Axis.X ? X_POSITIVE_AABB : Z_POSITIVE_AABB;
+            case NEGATIVE -> axis == Direction.Axis.X ? X_NEGATIVE_AABB : Z_NEGATIVE_AABB;
+            case DOUBLE -> Shapes.block();
+        };
     }
 }
