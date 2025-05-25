@@ -35,6 +35,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
+    protected boolean useShapeForLightOcclusion(BlockState state) {
+        return state.getValue(TYPE) != VerticalSlabType.DOUBLE;
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         final var axis = state.getValue(AXIS);
         final var slabType = state.getValue(TYPE);
