@@ -4,6 +4,7 @@
   "package": "cjminecraft.doubleslabs.fabric.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "cjminecraft.doubleslabs.fabric.mixin.DSMixinPlugin",
   "mixins": [
     "EntityMixin",
     "ItemStackMixin",
