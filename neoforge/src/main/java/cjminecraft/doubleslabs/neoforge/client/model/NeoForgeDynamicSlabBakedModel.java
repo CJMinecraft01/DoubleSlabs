@@ -5,10 +5,8 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,7 +46,7 @@ public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedMode
             final var renderTypes = new HashSet<RenderType>();
             stateContainer.runOnBlockStates(slabState -> {
                 final var model = renderDispatcher.getBlockModel(slabState);
-                renderTypes.addAll(model.getRenderTypes(state, rand, data).asList());
+                renderTypes.addAll(model.getRenderTypes(slabState, rand, data).asList());
             });
 
             return ChunkRenderTypeSet.of(renderTypes);
