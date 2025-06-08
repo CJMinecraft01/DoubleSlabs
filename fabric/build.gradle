@@ -2,6 +2,17 @@ plugins {
     id 'multiloader-loader'
     id 'fabric-loom'
 }
+
+repositories {
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content { includeGroupAndSubgroups("maven.modrinth") }
+    }
+}
+
+var sodiumVersion = "mc1.21.1-0.6.13-fabric"
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
@@ -10,6 +21,8 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    modCompileOnly("maven.modrinth:sodium:$sodiumVersion")
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }
