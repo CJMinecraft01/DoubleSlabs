@@ -15,7 +15,8 @@
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
-    "client.ParticleEngineMixin"
+    "client.ParticleEngineMixin",
+    "client.RenderContextMixin"
   ],
   "server": [],
   "injectors": {
