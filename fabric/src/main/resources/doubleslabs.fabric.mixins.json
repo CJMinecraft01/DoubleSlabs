@@ -11,7 +11,7 @@
     "PlayerMixin"
   ],
   "client": [
-    "client.AbstractBlockRenderContextAccessor",
+    "client.AbstractBlockRenderContextMixin",
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
