@@ -48,7 +48,7 @@ public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedMode
             final var renderTypes = new HashSet<RenderType>();
             stateContainer.runOnBlockStates(slabState -> {
                 final var model = renderDispatcher.getBlockModel(slabState);
-                renderTypes.addAll(model.getRenderTypes(state, rand, data).asList());
+                renderTypes.addAll(model.getRenderTypes(slabState, rand, data).asList());
             });
 
             return ChunkRenderTypeSet.of(renderTypes);
