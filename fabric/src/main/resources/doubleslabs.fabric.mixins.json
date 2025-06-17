@@ -17,9 +17,7 @@
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
     "client.ParticleEngineMixin",
-    "client.RenderContextMixin",
-    "client.compat.sodium.AbstractBlockRenderContextMixin",
-    "client.compat.sodium.BlockRendererMixin"
+    "client.RenderContextMixin"
   ],
   "server": [],
   "injectors": {

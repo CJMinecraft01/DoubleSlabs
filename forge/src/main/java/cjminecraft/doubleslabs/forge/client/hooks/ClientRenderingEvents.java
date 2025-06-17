@@ -20,6 +20,6 @@ public class ClientRenderingEvents {
 
     @SubscribeEvent
     public static void addTextToDebugScreenOverlay(CustomizeGuiOverlayEvent.DebugText event) {
-        ClientRenderingHooks.addTextToDebugScreenOverlay(event.getRight().stream().toList());
+        ClientRenderingHooks.addTextToDebugScreenOverlay(event.getRight());
     }
 }
