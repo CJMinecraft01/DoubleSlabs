@@ -119,7 +119,7 @@ public class ClientRenderingHooks {
     }
 
     public static void crackParticle(BlockPos pos, BlockState state, Direction side, ClientLevel level, ParticleEngine particleEngine) {
-        if (state.getRenderShape() != RenderShape.INVISIBLE && state.shouldSpawnTerrainParticles()) {
+        if (state.getRenderShape() != RenderShape.INVISIBLE && state.shouldSpawnParticlesOnBreak()) {
             final var i = pos.getX();
             final var j = pos.getY();
             final var k = pos.getZ();

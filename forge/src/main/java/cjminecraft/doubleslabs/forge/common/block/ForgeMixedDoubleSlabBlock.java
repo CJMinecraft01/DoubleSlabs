@@ -9,12 +9,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +35,13 @@ public class ForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return MixedDoubleSlabBlockHooks.getCloneItemStack(level, pos, target);
+    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState target) {
+        return MixedDoubleSlabBlockHooks.getCloneItemStack(level, pos, new HitResult(new Vec3(pos.getX(), pos.getY(), pos.getZ())) {
+            @Override
+            public Type getType() {
+                return Type.BLOCK;
+            }
+        });
     }
 
     @Override

@@ -20,7 +20,7 @@ public class ParticleEngineMixin {
 
     @Inject(method = "destroy", at = @At("HEAD"), cancellable = true)
     public void destroy(BlockPos pos, BlockState state, CallbackInfo ci) {
-        if (state.isAir() || !state.shouldSpawnTerrainParticles()) {
+        if (state.isAir() || !state.shouldSpawnParticlesOnBreak()) {
             return;
         }
 

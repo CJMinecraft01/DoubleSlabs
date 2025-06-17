@@ -76,14 +76,14 @@ public interface ISlabStateContainer {
         return getLevel() != null;
     }
 
-    default CompoundTag serialize(HolderLookup.Provider registries) {
+    default CompoundTag serialize() {
         final var tag = new CompoundTag();
         runOnBlockState(state -> tag.put("state", NbtUtils.writeBlockState(state)));
-        runOnBlockEntity(blockEntity -> tag.put("blockEntity", blockEntity.saveWithId(registries)));
+        runOnBlockEntity(blockEntity -> tag.put("blockEntity", blockEntity.saveWithId()));
         return tag;
     }
 
-    default void deserialize(CompoundTag tag, HolderLookup.Provider registries) {
+    default void deserialize(CompoundTag tag) {
         if (tag.contains("state")) {
             final var blockGetter = hasLevel() ?
                     Objects.requireNonNull(getLevel()).holderLookup(Registries.BLOCK) :
@@ -91,7 +91,7 @@ public interface ISlabStateContainer {
             setBlockState(NbtUtils.readBlockState(blockGetter, tag.getCompound("state")));
         }
         if (tag.contains("blockEntity")) {
-            setBlockEntity(BlockEntity.loadStatic(getBlockPos(), getBlockState(), tag.getCompound("blockEntity"), registries));
+            setBlockEntity(BlockEntity.loadStatic(getBlockPos(), getBlockState(), tag.getCompound("blockEntity")));
         }
     }
 

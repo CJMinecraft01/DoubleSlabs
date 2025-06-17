@@ -9,6 +9,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class MixedDoubleSlabBlock extends DynamicSlabBlock {
@@ -19,7 +21,7 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.getDestroyProgress(player, level, pos)
                 .orElseGet(() -> super.getDestroyProgress(state, player, level, pos));
     }
@@ -57,13 +59,13 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
     }
 
     // TODO: Fix collision shape
-//    @Override
-//    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-//        return MixedDoubleSlabBlockHooks.getCollisionShape(level, pos, context).orElseGet(() -> super.getCollisionShape(state, level, pos, context));
-//    }
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return MixedDoubleSlabBlockHooks.getCollisionShape(level, pos, context).orElseGet(() -> super.getCollisionShape(state, level, pos, context));
+    }
 }

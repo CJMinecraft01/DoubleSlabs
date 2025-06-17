@@ -52,14 +52,14 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
-        final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+        final var hitResult = player.pick(5.0F, 0F, false);
 
         return getHalfFromHitResult(hitResult, slabPos);
     }
 
     private static Half getHalfFromPlayerUsingCollision(final Player player, final VoxelShape collisionShape, final BlockPos slabPos) {
         final var clipStart = player.getEyePosition();
-        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(player.blockInteractionRange()));
+        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(5.0F));
 
         final var hitResult = Objects.requireNonNull(collisionShape.clip(clipStart, clipEnd, slabPos));
 
@@ -165,7 +165,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         }
     }
 
-    public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, HitResult hitResult) {
+    public static ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, HitResult hitResult) {
         return callOnLookingAtBlockState(level, pos, hitResult, state -> state.getBlock().getCloneItemStack(level, pos, state))
                 .orElse(ItemStack.EMPTY);
     }

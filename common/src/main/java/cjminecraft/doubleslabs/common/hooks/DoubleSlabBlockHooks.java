@@ -6,6 +6,8 @@ import cjminecraft.doubleslabs.common.Internal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -21,7 +23,7 @@ public class DoubleSlabBlockHooks {
             return false;
         }
 
-        final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+        final var hitResult = player.pick(5.0F, 0F, false);
 
         if (hitResult.getType() != HitResult.Type.BLOCK) {
             return false;
