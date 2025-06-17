@@ -19,13 +19,19 @@ public class ForgeSlabStateContainer extends SlabStateContainer implements ICapa
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction direction) {
-        Preconditions.checkState(blockEntity != null, "Cannot get the capability from the block entity if the block entity does not exist");
-        return blockEntity.getCapability(capability, direction);
+        if (blockEntity != null) {
+            return blockEntity.getCapability(capability, direction);
+        } else {
+            return LazyOptional.empty();
+        }
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability) {
-        Preconditions.checkState(blockEntity != null, "Cannot get the capability from the block entity if the block entity does not exist");
-        return blockEntity.getCapability(capability);
+        if (blockEntity != null) {
+            return blockEntity.getCapability(capability);
+        } else {
+            return LazyOptional.empty();
+        }
     }
 }
