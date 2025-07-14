@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
-import cjminecraft.doubleslabs.client.ClientConstants;
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.common.hooks.DynamicSlabBlockHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
@@ -17,9 +17,9 @@ public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
             final var blockColours = Minecraft.getInstance().getBlockColors();
 
             return getDynamicSlabStateContainer(level, pos).flatMap(container -> {
-                if (tintIndex >= ClientConstants.TINT_OFFSET) {
+                if (tintIndex >= ClientInternal.TINT_OFFSET) {
                     return container.callOnBlockState(Half.POSITIVE, slabState ->
-                            blockColours.getColor(slabState, level, pos, tintIndex - ClientConstants.TINT_OFFSET));
+                            blockColours.getColor(slabState, level, pos, tintIndex - ClientInternal.TINT_OFFSET));
                 }
                 return container.callOnBlockState(Half.NEGATIVE, slabState ->
                                 blockColours.getColor(slabState, level, pos, tintIndex));

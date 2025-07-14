@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.BakedModel;
 
-public class ClientConstants {
+public class ClientInternal {
 
     public static final int TINT_OFFSET = 1000;
 

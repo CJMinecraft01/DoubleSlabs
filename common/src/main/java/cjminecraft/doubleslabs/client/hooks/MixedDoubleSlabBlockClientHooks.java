@@ -1,7 +1,7 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
-import cjminecraft.doubleslabs.client.ClientConstants;
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -32,7 +32,7 @@ public class MixedDoubleSlabBlockClientHooks extends MixedDoubleSlabBlockHooks {
     public static Function<BakedQuad, BakedQuad> withCorrectTint(Half half) {
         return switch (half) {
             case POSITIVE -> (quad) -> quad.isTinted() ?
-                    new BakedQuad(quad.getVertices(), quad.getTintIndex() + ClientConstants.TINT_OFFSET, quad.getDirection(), quad.getSprite(), quad.isShade())
+                    new BakedQuad(quad.getVertices(), quad.getTintIndex() + ClientInternal.TINT_OFFSET, quad.getDirection(), quad.getSprite(), quad.isShade())
                     : quad;
             case NEGATIVE -> (quad) -> quad;
         };

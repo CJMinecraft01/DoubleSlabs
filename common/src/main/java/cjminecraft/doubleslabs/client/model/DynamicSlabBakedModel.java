@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 
-import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
+import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
 
 public abstract class DynamicSlabBakedModel implements BakedModel {
 

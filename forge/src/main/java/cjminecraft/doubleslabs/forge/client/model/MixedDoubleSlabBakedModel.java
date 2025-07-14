@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
+import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
 
 public class MixedDoubleSlabBakedModel extends ForgeDynamicSlabBakedModel {
 
