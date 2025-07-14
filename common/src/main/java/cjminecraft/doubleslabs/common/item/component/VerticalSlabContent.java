@@ -7,6 +7,8 @@ import net.minecraft.world.item.ItemStack;
 
 public final class VerticalSlabContent {
 
+    public static final VerticalSlabContent EMPTY = new VerticalSlabContent(ItemStack.EMPTY);
+
     public static final Codec<VerticalSlabContent> CODEC = ItemStack.CODEC.xmap(VerticalSlabContent::new, VerticalSlabContent::getItem);
     public static final StreamCodec<RegistryFriendlyByteBuf, VerticalSlabContent> STREAM_CODEC = ItemStack.STREAM_CODEC
             .map(VerticalSlabContent::new, VerticalSlabContent::getItem);
@@ -18,11 +20,15 @@ public final class VerticalSlabContent {
     }
 
     public static VerticalSlabContent of(ItemStack slab) {
-        return new VerticalSlabContent(slab);
+        return slab.isEmpty() ? EMPTY : new VerticalSlabContent(slab);
     }
 
     public ItemStack getItem() {
         return item;
+    }
+
+    public boolean isEmpty() {
+        return item.isEmpty();
     }
 
     @Override
