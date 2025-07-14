@@ -1,7 +1,9 @@
 package cjminecraft.doubleslabs.neoforge.client;
 
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockExtensions;
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
@@ -9,6 +11,7 @@ import cjminecraft.doubleslabs.neoforge.client.model.NeoForgeModelBaker;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -29,6 +32,7 @@ public class DoubleSlabsClient {
         modBus.addListener(this::replaceModels);
         modBus.addListener(this::registerClientExtensions);
         modBus.addListener(this::registerBlockColours);
+        modBus.addListener(this::bakeModels);
     }
 
     private void replaceModels(final ModelEvent.ModifyBakingResult event) {
@@ -37,6 +41,16 @@ public class DoubleSlabsClient {
 
         final var neoforgeModelBaker = new NeoForgeModelBaker(event.getModelBakery(), Minecraft.getInstance().getModelManager());
         event.getModels().put(VERTICAL_SLAB_ITEM_MODEL, new VerticalSlabItemBakedModel(neoforgeModelBaker));
+    }
+
+    private void bakeModels(final ModelEvent.BakingCompleted event) {
+        final var neoforgeModelBaker = new NeoForgeModelBaker(event.getModelBakery(), event.getModelManager());
+        final var verticalSlabModelBaker = new VerticalSlabModelBaker(neoforgeModelBaker);
+
+        verticalSlabModelBaker.bakeBlocks(BuiltInRegistries.BLOCK);
+        verticalSlabModelBaker.bakeItems(BuiltInRegistries.ITEM, BuiltInRegistries.ITEM::getKey);
+
+        ClientInternal.initialise(verticalSlabModelBaker.createModelHelper());
     }
 
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
