@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=z,type=negative": { "model": "doubleslabs:block/vertical_slab", "y": 180, "uvlock": true },
+    "axis=z,type=positive": { "model": "doubleslabs:block/vertical_slab", "y": 0, "uvlock": true },
+    "axis=x,type=positive": { "model": "doubleslabs:block/vertical_slab", "y": 270, "uvlock": true },
+    "axis=x,type=negative": { "model": "doubleslabs:block/vertical_slab", "y": 90, "uvlock": true },
+    "axis=z,type=double": { "model": "doubleslabs:block/double_vertical_slab", "y": 0, "uvlock": true },
+    "axis=x,type=double": { "model": "doubleslabs:block/double_vertical_slab", "y": 90, "uvlock": true }
+  }
+}
