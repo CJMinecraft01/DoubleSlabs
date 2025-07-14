@@ -1,10 +1,13 @@
 package cjminecraft.doubleslabs.neoforge.client;
 
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
+import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockExtensions;
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
+import cjminecraft.doubleslabs.neoforge.client.model.NeoForgeModelBaker;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -13,24 +16,27 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
-import static cjminecraft.doubleslabs.common.init.DSBlocks.MIXED_SLAB_ID;
-import static cjminecraft.doubleslabs.common.init.DSBlocks.TRANSPARENT_MIXED_SLAB_ID;
+import static cjminecraft.doubleslabs.common.init.DSBlocks.*;
 
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class DoubleSlabsClient {
 
     private static final ModelResourceLocation MIXED_SLAB_MODEL = new ModelResourceLocation(MIXED_SLAB_ID, "");
     private static final ModelResourceLocation TRANSPARENT_MIXED_SLAB_MODEL = new ModelResourceLocation(TRANSPARENT_MIXED_SLAB_ID, "");
+    private static final ModelResourceLocation VERTICAL_SLAB_ITEM_MODEL = new ModelResourceLocation(VERTICAL_SLAB_ID, "inventory");
 
     public DoubleSlabsClient(IEventBus modBus) {
-        modBus.addListener(this::bakeModels);
+        modBus.addListener(this::replaceModels);
         modBus.addListener(this::registerClientExtensions);
         modBus.addListener(this::registerBlockColours);
     }
 
-    private void bakeModels(final ModelEvent.ModifyBakingResult event) {
+    private void replaceModels(final ModelEvent.ModifyBakingResult event) {
         event.getModels().put(MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
         event.getModels().put(TRANSPARENT_MIXED_SLAB_MODEL, new MixedDoubleSlabBakedModel());
+
+        final var neoforgeModelBaker = new NeoForgeModelBaker(event.getModelBakery(), Minecraft.getInstance().getModelManager());
+        event.getModels().put(VERTICAL_SLAB_ITEM_MODEL, new VerticalSlabItemBakedModel(neoforgeModelBaker));
     }
 
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
