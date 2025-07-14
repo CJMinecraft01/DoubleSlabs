@@ -1,16 +1,13 @@
 package cjminecraft.doubleslabs.client.model;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 
-public abstract class DynamicSlabBakedModel implements BakedModel {
+import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
 
-    protected static BakedModel getFallbackModel() {
-        return Minecraft.getInstance().getModelManager().getMissingModel();
-    }
+public abstract class DynamicSlabBakedModel implements BakedModel {
 
     @Override
     public boolean useAmbientOcclusion() {

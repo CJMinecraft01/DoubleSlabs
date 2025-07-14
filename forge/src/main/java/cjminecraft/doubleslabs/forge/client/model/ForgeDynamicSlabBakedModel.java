@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.forge.client.model;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.client.ClientConstants;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -18,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static cjminecraft.doubleslabs.client.ClientConstants.getFallbackModel;
+
 public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
 
     public static final ModelProperty<IDynamicSlabStateContainer> DYNAMIC_SLAB_STATE_CONTAINER = new ModelProperty<>();
@@ -32,7 +35,7 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
         final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
                 Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.POSITIVE,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
-                        DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
+                        ClientConstants::getFallbackModel) : getFallbackModel();
 
         return model.getParticleIcon(ModelData.EMPTY);
     }
