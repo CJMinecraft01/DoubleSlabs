@@ -14,6 +14,7 @@ public class DoubleSlabs {
     public DoubleSlabs(IEventBus modBus) {
         DSNeoForgeBlocks.BLOCKS.register(modBus);
         DSNeoForgeItems.ITEMS.register(modBus);
+        DSNeoForgeItems.DATA_COMPONENTS.register(modBus);
         DSNeoForgeBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
         Internal.initialise();
     }

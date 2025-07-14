@@ -21,6 +21,7 @@ public class DoubleSlabs {
 
         DSForgeBlocks.BLOCKS.register(modBus);
         DSForgeItems.ITEMS.register(modBus);
+        DSForgeItems.DATA_COMPONENT_TYPES.register(modBus);
         DSForgeBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
         Internal.initialise();
     }
