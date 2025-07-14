@@ -45,7 +45,7 @@ public class DoubleSlabBlockHooks {
 
         final var clickedSlabHelper = optionalClickedSlabHelper.get();
 
-        if (!clickedSlabHelper.isDoubleSlab(level, clickedPos, clickedState)) {
+        if (!clickedSlabHelper.isDoubleSlab(clickedState)) {
             return false;
         }
 

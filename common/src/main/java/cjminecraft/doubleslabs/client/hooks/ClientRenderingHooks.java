@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,7 +49,7 @@ public class ClientRenderingHooks {
         final var state = level.getBlockState(hitResult.getBlockPos());
 
         // TODO: It may be better to use the shapes of each half instead of manually defining a box
-        if (isDoubleSlab(level, hitResult.getBlockPos(), state)) {
+        if (isDoubleSlab(state)) {
             // Offset the position of the block for when we render
             final var x = hitResult.getBlockPos().getX() - camX;
             var y = hitResult.getBlockPos().getY() - camY;
@@ -68,13 +67,13 @@ public class ClientRenderingHooks {
         return false;
     }
 
-    private static boolean isDoubleSlab(final Level level, final BlockPos pos, final BlockState state) {
+    private static boolean isDoubleSlab(final BlockState state) {
         if (state.is(DSBlocks.MIXED_SLABS)) {
             return true;
         }
 
         final var slabHelper = Internal.getSlabHelper().getHorizontalSlabHelper(state);
-        return slabHelper.isPresent() && slabHelper.get().isDoubleSlab(level, pos, state);
+        return slabHelper.isPresent() && slabHelper.get().isDoubleSlab(state);
     }
 
     public static void addTextToDebugScreenOverlay(List<String> text) {

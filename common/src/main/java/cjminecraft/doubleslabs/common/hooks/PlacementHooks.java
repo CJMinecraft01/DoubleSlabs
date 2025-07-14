@@ -70,7 +70,7 @@ public class PlacementHooks {
                 final var clickedBlockSlabHelper = optionalClickedBlockSlabHelper.get();
 
                 // If we are clicking on the top or bottom of a double slab, use default behaviour
-                if (clickedBlockSlabHelper.isDoubleSlab(level, clickedPos, clickedBlockState)) {
+                if (clickedBlockSlabHelper.isDoubleSlab(clickedBlockState)) {
                     return Optional.empty();
                 }
 
@@ -108,7 +108,7 @@ public class PlacementHooks {
         final var slabHelper = Internal.getSlabHelper();
 
         // If the slab block is a double slab then ignore
-        if (slabBlockHelper.isDoubleSlab(level, slabPos, slabBlockState)) {
+        if (slabBlockHelper.isDoubleSlab(slabBlockState)) {
             return Optional.empty();
         }
 
