@@ -1,10 +1,16 @@
 package cjminecraft.doubleslabs.fabric.client;
 
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
+import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
+import cjminecraft.doubleslabs.fabric.client.model.FabricModelBaker;
 import cjminecraft.doubleslabs.fabric.client.model.MixedDoubleSlabBakedModel;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import static cjminecraft.doubleslabs.common.init.DSBlocks.*;
 
@@ -37,6 +43,15 @@ public class DoubleSlabsClient implements ClientModInitializer {
 
             return original;
         });
+    }
+
+    public static void bakeVerticalSlabs(ModelBakery modelBakery, ModelManager modelManager) {
+        final var verticalSlabModelBaker = new VerticalSlabModelBaker(new FabricModelBaker(modelBakery, modelManager));
+
+        verticalSlabModelBaker.bakeBlocks(BuiltInRegistries.BLOCK);
+        verticalSlabModelBaker.bakeItems(BuiltInRegistries.ITEM, BuiltInRegistries.ITEM::getKey);
+
+        ClientInternal.initialise(verticalSlabModelBaker.createModelHelper());
     }
 
 }

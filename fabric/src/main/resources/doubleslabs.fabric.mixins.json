@@ -16,6 +16,7 @@
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
+    "client.ModelManagerMixin",
     "client.ParticleEngineMixin",
     "client.RenderContextMixin",
     "client.compat.sodium.AbstractBlockRenderContextMixin",
