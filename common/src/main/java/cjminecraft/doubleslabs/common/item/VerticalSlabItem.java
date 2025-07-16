@@ -9,6 +9,7 @@ import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.item.component.VerticalSlabContent;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -64,5 +65,16 @@ public class VerticalSlabItem extends BlockItem {
         });
 
         return result;
+    }
+
+    @Override
+    public String getDescriptionId(ItemStack stack) {
+        final var content = Objects.requireNonNull(stack.get(DSItems.VERTICAL_SLAB_CONTENT.get()));
+        return content.getItem().getDescriptionId();
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        return Component.translatable("item.vertical_slab.prefix", Component.translatable(getDescriptionId(stack)));
     }
 }
