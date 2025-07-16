@@ -1,12 +1,15 @@
 package cjminecraft.doubleslabs.fabric.client;
 
 import cjminecraft.doubleslabs.client.ClientInternal;
+import cjminecraft.doubleslabs.client.hooks.VerticalSlabItemClientHooks;
 import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
 import cjminecraft.doubleslabs.fabric.client.model.FabricModelBaker;
 import cjminecraft.doubleslabs.fabric.client.model.MixedDoubleSlabBakedModel;
+import cjminecraft.doubleslabs.fabric.common.init.DSFabricItems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -23,6 +26,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ModelLoadingPlugin.register(this::modifyModels);
+        registerItemColours();
     }
 
     private void modifyModels(ModelLoadingPlugin.Context pluginContext) {
@@ -52,6 +56,10 @@ public class DoubleSlabsClient implements ClientModInitializer {
         verticalSlabModelBaker.bakeItems(BuiltInRegistries.ITEM, BuiltInRegistries.ITEM::getKey);
 
         ClientInternal.initialise(verticalSlabModelBaker.createModelHelper());
+    }
+
+    private static void registerItemColours() {
+        ColorProviderRegistry.ITEM.register(VerticalSlabItemClientHooks.getItemColour(), DSFabricItems.VERTICAL_SLAB);
     }
 
 }

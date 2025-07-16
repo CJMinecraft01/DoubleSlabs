@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.neoforge.client;
 
 import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
+import cjminecraft.doubleslabs.client.hooks.VerticalSlabItemClientHooks;
 import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
 import cjminecraft.doubleslabs.common.Constants;
@@ -9,6 +10,7 @@ import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockE
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.neoforge.client.model.NeoForgeModelBaker;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
+import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,6 +34,7 @@ public class DoubleSlabsClient {
         modBus.addListener(this::replaceModels);
         modBus.addListener(this::registerClientExtensions);
         modBus.addListener(this::registerBlockColours);
+        modBus.addListener(this::registerItemColours);
         modBus.addListener(this::bakeModels);
     }
 
@@ -62,6 +65,10 @@ public class DoubleSlabsClient {
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.MIXED_SLAB.get());
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB.get());
         event.register(DynamicSlabBlockClientHooks.getBlockColour(), DSNeoForgeBlocks.VERTICAL_SLAB.get());
+    }
+
+    private void registerItemColours(final RegisterColorHandlersEvent.Item event) {
+        event.register(VerticalSlabItemClientHooks.getItemColour(), DSNeoForgeItems.VERTICAL_SLAB.get());
     }
 
 }
