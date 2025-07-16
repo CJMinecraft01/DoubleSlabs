@@ -8,8 +8,10 @@ import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.forge.client.model.ForgeModelBaker;
 import cjminecraft.doubleslabs.forge.client.model.MixedDoubleSlabBakedModel;
+import cjminecraft.doubleslabs.forge.client.model.VerticalSlabBakedModel;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -37,6 +39,12 @@ public class DoubleSlabsClient {
 
         final var forgeModelBaker = new ForgeModelBaker(event.getModelBakery(), Minecraft.getInstance().getModelManager());
         event.getModels().put(VERTICAL_SLAB_ITEM_MODEL, new VerticalSlabItemBakedModel(forgeModelBaker));
+
+        final var verticalSlabModel = new VerticalSlabBakedModel();
+        VERTICAL_SLAB.get().getStateDefinition().getPossibleStates().forEach(state -> {
+            final var location = BlockModelShaper.stateToModelLocation(state);
+            event.getModels().put(location, verticalSlabModel);
+        });
     }
 
     private static void bakeModels(final ModelEvent.BakingCompleted event) {
