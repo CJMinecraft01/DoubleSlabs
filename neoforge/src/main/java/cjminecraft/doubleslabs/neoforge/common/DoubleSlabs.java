@@ -15,6 +15,7 @@ public class DoubleSlabs {
         DSNeoForgeBlocks.BLOCKS.register(modBus);
         DSNeoForgeItems.ITEMS.register(modBus);
         DSNeoForgeItems.DATA_COMPONENTS.register(modBus);
+        DSNeoForgeItems.CREATIVE_MODE_TABS.register(modBus);
         DSNeoForgeBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
         Internal.initialise();
     }
