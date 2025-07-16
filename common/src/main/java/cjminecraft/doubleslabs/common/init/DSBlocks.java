@@ -21,7 +21,7 @@ public class DSBlocks {
 
     public static final BlockBehaviour.Properties MIXED_SLAB_PROPERTIES = BlockBehaviour.Properties.of();
     public static final BlockBehaviour.Properties TRANSPARENT_MIXED_SLAB_PROPERTIES = BlockBehaviour.Properties.of().noOcclusion();
-    public static final BlockBehaviour.Properties VERTICAL_SLAB_PROPERTIES = BlockBehaviour.Properties.of();
+    public static final BlockBehaviour.Properties VERTICAL_SLAB_PROPERTIES = BlockBehaviour.Properties.of().noOcclusion();
 
     // We have to wrap the supplier to ensure class loading gets the mixed slab supplier
     public static final Supplier<MixedDoubleSlabBlock> MIXED_SLAB = () -> Services.PLATFORM.getBlocks().getMixedSlabBlock();
