@@ -9,9 +9,11 @@ import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockExtensions;
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.neoforge.client.model.NeoForgeModelBaker;
+import cjminecraft.doubleslabs.neoforge.client.model.VerticalSlabBakedModel;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.api.distmarker.Dist;
@@ -44,6 +46,12 @@ public class DoubleSlabsClient {
 
         final var neoforgeModelBaker = new NeoForgeModelBaker(event.getModelBakery(), Minecraft.getInstance().getModelManager());
         event.getModels().put(VERTICAL_SLAB_ITEM_MODEL, new VerticalSlabItemBakedModel(neoforgeModelBaker));
+
+        final var verticalSlabModel = new VerticalSlabBakedModel();
+        VERTICAL_SLAB.get().getStateDefinition().getPossibleStates().forEach(state -> {
+            final var location = BlockModelShaper.stateToModelLocation(state);
+            event.getModels().put(location, verticalSlabModel);
+        });
     }
 
     private void bakeModels(final ModelEvent.BakingCompleted event) {
