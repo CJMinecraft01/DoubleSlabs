@@ -4,11 +4,14 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
+import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -128,6 +131,14 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
                 level.removeBlock(pos, false);
             }
         }
+    }
+
+    public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, HitResult hitResult) {
+        return callOnLookingAtBlockState(level, state, pos, hitResult, s -> {
+            final var slab = s.getBlock().getCloneItemStack(level, pos, s);
+
+            return VerticalSlabItem.setContainedSlabItem(DSItems.VERTICAL_SLAB.get().getDefaultInstance(), slab);
+        }).orElse(ItemStack.EMPTY);
     }
 
 }
