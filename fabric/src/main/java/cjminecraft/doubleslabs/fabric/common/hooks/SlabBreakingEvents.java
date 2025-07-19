@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.fabric.common.hooks;
 
 import cjminecraft.doubleslabs.common.hooks.DoubleSlabBlockHooks;
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
+import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
@@ -18,10 +19,14 @@ public class SlabBreakingEvents {
     }
 
     private static boolean breakBlock(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        if (state.is(DSBlocks.MIXED_SLABS)) {
-            final var willHarvest = !player.isCreative() && player.hasCorrectToolForDrops(state);
+        final var willHarvest = !player.isCreative() && player.hasCorrectToolForDrops(state);
 
+        if (state.is(DSBlocks.MIXED_SLABS)) {
             return willHarvest || !MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, false);
+        }
+
+        if (state.is(DSBlocks.VERTICAL_SLAB.get())) {
+            return willHarvest || !VerticalSlabBlockHooks.removeBlock(state, level, pos, player, false);
         }
 
         return !DoubleSlabBlockHooks.trySeparateDoubleSlab(player, level);

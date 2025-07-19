@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -89,6 +88,23 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnLookingAtBlockState(blockGetter, state, pos, player, s -> s.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, s -> s.getDestroyProgress(player, blockGetter, pos)));
     }
 
+    public static boolean removeBlock(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest) {
+        // If we will harvest the block then destroy the block using player destroy
+        if (willHarvest) {
+            return true;
+        }
+
+        // If the player is crouching in creative then break the slabs separately
+        if (player.isCreative() && player.isCrouching()) {
+            // We call player destroy manually here since it is not called when the player is in creative
+            playerDestroy(player, level, pos, state, level.getBlockEntity(pos), player.getMainHandItem());
+            return true;
+        }
+
+        // Return false to signify that we want to call the super method
+        return false;
+    }
+
     public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         // The block has been destroyed at this point so the raytrace results will be incorrect
         // Hence we use the block pos and eye pos to work out which half we are looking at
@@ -104,7 +120,10 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
             final var type = state.getValue(VerticalSlabBlock.TYPE);
 
             if (type == VerticalSlabType.DOUBLE) {
+                final var halfToKeep = halfToRemove.getOpposite();
+
                 container.clearStateContainer(halfToRemove);
+                level.setBlock(pos, state.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.fromHalf(halfToKeep)), 3);
             } else {
                 level.removeBlock(pos, false);
             }

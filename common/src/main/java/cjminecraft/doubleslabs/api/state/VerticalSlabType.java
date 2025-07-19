@@ -47,6 +47,13 @@ public enum VerticalSlabType implements StringRepresentable {
         };
     }
 
+    public static VerticalSlabType fromHalf(Half half) {
+        return switch (half) {
+            case POSITIVE -> POSITIVE;
+            case NEGATIVE -> NEGATIVE;
+        };
+    }
+
     public Direction getDirection(Half half, Direction.Axis axis) {
         return switch (this) {
             case POSITIVE -> axis == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
