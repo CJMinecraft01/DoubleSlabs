@@ -17,6 +17,10 @@ public interface IDynamicSlabStateContainer {
 
     void setBlockEntity(Half half, @Nullable BlockEntity blockEntity);
 
+    default void clearStateContainer(Half half) {
+        runOnStateContainer(half, ISlabStateContainer::clear);
+    }
+
     ISlabStateContainer getStateContainer(Half half);
 
     void runOnStateContainers(Consumer<ISlabStateContainer> consumer);

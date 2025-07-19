@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -19,6 +20,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface ISlabStateContainer {
+
+    default void clear() {
+        setBlockState(Blocks.AIR.defaultBlockState());
+        setBlockEntity(null);
+    }
 
     BlockState getBlockState();
 
