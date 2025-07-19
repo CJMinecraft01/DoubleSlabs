@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(AbstractBlockRenderContext.class)
 public class AbstractBlockRenderContextMixin implements IDynamicSlabRenderContext {
 
-    @Shadow @Final protected BlockRenderInfo blockInfo;
+    @Shadow(remap = false) @Final protected BlockRenderInfo blockInfo;
 
     @Override
     public void prepareForBlock(BlockState blockState, BlockPos blockPos, boolean modelAo) {
