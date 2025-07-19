@@ -1,9 +1,11 @@
 package cjminecraft.doubleslabs.common.block;
 
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
+import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -123,5 +125,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
         // Only allow replacing the vertical slab if the side clicked is opposite to the side the slab is facing
         return slabFacingDirection == context.getClickedFace().getOpposite();
+    }
+
+    @Override
+    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+        return VerticalSlabBlockHooks.getDestroyProgress(player, level, state, pos)
+                .orElseGet(() -> super.getDestroyProgress(state, player, level, pos));
     }
 }

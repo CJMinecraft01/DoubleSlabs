@@ -68,4 +68,8 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnBlockState(blockGetter, pos, slabHalf, function);
     }
 
+    public static Optional<Float> getDestroyProgress(Player player, BlockGetter blockGetter, BlockState state, BlockPos pos) {
+        return callOnLookingAtBlockState(blockGetter, state, pos, player, s -> s.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, s -> s.getDestroyProgress(player, blockGetter, pos)));
+    }
+
 }
