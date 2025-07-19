@@ -1,16 +1,24 @@
 package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
+import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -48,6 +56,15 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return getHalfFromHitResult(verticalSlabState, hitResult, slabPos);
     }
 
+    protected static Half getHalfFromPlayerUsingCollision(final Player player, final VoxelShape collisionShape, final BlockState verticalSlabState, final BlockPos slabPos) {
+        final var clipStart = player.getEyePosition();
+        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(player.blockInteractionRange()));
+
+        final var hitResult = Objects.requireNonNull(collisionShape.clip(clipStart, clipEnd, slabPos));
+
+        return Objects.requireNonNull(getHalfFromHitResult(verticalSlabState, hitResult, slabPos));
+    }
+
     protected static <T> Optional<T> callOnLookingAtBlockState(final BlockGetter blockGetter, final BlockState state, final BlockPos pos, final HitResult hitResult, final Function<BlockState, T> function) {
         final @Nullable Half slabHalf = getHalfFromHitResult(state, hitResult, pos);
 
@@ -70,6 +87,28 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
     public static Optional<Float> getDestroyProgress(Player player, BlockGetter blockGetter, BlockState state, BlockPos pos) {
         return callOnLookingAtBlockState(blockGetter, state, pos, player, s -> s.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, s -> s.getDestroyProgress(player, blockGetter, pos)));
+    }
+
+    public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        // The block has been destroyed at this point so the raytrace results will be incorrect
+        // Hence we use the block pos and eye pos to work out which half we are looking at
+
+        if (!(blockEntity instanceof IDynamicSlabStateContainer container)) {
+            player.causeFoodExhaustion(0.005F);
+            Block.dropResources(state, level, pos, blockEntity, player, tool);
+        } else {
+            final var halfToRemove = getHalfFromPlayerUsingCollision(player, state.getCollisionShape(level, pos), state, pos);
+
+            destroyHalf(container, player, level, pos, tool, halfToRemove);
+
+            final var type = state.getValue(VerticalSlabBlock.TYPE);
+
+            if (type == VerticalSlabType.DOUBLE) {
+                container.clearStateContainer(halfToRemove);
+            } else {
+                level.removeBlock(pos, false);
+            }
+        }
     }
 
 }
