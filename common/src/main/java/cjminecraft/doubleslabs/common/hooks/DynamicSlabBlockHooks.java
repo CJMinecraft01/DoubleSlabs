@@ -7,12 +7,15 @@ import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -52,6 +55,26 @@ public class DynamicSlabBlockHooks {
 
     protected static boolean requireBothStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, Boolean> function) {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalAnd)).orElse(false);
+    }
+
+    protected static void destroyHalf(IDynamicSlabStateContainer container, Player player, Level level, BlockPos pos, ItemStack tool, Half halfToRemove) {
+        container.runOnStateContainer(halfToRemove, slabContainer -> {
+            if (!slabContainer.hasBlockState()) {
+                return;
+            }
+
+            final var slabState = slabContainer.getBlockState();
+
+            player.awardStat(Stats.BLOCK_MINED.get(slabState.getBlock()));
+            level.levelEvent(2001, pos, Block.getId(slabState));
+            player.causeFoodExhaustion(0.005F);
+
+            if (!player.isCreative()) {
+                Block.dropResources(slabState, level, pos, slabContainer.getBlockEntity(), player, tool);
+            }
+
+            slabState.onRemove(level, pos, Blocks.AIR.defaultBlockState(), false);
+        });
     }
 
     public static List<ItemStack> getDrops(LootParams.Builder params) {

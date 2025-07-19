@@ -129,23 +129,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         } else {
             final var halfToKeep = halfToRemove.getOpposite();
 
-            container.runOnStateContainer(halfToRemove, slabContainer -> {
-                if (!slabContainer.hasBlockState()) {
-                    return;
-                }
-
-                final var slabState = slabContainer.getBlockState();
-
-                player.awardStat(Stats.BLOCK_MINED.get(slabState.getBlock()));
-                level.levelEvent(2001, pos, Block.getId(slabState));
-                player.causeFoodExhaustion(0.005F);
-
-                if (!player.isCreative()) {
-                    Block.dropResources(slabState, level, pos, slabContainer.getBlockEntity(), player, tool);
-                }
-
-                slabState.onRemove(level, pos, Blocks.AIR.defaultBlockState(), false);
-            });
+            destroyHalf(container, player, level, pos, tool, halfToRemove);
 
             container.runOnStateContainer(halfToKeep, slabContainer -> {
                 if (!slabContainer.hasBlockState()) {
