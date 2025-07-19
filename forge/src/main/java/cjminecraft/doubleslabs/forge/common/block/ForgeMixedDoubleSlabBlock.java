@@ -27,7 +27,7 @@ public class ForgeMixedDoubleSlabBlock extends MixedDoubleSlabBlock {
 
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        final var usePlayerDestroy = MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, fluid, willHarvest);
+        final var usePlayerDestroy = MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, willHarvest);
         return usePlayerDestroy || super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
 

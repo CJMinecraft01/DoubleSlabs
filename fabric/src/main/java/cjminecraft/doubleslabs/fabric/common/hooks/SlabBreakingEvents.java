@@ -21,7 +21,7 @@ public class SlabBreakingEvents {
         if (state.is(DSBlocks.MIXED_SLABS)) {
             final var willHarvest = !player.isCreative() && player.hasCorrectToolForDrops(state);
 
-            return willHarvest || !MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, level.getFluidState(pos), false);
+            return willHarvest || !MixedDoubleSlabBlockHooks.removeBlock(state, level, pos, player, false);
         }
 
         return !DoubleSlabBlockHooks.trySeparateDoubleSlab(player, level);
