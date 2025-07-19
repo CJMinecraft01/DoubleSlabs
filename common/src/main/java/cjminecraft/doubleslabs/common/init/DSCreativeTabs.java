@@ -18,11 +18,9 @@ public class DSCreativeTabs {
     public static final ResourceLocation VERTICAL_SLABS_TAB_ID = id("vertical_slabs");
 
     public static CreativeModeTab createVerticalSlabsTab(CreativeModeTab.Builder builder, Iterable<Item> items) {
-        final var verticalSlab = new ItemStack(VERTICAL_SLAB.get());
-
         return builder
                 .title(Component.translatable("item_group." + Constants.MOD_ID + ".vertical_slabs"))
-                .icon(() -> VerticalSlabItem.setContainedSlabItem(verticalSlab.copy(), new ItemStack(Items.SMOOTH_STONE_SLAB)))
+                .icon(() -> VerticalSlabItem.setContainedSlabItem(VERTICAL_SLAB.get().getDefaultInstance(), new ItemStack(Items.SMOOTH_STONE_SLAB)))
                 .displayItems((params, output) -> items.forEach(item -> {
                     final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(item);
 
@@ -30,7 +28,7 @@ public class DSCreativeTabs {
                         return;
                     }
 
-                    output.accept(VerticalSlabItem.setContainedSlabItem(verticalSlab.copy(), new ItemStack(item)));
+                    output.accept(VerticalSlabItem.setContainedSlabItem(VERTICAL_SLAB.get().getDefaultInstance(), new ItemStack(item)));
                 }))
                 .build();
     }
