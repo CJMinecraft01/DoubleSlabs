@@ -2,7 +2,7 @@ package cjminecraft.doubleslabs.neoforge.client.model;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
-import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
+import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.neoforge.common.init.DSNeoForgeBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -49,7 +49,7 @@ public class MixedDoubleSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
                 final var directionToCull = half == Half.POSITIVE ? Direction.DOWN : Direction.UP;
 
                 quads.addAll(modelQuads.stream().filter(quad -> shouldNotCull || quad.getDirection() != directionToCull)
-                        .map(MixedDoubleSlabBlockClientHooks.withCorrectTint(half)).toList());
+                        .map(DynamicSlabBlockClientHooks.withCorrectTint(half)).toList());
             }
         });
 

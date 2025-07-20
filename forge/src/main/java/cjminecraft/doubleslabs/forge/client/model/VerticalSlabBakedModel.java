@@ -2,7 +2,7 @@ package cjminecraft.doubleslabs.forge.client.model;
 
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.client.ClientInternal;
-import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
+import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -49,7 +49,7 @@ public class VerticalSlabBakedModel extends ForgeDynamicSlabBakedModel {
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
                 final var modelQuads = model.getQuads(slabState, side, rand, data, renderType);
 
-                quads.addAll(modelQuads.stream().map(MixedDoubleSlabBlockClientHooks.withCorrectTint(half)).toList());
+                quads.addAll(modelQuads.stream().map(DynamicSlabBlockClientHooks.withCorrectTint(half)).toList());
             }
         });
 
