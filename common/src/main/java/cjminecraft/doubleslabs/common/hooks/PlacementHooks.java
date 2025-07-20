@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -159,6 +160,11 @@ public class PlacementHooks {
             dynamicSlabBlockEntity.setBlockState(slabBlockHalf, slabBlockState);
             dynamicSlabBlockEntity.setBlockEntity(slabBlockHalf, existingBlockEntity);
             dynamicSlabBlockEntity.setBlockState(slabToPlaceHalf, slabToPlaceState);
+
+            if (slabToPlaceState.hasBlockEntity()) {
+                final var slabToPlaceBlockEntity = ((EntityBlock) slabToPlaceState.getBlock()).newBlockEntity(slabPos, slabToPlaceState);
+                dynamicSlabBlockEntity.setBlockEntity(slabToPlaceHalf, slabToPlaceBlockEntity);
+            }
 
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         });

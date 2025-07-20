@@ -8,11 +8,11 @@ import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.item.component.VerticalSlabContent;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
@@ -66,6 +66,11 @@ public class VerticalSlabItem extends BlockItem {
 
             final var slabState = helper.getStateForHalf(level, pos, stateFromSlabItem, half);
             dynamicSlab.setBlockState(half, slabState);
+
+            if (slabState.hasBlockEntity()) {
+                final var slabToPlaceBlockEntity = ((EntityBlock) slabState.getBlock()).newBlockEntity(pos, slabState);
+                dynamicSlab.setBlockEntity(half, slabToPlaceBlockEntity);
+            }
         });
 
         return result;
