@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
+import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -242,6 +243,20 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
     public static boolean fallOn(Level level, BlockState verticalSlabState, BlockPos pos, Entity entity, float fallDistance) {
         return callOnBlockStateBelow(level, verticalSlabState, pos, entity, state -> {
             state.getBlock().fallOn(level, state, pos, entity, fallDistance);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
+        final var pos = entity.getOnPos();
+        final var verticalSlabState = blockGetter.getBlockState(pos);
+
+        if (!verticalSlabState.is(DSBlocks.VERTICAL_SLAB.get())) {
+            return false;
+        }
+
+        return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, state -> {
+            state.getBlock().updateEntityAfterFallOn(blockGetter, entity);
             return true;
         }).orElse(false);
     }
