@@ -47,10 +47,9 @@ public class DoubleSlabsClient {
         final var neoforgeModelBaker = new NeoForgeModelBaker(event.getModelBakery(), Minecraft.getInstance().getModelManager());
         event.getModels().put(VERTICAL_SLAB_ITEM_MODEL, new VerticalSlabItemBakedModel(neoforgeModelBaker));
 
-        final var verticalSlabModel = new VerticalSlabBakedModel();
         VERTICAL_SLAB.get().getStateDefinition().getPossibleStates().forEach(state -> {
             final var location = BlockModelShaper.stateToModelLocation(state);
-            event.getModels().put(location, verticalSlabModel);
+            event.getModels().computeIfPresent(location, (l, originalModel) -> new VerticalSlabBakedModel(originalModel));
         });
     }
 
