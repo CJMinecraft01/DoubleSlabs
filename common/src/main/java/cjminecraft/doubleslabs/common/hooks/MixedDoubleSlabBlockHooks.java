@@ -131,7 +131,8 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         } else {
             final var halfToKeep = halfToRemove.getOpposite();
 
-            destroyHalf(container, player, level, pos, tool, halfToRemove);
+            destroyHalf(container, player, level, pos, tool, halfToRemove, slabContainer ->
+                    Block.dropResources(slabContainer.getBlockState(), level, pos, slabContainer.getBlockEntity(), player, tool));
 
             container.runOnStateContainer(halfToKeep, slabContainer -> {
                 if (!slabContainer.hasBlockState()) {

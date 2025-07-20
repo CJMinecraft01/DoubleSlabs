@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -122,7 +123,16 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         } else {
             final var halfToRemove = getHalfFromPlayerUsingCollision(player, state.getCollisionShape(level, pos), state, pos);
 
-            destroyHalf(container, player, level, pos, tool, halfToRemove);
+            destroyHalf(container, player, level, pos, tool, halfToRemove, slabContainer -> {
+                if (level instanceof ServerLevel) {
+                    final var slabState = slabContainer.getBlockState();
+                    final var slabItem = slabState.getBlock().asItem();
+                    Block.getDrops(slabState, (ServerLevel)level, pos, slabContainer.getBlockEntity(), player, tool).stream()
+                            .map(stack -> stack.is(slabItem) ? VerticalSlabItem.of(stack) : stack)
+                            .forEach((stack) -> Block.popResource(level, pos, stack));
+                    state.spawnAfterBreak((ServerLevel)level, pos, tool, true);
+                }
+            });
 
             final var type = state.getValue(VerticalSlabBlock.TYPE);
 
