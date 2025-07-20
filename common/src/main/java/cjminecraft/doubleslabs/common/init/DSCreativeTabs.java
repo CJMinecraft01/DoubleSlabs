@@ -7,11 +7,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import static cjminecraft.doubleslabs.common.Constants.id;
-import static cjminecraft.doubleslabs.common.init.DSItems.VERTICAL_SLAB;
 
 public class DSCreativeTabs {
 
@@ -20,7 +18,7 @@ public class DSCreativeTabs {
     public static CreativeModeTab createVerticalSlabsTab(CreativeModeTab.Builder builder, Iterable<Item> items) {
         return builder
                 .title(Component.translatable("item_group." + Constants.MOD_ID + ".vertical_slabs"))
-                .icon(() -> VerticalSlabItem.setContainedSlabItem(VERTICAL_SLAB.get().getDefaultInstance(), new ItemStack(Items.SMOOTH_STONE_SLAB)))
+                .icon(() -> VerticalSlabItem.of(Items.SMOOTH_STONE_SLAB.getDefaultInstance()))
                 .displayItems((params, output) -> items.forEach(item -> {
                     final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(item);
 
@@ -28,7 +26,7 @@ public class DSCreativeTabs {
                         return;
                     }
 
-                    output.accept(VerticalSlabItem.setContainedSlabItem(VERTICAL_SLAB.get().getDefaultInstance(), new ItemStack(item)));
+                    output.accept(VerticalSlabItem.of(item.getDefaultInstance()));
                 }))
                 .build();
     }

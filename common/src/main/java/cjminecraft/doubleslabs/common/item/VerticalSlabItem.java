@@ -22,6 +22,10 @@ public class VerticalSlabItem extends BlockItem {
         super(DSBlocks.VERTICAL_SLAB.get(), new Properties().component(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.EMPTY));
     }
 
+    public static ItemStack of(ItemStack slab) {
+        return setContainedSlabItem(DSItems.VERTICAL_SLAB.get().getDefaultInstance(), slab);
+    }
+
     public static ItemStack setContainedSlabItem(ItemStack stack, ItemStack slab) {
         final var copy = slab.copyWithCount(1);
 

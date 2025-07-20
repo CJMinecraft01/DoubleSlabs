@@ -137,7 +137,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnLookingAtBlockState(level, state, pos, hitResult, s -> {
             final var slab = s.getBlock().getCloneItemStack(level, pos, s);
 
-            return VerticalSlabItem.setContainedSlabItem(DSItems.VERTICAL_SLAB.get().getDefaultInstance(), slab);
+            return VerticalSlabItem.of(slab);
         }).orElse(ItemStack.EMPTY);
     }
 
