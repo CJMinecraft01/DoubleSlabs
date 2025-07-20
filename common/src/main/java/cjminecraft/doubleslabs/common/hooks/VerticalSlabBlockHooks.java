@@ -7,19 +7,24 @@ import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -183,6 +188,27 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         }
 
         return drops;
+    }
+
+    public static Optional<SoundType> getSoundType(BlockGetter blockGetter, BlockState verticalSlabState, BlockPos pos, @Nullable Entity entity) {
+        if (entity instanceof Player player) {
+            // We first assume that we are destroying a block and so get the state based on what the player is looking at
+            final var destroyBlockSound = callOnLookingAtBlockState(blockGetter, verticalSlabState, pos, player, BlockBehaviour.BlockStateBase::getSoundType);
+            if (destroyBlockSound.isPresent()) {
+                return destroyBlockSound;
+            }
+            // If the player is not looking at this slab block then treat it like all other entities
+        }
+
+        // If we have an entity, get the sound type for the slab they are on
+        if (entity != null) {
+            final var half = getHalfFromHitResult(verticalSlabState, new BlockHitResult(entity.position().subtract(0, 1E-5F, 0), Direction.UP, pos, true), pos);
+            if (half != null) {
+                return callOnBlockState(blockGetter, pos, half, BlockBehaviour.BlockStateBase::getSoundType);
+            }
+        }
+
+        return Optional.empty();
     }
 
 }
