@@ -24,7 +24,6 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -107,8 +106,10 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
             return true;
         }
 
+        final var type = state.getValue(VerticalSlabBlock.TYPE);
+
         // If the player is crouching in creative then break the slabs separately
-        if (player.isCreative() && player.isCrouching()) {
+        if (player.isCreative() && player.isCrouching() && type == VerticalSlabType.DOUBLE) {
             // We call player destroy manually here since it is not called when the player is in creative
             playerDestroy(player, level, pos, state, level.getBlockEntity(pos), player.getMainHandItem());
             return true;
