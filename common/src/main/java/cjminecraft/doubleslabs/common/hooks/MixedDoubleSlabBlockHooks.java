@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -24,6 +27,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -206,6 +211,31 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
 
     public static Optional<VoxelShape> getCollisionShape(BlockGetter blockGetter, BlockPos pos, CollisionContext context) {
         return reduceOnBlockStates(blockGetter, pos, state -> state.getCollisionShape(blockGetter, pos, context), Shapes::or);
+    }
+
+    public static List<ItemStack> getDrops(LootParams.Builder params) {
+        final var drops = new ArrayList<ItemStack>();
+
+        final var blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlab) {
+            dynamicSlab.runOnStateContainers(container -> {
+                if (!container.hasBlockState()) {
+                    return;
+                }
+
+                final var slabState = container.getBlockState();
+
+                var slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
+
+                if (container.hasBlockEntity()) {
+                    slabParams = slabParams.withParameter(LootContextParams.BLOCK_ENTITY, Objects.requireNonNull(container.getBlockEntity()));
+                }
+
+                drops.addAll(slabState.getDrops(slabParams));
+            });
+        }
+
+        return drops;
     }
 
 }

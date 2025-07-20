@@ -45,11 +45,6 @@ public class DynamicSlabBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        return DynamicSlabBlockHooks.getDrops(params);
-    }
-
-    @Override
     protected boolean isRandomlyTicking(BlockState state) {
         return true;
     }

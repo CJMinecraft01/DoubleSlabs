@@ -77,31 +77,6 @@ public class DynamicSlabBlockHooks {
         });
     }
 
-    public static List<ItemStack> getDrops(LootParams.Builder params) {
-        final var drops = new ArrayList<ItemStack>();
-
-        final var blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
-        if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlab) {
-            dynamicSlab.runOnStateContainers(container -> {
-                if (!container.hasBlockState()) {
-                    return;
-                }
-
-                final var slabState = container.getBlockState();
-
-                var slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
-
-                if (container.hasBlockEntity()) {
-                    slabParams = slabParams.withParameter(LootContextParams.BLOCK_ENTITY, Objects.requireNonNull(container.getBlockEntity()));
-                }
-
-                drops.addAll(slabState.getDrops(slabParams));
-            });
-        }
-
-        return drops;
-    }
-
     public static void randomTick(ServerLevel serverLevel, BlockPos pos, RandomSource random) {
         getDynamicSlabStateContainer(serverLevel, pos).ifPresent(container -> container.runOnStateContainers(stateContainer -> {
             final var state = stateContainer.getBlockState();
