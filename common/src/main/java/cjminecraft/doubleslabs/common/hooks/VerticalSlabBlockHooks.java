@@ -122,7 +122,9 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         // The block has been destroyed at this point so the raytrace results will be incorrect
         // Hence we use the block pos and eye pos to work out which half we are looking at
 
-        if (!(blockEntity instanceof IDynamicSlabStateContainer container)) {
+        final var type = state.getValue(VerticalSlabBlock.TYPE);
+
+        if (!(blockEntity instanceof IDynamicSlabStateContainer container) || type != VerticalSlabType.DOUBLE) {
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
         } else {
@@ -139,16 +141,10 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
                 }
             });
 
-            final var type = state.getValue(VerticalSlabBlock.TYPE);
+            final var halfToKeep = halfToRemove.getOpposite();
 
-            if (type == VerticalSlabType.DOUBLE) {
-                final var halfToKeep = halfToRemove.getOpposite();
-
-                container.clearStateContainer(halfToRemove);
-                level.setBlock(pos, state.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.fromHalf(halfToKeep)), 3);
-            } else {
-                level.removeBlock(pos, false);
-            }
+            container.clearStateContainer(halfToRemove);
+            level.setBlock(pos, state.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.fromHalf(halfToKeep)), 3);
         }
     }
 
