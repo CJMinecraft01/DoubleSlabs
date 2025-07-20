@@ -189,6 +189,13 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static Optional<SoundType> getSoundType(BlockGetter blockGetter, BlockState verticalSlabState, BlockPos pos, @Nullable Entity entity) {
+        final var type = verticalSlabState.getValue(VerticalSlabBlock.TYPE);
+
+        // Single vertical slabs can just use the sound type for the existing slab
+        if (type != VerticalSlabType.DOUBLE) {
+            return callOnBlockState(blockGetter, pos, type.getHalf(), BlockBehaviour.BlockStateBase::getSoundType);
+        }
+
         if (entity instanceof Player player) {
             // We first assume that we are destroying a block and so get the state based on what the player is looking at
             final var destroyBlockSound = callOnLookingAtBlockState(blockGetter, verticalSlabState, pos, player, BlockBehaviour.BlockStateBase::getSoundType);
