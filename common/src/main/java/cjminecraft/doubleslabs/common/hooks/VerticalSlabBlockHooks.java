@@ -127,6 +127,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         if (!(blockEntity instanceof IDynamicSlabStateContainer container) || type != VerticalSlabType.DOUBLE) {
             player.causeFoodExhaustion(0.005F);
             Block.dropResources(state, level, pos, blockEntity, player, tool);
+            level.removeBlock(pos, false);
         } else {
             final var halfToRemove = getHalfFromPlayerUsingCollision(player, state.getCollisionShape(level, pos), state, pos);
 
