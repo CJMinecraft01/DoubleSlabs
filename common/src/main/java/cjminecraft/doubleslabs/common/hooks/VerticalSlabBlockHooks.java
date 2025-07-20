@@ -4,7 +4,7 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
-import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -15,11 +15,15 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -139,6 +143,36 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
             return VerticalSlabItem.of(slab);
         }).orElse(ItemStack.EMPTY);
+    }
+
+    public static List<ItemStack> getDrops(LootParams.Builder params) {
+        final var drops = new ArrayList<ItemStack>();
+
+        final var blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlab) {
+            dynamicSlab.runOnStateContainers(container -> {
+                if (!container.hasBlockState()) {
+                    return;
+                }
+
+                final var slabState = container.getBlockState();
+
+                var slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
+
+                if (container.hasBlockEntity()) {
+                    slabParams = slabParams.withParameter(LootContextParams.BLOCK_ENTITY, Objects.requireNonNull(container.getBlockEntity()));
+                }
+
+                final var slabItem = slabState.getBlock().asItem();
+                final var slabDrops = slabState.getDrops(slabParams).stream()
+                        .map(stack -> stack.is(slabItem) ? VerticalSlabItem.of(stack) : stack)
+                        .toList();
+
+                drops.addAll(slabDrops);
+            });
+        }
+
+        return drops;
     }
 
 }

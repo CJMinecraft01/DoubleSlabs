@@ -17,10 +17,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class VerticalSlabBlock extends DynamicSlabBlock {
     // Anything specific to vertical slabs should go here
@@ -128,6 +131,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
 
         // Only allow replacing the vertical slab if the side clicked is opposite to the side the slab is facing
         return slabFacingDirection == context.getClickedFace().getOpposite();
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return VerticalSlabBlockHooks.getDrops(params);
     }
 
     @Override
