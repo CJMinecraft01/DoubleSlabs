@@ -52,6 +52,10 @@ public class DynamicSlabBlockHooks {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalAnd)).orElse(false);
     }
 
+    protected static boolean requireEitherStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, Boolean> function) {
+        return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalOr)).orElse(true);
+    }
+
     protected static void destroyHalf(IDynamicSlabStateContainer container, Player player, Level level, BlockPos pos, ItemStack tool, Half halfToRemove, Consumer<ISlabStateContainer> dropResources) {
         container.runOnStateContainer(halfToRemove, slabContainer -> {
             if (!slabContainer.hasBlockState()) {

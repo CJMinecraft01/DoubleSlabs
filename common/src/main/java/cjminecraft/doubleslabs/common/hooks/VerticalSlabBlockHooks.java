@@ -236,4 +236,8 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
+    public static boolean propagateSkylightDown(BlockGetter blockGetter, BlockPos pos) {
+        return requireEitherStates(blockGetter, pos, state -> state.propagatesSkylightDown(blockGetter, pos));
+    }
+
 }

@@ -148,4 +148,9 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         VerticalSlabBlockHooks.playerDestroy(player, level, pos, state, blockEntity, tool);
     }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+        return VerticalSlabBlockHooks.propagateSkylightDown(level, pos);
+    }
 }
