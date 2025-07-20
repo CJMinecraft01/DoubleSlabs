@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.forge.common.block;
 
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
+import cjminecraft.doubleslabs.forge.client.block.VerticalSlabClientBlockExtensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -14,7 +15,10 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class ForgeVerticalSlabBlock extends VerticalSlabBlock {
     public ForgeVerticalSlabBlock(Properties properties) {
@@ -36,6 +40,11 @@ public class ForgeVerticalSlabBlock extends VerticalSlabBlock {
     public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return VerticalSlabBlockHooks.getSoundType(level, state, pos, entity)
                 .orElseGet(() -> super.getSoundType(state, level, pos, entity));
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
+        consumer.accept(VerticalSlabClientBlockExtensions.INSTANCE);
     }
 
     @Override

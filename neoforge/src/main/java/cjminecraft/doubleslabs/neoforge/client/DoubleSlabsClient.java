@@ -7,6 +7,7 @@ import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.neoforge.client.block.MixedDoubleSlabClientBlockExtensions;
+import cjminecraft.doubleslabs.neoforge.client.block.VerticalSlabClientBlockExtensions;
 import cjminecraft.doubleslabs.neoforge.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.neoforge.client.model.NeoForgeModelBaker;
 import cjminecraft.doubleslabs.neoforge.client.model.VerticalSlabBakedModel;
@@ -66,6 +67,7 @@ public class DoubleSlabsClient {
     private void registerClientExtensions(final RegisterClientExtensionsEvent event) {
         event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.MIXED_SLAB);
         event.registerBlock(MixedDoubleSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.TRANSPARENT_MIXED_SLAB);
+        event.registerBlock(VerticalSlabClientBlockExtensions.INSTANCE, DSNeoForgeBlocks.VERTICAL_SLAB);
     }
 
     private void registerBlockColours(final RegisterColorHandlersEvent.Block event) {
