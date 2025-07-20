@@ -96,6 +96,16 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnBlockState(blockGetter, pos, slabHalf, function);
     }
 
+    protected static <T> Optional<T> callOnBlockStateBelow(final BlockGetter blockGetter, final BlockState state, final BlockPos pos, final Entity entity, final Function<BlockState, T> function) {
+        final @Nullable Half slabHalf = getHalfFromHitResult(state, new BlockHitResult(entity.position().subtract(0, 1E-5F, 0), Direction.UP, pos, true), pos);
+
+        if (slabHalf == null) {
+            return Optional.empty();
+        }
+
+        return callOnBlockState(blockGetter, pos, slabHalf, function);
+    }
+
     public static Optional<Float> getDestroyProgress(Player player, BlockGetter blockGetter, BlockState state, BlockPos pos) {
         return callOnLookingAtBlockState(blockGetter, state, pos, player, s -> s.getDestroyProgress(player, blockGetter, pos)).or(() -> minFromBlockState(blockGetter, pos, s -> s.getDestroyProgress(player, blockGetter, pos)));
     }
@@ -207,10 +217,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
         // If we have an entity, get the sound type for the slab they are on
         if (entity != null) {
-            final var half = getHalfFromHitResult(verticalSlabState, new BlockHitResult(entity.position().subtract(0, 1E-5F, 0), Direction.UP, pos, true), pos);
-            if (half != null) {
-                return callOnBlockState(blockGetter, pos, half, BlockBehaviour.BlockStateBase::getSoundType);
-            }
+            return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, BlockBehaviour.BlockStateBase::getSoundType);
         }
 
         return Optional.empty();
