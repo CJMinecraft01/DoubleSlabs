@@ -168,4 +168,11 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
             super.updateEntityAfterFallOn(level, entity);
         }
     }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        if (!VerticalSlabBlockHooks.stepOn(level, state, pos, entity)) {
+            super.stepOn(level, pos, state, entity);
+        }
+    }
 }

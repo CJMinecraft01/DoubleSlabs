@@ -261,4 +261,11 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         }).orElse(false);
     }
 
+    public static boolean stepOn(Level level, BlockState verticalSlabState, BlockPos pos, Entity entity) {
+        return callOnBlockStateBelow(level, verticalSlabState, pos, entity, state -> {
+            state.getBlock().stepOn(level, pos, state, entity);
+            return true;
+        }).orElse(false);
+    }
+
 }
