@@ -5,6 +5,7 @@ import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -152,5 +153,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock {
     @Override
     protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return VerticalSlabBlockHooks.propagateSkylightDown(level, pos);
+    }
+
+    @Override
+    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        if (!VerticalSlabBlockHooks.fallOn(level, state, pos, entity, fallDistance)) {
+            super.fallOn(level, state, pos, entity, fallDistance);
+        }
     }
 }

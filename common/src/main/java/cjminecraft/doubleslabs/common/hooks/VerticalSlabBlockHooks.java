@@ -12,7 +12,6 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -238,6 +237,13 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
     public static boolean propagateSkylightDown(BlockGetter blockGetter, BlockPos pos) {
         return requireEitherStates(blockGetter, pos, state -> state.propagatesSkylightDown(blockGetter, pos));
+    }
+
+    public static boolean fallOn(Level level, BlockState verticalSlabState, BlockPos pos, Entity entity, float fallDistance) {
+        return callOnBlockStateBelow(level, verticalSlabState, pos, entity, state -> {
+            state.getBlock().fallOn(level, state, pos, entity, fallDistance);
+            return true;
+        }).orElse(false);
     }
 
 }
