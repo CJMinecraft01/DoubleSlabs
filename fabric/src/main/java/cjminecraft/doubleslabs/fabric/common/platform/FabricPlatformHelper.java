@@ -8,6 +8,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
     private final IPlatformBlocks blocks = new FabricBlocks();
     private final IPlatformBlockEntities blockEntities = new FabricBlockEntities();
     private final IPlatformItems items = new FabricItems();
+    private final IPlatformRecipes recipes = new FabricRecipes();
 
     @Override
     public IPlatformPluginHelper getPluginHelper() {
@@ -27,5 +28,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public IPlatformItems getItems() {
         return items;
+    }
+
+    @Override
+    public IPlatformRecipes getRecipes() {
+        return recipes;
     }
 }

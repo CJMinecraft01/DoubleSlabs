@@ -29,7 +29,7 @@ public class VerticalSlabItem extends BlockItem {
     public static ItemStack setContainedSlabItem(ItemStack stack, ItemStack slab) {
         final var copy = slab.copyWithCount(1);
 
-        stack.applyComponents(DataComponentMap.builder().set(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.of(copy)).build());
+        stack.set(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.of(copy));
 
         return stack;
     }

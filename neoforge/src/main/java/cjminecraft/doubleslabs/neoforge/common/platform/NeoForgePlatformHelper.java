@@ -8,6 +8,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     private final IPlatformBlocks blocks = new NeoForgeBlocks();
     private final IPlatformBlockEntities blockEntities = new NeoForgeBlockEntities();
     private final IPlatformItems items = new NeoForgeItems();
+    private final IPlatformRecipes recipes = new NeoForgeRecipes();
 
     @Override
     public IPlatformPluginHelper getPluginHelper() {
@@ -27,5 +28,10 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public IPlatformItems getItems() {
         return items;
+    }
+
+    @Override
+    public IPlatformRecipes getRecipes() {
+        return recipes;
     }
 }

@@ -8,6 +8,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
     private final IPlatformBlocks blocks = new ForgeBlocks();
     private final IPlatformBlockEntities blockEntities = new ForgeBlockEntities();
     private final IPlatformItems items = new ForgeItems();
+    private final IPlatformRecipes recipes = new ForgeRecipes();
 
     @Override
     public IPlatformPluginHelper getPluginHelper() {
@@ -27,5 +28,10 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public IPlatformItems getItems() {
         return items;
+    }
+
+    @Override
+    public IPlatformRecipes getRecipes() {
+        return recipes;
     }
 }

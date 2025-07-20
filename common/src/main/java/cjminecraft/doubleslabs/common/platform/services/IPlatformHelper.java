@@ -10,4 +10,6 @@ public interface IPlatformHelper {
 
     IPlatformItems getItems();
 
+    IPlatformRecipes getRecipes();
+
 }
