@@ -100,6 +100,12 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     protected static <T> Optional<T> callOnBlockStateBelow(final BlockGetter blockGetter, final BlockState state, final BlockPos pos, final Entity entity, final Function<BlockState, T> function) {
+        final var type = state.getValue(VerticalSlabBlock.TYPE);
+
+        if (type != VerticalSlabType.DOUBLE) {
+            return callOnBlockState(blockGetter, pos, type.getHalf(), function);
+        }
+
         final @Nullable Half slabHalf = getHalfFromHitResult(state, new BlockHitResult(entity.position().subtract(0, 1E-5F, 0), Direction.UP, pos, true), pos);
 
         if (slabHalf == null) {
@@ -227,12 +233,6 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     public static Optional<BlockParticleOption> getParticleForLanding(BlockGetter blockGetter, BlockState verticalSlabState, BlockPos pos, Entity entity) {
-        final var type = verticalSlabState.getValue(VerticalSlabBlock.TYPE);
-
-        if (type != VerticalSlabType.DOUBLE) {
-            return callOnBlockState(blockGetter, pos, type.getHalf(), state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
-        }
-
         return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
