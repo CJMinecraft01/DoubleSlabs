@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
+import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,10 @@ public class LivingEntityMixin {
         if (type instanceof BlockParticleOption blockParticleOption) {
             if (blockParticleOption.getState().is(DSBlocks.MIXED_SLABS)) {
                 particle = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
+            }
+            if (blockParticleOption.getState().is(DSBlocks.VERTICAL_SLAB.get())) {
+                particle = VerticalSlabBlockHooks.getParticleForLanding(instance, blockParticleOption.getState(), pos, (LivingEntity) (Object) this)
+                        .orElse(blockParticleOption);
             }
         }
 

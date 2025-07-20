@@ -38,6 +38,11 @@ public class EntityMixin {
             if (blockParticleOption.getState().is(DSBlocks.MIXED_SLABS)) {
                 type = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
             }
+
+            if (blockParticleOption.getState().is(DSBlocks.VERTICAL_SLAB.get())) {
+                type = VerticalSlabBlockHooks.getParticleForLanding(instance, blockParticleOption.getState(), pos, (Entity) (Object) this)
+                        .orElse(blockParticleOption);
+            }
         }
 
         instance.addParticle(type, x, y, z, xSpeed, ySpeed, zSpeed);

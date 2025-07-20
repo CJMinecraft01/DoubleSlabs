@@ -8,8 +8,11 @@ import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -221,6 +224,16 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         }
 
         return Optional.empty();
+    }
+
+    public static Optional<BlockParticleOption> getParticleForLanding(BlockGetter blockGetter, BlockState verticalSlabState, BlockPos pos, Entity entity) {
+        final var type = verticalSlabState.getValue(VerticalSlabBlock.TYPE);
+
+        if (type != VerticalSlabType.DOUBLE) {
+            return callOnBlockState(blockGetter, pos, type.getHalf(), state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
+        }
+
+        return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, state -> new BlockParticleOption(ParticleTypes.BLOCK, state));
     }
 
 }
