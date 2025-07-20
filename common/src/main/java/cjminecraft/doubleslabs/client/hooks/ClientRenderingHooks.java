@@ -1,7 +1,9 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
+import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.Internal;
+import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.google.common.base.Preconditions;
@@ -61,6 +63,31 @@ public class ClientRenderingHooks {
             }
 
             LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 1, y + 0.5, z + 1, 0, 0, 0, 0.4f);
+            return true;
+        }
+
+        if (state.is(DSBlocks.VERTICAL_SLAB.get()) && state.getValue(VerticalSlabBlock.TYPE) == VerticalSlabType.DOUBLE) {
+            // Offset the position of the block for when we render
+            var x = hitResult.getBlockPos().getX() - camX;
+            final var y = hitResult.getBlockPos().getY() - camY;
+            var z = hitResult.getBlockPos().getZ() - camZ;
+
+            final var axis = state.getValue(VerticalSlabBlock.AXIS);
+
+            switch (axis) {
+                case X -> {
+                    if (hitResult.getLocation().x - hitResult.getBlockPos().getX() > 0.5) {
+                        x += 0.5;
+                    }
+                    LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 0.5, y + 1, z + 1, 0, 0, 0, 0.4f);
+                }
+                case Z -> {
+                    if (hitResult.getLocation().z - hitResult.getBlockPos().getZ() > 0.5) {
+                        z += 0.5;
+                    }
+                    LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 1, y + 1, z + 0.5, 0, 0, 0, 0.4f);
+                }
+            }
             return true;
         }
 
