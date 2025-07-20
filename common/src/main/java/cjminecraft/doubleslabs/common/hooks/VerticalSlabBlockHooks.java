@@ -229,7 +229,8 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
             return callOnBlockStateBelow(blockGetter, verticalSlabState, pos, entity, BlockBehaviour.BlockStateBase::getSoundType);
         }
 
-        return Optional.empty();
+        // Optimistically take the first sound type when we don't have enough information to know which sound type to use
+        return reduceOnBlockStates(blockGetter, pos, BlockBehaviour.BlockStateBase::getSoundType, (a, b) -> a);
     }
 
     public static Optional<BlockParticleOption> getParticleForLanding(BlockGetter blockGetter, BlockState verticalSlabState, BlockPos pos, Entity entity) {
