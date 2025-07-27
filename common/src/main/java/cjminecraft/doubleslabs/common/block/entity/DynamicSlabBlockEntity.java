@@ -39,15 +39,6 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
         }
     }
 
-    @Override
-    public @Nullable Half getMissingHalf() {
-        if (positiveBlockStateContainer.hasBlockState() && negativeBlockStateContainer.hasBlockState()) {
-            return null;
-        }
-
-        return positiveBlockStateContainer.hasBlockState() ? Half.NEGATIVE : Half.POSITIVE;
-    }
-
     public void setBlockState(Half half, BlockState state) {
         switch (half) {
             case POSITIVE -> positiveBlockStateContainer.setBlockState(state);

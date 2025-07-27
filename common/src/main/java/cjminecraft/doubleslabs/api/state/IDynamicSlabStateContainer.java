@@ -11,8 +11,6 @@ public interface IDynamicSlabStateContainer {
 
     void markDirty();
 
-    @Nullable Half getMissingHalf();
-
     void setBlockState(Half half, BlockState state);
 
     void setBlockEntity(Half half, @Nullable BlockEntity blockEntity);
