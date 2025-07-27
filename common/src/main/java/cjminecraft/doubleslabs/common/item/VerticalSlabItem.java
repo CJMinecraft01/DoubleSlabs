@@ -36,6 +36,10 @@ public class VerticalSlabItem extends BlockItem {
 
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
+        final var level = context.getLevel();
+        final var pos = context.getClickedPos();
+        final var originalState = level.getBlockState(pos);
+
         final var result = super.placeBlock(context, state);
         final var player = context.getPlayer();
 
@@ -43,8 +47,6 @@ public class VerticalSlabItem extends BlockItem {
             return result;
         }
 
-        final var level = context.getLevel();
-        final var pos = context.getClickedPos();
         final var stack = context.getItemInHand();
 
         final var content = Objects.requireNonNull(stack.get(DSItems.VERTICAL_SLAB_CONTENT.get()));
@@ -53,16 +55,16 @@ public class VerticalSlabItem extends BlockItem {
             return result;
         }
 
-        final var type = state.getValue(VerticalSlabBlock.TYPE);
+        final var newType = state.getValue(VerticalSlabBlock.TYPE);
 
         final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(content.getItem()).orElseThrow();
 
         final var stateFromSlabItem = Objects.requireNonNull(helper.getStateFromStack(content.getItem(), context));
 
         level.getBlockEntity(pos, DSBlockEntities.DYNAMIC_SLAB.get()).ifPresent(dynamicSlab -> {
-            final var half = type == VerticalSlabType.DOUBLE ?
-                    Objects.requireNonNull(dynamicSlab.getMissingHalf())
-                    : type.getHalf();
+            final var half = newType == VerticalSlabType.DOUBLE ?
+                    originalState.getValue(VerticalSlabBlock.TYPE).getHalf().getOpposite()
+                    : newType.getHalf();
 
             final var slabState = helper.getStateForHalf(level, pos, stateFromSlabItem, half);
             dynamicSlab.setBlockState(half, slabState);
