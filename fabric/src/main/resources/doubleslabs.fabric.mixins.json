@@ -9,7 +9,8 @@
     "EntityMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerGameModeMixin"
   ],
   "client": [
     "client.AbstractBlockRenderContextMixin",
@@ -17,11 +18,11 @@
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
     "client.ModelManagerMixin",
+    "client.MultiPlayerGameModeMixin",
     "client.ParticleEngineMixin",
     "client.RenderContextMixin",
     "client.compat.sodium.AbstractBlockRenderContextMixin",
-    "client.compat.sodium.BlockRendererMixin",
-    "client.MultiPlayerGameModeMixin"
+    "client.compat.sodium.BlockRendererMixin"
   ],
   "server": [],
   "injectors": {

@@ -134,8 +134,8 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
             return true;
         }
 
-        // Return false to signify that we want to call the super method
-        return false;
+        // Return false if the player is in survival to signify that we want to call the super method
+        return !player.isCreative();
     }
 
     public static void playerDestroy(Player player, Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
