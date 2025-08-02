@@ -5,9 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 
 public interface IVerticalSlabHelper {
 
@@ -28,5 +31,11 @@ public interface IVerticalSlabHelper {
     VerticalSlabState getVerticalSlabState(BlockGetter level, BlockPos pos, BlockState state);
 
     BlockState getStateForVerticalSlabState(BlockGetter level, BlockPos pos, BlockState state, VerticalSlabState verticalSlabState);
+
+    @Nullable
+    default BlockState getStateFromStack(ItemStack stack, BlockPlaceContext blockPlaceContext) {
+        return stack.getItem() instanceof BlockItem blockItem ?
+                blockItem.getBlock().getStateForPlacement(blockPlaceContext) : null;
+    }
 
 }
