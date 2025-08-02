@@ -70,16 +70,15 @@ public class PlacementHooks {
             if (clickedFace.getAxis().isVertical() && optionalClickedBlockSlabHelper.isPresent()) {
                 final var clickedBlockSlabHelper = optionalClickedBlockSlabHelper.get();
 
-                // If we are clicking on the top or bottom of a double slab, use default behaviour
-                if (clickedBlockSlabHelper.isDoubleSlab(clickedBlockState)) {
-                    return Optional.empty();
-                }
-
-                final var half = clickedBlockSlabHelper.getHalf(level, clickedPos, clickedBlockState);
-                // Check that the side clicked is the side that would place the slab within the same block
-                if ((half == Half.NEGATIVE && clickedFace == Direction.UP) || (half == Half.POSITIVE && clickedFace == Direction.DOWN)) {
-                    return tryCombineHorizontalSlabs(level, clickedBlockState, clickedPos, player, itemInHand, hand,
-                            blockHitResult, clickedBlockSlabHelper, itemInHandSlabHelper);
+                // If we are clicking on the top or bottom of a double slab, try to place relative
+                // Otherwise, try to combine the slabs
+                if (!clickedBlockSlabHelper.isDoubleSlab(clickedBlockState)) {
+                    final var half = clickedBlockSlabHelper.getHalf(level, clickedPos, clickedBlockState);
+                    // Check that the side clicked is the side that would place the slab within the same block
+                    if ((half == Half.NEGATIVE && clickedFace == Direction.UP) || (half == Half.POSITIVE && clickedFace == Direction.DOWN)) {
+                        return tryCombineHorizontalSlabs(level, clickedBlockState, clickedPos, player, itemInHand, hand,
+                                blockHitResult, clickedBlockSlabHelper, itemInHandSlabHelper);
+                    }
                 }
             }
 
