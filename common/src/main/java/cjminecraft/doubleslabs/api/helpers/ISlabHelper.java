@@ -59,6 +59,8 @@ public interface ISlabHelper {
 
     boolean areSameTypeOfSlab(BlockState state, IHorizontalSlabHelper stateSlabHelper, ItemStack stack, IHorizontalSlabHelper stackSlabHelper);
 
+    boolean areSameTypeOfSlab(BlockState state, IVerticalSlabHelper stateSlabHelper, ItemStack stack, IVerticalSlabHelper stackSlabHelper);
+
     Optional<ISlabAbilities> getSlabAbilities(Block block);
 
 }

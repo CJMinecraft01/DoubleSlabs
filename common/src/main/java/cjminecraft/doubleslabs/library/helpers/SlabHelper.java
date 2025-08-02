@@ -121,6 +121,11 @@ public class SlabHelper implements ISlabHelper {
     }
 
     @Override
+    public boolean areSameTypeOfSlab(BlockState state, IVerticalSlabHelper stateSlabHelper, ItemStack stack, IVerticalSlabHelper stackSlabHelper) {
+        return stateSlabHelper == stackSlabHelper && stackSlabHelper.areSameTypeOfSlab(state, stack);
+    }
+
+    @Override
     public Optional<ISlabAbilities> getSlabAbilities(Block block) {
         if (block instanceof ISlabAbilities abilities) {
             return Optional.of(abilities);

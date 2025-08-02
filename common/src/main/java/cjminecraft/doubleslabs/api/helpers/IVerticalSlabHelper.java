@@ -32,6 +32,10 @@ public interface IVerticalSlabHelper {
 
     BlockState getStateForVerticalSlabState(BlockGetter level, BlockPos pos, BlockState state, VerticalSlabState verticalSlabState);
 
+    default boolean areSameTypeOfSlab(BlockState state, ItemStack stack) {
+        return stack.getItem() instanceof BlockItem blockItem && state.is(blockItem.getBlock());
+    }
+
     @Nullable
     default BlockState getStateFromStack(ItemStack stack, BlockPlaceContext blockPlaceContext) {
         return stack.getItem() instanceof BlockItem blockItem ?
