@@ -1,10 +1,12 @@
 package cjminecraft.doubleslabs.fabric.client.model;
 
 import cjminecraft.doubleslabs.client.ClientInternal;
+import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.fabric.api.client.IDynamicSlabRenderContext;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -23,9 +25,14 @@ public class VerticalSlabBakedModel extends FabricDynamicSlabBakedModel {
         final var blockEntity = blockView.getBlockEntity(pos);
 
         if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlabBlockEntity) {
+            final var blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
+            final var slabHelper = Internal.getSlabHelper();
+
             dynamicSlabBlockEntity.runOnBlockStates((half, slabState) -> {
                 final var direction = type.getDirection(half, axis);
-                final var model = ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabState, direction);
+                final var model = slabHelper.isVerticalSlab(slabState) ?
+                        blockRenderDispatcher.getBlockModel(slabState) :
+                        ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabState, direction);
 
                 ((IDynamicSlabRenderContext) context).prepareForBlock(slabState, pos, model.useAmbientOcclusion());
 

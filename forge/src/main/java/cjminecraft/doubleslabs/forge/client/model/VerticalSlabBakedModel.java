@@ -3,7 +3,9 @@ package cjminecraft.doubleslabs.forge.client.model;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
+import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -40,11 +42,16 @@ public class VerticalSlabBakedModel extends ForgeDynamicSlabBakedModel {
         final var type = state.getValue(VerticalSlabBlock.TYPE);
         final var axis = state.getValue(VerticalSlabBlock.AXIS);
 
+        final var blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
+        final var slabHelper = Internal.getSlabHelper();
+
         final var quads = new ArrayList<BakedQuad>();
 
         stateContainer.runOnBlockStates((half, slabState) -> {
             final var direction = type.getDirection(half, axis);
-            final var model = ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabState, direction);
+            final var model = slabHelper.isVerticalSlab(slabState) ?
+                    blockRenderDispatcher.getBlockModel(slabState) :
+                    ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabState, direction);
 
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
                 final var modelQuads = model.getQuads(slabState, side, rand, data, renderType);
