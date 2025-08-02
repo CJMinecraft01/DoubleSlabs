@@ -15,6 +15,10 @@ public interface IDynamicSlabStateContainer {
 
     void setBlockEntity(Half half, @Nullable BlockEntity blockEntity);
 
+    default void clearStateContainer(Half half) {
+        runOnStateContainer(half, ISlabStateContainer::clear);
+    }
+
     ISlabStateContainer getStateContainer(Half half);
 
     void runOnStateContainers(Consumer<ISlabStateContainer> consumer);
@@ -34,8 +38,8 @@ public interface IDynamicSlabStateContainer {
     }
 
     default <T> Optional<T> reduceOnBlockStates(Function<BlockState, T> consumer, BiFunction<T, T, T> reducer) {
-        final var resultTop = callOnBlockState(Half.TOP, consumer);
-        final var resultBottom = callOnBlockState(Half.BOTTOM, consumer);
+        final var resultTop = callOnBlockState(Half.POSITIVE, consumer);
+        final var resultBottom = callOnBlockState(Half.NEGATIVE, consumer);
 
         if (resultTop.isPresent() && resultBottom.isPresent()) {
             return Optional.of(reducer.apply(resultTop.get(), resultBottom.get()));

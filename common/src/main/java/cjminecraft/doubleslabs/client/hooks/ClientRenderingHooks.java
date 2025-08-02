@@ -1,7 +1,9 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
+import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.Internal;
+import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.google.common.base.Preconditions;
@@ -16,7 +18,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,7 +51,7 @@ public class ClientRenderingHooks {
         final var state = level.getBlockState(hitResult.getBlockPos());
 
         // TODO: It may be better to use the shapes of each half instead of manually defining a box
-        if (isDoubleSlab(level, hitResult.getBlockPos(), state)) {
+        if (isDoubleSlab(state)) {
             // Offset the position of the block for when we render
             final var x = hitResult.getBlockPos().getX() - camX;
             var y = hitResult.getBlockPos().getY() - camY;
@@ -65,16 +66,41 @@ public class ClientRenderingHooks {
             return true;
         }
 
+        if (state.is(DSBlocks.VERTICAL_SLAB.get()) && state.getValue(VerticalSlabBlock.TYPE) == VerticalSlabType.DOUBLE) {
+            // Offset the position of the block for when we render
+            var x = hitResult.getBlockPos().getX() - camX;
+            final var y = hitResult.getBlockPos().getY() - camY;
+            var z = hitResult.getBlockPos().getZ() - camZ;
+
+            final var axis = state.getValue(VerticalSlabBlock.AXIS);
+
+            switch (axis) {
+                case X -> {
+                    if (hitResult.getLocation().x - hitResult.getBlockPos().getX() > 0.5) {
+                        x += 0.5;
+                    }
+                    LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 0.5, y + 1, z + 1, 0, 0, 0, 0.4f);
+                }
+                case Z -> {
+                    if (hitResult.getLocation().z - hitResult.getBlockPos().getZ() > 0.5) {
+                        z += 0.5;
+                    }
+                    LevelRenderer.renderLineBox(poseStack, vertexConsumer.get(), x, y, z, x + 1, y + 1, z + 0.5, 0, 0, 0, 0.4f);
+                }
+            }
+            return true;
+        }
+
         return false;
     }
 
-    private static boolean isDoubleSlab(final Level level, final BlockPos pos, final BlockState state) {
+    private static boolean isDoubleSlab(final BlockState state) {
         if (state.is(DSBlocks.MIXED_SLABS)) {
             return true;
         }
 
         final var slabHelper = Internal.getSlabHelper().getHorizontalSlabHelper(state);
-        return slabHelper.isPresent() && slabHelper.get().isDoubleSlab(level, pos, state);
+        return slabHelper.isPresent() && slabHelper.get().isDoubleSlab(state);
     }
 
     public static void addTextToDebugScreenOverlay(List<String> text) {

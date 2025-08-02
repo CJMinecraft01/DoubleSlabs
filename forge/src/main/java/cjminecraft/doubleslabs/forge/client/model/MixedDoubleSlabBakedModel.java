@@ -2,7 +2,7 @@ package cjminecraft.doubleslabs.forge.client.model;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
-import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
+import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
 
 public class MixedDoubleSlabBakedModel extends ForgeDynamicSlabBakedModel {
 
@@ -44,10 +46,10 @@ public class MixedDoubleSlabBakedModel extends ForgeDynamicSlabBakedModel {
 
             if (model.getRenderTypes(slabState, rand, data).contains(renderType)) {
                 final var modelQuads = model.getQuads(slabState, side, rand, data, renderType);
-                final var directionToCull = half == Half.TOP ? Direction.DOWN : Direction.UP;
+                final var directionToCull = half == Half.POSITIVE ? Direction.DOWN : Direction.UP;
 
                 quads.addAll(modelQuads.stream().filter(quad -> shouldNotCull || quad.getDirection() != directionToCull)
-                        .map(MixedDoubleSlabBlockClientHooks.withCorrectTint(half)).toList());
+                        .map(DynamicSlabBlockClientHooks.withCorrectTint(half)).toList());
             }
         });
 

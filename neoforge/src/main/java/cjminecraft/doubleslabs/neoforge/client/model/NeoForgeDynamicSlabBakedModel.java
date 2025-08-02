@@ -2,6 +2,7 @@ package cjminecraft.doubleslabs.neoforge.client.model;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.model.DynamicSlabBakedModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -18,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
+
 public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
 
     public static final ModelProperty<IDynamicSlabStateContainer> DYNAMIC_SLAB_STATE_CONTAINER = new ModelProperty<>();
@@ -30,9 +33,9 @@ public abstract class NeoForgeDynamicSlabBakedModel extends DynamicSlabBakedMode
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
-                Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.TOP,
+                Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.POSITIVE,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
-                        DynamicSlabBakedModel::getFallbackModel) : getFallbackModel();
+                        ClientInternal::getFallbackModel) : getFallbackModel();
 
         return model.getParticleIcon(ModelData.EMPTY);
     }

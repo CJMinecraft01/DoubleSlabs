@@ -2,24 +2,22 @@ package cjminecraft.doubleslabs.common.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import cjminecraft.doubleslabs.common.Internal;
-import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -54,29 +52,28 @@ public class DynamicSlabBlockHooks {
         return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalAnd)).orElse(false);
     }
 
-    public static List<ItemStack> getDrops(LootParams.Builder params) {
-        final var drops = new ArrayList<ItemStack>();
+    protected static boolean requireEitherStates(BlockGetter blockGetter, BlockPos pos, Function<BlockState, Boolean> function) {
+        return getDynamicSlabStateContainer(blockGetter, pos).flatMap(container -> container.reduceOnBlockStates(function, Boolean::logicalOr)).orElse(true);
+    }
 
-        final var blockEntity = params.getParameter(LootContextParams.BLOCK_ENTITY);
-        if (blockEntity instanceof DynamicSlabBlockEntity<?> dynamicSlab) {
-            dynamicSlab.runOnStateContainers(container -> {
-                if (!container.hasBlockState()) {
-                    return;
-                }
+    protected static void destroyHalf(IDynamicSlabStateContainer container, Player player, Level level, BlockPos pos, ItemStack tool, Half halfToRemove, Consumer<ISlabStateContainer> dropResources) {
+        container.runOnStateContainer(halfToRemove, slabContainer -> {
+            if (!slabContainer.hasBlockState()) {
+                return;
+            }
 
-                final var slabState = container.getBlockState();
+            final var slabState = slabContainer.getBlockState();
 
-                var slabParams = params.withParameter(LootContextParams.BLOCK_STATE, slabState);
+            player.awardStat(Stats.BLOCK_MINED.get(slabState.getBlock()));
+            level.levelEvent(2001, pos, Block.getId(slabState));
+            player.causeFoodExhaustion(0.005F);
 
-                if (container.hasBlockEntity()) {
-                    slabParams = slabParams.withParameter(LootContextParams.BLOCK_ENTITY, Objects.requireNonNull(container.getBlockEntity()));
-                }
+            if (!player.isCreative()) {
+                dropResources.accept(slabContainer);
+            }
 
-                drops.addAll(slabState.getDrops(slabParams));
-            });
-        }
-
-        return drops;
+            slabState.onRemove(level, pos, Blocks.AIR.defaultBlockState(), false);
+        });
     }
 
     public static void randomTick(ServerLevel serverLevel, BlockPos pos, RandomSource random) {

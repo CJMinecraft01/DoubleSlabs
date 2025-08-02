@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
+import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
@@ -24,6 +25,9 @@ public abstract class PlayerMixin {
     private SoundType getSoundType(BlockState state, BlockPos pos, Player player) {
         if (state.is(DSBlocks.MIXED_SLABS)) {
             return MixedDoubleSlabBlockHooks.getSoundType(player.level(), pos, player).orElseGet(state::getSoundType);
+        }
+        if (state.is(DSBlocks.VERTICAL_SLAB.get())) {
+            return VerticalSlabBlockHooks.getSoundType(player.level(), state, pos, player).orElseGet(state::getSoundType);
         }
         return state.getSoundType();
     }

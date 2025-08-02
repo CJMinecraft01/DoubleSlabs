@@ -9,13 +9,21 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     // Anything specific to horizontal double slabs should go here
 
     public MixedDoubleSlabBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return MixedDoubleSlabBlockHooks.getDrops(params);
     }
 
     @Override

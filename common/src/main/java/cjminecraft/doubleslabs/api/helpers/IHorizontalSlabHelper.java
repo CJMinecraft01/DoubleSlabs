@@ -32,7 +32,7 @@ public interface IHorizontalSlabHelper {
 
     BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half);
 
-    boolean isDoubleSlab(BlockGetter level, BlockPos pos, BlockState state);
+    boolean isDoubleSlab(BlockState state);
 
     default boolean areSameTypeOfSlab(BlockState state, ItemStack stack) {
         return stack.getItem() instanceof BlockItem blockItem && state.is(blockItem.getBlock());

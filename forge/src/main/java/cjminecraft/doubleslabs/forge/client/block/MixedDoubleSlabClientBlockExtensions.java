@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.forge.client.block;
 
+import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.client.hooks.MixedDoubleSlabBlockClientHooks;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -27,6 +28,6 @@ public class MixedDoubleSlabClientBlockExtensions implements IClientBlockExtensi
 
     @Override
     public boolean addDestroyEffects(BlockState state, Level level, BlockPos pos, ParticleEngine manager) {
-        return MixedDoubleSlabBlockClientHooks.addDestroyEffects(level, pos, manager);
+        return DynamicSlabBlockClientHooks.addDestroyEffects(level, pos, manager);
     }
 }

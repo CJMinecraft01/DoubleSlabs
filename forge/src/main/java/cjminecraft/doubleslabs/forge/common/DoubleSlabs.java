@@ -5,6 +5,8 @@ import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.forge.client.DoubleSlabsClient;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlockEntities;
 import cjminecraft.doubleslabs.forge.common.init.DSForgeBlocks;
+import cjminecraft.doubleslabs.forge.common.init.DSForgeItems;
+import cjminecraft.doubleslabs.forge.common.init.DSForgeRecipes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +21,11 @@ public class DoubleSlabs {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> DoubleSlabsClient.addListeners(modBus));
 
         DSForgeBlocks.BLOCKS.register(modBus);
+        DSForgeItems.ITEMS.register(modBus);
+        DSForgeItems.DATA_COMPONENT_TYPES.register(modBus);
+        DSForgeItems.CREATIVE_MODE_TABS.register(modBus);
         DSForgeBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
+        DSForgeRecipes.RECIPE_SERIALIZERS.register(modBus);
         Internal.initialise();
     }
 }

@@ -8,4 +8,8 @@ public interface IPlatformHelper {
 
     IPlatformBlockEntities getBlockEntities();
 
+    IPlatformItems getItems();
+
+    IPlatformRecipes getRecipes();
+
 }

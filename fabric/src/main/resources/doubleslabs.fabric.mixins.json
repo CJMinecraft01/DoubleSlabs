@@ -9,13 +9,16 @@
     "EntityMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerGameModeMixin"
   ],
   "client": [
     "client.AbstractBlockRenderContextMixin",
     "client.DebugScreenOverlayMixin",
     "client.LevelRendererMixin",
     "client.MinecraftMixin",
+    "client.ModelManagerMixin",
+    "client.MultiPlayerGameModeMixin",
     "client.ParticleEngineMixin",
     "client.RenderContextMixin",
     "client.compat.sodium.AbstractBlockRenderContextMixin",

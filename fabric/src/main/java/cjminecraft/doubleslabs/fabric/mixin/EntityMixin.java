@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.fabric.mixin;
 
 import cjminecraft.doubleslabs.common.hooks.MixedDoubleSlabBlockHooks;
+import cjminecraft.doubleslabs.common.hooks.VerticalSlabBlockHooks;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
@@ -25,6 +26,9 @@ public class EntityMixin {
         if (instance.is(DSBlocks.MIXED_SLABS)) {
             return MixedDoubleSlabBlockHooks.getSoundType(level, pos, (Entity) (Object) this).orElseGet(instance::getSoundType);
         }
+        if (instance.is(DSBlocks.VERTICAL_SLAB.get())) {
+            return VerticalSlabBlockHooks.getSoundType(level, instance, pos, (Entity) (Object) this).orElseGet(instance::getSoundType);
+        }
         return instance.getSoundType();
     }
 
@@ -33,6 +37,11 @@ public class EntityMixin {
         if (type instanceof BlockParticleOption blockParticleOption) {
             if (blockParticleOption.getState().is(DSBlocks.MIXED_SLABS)) {
                 type = MixedDoubleSlabBlockHooks.getParticleForTopSlab(instance, pos).orElse(blockParticleOption);
+            }
+
+            if (blockParticleOption.getState().is(DSBlocks.VERTICAL_SLAB.get())) {
+                type = VerticalSlabBlockHooks.getParticleForLanding(instance, blockParticleOption.getState(), pos, (Entity) (Object) this)
+                        .orElse(blockParticleOption);
             }
         }
 

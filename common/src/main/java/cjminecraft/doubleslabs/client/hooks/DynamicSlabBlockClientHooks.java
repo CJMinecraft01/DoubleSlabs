@@ -1,10 +1,16 @@
 package cjminecraft.doubleslabs.client.hooks;
 
 import cjminecraft.doubleslabs.api.state.Half;
-import cjminecraft.doubleslabs.client.ClientConstants;
+import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.common.hooks.DynamicSlabBlockHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+
+import java.util.function.Function;
 
 public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
 
@@ -17,13 +23,29 @@ public class DynamicSlabBlockClientHooks extends DynamicSlabBlockHooks {
             final var blockColours = Minecraft.getInstance().getBlockColors();
 
             return getDynamicSlabStateContainer(level, pos).flatMap(container -> {
-                if (tintIndex >= ClientConstants.TINT_OFFSET) {
-                    return container.callOnBlockState(Half.TOP, slabState ->
-                            blockColours.getColor(slabState, level, pos, tintIndex - ClientConstants.TINT_OFFSET));
+                if (tintIndex >= ClientInternal.TINT_OFFSET) {
+                    return container.callOnBlockState(Half.POSITIVE, slabState ->
+                            blockColours.getColor(slabState, level, pos, tintIndex - ClientInternal.TINT_OFFSET));
                 }
-                return container.callOnBlockState(Half.BOTTOM, slabState ->
+                return container.callOnBlockState(Half.NEGATIVE, slabState ->
                                 blockColours.getColor(slabState, level, pos, tintIndex));
             }).orElse(-1);
+        };
+    }
+
+    public static boolean addDestroyEffects(BlockGetter blockGetter, BlockPos slabPos, ParticleEngine particleEngine) {
+        return getDynamicSlabStateContainer(blockGetter, slabPos).map(container -> {
+            container.runOnBlockStates(state -> particleEngine.destroy(slabPos, state));
+            return true;
+        }).orElse(false);
+    }
+
+    public static Function<BakedQuad, BakedQuad> withCorrectTint(Half half) {
+        return switch (half) {
+            case POSITIVE -> (quad) -> quad.isTinted() ?
+                    new BakedQuad(quad.getVertices(), quad.getTintIndex() + ClientInternal.TINT_OFFSET, quad.getDirection(), quad.getSprite(), quad.isShade())
+                    : quad;
+            case NEGATIVE -> (quad) -> quad;
         };
     }
 

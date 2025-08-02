@@ -41,23 +41,23 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
 
     public void setBlockState(Half half, BlockState state) {
         switch (half) {
-            case TOP -> positiveBlockStateContainer.setBlockState(state);
-            case BOTTOM -> negativeBlockStateContainer.setBlockState(state);
+            case POSITIVE -> positiveBlockStateContainer.setBlockState(state);
+            case NEGATIVE -> negativeBlockStateContainer.setBlockState(state);
         }
     }
 
     public void setBlockEntity(Half half, @Nullable BlockEntity blockEntity) {
         switch (half) {
-            case TOP -> positiveBlockStateContainer.setBlockEntity(blockEntity);
-            case BOTTOM -> negativeBlockStateContainer.setBlockEntity(blockEntity);
+            case POSITIVE -> positiveBlockStateContainer.setBlockEntity(blockEntity);
+            case NEGATIVE -> negativeBlockStateContainer.setBlockEntity(blockEntity);
         }
     }
 
     @Override
     public ISlabStateContainer getStateContainer(Half half) {
         return switch (half) {
-            case TOP -> positiveBlockStateContainer;
-            case BOTTOM -> negativeBlockStateContainer;
+            case POSITIVE -> positiveBlockStateContainer;
+            case NEGATIVE -> negativeBlockStateContainer;
         };
     }
 
@@ -69,23 +69,23 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
 
     @Override
     public void runOnStateContainers(BiConsumer<Half, ISlabStateContainer> consumer) {
-        consumer.accept(Half.TOP, positiveBlockStateContainer);
-        consumer.accept(Half.BOTTOM, negativeBlockStateContainer);
+        consumer.accept(Half.POSITIVE, positiveBlockStateContainer);
+        consumer.accept(Half.NEGATIVE, negativeBlockStateContainer);
     }
 
     @Override
     public void runOnStateContainer(Half half, Consumer<ISlabStateContainer> consumer) {
         switch (half) {
-            case TOP -> consumer.accept(positiveBlockStateContainer);
-            case BOTTOM -> consumer.accept(negativeBlockStateContainer);
+            case POSITIVE -> consumer.accept(positiveBlockStateContainer);
+            case NEGATIVE -> consumer.accept(negativeBlockStateContainer);
         }
     }
 
     @Override
     public <T> T callOnStateContainer(Half half, Function<ISlabStateContainer, T> consumer) {
         return switch (half) {
-            case TOP -> consumer.apply(positiveBlockStateContainer);
-            case BOTTOM -> consumer.apply(negativeBlockStateContainer);
+            case POSITIVE -> consumer.apply(positiveBlockStateContainer);
+            case NEGATIVE -> consumer.apply(negativeBlockStateContainer);
         };
     }
 
