@@ -65,4 +65,12 @@ public enum VerticalSlabType implements StringRepresentable {
         };
     }
 
+    public VerticalSlabType getOpposite() {
+        return switch (this) {
+            case POSITIVE -> NEGATIVE;
+            case NEGATIVE -> POSITIVE;
+            case DOUBLE -> throw new IllegalStateException("Cannot get the opposite of a double slab type");
+        };
+    }
+
 }
