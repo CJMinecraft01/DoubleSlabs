@@ -47,5 +47,4 @@ plugins {
 rootProject.name = 'DoubleSlabs'
 include('common')
 include('fabric')
-include('neoforge')
 include('forge')
