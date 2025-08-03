@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.forge.client.hooks;
 
 import cjminecraft.doubleslabs.client.hooks.ClientRenderingHooks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
@@ -20,6 +21,11 @@ public class ClientRenderingEvents {
 
     @SubscribeEvent
     public static void addTextToDebugScreenOverlay(CustomizeGuiOverlayEvent.DebugText event) {
+        // Only show debug text when on the debug menu
+        if (!Minecraft.getInstance().options.renderDebug) {
+            return;
+        }
+
         ClientRenderingHooks.addTextToDebugScreenOverlay(event.getRight());
     }
 
