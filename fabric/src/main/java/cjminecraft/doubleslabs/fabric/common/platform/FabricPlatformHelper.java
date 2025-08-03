@@ -1,8 +1,12 @@
 package cjminecraft.doubleslabs.fabric.common.platform;
 
 import cjminecraft.doubleslabs.common.platform.services.*;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.player.Player;
 
 public class FabricPlatformHelper implements IPlatformHelper {
+
+    private static final double MAX_REACH_DISTANCE = Math.sqrt(ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE);
 
     private final IPlatformPluginHelper pluginHelper = new FabricPluginHelper();
     private final IPlatformBlocks blocks = new FabricBlocks();
@@ -33,5 +37,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public IPlatformRecipes getRecipes() {
         return recipes;
+    }
+
+    @Override
+    public double getPlayerReachDistance(Player player) {
+        return MAX_REACH_DISTANCE;
     }
 }
