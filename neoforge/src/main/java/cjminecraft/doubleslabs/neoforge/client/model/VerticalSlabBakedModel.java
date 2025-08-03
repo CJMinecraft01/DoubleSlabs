@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.neoforge.client.model;
 
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
+import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.hooks.DynamicSlabBlockClientHooks;
 import cjminecraft.doubleslabs.common.Internal;
@@ -47,6 +48,11 @@ public class VerticalSlabBakedModel extends NeoForgeDynamicSlabBakedModel {
         final var quads = new ArrayList<BakedQuad>();
 
         stateContainer.runOnBlockStates((half, slabState) -> {
+            // Only add quads for the present vertical slab half
+            if (type != VerticalSlabType.DOUBLE && type.getHalf() != half) {
+                return;
+            }
+
             final var direction = type.getDirection(half, axis);
             final var model = slabHelper.isVerticalSlab(slabState) ?
                     blockRenderDispatcher.getBlockModel(slabState) :
