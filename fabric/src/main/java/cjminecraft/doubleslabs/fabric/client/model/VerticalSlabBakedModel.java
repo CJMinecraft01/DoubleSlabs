@@ -1,5 +1,6 @@
 package cjminecraft.doubleslabs.fabric.client.model;
 
+import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
@@ -29,6 +30,11 @@ public class VerticalSlabBakedModel extends FabricDynamicSlabBakedModel {
             final var slabHelper = Internal.getSlabHelper();
 
             dynamicSlabBlockEntity.runOnBlockStates((half, slabState) -> {
+                // Only emit quads for the present vertical slab half
+                if (type != VerticalSlabType.DOUBLE && type.getHalf() != half) {
+                    return;
+                }
+
                 final var direction = type.getDirection(half, axis);
                 final var model = slabHelper.isVerticalSlab(slabState) ?
                         blockRenderDispatcher.getBlockModel(slabState) :
