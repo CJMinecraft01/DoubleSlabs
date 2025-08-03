@@ -32,7 +32,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
 
     private void modifyModels(ModelLoadingPlugin.Context pluginContext) {
         pluginContext.modifyModelAfterBake().register((original, context) -> {
-            final var location = context.topLevelId();
+            final var location = context.id();
 
             if (location == null) {
                 return original;
@@ -46,7 +46,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
                 return new VerticalSlabItemBakedModel(context.baker());
             }
 
-            if (location.id().equals(VERTICAL_SLAB_ID)) {
+            if (location.equals(VERTICAL_SLAB_ID)) {
                 return new VerticalSlabBakedModel();
             }
 
