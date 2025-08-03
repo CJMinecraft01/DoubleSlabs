@@ -11,7 +11,7 @@ repositories {
     }
 }
 
-var sodiumVersion = "mc1.21.1-0.6.13-fabric"
+var sodiumVersion = "mc1.20.1-0.5.13-fabric"
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
