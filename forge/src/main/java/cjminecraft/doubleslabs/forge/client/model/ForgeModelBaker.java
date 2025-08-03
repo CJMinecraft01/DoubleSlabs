@@ -18,7 +18,7 @@ public class ForgeModelBaker extends PlatformIndependentModelBaker {
     public @Nullable BakedModel bake(ResourceLocation resourceLocation, ModelState modelState, Function<Material, TextureAtlasSprite> function) {
         final var model = getModel(resourceLocation);
 
-        return model.bake(this, function, modelState);
+        return model.bake(this, function, modelState, resourceLocation);
     }
 
     @Override

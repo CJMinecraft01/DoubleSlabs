@@ -70,14 +70,15 @@ public class VerticalSlabModelBaker {
     }
 
     private void bake(final Item item, final ResourceLocation registryName) {
-        final var model = modelBaker.getModel(registryName.withPrefix("item/"));
+        final var resourceLocation = registryName.withPrefix("item/");
+        final var model = modelBaker.getModel(resourceLocation);
 
         if (!(model instanceof BlockModel blockModel)) {
             Constants.LOG.warn("Cannot bake vertical slab model for {} as it does not use a block model", registryName);
             return;
         }
 
-        final var bakedModel = blockModel.bake(modelBaker, blockModel, modelBaker::getTextureSprite, BlockModelRotation.X90_Y0, false);
+        final var bakedModel = blockModel.bake(modelBaker, blockModel, modelBaker::getTextureSprite, BlockModelRotation.X90_Y0, resourceLocation, false);
 
         itemModels.put(item, bakedModel);
     }
@@ -91,7 +92,7 @@ public class VerticalSlabModelBaker {
     }
 
     private void bake(final BlockState state) {
-        final var resourceLocation = BlockModelShaper.stateToModelLocation(state).id().withPrefix("block/");
+        final var resourceLocation = BlockModelShaper.stateToModelLocation(state).withPrefix("block/");
 
         final var directionalModels = Maps.<Direction, BakedModel>newEnumMap(Direction.class);
         directionalModels.put(Direction.NORTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));

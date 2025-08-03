@@ -23,7 +23,7 @@ public abstract class PlatformIndependentModelBaker implements ModelBaker {
     public @Nullable BakedModel bake(ResourceLocation resourceLocation, ModelState modelState) {
         final var model = getModel(resourceLocation);
 
-        return model.bake(this, this::getTextureSprite, modelState);
+        return model.bake(this, this::getTextureSprite, modelState, resourceLocation);
     }
 
     public TextureAtlasSprite getTextureSprite(Material material) {
