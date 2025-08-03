@@ -170,7 +170,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         }
     }
 
-    public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, HitResult hitResult) {
+    public static ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state, HitResult hitResult) {
         return callOnLookingAtBlockState(level, state, pos, hitResult, s -> {
             final var slab = s.getBlock().getCloneItemStack(level, pos, s);
 

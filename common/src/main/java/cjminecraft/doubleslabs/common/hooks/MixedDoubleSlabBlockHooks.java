@@ -153,7 +153,7 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
         }
     }
 
-    public static ItemStack getCloneItemStack(LevelReader level, BlockPos pos, HitResult hitResult) {
+    public static ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, HitResult hitResult) {
         return callOnLookingAtBlockState(level, pos, hitResult, state -> state.getBlock().getCloneItemStack(level, pos, state))
                 .orElse(ItemStack.EMPTY);
     }
