@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
+import cjminecraft.doubleslabs.common.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -54,14 +55,14 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
     }
 
     protected static @Nullable Half getHalfFromLookingAtBlock(final Player player, final BlockPos slabPos) {
-        final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+        final var hitResult = player.pick(Services.PLATFORM.getPlayerReachDistance(player), 0F, false);
 
         return getHalfFromHitResult(hitResult, slabPos);
     }
 
     private static Half getHalfFromPlayerUsingCollision(final Player player, final VoxelShape collisionShape, final BlockPos slabPos) {
         final var clipStart = player.getEyePosition();
-        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(player.blockInteractionRange()));
+        final var clipEnd = player.getEyePosition().add(player.getLookAngle().scale(Services.PLATFORM.getPlayerReachDistance(player)));
 
         final var hitResult = Objects.requireNonNull(collisionShape.clip(clipStart, clipEnd, slabPos));
 

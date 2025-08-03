@@ -3,6 +3,7 @@ package cjminecraft.doubleslabs.common.hooks;
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
 import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.common.Internal;
+import cjminecraft.doubleslabs.common.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.stats.Stats;
@@ -21,7 +22,7 @@ public class DoubleSlabBlockHooks {
             return false;
         }
 
-        final var hitResult = player.pick(player.blockInteractionRange(), 0F, false);
+        final var hitResult = player.pick(Services.PLATFORM.getPlayerReachDistance(player), 0F, false);
 
         if (hitResult.getType() != HitResult.Type.BLOCK) {
             return false;
