@@ -19,12 +19,15 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
     }
+
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     modCompileOnly("maven.modrinth:sodium:$sodiumVersion")
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+    implementation project(":common")
 }
 
 loom {
