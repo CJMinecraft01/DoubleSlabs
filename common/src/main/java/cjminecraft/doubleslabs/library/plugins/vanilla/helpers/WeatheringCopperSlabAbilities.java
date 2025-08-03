@@ -25,7 +25,7 @@ public class WeatheringCopperSlabAbilities implements ISlabAbilities {
         final var block = (WeatheringCopperSlabBlock) originalState.getBlock();
 
         if (random.nextFloat() < 0.05688889F) {
-            block.getNextState(originalState, level, pos, random).ifPresent(stateContainer::setBlockState);
+            block.getNext(originalState).ifPresent(stateContainer::setBlockState);
         }
     }
 }
