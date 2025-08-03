@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Blocks;
 public class VanillaPlugin implements IDoubleSlabsPlugin {
     @Override
     public ResourceLocation getPluginId() {
-        return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "minecraft");
+        return new ResourceLocation(Constants.MOD_ID, "minecraft");
     }
 
     @Override
