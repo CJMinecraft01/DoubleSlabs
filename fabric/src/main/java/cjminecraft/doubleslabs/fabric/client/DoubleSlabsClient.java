@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.client.ClientInternal;
 import cjminecraft.doubleslabs.client.hooks.VerticalSlabItemClientHooks;
 import cjminecraft.doubleslabs.client.model.VerticalSlabItemBakedModel;
 import cjminecraft.doubleslabs.client.model.VerticalSlabModelBaker;
+import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.fabric.client.model.FabricModelBaker;
 import cjminecraft.doubleslabs.fabric.client.model.MixedDoubleSlabBakedModel;
 import cjminecraft.doubleslabs.fabric.client.model.VerticalSlabBakedModel;
@@ -46,7 +47,7 @@ public class DoubleSlabsClient implements ClientModInitializer {
                 return new VerticalSlabItemBakedModel(context.baker());
             }
 
-            if (location.equals(VERTICAL_SLAB_ID)) {
+            if (location.getNamespace().equals(Constants.MOD_ID) && location.getPath().contains(VERTICAL_SLAB_ID.getPath())) {
                 return new VerticalSlabBakedModel();
             }
 
