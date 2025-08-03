@@ -22,7 +22,6 @@ public class DoubleSlabs {
 
         DSForgeBlocks.BLOCKS.register(modBus);
         DSForgeItems.ITEMS.register(modBus);
-        DSForgeItems.DATA_COMPONENT_TYPES.register(modBus);
         DSForgeItems.CREATIVE_MODE_TABS.register(modBus);
         DSForgeBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
         DSForgeRecipes.RECIPE_SERIALIZERS.register(modBus);

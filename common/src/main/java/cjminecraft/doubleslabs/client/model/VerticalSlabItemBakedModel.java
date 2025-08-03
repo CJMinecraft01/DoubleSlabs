@@ -1,8 +1,7 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.client.ClientInternal;
-import cjminecraft.doubleslabs.common.init.DSItems;
-import cjminecraft.doubleslabs.common.item.component.VerticalSlabContent;
+import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -76,12 +75,10 @@ public class VerticalSlabItemBakedModel implements BakedModel {
 
         @Override
         public @Nullable BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-            final @Nullable VerticalSlabContent content = stack.get(DSItems.VERTICAL_SLAB_CONTENT.get());
+            final var slabStack = VerticalSlabItem.getContainedSlabItem(stack);
 
-            if (content != null && !content.isEmpty()) {
-                final var slab = content.getItem();
-
-                return ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slab);
+            if (!slabStack.isEmpty()) {
+                return ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabStack);
             }
 
             return getFallbackModel();

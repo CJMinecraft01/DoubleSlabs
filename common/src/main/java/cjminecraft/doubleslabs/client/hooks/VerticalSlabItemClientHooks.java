@@ -1,6 +1,6 @@
 package cjminecraft.doubleslabs.client.hooks;
 
-import cjminecraft.doubleslabs.common.init.DSItems;
+import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 
@@ -12,14 +12,10 @@ public class VerticalSlabItemClientHooks {
                 return -1;
             }
 
-            final var content = stack.get(DSItems.VERTICAL_SLAB_CONTENT.get());
-
-            if (content == null) {
-                return -1;
-            }
+            final var slabStack = VerticalSlabItem.getContainedSlabItem(stack);
 
             final var itemColours = Minecraft.getInstance().itemColors;
-            return itemColours.getColor(content.getItem(), tintIndex);
+            return itemColours.getColor(slabStack, tintIndex);
         };
     }
 

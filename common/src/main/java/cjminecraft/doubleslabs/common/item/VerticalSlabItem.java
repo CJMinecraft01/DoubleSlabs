@@ -7,7 +7,7 @@ import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
-import cjminecraft.doubleslabs.common.item.component.VerticalSlabContent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class VerticalSlabItem extends BlockItem {
     public VerticalSlabItem() {
-        super(DSBlocks.VERTICAL_SLAB.get(), new Properties().component(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.EMPTY));
+        super(DSBlocks.VERTICAL_SLAB.get(), new Properties());
     }
 
     public static ItemStack of(ItemStack slab) {
@@ -29,9 +29,14 @@ public class VerticalSlabItem extends BlockItem {
     public static ItemStack setContainedSlabItem(ItemStack stack, ItemStack slab) {
         final var copy = slab.copyWithCount(1);
 
-        stack.set(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.of(copy));
+        stack.addTagElement("item", copy.save(new CompoundTag()));
 
         return stack;
+    }
+
+    public static ItemStack getContainedSlabItem(ItemStack stack) {
+        final var slabTag = stack.getOrCreateTagElement("item");
+        return ItemStack.of(slabTag);
     }
 
     @Override
@@ -49,17 +54,17 @@ public class VerticalSlabItem extends BlockItem {
 
         final var stack = context.getItemInHand();
 
-        final var content = Objects.requireNonNull(stack.get(DSItems.VERTICAL_SLAB_CONTENT.get()));
-        if (content.isEmpty()) {
+        final var slabStack = getContainedSlabItem(stack);
+        if (slabStack.isEmpty()) {
             Constants.LOG.warn("Tried to place a vertical slab with no inner slab");
             return result;
         }
 
         final var newType = state.getValue(VerticalSlabBlock.TYPE);
 
-        final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(content.getItem()).orElseThrow();
+        final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(slabStack).orElseThrow();
 
-        final var stateFromSlabItem = Objects.requireNonNull(helper.getStateFromStack(content.getItem(), context));
+        final var stateFromSlabItem = Objects.requireNonNull(helper.getStateFromStack(slabStack, context));
 
         level.getBlockEntity(pos, DSBlockEntities.DYNAMIC_SLAB.get()).ifPresent(dynamicSlab -> {
             final var half = newType == VerticalSlabType.DOUBLE ?
@@ -80,8 +85,8 @@ public class VerticalSlabItem extends BlockItem {
 
     @Override
     public String getDescriptionId(ItemStack stack) {
-        final var content = Objects.requireNonNull(stack.get(DSItems.VERTICAL_SLAB_CONTENT.get()));
-        return content.getItem().getDescriptionId();
+        final var slabStack = getContainedSlabItem(stack);
+        return slabStack.getDescriptionId();
     }
 
     @Override
