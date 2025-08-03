@@ -4,25 +4,25 @@ import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.init.DSRecipes;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class VerticalSlabConversionRecipe extends CustomRecipe {
 
     private static final Ingredient VERTICAL_SLAB = Ingredient.of(DSItems.VERTICAL_SLAB.get());
 
-    public VerticalSlabConversionRecipe(CraftingBookCategory category) {
-        super(category);
+    public VerticalSlabConversionRecipe(ResourceLocation id, CraftingBookCategory category) {
+        super(id, category);
     }
 
-    private Optional<ItemStack> getMatch(CraftingInput craftingInput) {
-        if (craftingInput.ingredientCount() != 1) {
+    private Optional<ItemStack> getMatch(CraftingContainer craftingInput) {
+        if (craftingInput.getContainerSize() != 1) {
             return Optional.empty();
         }
 
@@ -33,16 +33,16 @@ public class VerticalSlabConversionRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInput craftingInput, Level level) {
+    public boolean matches(CraftingContainer craftingInput, Level level) {
         return getMatch(craftingInput).isPresent();
     }
 
     @Override
-    public ItemStack assemble(CraftingInput craftingInput, HolderLookup.Provider provider) {
+    public ItemStack assemble(CraftingContainer craftingInput, RegistryAccess registryAccess) {
         final var stack = craftingInput.getItem(0);
 
         if (VERTICAL_SLAB.test(stack)) {
-            return Objects.requireNonNull(stack.get(DSItems.VERTICAL_SLAB_CONTENT.get())).getItem().copy();
+            return VerticalSlabItem.getContainedSlabItem(stack).copy();
         } else {
             return VerticalSlabItem.of(stack);
         }
