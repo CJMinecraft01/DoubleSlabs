@@ -22,12 +22,12 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         return MixedDoubleSlabBlockHooks.getDrops(params);
     }
 
     @Override
-    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.getDestroyProgress(player, level, pos)
                 .orElseGet(() -> super.getDestroyProgress(state, player, level, pos));
     }
@@ -65,7 +65,7 @@ public class MixedDoubleSlabBlock extends DynamicSlabBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return MixedDoubleSlabBlockHooks.propagatesSkylightDown(level, pos);
     }
 

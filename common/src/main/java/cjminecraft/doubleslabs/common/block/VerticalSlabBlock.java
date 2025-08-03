@@ -62,12 +62,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    protected boolean useShapeForLightOcclusion(BlockState state) {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return state.getValue(TYPE) != VerticalSlabType.DOUBLE;
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         final var axis = state.getValue(AXIS);
         final var slabType = state.getValue(TYPE);
 
@@ -130,7 +130,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
@@ -140,12 +140,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
-        return state.getValue(TYPE) != VerticalSlabType.DOUBLE && SimpleWaterloggedBlock.super.canPlaceLiquid(player, level, pos, state, fluid);
+    public boolean canPlaceLiquid(BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
+        return state.getValue(TYPE) != VerticalSlabType.DOUBLE && SimpleWaterloggedBlock.super.canPlaceLiquid(level, pos, state, fluid);
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
@@ -154,12 +154,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
-        return pathComputationType == PathComputationType.WATER && state.getFluidState().is(FluidTags.WATER);
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return type == PathComputationType.WATER && state.getFluidState().is(FluidTags.WATER);
     }
 
     @Override
-    protected boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+    public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
         final var heldItem = context.getItemInHand();
         final var slabType = state.getValue(TYPE);
 
@@ -179,12 +179,12 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         return VerticalSlabBlockHooks.getDrops(params);
     }
 
     @Override
-    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
         return VerticalSlabBlockHooks.getDestroyProgress(player, level, state, pos)
                 .orElseGet(() -> super.getDestroyProgress(state, player, level, pos));
     }
@@ -195,7 +195,7 @@ public class VerticalSlabBlock extends DynamicSlabBlock implements SimpleWaterlo
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return VerticalSlabBlockHooks.propagateSkylightDown(level, pos);
     }
 
