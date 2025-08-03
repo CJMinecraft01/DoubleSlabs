@@ -20,9 +20,7 @@ public class ClientRenderingEvents {
 
     @SubscribeEvent
     public static void addTextToDebugScreenOverlay(CustomizeGuiOverlayEvent.DebugText event) {
-        if (event.getSide() == CustomizeGuiOverlayEvent.DebugText.Side.Right) {
-            ClientRenderingHooks.addTextToDebugScreenOverlay(event.getText());
-        }
+        ClientRenderingHooks.addTextToDebugScreenOverlay(event.getRight());
     }
 
 }
