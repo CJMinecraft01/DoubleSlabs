@@ -14,9 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
@@ -31,7 +30,7 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    public TextureAtlasSprite getParticleIcon(ModelData data) {
         final var model = data.has(DYNAMIC_SLAB_STATE_CONTAINER) ?
                 Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER)).callOnBlockState(Half.POSITIVE,
                         state -> Minecraft.getInstance().getBlockRenderer().getBlockModel(state),
@@ -41,7 +40,7 @@ public abstract class ForgeDynamicSlabBakedModel extends DynamicSlabBakedModel {
     }
 
     @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
         if (data.has(DYNAMIC_SLAB_STATE_CONTAINER)) {
             final var stateContainer = Objects.requireNonNull(data.get(DYNAMIC_SLAB_STATE_CONTAINER));
             final var renderDispatcher = Minecraft.getInstance().getBlockRenderer();

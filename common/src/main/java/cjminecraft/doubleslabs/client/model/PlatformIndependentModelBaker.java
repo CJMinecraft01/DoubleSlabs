@@ -3,7 +3,7 @@ package cjminecraft.doubleslabs.client.model;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public abstract class PlatformIndependentModelBaker implements ModelBaker {
     protected final ModelBakery bakery;

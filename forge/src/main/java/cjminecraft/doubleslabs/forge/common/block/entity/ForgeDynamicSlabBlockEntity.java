@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -30,21 +29,21 @@ public class ForgeDynamicSlabBlockEntity extends DynamicSlabBlockEntity<ForgeSla
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         final var negativeCapability = negativeBlockStateContainer.getCapability(cap, side);
         final var positiveCapability = positiveBlockStateContainer.getCapability(cap, side);
         return negativeCapability.isPresent() ? negativeCapability : positiveCapability;
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+    public <T> LazyOptional<T> getCapability(Capability<T> cap) {
         final var negativeCapability = negativeBlockStateContainer.getCapability(cap);
         final var positiveCapability = positiveBlockStateContainer.getCapability(cap);
         return negativeCapability.isPresent() ? negativeCapability : positiveCapability;
     }
 
     @Override
-    public @NotNull ModelData getModelData() {
+    public ModelData getModelData() {
         return ModelData.builder().with(ForgeDynamicSlabBakedModel.DYNAMIC_SLAB_STATE_CONTAINER, this).build();
     }
 }

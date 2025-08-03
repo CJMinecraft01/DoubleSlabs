@@ -14,8 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,8 @@ public class VerticalSlabBakedModel extends ForgeDynamicSlabBakedModel {
     }
 
     @Override
-    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand,
+                                    ModelData data, @Nullable RenderType renderType) {
         if (!data.has(DYNAMIC_SLAB_STATE_CONTAINER) || renderType == null || state == null) {
             return baseModel.getQuads(state, side, rand, data, renderType);
         }

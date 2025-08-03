@@ -11,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -22,9 +21,8 @@ import static cjminecraft.doubleslabs.client.ClientInternal.getFallbackModel;
 public class MixedDoubleSlabBakedModel extends ForgeDynamicSlabBakedModel {
 
     @Override
-    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
-                                             @NotNull RandomSource rand, @NotNull ModelData data,
-                                             @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand,
+                                    ModelData data, @Nullable RenderType renderType) {
         if (!data.has(DYNAMIC_SLAB_STATE_CONTAINER) || renderType == null) {
             return getFallbackModel().getQuads(state, side, rand, data, renderType);
         }
