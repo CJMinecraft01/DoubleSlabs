@@ -24,7 +24,7 @@ public class MixedDoubleSlabBakedModel extends FabricDynamicSlabBakedModel {
             dynamicSlabBlockEntity.runOnBlockStates(slabState -> {
                 final var model = blockRenderDispatcher.getBlockModel(slabState);
 
-                ((IDynamicSlabRenderContext) context).prepareForBlock(slabState, pos, model.useAmbientOcclusion());
+                ((IDynamicSlabRenderContext) context).prepareForBlock(slabState, pos, model);
 
                 model.emitBlockQuads(blockView, slabState, pos, randomSupplier, context);
             });
