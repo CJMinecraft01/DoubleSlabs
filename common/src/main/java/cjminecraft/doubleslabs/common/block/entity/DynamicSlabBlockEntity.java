@@ -5,7 +5,6 @@ import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.ISlabStateContainer;
 import cjminecraft.doubleslabs.common.init.DSBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -97,15 +96,16 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("positive", positiveBlockStateContainer.serialize(registries));
-        tag.put("negative", negativeBlockStateContainer.serialize(registries));
+    protected void saveAdditional(CompoundTag tag) {
+        tag.put("positive", positiveBlockStateContainer.serialize());
+        tag.put("negative", negativeBlockStateContainer.serialize());
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        positiveBlockStateContainer.deserialize(tag.getCompound("positive"), registries);
-        negativeBlockStateContainer.deserialize(tag.getCompound("negative"), registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        positiveBlockStateContainer.deserialize(tag.getCompound("positive"));
+        negativeBlockStateContainer.deserialize(tag.getCompound("negative"));
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class DynamicSlabBlockEntity<S extends ISlabStateContainer> exte
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return saveWithoutMetadata(registries);
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
     }
 }
