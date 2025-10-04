@@ -5,6 +5,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.Map;
 
@@ -20,7 +21,8 @@ public class VerticalSlabModelHelper implements IVerticalSlabModelHelper {
 
     @Override
     public BakedModel getVerticalSlabModel(BlockState state, Direction side) {
-        return verticalModels.get(state).get(side);
+		final var normalisedState = state.setValue(BlockStateProperties.WATERLOGGED, false);
+		return verticalModels.get(normalisedState).get(side);
     }
 
     @Override
