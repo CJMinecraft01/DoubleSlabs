@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.library.helpers.VerticalSlabModelHelper;
@@ -22,7 +23,7 @@ import java.util.function.Function;
 
 public class VerticalSlabModelBaker {
 
-    private final Map<BlockState, Map<Direction, BakedModel>> verticalModels = new HashMap<>();
+    private final Map<Block, Map<Direction, BakedModel>> verticalModels = new HashMap<>();
     private final Map<Item, BakedModel> itemModels = new HashMap<>();
 
     protected final PlatformIndependentModelBaker modelBaker;
@@ -83,23 +84,26 @@ public class VerticalSlabModelBaker {
     }
 
     private void bakeVariants(final Block block, final IHorizontalSlabHelper helper) {
+		final var directionalModels = Maps.<Direction, BakedModel>newEnumMap(Direction.class);
         block.getStateDefinition().getPossibleStates().stream()
                 .filter(Predicates.not(helper::isDoubleSlab)
-                        .and(state -> !state.hasProperty(BlockStateProperties.WATERLOGGED)
-                                || !state.getValue(BlockStateProperties.WATERLOGGED)))
-                .forEach(this::bake);
+				.and(state -> !state.hasProperty(BlockStateProperties.WATERLOGGED) || !state.getValue(BlockStateProperties.WATERLOGGED)))
+                .forEach(state -> {
+					var resourceLocation = BlockModelShaper.stateToModelLocation(state).id().withPrefix("block/");
+					if (helper.isHalf(state, Half.POSITIVE)) {
+						resourceLocation = resourceLocation.withSuffix("_top");
+						// Positive Z
+						directionalModels.put(Direction.SOUTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
+						// Positive X
+						directionalModels.put(Direction.EAST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
+					}
+					if (helper.isHalf(state, Half.NEGATIVE)) {
+						// Negative Z
+						directionalModels.put(Direction.NORTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
+						// Negative X
+						directionalModels.put(Direction.WEST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
+					}
+				});
+		verticalModels.put(block, directionalModels);
     }
-
-    private void bake(final BlockState state) {
-        final var resourceLocation = BlockModelShaper.stateToModelLocation(state).id().withPrefix("block/");
-
-        final var directionalModels = Maps.<Direction, BakedModel>newEnumMap(Direction.class);
-        directionalModels.put(Direction.NORTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
-        directionalModels.put(Direction.EAST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y270));
-        directionalModels.put(Direction.SOUTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y0));
-        directionalModels.put(Direction.WEST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
-
-        verticalModels.put(state, directionalModels);
-    }
-
 }

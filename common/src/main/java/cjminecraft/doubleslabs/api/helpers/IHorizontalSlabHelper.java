@@ -31,7 +31,8 @@ public interface IHorizontalSlabHelper {
     Half getHalf(BlockGetter level, BlockPos pos, BlockState state);
 
     BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half);
-
+	
+	boolean isHalf(BlockState state, Half half);
     boolean isDoubleSlab(BlockState state);
 
     default boolean areSameTypeOfSlab(BlockState state, ItemStack stack) {

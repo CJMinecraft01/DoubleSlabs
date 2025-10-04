@@ -36,6 +36,15 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
             case DOUBLE -> throw new IllegalStateException("Cannot get the half for a double slab");
         };
     }
+	
+	@Override
+	public boolean isHalf(BlockState state, Half half) {
+		return switch (state.getValue(BlockStateProperties.SLAB_TYPE)) {
+			case BOTTOM -> half == Half.NEGATIVE;
+			case TOP -> half == Half.POSITIVE;
+			default -> false;
+		};
+	}
 
     @Override
     public boolean isDoubleSlab(BlockState state) {
