@@ -11,12 +11,15 @@ import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,7 +48,7 @@ public class VerticalSlabModelBaker {
             final var helper = Internal.getSlabHelper().getHorizontalSlabHelper(block);
 
             if (helper.isPresent()) {
-                bakeVariants(block, helper.get());
+                bakeVariants(block);
                 count++;
             }
         }
@@ -83,27 +86,24 @@ public class VerticalSlabModelBaker {
         itemModels.put(item, bakedModel);
     }
 
-    private void bakeVariants(final Block block, final IHorizontalSlabHelper helper) {
+    private void bakeVariants(final Block block) {
 		final var directionalModels = Maps.<Direction, BakedModel>newEnumMap(Direction.class);
-        block.getStateDefinition().getPossibleStates().stream()
-                .filter(Predicates.not(helper::isDoubleSlab)
-				.and(state -> !state.hasProperty(BlockStateProperties.WATERLOGGED) || !state.getValue(BlockStateProperties.WATERLOGGED)))
-                .forEach(state -> {
-					var resourceLocation = BlockModelShaper.stateToModelLocation(state).id().withPrefix("block/");
-					if (helper.isHalf(state, Half.POSITIVE)) {
-						resourceLocation = resourceLocation.withSuffix("_top");
-						// Positive Z
-						directionalModels.put(Direction.SOUTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
-						// Positive X
-						directionalModels.put(Direction.EAST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
-					}
-					if (helper.isHalf(state, Half.NEGATIVE)) {
-						// Negative Z
-						directionalModels.put(Direction.NORTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
-						// Negative X
-						directionalModels.put(Direction.WEST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
-					}
-				});
+		var resourceLocation = BuiltInRegistries.BLOCK.getKey(block).withPrefix("block/");
+		directionalModels.put(Direction.NORTH, bakeVariant(resourceLocation, Direction.NORTH));
+		directionalModels.put(Direction.SOUTH, bakeVariant(resourceLocation, Direction.SOUTH));
+		directionalModels.put(Direction.EAST,  bakeVariant(resourceLocation, Direction.EAST));
+		directionalModels.put(Direction.WEST,  bakeVariant(resourceLocation, Direction.WEST));
 		verticalModels.put(block, directionalModels);
     }
+	
+	private @Nullable BakedModel bakeVariant(final ResourceLocation resourceLocation, final Direction direction) {
+		//final var resourceLocationVertical = resourceLocation.withSuffix("_vertical_" + direction.toString());
+		final var resourceLocationHorizontal = (direction == Direction.SOUTH || direction == Direction.EAST) ? resourceLocation.withSuffix("_top") : resourceLocation;
+		final var rotation = switch (direction) {
+			case Direction.NORTH, Direction.SOUTH -> BlockModelRotation.X90_Y180;
+			case Direction.WEST, Direction.EAST -> BlockModelRotation.X90_Y90;
+			default -> BlockModelRotation.X0_Y0;
+		};
+		return modelBaker.bake(resourceLocationHorizontal, rotation);
+	}
 }
