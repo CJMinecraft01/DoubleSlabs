@@ -66,7 +66,7 @@ public class VerticalSlabItem extends BlockItem {
                     originalState.getValue(VerticalSlabBlock.TYPE).getHalf().getOpposite()
                     : newType.getHalf();
 
-            final var slabState = helper.getStateForHalf(level, pos, stateFromSlabItem, half);
+            final var slabState = helper.getStateForHalf(stateFromSlabItem, half);
             dynamicSlab.setBlockState(half, slabState);
 
             if (slabState.hasBlockEntity()) {
