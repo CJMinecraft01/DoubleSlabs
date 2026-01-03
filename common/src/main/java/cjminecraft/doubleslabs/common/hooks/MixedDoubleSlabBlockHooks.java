@@ -140,8 +140,8 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
                     return;
                 }
 
-                var slabState = slabContainer.getBlockState();
-				slabState = slabState.setValue(BlockStateProperties.WATERLOGGED, false);
+                var slabState = slabContainer.getBlockState()
+                        .trySetValue(BlockStateProperties.WATERLOGGED, false);
 
                 level.setBlock(pos, slabState, level.isClientSide() ? 11 : 3);
 

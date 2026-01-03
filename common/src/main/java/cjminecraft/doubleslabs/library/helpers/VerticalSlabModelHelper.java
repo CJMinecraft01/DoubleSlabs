@@ -21,7 +21,7 @@ public class VerticalSlabModelHelper implements IVerticalSlabModelHelper {
 
     @Override
     public BakedModel getVerticalSlabModel(BlockState state, Direction side) {
-		final var normalisedState = state.setValue(BlockStateProperties.WATERLOGGED, false);
+		final var normalisedState = state.trySetValue(BlockStateProperties.WATERLOGGED, false);
 		return verticalModels.get(normalisedState).get(side);
     }
 
