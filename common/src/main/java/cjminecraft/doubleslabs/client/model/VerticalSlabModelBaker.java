@@ -1,6 +1,7 @@
 package cjminecraft.doubleslabs.client.model;
 
 import cjminecraft.doubleslabs.api.helpers.IHorizontalSlabHelper;
+import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.library.helpers.VerticalSlabModelHelper;
@@ -88,19 +89,32 @@ public class VerticalSlabModelBaker {
                 .filter(Predicates.not(helper::isDoubleSlab)
                         .and(state -> !state.hasProperty(BlockStateProperties.WATERLOGGED)
                                 || !state.getValue(BlockStateProperties.WATERLOGGED)))
-                .forEach(this::bake);
+                .forEach(state -> bake(state, helper));
     }
 
-    private void bake(final BlockState state) {
-        final var resourceLocation = BlockModelShaper.stateToModelLocation(state).withPrefix("block/");
+    private void bake(final BlockState state, final IHorizontalSlabHelper helper) {
+        final var resourceLocation = BlockModelShaper.stateToModelLocation(state);
+        final var half = helper.getHalf(state);
 
         final var directionalModels = Maps.<Direction, BakedModel>newEnumMap(Direction.class);
-        directionalModels.put(Direction.NORTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y180));
-        directionalModels.put(Direction.EAST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y270));
-        directionalModels.put(Direction.SOUTH, modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y0));
-        directionalModels.put(Direction.WEST,  modelBaker.bake(resourceLocation, BlockModelRotation.X90_Y90));
+
+        for (final var direction : Direction.Plane.HORIZONTAL) {
+            directionalModels.put(direction, modelBaker.bake(resourceLocation, getVerticalModelRotation(half, direction)));
+        }
 
         verticalModels.put(state, directionalModels);
+    }
+
+    private static ModelState getVerticalModelRotation(final Half half, final Direction direction) {
+        // For the positive state, we want to flip the rotations
+        return switch (half == Half.NEGATIVE ? direction : direction.getOpposite()) {
+            case NORTH -> BlockModelRotation.X90_Y180;
+            case EAST -> BlockModelRotation.X90_Y270;
+            case SOUTH -> BlockModelRotation.X90_Y0;
+            case WEST -> BlockModelRotation.X90_Y90;
+
+            default -> BlockModelRotation.X0_Y0;
+        };
     }
 
 }
