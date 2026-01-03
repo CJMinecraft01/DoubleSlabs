@@ -63,8 +63,8 @@ public class DoubleSlabBlockHooks {
     }
 
     private static boolean separateDoubleSlab(final Level level, final Player player, final IHorizontalSlabHelper slabHelper, final BlockState slabBlockState, final BlockPos slabPos, final Half halfToRemove) {
-        final var stateToRemove = slabHelper.getStateForHalf(level, slabPos, slabBlockState, halfToRemove);
-        final var remainingSlabState = slabHelper.getStateForHalf(level, slabPos, slabBlockState, halfToRemove.getOpposite());
+        final var stateToRemove = slabHelper.getStateForHalf(slabBlockState, halfToRemove);
+        final var remainingSlabState = slabHelper.getStateForHalf(slabBlockState, halfToRemove.getOpposite());
 
         if (!level.setBlock(slabPos, remainingSlabState, 3)) {
             return false;

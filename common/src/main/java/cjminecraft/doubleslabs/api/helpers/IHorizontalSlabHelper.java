@@ -1,12 +1,10 @@
 package cjminecraft.doubleslabs.api.helpers;
 
 import cjminecraft.doubleslabs.api.state.Half;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -28,9 +26,9 @@ public interface IHorizontalSlabHelper {
         return isHorizontalSlab(stack.getItem());
     }
 
-    Half getHalf(BlockGetter level, BlockPos pos, BlockState state);
+    Half getHalf(BlockState state);
 
-    BlockState getStateForHalf(BlockGetter level, BlockPos pos, BlockState state, Half half);
+    BlockState getStateForHalf(BlockState state, Half half);
 
     boolean isDoubleSlab(BlockState state);
 

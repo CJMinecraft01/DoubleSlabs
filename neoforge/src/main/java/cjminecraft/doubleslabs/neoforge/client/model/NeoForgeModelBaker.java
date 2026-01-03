@@ -1,7 +1,6 @@
 package cjminecraft.doubleslabs.neoforge.client.model;
 
 import cjminecraft.doubleslabs.client.model.PlatformIndependentModelBaker;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +15,7 @@ public class NeoForgeModelBaker extends PlatformIndependentModelBaker {
 
     @Override
     public @Nullable UnbakedModel getTopLevelModel(ModelResourceLocation modelResourceLocation) {
-        return null;
+        return bakery.topLevelModels.get(modelResourceLocation);
     }
 
     @Override
