@@ -2,7 +2,6 @@ package cjminecraft.doubleslabs.forge.common.state;
 
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.library.state.SlabStateContainer;
-import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -18,13 +17,11 @@ public class ForgeSlabStateContainer extends SlabStateContainer implements ICapa
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction direction) {
-        Preconditions.checkState(blockEntity != null, "Cannot get the capability from the block entity if the block entity does not exist");
-        return blockEntity.getCapability(capability, direction);
+        return blockEntity != null ? blockEntity.getCapability(capability, direction) : LazyOptional.empty();
     }
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability) {
-        Preconditions.checkState(blockEntity != null, "Cannot get the capability from the block entity if the block entity does not exist");
-        return blockEntity.getCapability(capability);
+        return blockEntity != null ?  blockEntity.getCapability(capability) : LazyOptional.empty();
     }
 }
