@@ -24,7 +24,7 @@ public class ParticleEngineMixin {
             return;
         }
 
-        if (state.is(DSBlocks.MIXED_SLABS)) {
+        if (state.is(DSBlocks.MIXED_SLABS) || state.is(DSBlocks.VERTICAL_SLAB.get())) {
             if (DynamicSlabBlockClientHooks.addDestroyEffects(level, pos, (ParticleEngine) (Object) this)) {
                 ci.cancel();
             }
