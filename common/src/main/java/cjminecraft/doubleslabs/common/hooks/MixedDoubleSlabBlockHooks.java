@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -139,7 +140,8 @@ public class MixedDoubleSlabBlockHooks extends DynamicSlabBlockHooks {
                     return;
                 }
 
-                final var slabState = slabContainer.getBlockState();
+                var slabState = slabContainer.getBlockState()
+                        .trySetValue(BlockStateProperties.WATERLOGGED, false);
 
                 level.setBlock(pos, slabState, level.isClientSide() ? 11 : 3);
 
