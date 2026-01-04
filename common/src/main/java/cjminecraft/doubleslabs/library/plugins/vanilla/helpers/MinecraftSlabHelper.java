@@ -23,7 +23,10 @@ public class MinecraftSlabHelper implements IHorizontalSlabHelper {
 
     @Override
     public boolean isHorizontalSlab(Item item) {
-        return item instanceof BlockItem blockItem && isHorizontalSlab(blockItem.getBlock().defaultBlockState());
+        //noinspection ConstantValue - Some mods have set their block for a block item to be null
+        return item instanceof BlockItem blockItem &&
+                blockItem.getBlock() != null &&
+                isHorizontalSlab(blockItem.getBlock().defaultBlockState());
     }
 
     @Override
