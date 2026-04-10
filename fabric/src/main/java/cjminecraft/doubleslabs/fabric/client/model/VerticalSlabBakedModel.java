@@ -40,7 +40,7 @@ public class VerticalSlabBakedModel extends FabricDynamicSlabBakedModel {
                         blockRenderDispatcher.getBlockModel(slabState) :
                         ClientInternal.getVerticalSlabModelHelper().getVerticalSlabModel(slabState, direction);
 
-                ((IDynamicSlabRenderContext) context).prepareForBlock(slabState, pos, model.useAmbientOcclusion());
+                ((IDynamicSlabRenderContext) context).prepareForBlock(state, pos, model.useAmbientOcclusion());
 
                 model.emitBlockQuads(blockView, state, pos, randomSupplier, context);
             });
