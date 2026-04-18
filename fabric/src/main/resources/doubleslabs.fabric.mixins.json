@@ -21,7 +21,8 @@
     "client.MultiPlayerGameModeMixin",
     "client.ParticleEngineMixin",
     "client.RenderContextMixin",
-    "client.compat.sodium.BlockRenderContextMixin"
+    "client.compat.sodium.BlockRenderContextMixin",
+    "client.compat.sodium.BlockRendererMixin"
   ],
   "server": [],
   "injectors": {
