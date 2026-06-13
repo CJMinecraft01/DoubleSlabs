@@ -13,6 +13,17 @@ repositories {
 
 var sodiumVersion = "mc1.20.1-0.5.13-fabric"
 
+// Sodium requires us to use LWJGL 3.3.1 but by default we use 3.3.2-snapshot
+configurations.configureEach {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.lwjgl') {
+                details.useVersion '3.3.1'
+            }
+        }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
