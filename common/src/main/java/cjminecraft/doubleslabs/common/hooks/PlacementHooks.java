@@ -23,6 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -156,14 +158,24 @@ public class PlacementHooks {
 
         final var axis = dynamicVerticalSlabState.getValue(VerticalSlabBlock.AXIS);
         final var type = dynamicVerticalSlabState.getValue(VerticalSlabBlock.TYPE);
+        if (type == VerticalSlabType.DOUBLE) {
+            return Optional.empty();
+        }
+
+        final var combinedState = dynamicVerticalSlabState.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.DOUBLE)
+                .setValue(VerticalSlabBlock.WATERLOGGED, false);
+        if (!canCombineVerticalSlab(level, slabPos, player, itemInHand, blockHitResult, combinedState)) {
+            return Optional.empty();
+        }
 
         final var slabToPlaceType = type.getOpposite();
         final var slabToPlaceHalf = slabToPlaceType.getHalf();
         final var verticalSlabStateToPlace = new VerticalSlabState(axis, slabToPlaceType);
 
-        final var slabToPlaceState = slabItemHelper.getStateForVerticalSlabState(level, slabPos, stateFromSlabItem, verticalSlabStateToPlace);
+        final var slabToPlaceState = slabItemHelper.getStateForVerticalSlabState(level, slabPos, stateFromSlabItem, verticalSlabStateToPlace)
+                .trySetValue(BlockStateProperties.WATERLOGGED, false);
 
-        if (!level.setBlockAndUpdate(slabPos, dynamicVerticalSlabState.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.DOUBLE))) {
+        if (!level.setBlockAndUpdate(slabPos, combinedState)) {
             return Optional.empty();
         }
 
@@ -172,6 +184,8 @@ public class PlacementHooks {
         final var optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos, DSBlockEntities.DYNAMIC_SLAB.get());
 
         return optionalDynamicSlabBlockEntity.map(dynamicSlabBlockEntity -> {
+            final var existing = dynamicSlabBlockEntity.getStateContainer(type.getHalf());
+            existing.setBlockState(existing.getBlockState().trySetValue(BlockStateProperties.WATERLOGGED, false));
             dynamicSlabBlockEntity.setBlockState(slabToPlaceHalf, slabToPlaceState);
 
             if (slabToPlaceState.hasBlockEntity()) {
@@ -219,7 +233,8 @@ public class PlacementHooks {
         final var slabToPlaceHalf = slabToPlaceType.getHalf();
         final var verticalSlabStateToPlace = new VerticalSlabState(slabVerticalSlabState.axis(), slabToPlaceType);
 
-        final var slabToPlaceState = slabItemHelper.getStateForVerticalSlabState(level, slabPos, stateFromSlabItem, verticalSlabStateToPlace);
+        final var slabToPlaceState = slabItemHelper.getStateForVerticalSlabState(level, slabPos, stateFromSlabItem, verticalSlabStateToPlace)
+                .trySetValue(BlockStateProperties.WATERLOGGED, false);
 
         final @Nullable BlockEntity existingBlockEntity = level.getBlockEntity(slabPos);
 
@@ -227,7 +242,8 @@ public class PlacementHooks {
                 .setValue(VerticalSlabBlock.AXIS, slabVerticalSlabState.axis())
                 .setValue(VerticalSlabBlock.TYPE, VerticalSlabType.DOUBLE);
 
-        if (!level.setBlockAndUpdate(slabPos, dynamicVerticalSlabState)) {
+        if (!canCombineVerticalSlab(level, slabPos, player, itemInHand, blockHitResult, dynamicVerticalSlabState)
+                || !level.setBlockAndUpdate(slabPos, dynamicVerticalSlabState)) {
             return Optional.empty();
         }
 
@@ -236,7 +252,7 @@ public class PlacementHooks {
         final var optionalDynamicSlabBlockEntity = level.getBlockEntity(slabPos, DSBlockEntities.DYNAMIC_SLAB.get());
 
         return optionalDynamicSlabBlockEntity.map(dynamicSlabBlockEntity -> {
-            dynamicSlabBlockEntity.setBlockState(slabBlockHalf, slabBlockState);
+            dynamicSlabBlockEntity.setBlockState(slabBlockHalf, slabBlockState.trySetValue(BlockStateProperties.WATERLOGGED, false));
             dynamicSlabBlockEntity.setBlockEntity(slabBlockHalf, existingBlockEntity);
             dynamicSlabBlockEntity.setBlockState(slabToPlaceHalf, slabToPlaceState);
 
@@ -247,6 +263,12 @@ public class PlacementHooks {
 
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         });
+    }
+
+    private static boolean canCombineVerticalSlab(Level level, BlockPos pos, Player player, ItemStack stack,
+                                                  BlockHitResult hit, BlockState combinedState) {
+        return player.mayUseItemAt(pos, hit.getDirection(), stack)
+                && level.isUnobstructed(combinedState, pos, CollisionContext.of(player));
     }
 
     private static Optional<ItemInteractionResult> tryUseHorizontalSlab(final Level level,

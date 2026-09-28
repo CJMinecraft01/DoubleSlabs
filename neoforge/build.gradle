@@ -38,3 +38,18 @@ neoForge {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = 'https://api.modrinth.com/maven' }
+        }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+dependencies {
+    // Optional integration: neither mod is bundled or required at runtime.
+    compileOnly 'maven.modrinth:quark:hMLnxKZx' // 4.1-480
+    compileOnly 'maven.modrinth:zeta:9GjNW2Gf' // 1.1-40
+}
