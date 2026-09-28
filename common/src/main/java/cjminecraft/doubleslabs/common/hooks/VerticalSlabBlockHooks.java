@@ -4,6 +4,7 @@ import cjminecraft.doubleslabs.api.state.Half;
 import cjminecraft.doubleslabs.api.state.IDynamicSlabStateContainer;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.block.VerticalSlabBlock;
+import cjminecraft.doubleslabs.common.Internal;
 import cjminecraft.doubleslabs.common.block.entity.DynamicSlabBlockEntity;
 import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.item.VerticalSlabItem;
@@ -156,7 +157,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
                     final var slabState = slabContainer.getBlockState();
                     final var slabItem = slabState.getBlock().asItem();
                     Block.getDrops(slabState, (ServerLevel)level, pos, slabContainer.getBlockEntity(), player, tool).stream()
-                            .map(stack -> stack.is(slabItem) ? VerticalSlabItem.of(stack) : stack)
+                            .map(stack -> stack.is(slabItem) ? getVerticalSlabItem(slabState, stack) : stack)
                             .forEach((stack) -> Block.popResource(level, pos, stack));
                     state.spawnAfterBreak((ServerLevel)level, pos, tool, true);
                 }
@@ -164,8 +165,14 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
             final var halfToKeep = halfToRemove.getOpposite();
 
-            container.clearStateContainer(halfToRemove);
-            level.setBlock(pos, state.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.fromHalf(halfToKeep)), 3);
+            final var remaining = container.getStateContainer(halfToKeep);
+            final var remainingState = remaining.getBlockState();
+            if (Internal.getSlabHelper().isVerticalSlab(remainingState) && !remaining.hasBlockEntity()) {
+                level.setBlock(pos, remainingState, 3);
+            } else {
+                container.clearStateContainer(halfToRemove);
+                level.setBlock(pos, state.setValue(VerticalSlabBlock.TYPE, VerticalSlabType.fromHalf(halfToKeep)), 3);
+            }
         }
     }
 
@@ -173,8 +180,15 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
         return callOnLookingAtBlockState(level, state, pos, hitResult, s -> {
             final var slab = s.getBlock().getCloneItemStack(level, pos, s);
 
-            return VerticalSlabItem.of(slab);
+            return getVerticalSlabItem(s, slab);
         }).orElse(ItemStack.EMPTY);
+    }
+
+    private static ItemStack getVerticalSlabItem(BlockState state, ItemStack stack) {
+        if (stack.isEmpty() || Internal.getSlabHelper().isVerticalSlab(state)) {
+            return stack;
+        }
+        return VerticalSlabItem.of(stack).copyWithCount(stack.getCount());
     }
 
     public static List<ItemStack> getDrops(LootParams.Builder params) {
@@ -197,7 +211,7 @@ public class VerticalSlabBlockHooks extends DynamicSlabBlockHooks {
 
                 final var slabItem = slabState.getBlock().asItem();
                 final var slabDrops = slabState.getDrops(slabParams).stream()
-                        .map(stack -> stack.is(slabItem) ? VerticalSlabItem.of(stack) : stack)
+                        .map(stack -> stack.is(slabItem) ? getVerticalSlabItem(slabState, stack) : stack)
                         .toList();
 
                 drops.addAll(slabDrops);

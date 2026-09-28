@@ -1,5 +1,7 @@
 package cjminecraft.doubleslabs.common.item;
 
+import cjminecraft.doubleslabs.api.helpers.IVerticalSlabHelper;
+import cjminecraft.doubleslabs.api.state.VerticalSlabState;
 import cjminecraft.doubleslabs.api.state.VerticalSlabType;
 import cjminecraft.doubleslabs.common.Constants;
 import cjminecraft.doubleslabs.common.Internal;
@@ -9,15 +11,20 @@ import cjminecraft.doubleslabs.common.init.DSBlocks;
 import cjminecraft.doubleslabs.common.init.DSItems;
 import cjminecraft.doubleslabs.common.item.component.VerticalSlabContent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
+import javax.annotation.Nullable;
 
-public class VerticalSlabItem extends BlockItem {
+public class VerticalSlabItem extends BlockItem implements IVerticalSlabHelper {
     public VerticalSlabItem() {
         super(DSBlocks.VERTICAL_SLAB.get(), new Properties().component(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.EMPTY));
     }
@@ -32,6 +39,39 @@ public class VerticalSlabItem extends BlockItem {
         stack.set(DSItems.VERTICAL_SLAB_CONTENT.get(), VerticalSlabContent.of(copy));
 
         return stack;
+    }
+
+    @Override
+    public boolean isVerticalSlab(Item item) {
+        return item == this;
+    }
+
+    @Override
+    public boolean isVerticalSlab(Block block) {
+        return block == DSBlocks.VERTICAL_SLAB.get();
+    }
+
+    @Override
+    public VerticalSlabState getVerticalSlabState(BlockGetter level, BlockPos pos, BlockState state) {
+        return new VerticalSlabState(state.getValue(VerticalSlabBlock.AXIS), state.getValue(VerticalSlabBlock.TYPE));
+    }
+
+    @Override
+    public BlockState getStateForVerticalSlabState(BlockGetter level, BlockPos pos, BlockState state,
+                                                  VerticalSlabState verticalSlabState) {
+        // Our item stores a horizontal slab; the container supplies its vertical orientation.
+        return Internal.getSlabHelper().getHorizontalSlabHelper(state).orElseThrow()
+                .getStateForHalf(state, verticalSlabState.type().getHalf());
+    }
+
+    @Override
+    public @Nullable BlockState getStateFromStack(ItemStack stack, BlockPlaceContext context) {
+        final var content = stack.get(DSItems.VERTICAL_SLAB_CONTENT.get());
+        if (content == null || content.isEmpty()) {
+            return null;
+        }
+        return Internal.getSlabHelper().getHorizontalSlabHelper(content.getItem())
+                .map(helper -> helper.getStateFromStack(content.getItem(), context)).orElse(null);
     }
 
     @Override
